@@ -4,7 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Checklist gratuito – Fechamento técnico de Work Orders (CMMS)</title>
-  <meta name="description" content="Baixe grátis o checklist de validação técnica para fechamento de Work Orders em CMMS e avance para a página de treinamentos." />
+  <meta name="description" content="Baixe gratuitamente o Checklist de Responsabilidade Técnica para fechamento de Work Orders em CMMS e siga para a página de treinamentos." />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="theme-color" content="#07090d" />
 
   <style>
     :root{
@@ -14,14 +17,16 @@
       --muted:#a7b1c2;
       --gold:#d6b15a;
       --line:rgba(214,177,90,.25);
+      --whiteLine:rgba(255,255,255,.10);
     }
     *{box-sizing:border-box}
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 600px at 20% 10%, rgba(214,177,90,.12), transparent 55%),
-                  radial-gradient(900px 500px at 85% 40%, rgba(120,170,255,.10), transparent 60%),
-                  var(--bg);
+      background:
+        radial-gradient(1200px 600px at 20% 10%, rgba(214,177,90,.12), transparent 55%),
+        radial-gradient(900px 500px at 85% 40%, rgba(120,170,255,.10), transparent 60%),
+        var(--bg);
       color:var(--text);
     }
     .wrap{
@@ -78,7 +83,7 @@
       color:var(--muted);
       font-size:16px;
       line-height:1.55;
-      max-width:62ch;
+      max-width:65ch;
     }
     .list{
       margin:18px 0 24px 0;
@@ -97,7 +102,8 @@
     }
     .list span{
       color:var(--gold);
-      font-weight:600;
+      font-weight:700;
+      margin-right:6px;
     }
     .ctaRow{
       display:flex;
@@ -111,10 +117,15 @@
       border:none;
       border-radius:12px;
       padding:14px 16px;
-      font-weight:700;
+      font-weight:800;
       cursor:pointer;
       transition: transform .06s ease, filter .2s ease;
       user-select:none;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:46px;
     }
     .btn:active{transform: translateY(1px);}
     .btnPrimary{
@@ -132,6 +143,16 @@
       font-size:13px;
       line-height:1.4;
       margin-top:8px;
+    }
+    .toast{
+      display:none;
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--whiteLine);
+      background: rgba(0,0,0,.28);
+      color: var(--text);
+      font-size:13px;
     }
     .side{
       flex:1 1 320px;
@@ -154,21 +175,17 @@
       font-size:14px;
     }
     .footer{
-      margin-top:24px;
+      margin-top:16px;
       color:var(--muted);
       font-size:12px;
       line-height:1.5;
       opacity:.95;
     }
-    .toast{
-      display:none;
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.28);
-      color: var(--text);
-      font-size:13px;
+    .smallLink{
+      color:var(--muted);
+      font-size:12px;
+      text-decoration:underline;
+      text-underline-offset:3px;
     }
   </style>
 </head>
@@ -177,57 +194,67 @@
   <main class="wrap">
     <section class="top">
       <div class="card">
-        <div class="badge">Guia gratuito • Fechamento técnico de Work Orders em CMMS</div>
-        <h1>Checklist de responsabilidade técnica para fechar Work Orders sem ficar exposto</h1>
+        <div class="badge">PDF gratuito • Fechamento técnico de Work Orders em CMMS</div>
+
+        <h1>Checklist de responsabilidade técnica para fechar Work Orders com segurança</h1>
+
         <p class="lead">
-          Encerrar uma Work Order não é “mudar status”.
-          É declarar formalmente que a intervenção se sustenta em auditorias, histórico e continuidade operacional.
+          Fechar uma Work Order não é só concluir tarefa.
+          É deixar um registro que se sustenta em auditoria, histórico e continuidade operacional.
         </p>
 
         <ul class="list">
-          <li><span>1.</span> Verifica se a falha foi resolvida ou tecnicamente delimitada.</li>
-          <li><span>2.</span> Confere se os testes sustentam a liberação em condições reais.</li>
-          <li><span>3.</span> Evita fechamento com registro genérico, pendências ocultas e risco residual.</li>
-          <li><span>4.</span> Garante rastreabilidade para qualquer outro profissional entender o que foi entregue.</li>
+          <li><span>1.</span> Confirma se a intervenção resolveu ou delimitou tecnicamente a falha.</li>
+          <li><span>2.</span> Garante que testes e evidências sustentam a liberação.</li>
+          <li><span>3.</span> Evita fechamento genérico, pendências ocultas e risco residual.</li>
+          <li><span>4.</span> Mantém rastreabilidade para qualquer outro técnico assumir sem ruído.</li>
         </ul>
 
         <div class="ctaRow">
-          <button class="btn btnPrimary" id="downloadBtn">Baixar checklist grátis (PDF)</button>
-          <a class="btn btnGhost" href="https://flowcoresolutions.com.br/cursos.html" style="text-decoration:none; display:inline-flex; align-items:center;">
+          <a class="btn btnPrimary" id="downloadBtn" href="./Checklist-Fechamento-WO-CMMS.pdf">
+            Baixar checklist grátis (PDF)
+          </a>
+
+          <a class="btn btnGhost" href="https://flowcoresolutions.com.br/cursos.html">
             Ver treinamentos
           </a>
         </div>
 
         <div class="hint">
-          Ao clicar, o PDF será baixado e você será direcionado automaticamente para a página de treinamentos.
+          Ao clicar, o download será iniciado e você será direcionado para os treinamentos.
+          Se o navegador abrir o PDF em vez de baixar, é comportamento normal.
         </div>
 
         <div class="toast" id="toast"></div>
+
+        <div style="margin-top:10px;">
+          <a class="smallLink" href="./Checklist-Fechamento-WO-CMMS.pdf" target="_blank" rel="noopener">
+            Se preferir, abrir o PDF em nova aba
+          </a>
+        </div>
       </div>
 
       <aside class="side">
-        <h2>Como usar (na prática de campo)</h2>
+        <h2>Uso recomendado</h2>
         <p>
-          Use este checklist como “filtro de decisão técnica” antes de encerrar a WO.
-          Se houver desconforto técnico ao final, não feche.
+          Use como verificação final antes de encerrar a WO.
+          Se o fechamento não “se sustenta” tecnicamente, não feche.
         </p>
         <p>
-          Funcionalidade isolada não é critério suficiente.
           Pressão por prazo não transfere responsabilidade.
+          Registro bem feito reduz retrabalho e protege o próximo turno.
         </p>
-
-        <div class="footer">
-          FlowCore Solutions • Gestão de Ativos & Confiabilidade
-        </div>
+        <div class="footer">FlowCore Solutions • Confiabilidade • Metrologia • CMMS</div>
       </aside>
     </section>
   </main>
 
   <script>
-    // 1) Ajuste aqui o caminho onde você vai hospedar o PDF no seu domínio
-    const PDF_URL = "Checklist-Fechamento-WO-CMMS.pdf";
+    // PDF está na raiz do repositório (mesmo diretório deste HTML)
+    const PDF_FILE = "Checklist-Fechamento-WO-CMMS.pdf";
+    const PDF_URL = "./" + PDF_FILE;
 
-    // 2) Para onde redirecionar após iniciar o download
+    // Redirecionamento após iniciar o download
     const REDIRECT_URL = "https://flowcoresolutions.com.br/cursos.html";
 
     const btn = document.getElementById("downloadBtn");
@@ -238,31 +265,41 @@
       toast.style.display = "block";
     }
 
-    btn.addEventListener("click", () => {
+    function startDownload() {
+      // cria link temporário para forçar download quando possível
+      const a = document.createElement("a");
+      a.href = PDF_URL;
+
+      // nome do arquivo ao salvar (mais estável)
+      a.download = PDF_FILE;
+
+      // evita que abra a mesma aba caso browser ignore download
+      a.target = "_self";
+
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    btn.addEventListener("click", (e) => {
+      // evita navegação direta do <a> e controla o fluxo
+      e.preventDefault();
+
+      showToast("Iniciando download... redirecionando para os treinamentos.");
+
+      // tentativa 1: download programático
       try {
-        // Inicia download (mesmo domínio funciona melhor)
-        const a = document.createElement("a");
-        a.href = PDF_URL;
-        a.download = "Checklist-Fechamento-WO-CMMS.pdf";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-
-        showToast("Download iniciado. Redirecionando para os treinamentos...");
-
-        // Redireciona após um pequeno delay
-        setTimeout(() => {
-          window.location.href = REDIRECT_URL;
-        }, 900);
-
-      } catch (e) {
-        // fallback: manda direto para o PDF e o usuário pode voltar
-        window.location.href = PDF_URL;
+        startDownload();
+      } catch (err) {
+        // fallback: abre o PDF (o usuário baixa pelo viewer)
+        window.open(PDF_URL, "_blank", "noopener");
       }
+
+      // redireciona após pequeno delay
+      setTimeout(() => {
+        window.location.href = REDIRECT_URL;
+      }, 900);
     });
   </script>
 </body>
 </html>
-
-
-
