@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Checklist gratuito – Fechamento técnico de Work Orders (CMMS)</title>
+  <meta name="description" content="Baixe grátis o checklist de validação técnica para fechamento de Work Orders em CMMS e avance para a página de treinamentos." />
+
+  <style>
+    :root{
+      --bg:#07090d;
+      --card:#0c1018;
+      --text:#e9eef8;
+      --muted:#a7b1c2;
+      --gold:#d6b15a;
+      --line:rgba(214,177,90,.25);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% 10%, rgba(214,177,90,.12), transparent 55%),
+                  radial-gradient(900px 500px at 85% 40%, rgba(120,170,255,.10), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+    }
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+      padding:56px 18px;
+    }
+    .top{
+      display:flex;
+      gap:24px;
+      align-items:stretch;
+      flex-wrap:wrap;
+    }
+    .card{
+      flex:1 1 520px;
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:28px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.45);
+      position:relative;
+      overflow:hidden;
+    }
+    .card:before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius:18px;
+      background: radial-gradient(700px 220px at 30% 0%, rgba(214,177,90,.18), transparent 55%);
+      pointer-events:none;
+      opacity:.9;
+    }
+    .card > *{position:relative}
+    .badge{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 12px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      color:var(--muted);
+      font-size:13px;
+      letter-spacing:.2px;
+      margin-bottom:14px;
+    }
+    h1{
+      margin:0 0 10px 0;
+      font-size:34px;
+      line-height:1.1;
+      letter-spacing:-.4px;
+    }
+    .lead{
+      margin:0 0 18px 0;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.55;
+      max-width:62ch;
+    }
+    .list{
+      margin:18px 0 24px 0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:10px;
+    }
+    .list li{
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.20);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .list span{
+      color:var(--gold);
+      font-weight:600;
+    }
+    .ctaRow{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:10px;
+    }
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius:12px;
+      padding:14px 16px;
+      font-weight:700;
+      cursor:pointer;
+      transition: transform .06s ease, filter .2s ease;
+      user-select:none;
+    }
+    .btn:active{transform: translateY(1px);}
+    .btnPrimary{
+      background: linear-gradient(180deg, rgba(214,177,90,1), rgba(177,135,55,1));
+      color:#1b1406;
+      box-shadow: 0 10px 30px rgba(214,177,90,.22);
+    }
+    .btnGhost{
+      background: transparent;
+      color: var(--text);
+      border:1px solid rgba(255,255,255,.16);
+    }
+    .hint{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
+      margin-top:8px;
+    }
+    .side{
+      flex:1 1 320px;
+      background: rgba(12,16,24,.55);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:22px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.35);
+      height:fit-content;
+    }
+    .side h2{
+      margin:0 0 10px 0;
+      font-size:18px;
+      letter-spacing:.1px;
+    }
+    .side p{
+      margin:0 0 12px 0;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:14px;
+    }
+    .footer{
+      margin-top:24px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+      opacity:.95;
+    }
+    .toast{
+      display:none;
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.28);
+      color: var(--text);
+      font-size:13px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <section class="top">
+      <div class="card">
+        <div class="badge">Guia gratuito • Fechamento técnico de Work Orders em CMMS</div>
+        <h1>Checklist de responsabilidade técnica para fechar Work Orders sem ficar exposto</h1>
+        <p class="lead">
+          Encerrar uma Work Order não é “mudar status”.
+          É declarar formalmente que a intervenção se sustenta em auditorias, histórico e continuidade operacional.
+        </p>
+
+        <ul class="list">
+          <li><span>1.</span> Verifica se a falha foi resolvida ou tecnicamente delimitada.</li>
+          <li><span>2.</span> Confere se os testes sustentam a liberação em condições reais.</li>
+          <li><span>3.</span> Evita fechamento com registro genérico, pendências ocultas e risco residual.</li>
+          <li><span>4.</span> Garante rastreabilidade para qualquer outro profissional entender o que foi entregue.</li>
+        </ul>
+
+        <div class="ctaRow">
+          <button class="btn btnPrimary" id="downloadBtn">Baixar checklist grátis (PDF)</button>
+          <a class="btn btnGhost" href="https://flowcoresolutions.com.br/cursos.html" style="text-decoration:none; display:inline-flex; align-items:center;">
+            Ver treinamentos
+          </a>
+        </div>
+
+        <div class="hint">
+          Ao clicar, o PDF será baixado e você será direcionado automaticamente para a página de treinamentos.
+        </div>
+
+        <div class="toast" id="toast"></div>
+      </div>
+
+      <aside class="side">
+        <h2>Como usar (na prática de campo)</h2>
+        <p>
+          Use este checklist como “filtro de decisão técnica” antes de encerrar a WO.
+          Se houver desconforto técnico ao final, não feche.
+        </p>
+        <p>
+          Funcionalidade isolada não é critério suficiente.
+          Pressão por prazo não transfere responsabilidade.
+        </p>
+
+        <div class="footer">
+          FlowCore Solutions • Gestão de Ativos & Confiabilidade
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    // 1) Ajuste aqui o caminho onde você vai hospedar o PDF no seu domínio
+    const PDF_URL = "/downloads/checklist-fechamento-wo-cmms.pdf";
+
+    // 2) Para onde redirecionar após iniciar o download
+    const REDIRECT_URL = "https://flowcoresolutions.com.br/cursos.html";
+
+    const btn = document.getElementById("downloadBtn");
+    const toast = document.getElementById("toast");
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.style.display = "block";
+    }
+
+    btn.addEventListener("click", () => {
+      try {
+        // Inicia download (mesmo domínio funciona melhor)
+        const a = document.createElement("a");
+        a.href = PDF_URL;
+        a.download = "Checklist-Fechamento-WO-CMMS.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        showToast("Download iniciado. Redirecionando para os treinamentos...");
+
+        // Redireciona após um pequeno delay
+        setTimeout(() => {
+          window.location.href = REDIRECT_URL;
+        }, 900);
+
+      } catch (e) {
+        // fallback: manda direto para o PDF e o usuário pode voltar
+        window.location.href = PDF_URL;
+      }
+    });
+  </script>
+</body>
+</html>
