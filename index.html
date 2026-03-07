@@ -17,20 +17,34 @@
 
   <style>
     :root {
-      /* Color Palette */
-      --bg-dark: #050507;
-      --bg-card: rgba(18, 20, 28, 0.4);
-      --bg-card-hover: rgba(28, 30, 42, 0.6);
-      --glass-border: rgba(255, 255, 255, 0.08);
+      /* Color Palette Based on Logo (Light Corporate Theme) */
+      --bg-dark: #F8F9FA;
+      /* Off-white, soft background */
+      --bg-card: #FFFFFF;
+      /* Pure white cards */
+      --bg-card-hover: #F1F3F5;
+      /* Slight gray hover */
+      --glass-border: rgba(31, 63, 104, 0.1);
+      /* Subtle dark border instead of white */
 
-      --accent-main: #F0B35A;
-      --accent-glow: rgba(240, 179, 90, 0.4);
-      --accent-light: #F8E2B4;
+      /* Primary Brand Colors from Logo */
+      --accent-main: #E55B13;
+      /* Strong saturated orange from logo */
+      --accent-glow: rgba(229, 91, 19, 0.15);
+      /* Softer glow for light mode */
+      --accent-light: #F48A50;
+      /* Lighter complementary orange */
+      --accent-secondary: #1F3F68;
+      /* Corporate deep blue from logo texts */
 
-      --text-pure: #FFFFFF;
-      --text-heading: #F5F6FA;
-      --text-body: #A0A5B5;
+      --text-pure: #111827;
+      /* Near black for pure text */
+      --text-heading: #1F2937;
+      /* Dark charcoal for headings */
+      --text-body: #4B5563;
+      /* Medium gray for readability */
       --text-muted: #6B7280;
+      /* Neutral muted text */
 
       --max-width: 1200px;
       --nav-height: 80px;
@@ -62,12 +76,11 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Ambient Glow Backgrounds */
     .ambient-glow {
       position: absolute;
       width: 60vw;
       height: 60vh;
-      background: radial-gradient(circle, rgba(240, 179, 90, 0.08) 0%, transparent 60%);
+      background: radial-gradient(circle, rgba(229, 91, 19, 0.04) 0%, transparent 60%);
       border-radius: 50%;
       top: -10%;
       left: 50%;
@@ -122,11 +135,18 @@
       display: flex;
       align-items: center;
       z-index: 1000;
-      background: rgba(5, 5, 7, 0.7);
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    header.scrolled {
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--glass-border);
-      transition: all 0.3s ease;
+      border-bottom: 1px solid rgba(31, 63, 104, 0.08);
+      /* Subtle dark border */
+      box-shadow: 0 10px 30px rgba(31, 63, 104, 0.05);
     }
 
     .nav-inner {
@@ -136,35 +156,27 @@
       align-items: center;
     }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    /* Navbar Logo Text Fallback (if image is moved) */
+    .logo-text {
       font-family: 'Outfit', sans-serif;
-      font-weight: 700;
-      font-size: 1.25rem;
-      letter-spacing: 0.05em;
-      color: var(--text-pure);
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+      color: var(--accent-secondary);
+      text-transform: uppercase;
     }
 
-    .logo-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #FFF, var(--accent-main), #8C6221);
-      box-shadow: 0 0 20px var(--accent-glow);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .logo-icon::after {
-      content: '';
+    /* Static Centered Hero Logo */
+    .hero-main-logo {
       position: absolute;
-      inset: 6px;
-      background: var(--bg-dark);
-      border-radius: 6px;
+      top: -140px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 420px;
+      max-width: 90%;
+      height: auto;
+      z-index: 10;
+      filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.4));
     }
 
     .nav-links {
@@ -215,15 +227,16 @@
     }
 
     .btn-outline {
-      background: transparent;
-      color: var(--text-pure);
-      border: 1px solid var(--glass-border);
-      background: rgba(255, 255, 255, 0.03);
+      background: #FFFFFF;
+      color: var(--accent-secondary);
+      border: 1px solid var(--accent-secondary);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
 
     .btn-outline:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.2);
+      background: var(--accent-secondary);
+      color: #FFFFFF;
+      border-color: var(--accent-secondary);
     }
 
     .btn-nav {
@@ -262,8 +275,10 @@
       gap: 8px;
       padding: 6px 16px;
       border-radius: var(--radius-pill);
-      background: rgba(240, 179, 90, 0.1);
-      border: 1px solid rgba(240, 179, 90, 0.2);
+      background: rgba(229, 91, 19, 0.08);
+      /* Light orange background */
+      border: 1px solid rgba(229, 91, 19, 0.15);
+      /* Light orange border */
       color: var(--accent-main);
       font-size: 0.85rem;
       font-weight: 600;
@@ -292,8 +307,10 @@
     }
 
     .text-gradient {
-      background: linear-gradient(to right, var(--text-pure), var(--accent-main));
+      background: linear-gradient(to right, var(--accent-secondary), var(--accent-main));
       -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
       -webkit-text-fill-color: transparent;
     }
 
@@ -331,31 +348,35 @@
     }
 
     .hero-book-wrapper.main-book {
-      z-index: 3;
-      transform: rotate(-4deg) translateX(-40px);
-    }
-
-    .hero-book-wrapper.main-book:hover {
-      transform: rotate(0deg) translateX(-40px) scale(1.05) translateY(-10px);
-      z-index: 5;
-    }
-
-    .hero-book-wrapper.second-book {
       z-index: 2;
-      transform: rotate(12deg) translateX(60px) scale(0.85);
+      /* Moved to back */
+      transform: rotate(12deg) translateX(40px);
+      /* Shifted right entirely without shrinking */
       filter: brightness(0.7);
     }
 
-    .hero-book-wrapper.second-book:hover {
-      transform: rotate(8deg) translateX(60px) scale(0.95) translateY(-10px);
+    .hero-book-wrapper.main-book:hover {
+      transform: rotate(8deg) translateX(40px) scale(1.05) translateY(-10px);
       z-index: 5;
       filter: brightness(1);
+    }
+
+    .hero-book-wrapper.second-book {
+      z-index: 3;
+      /* Moved to front */
+      transform: rotate(-6deg) translateX(-40px);
+      /* Shifted left without shrinking */
+    }
+
+    .hero-book-wrapper.second-book:hover {
+      transform: rotate(-2deg) translateX(-40px) scale(1.05) translateY(-10px);
+      z-index: 5;
     }
 
     .hero-book {
       width: 260px;
       border-radius: 12px;
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 40px rgba(31, 63, 104, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.05);
     }
 
     /* --- SOCIAL PROOF --- */
@@ -416,19 +437,19 @@
 
     .bento-card {
       background: var(--bg-card);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--glass-border);
       border-radius: var(--radius-xl);
       padding: 40px;
       transition: all 0.4s ease;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 10px 30px rgba(31, 63, 104, 0.05);
+      /* Soft shadow for light cards */
     }
 
     .bento-card:hover {
       background: var(--bg-card-hover);
-      border-color: rgba(240, 179, 90, 0.3);
+      border-color: rgba(31, 63, 104, 0.2);
       transform: translateY(-4px);
     }
 
@@ -483,7 +504,7 @@
     }
 
     .product-card {
-      background: linear-gradient(145deg, rgba(20, 22, 30, 0.8), rgba(10, 12, 16, 0.9));
+      background: #FFFFFF;
       border: 1px solid var(--glass-border);
       border-radius: var(--radius-xl);
       padding: 40px;
@@ -492,11 +513,12 @@
       position: relative;
       overflow: hidden;
       transition: all 0.4s ease;
+      box-shadow: 0 12px 35px rgba(31, 63, 104, 0.06);
     }
 
     .product-card:hover {
-      border-color: rgba(240, 179, 90, 0.4);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(240, 179, 90, 0.1);
+      border-color: rgba(31, 63, 104, 0.2);
+      box-shadow: 0 20px 40px rgba(31, 63, 104, 0.12);
       transform: translateY(-8px);
     }
 
@@ -604,7 +626,7 @@
 
     /* --- AUTHOR SECTION --- */
     .author-section {
-      background: linear-gradient(to bottom, transparent, rgba(16, 21, 32, 0.4), transparent);
+      background: linear-gradient(to bottom, transparent, rgba(31, 63, 104, 0.03), transparent);
     }
 
     .author-grid {
@@ -619,9 +641,12 @@
       aspect-ratio: 1;
       border-radius: var(--radius-xl);
       background: url('Flow core solutions Color.png') center/contain no-repeat;
-      background-color: #0A0D14;
+      background-color: #FFFFFF;
+      /* Light bg for author image container */
       border: 1px solid var(--glass-border);
       position: relative;
+      box-shadow: 0 15px 35px rgba(31, 63, 104, 0.08);
+      /* Soft shadow */
     }
 
     .author-image::after {
@@ -629,7 +654,7 @@
       position: absolute;
       inset: -1px;
       border-radius: var(--radius-xl);
-      background: linear-gradient(135deg, rgba(240, 179, 90, 0.4), transparent);
+      background: linear-gradient(135deg, rgba(229, 91, 19, 0.15), transparent);
       z-index: -1;
       filter: blur(15px);
     }
@@ -673,26 +698,21 @@
     }
 
     .cta-box {
-      background: linear-gradient(145deg, rgba(240, 179, 90, 0.1), rgba(10, 12, 16, 0.8));
-      border: 1px solid rgba(240, 179, 90, 0.3);
+      background: #F8F9FA;
+      /* Matches the outer page background */
+      border: 1px solid rgba(31, 63, 104, 0.08);
+      /* Very subtle inset border edge */
       border-radius: var(--radius-xl);
       padding: 80px 40px;
       text-align: center;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+      /* Inset shadows create the "pressed in" / debossed low-relief effect */
+      box-shadow: inset 4px 4px 15px rgba(31, 63, 104, 0.05), inset -4px -4px 15px rgba(255, 255, 255, 1);
     }
 
-    .cta-box::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at center, rgba(240, 179, 90, 0.15) 0%, transparent 60%);
-      pointer-events: none;
-    }
+    /* Removed the yellow ambient glow (.cta-box::before) from dark mode */
+
 
     .cta-box h2 {
       font-size: clamp(2rem, 4vw, 3.5rem);
@@ -712,9 +732,11 @@
 
     /* --- FOOTER --- */
     footer {
-      border-top: 1px solid var(--glass-border);
+      border-top: 1px solid rgba(31, 63, 104, 0.1);
+      /* Subtle dark border */
       padding: 60px 0 40px;
-      background: #000;
+      background: #FFFFFF;
+      /* White footer for clean look */
     }
 
     .footer-content {
@@ -773,11 +795,35 @@
       .hero-grid {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 20px;
+        gap: 30px;
       }
 
       .hero-content {
         text-align: center;
+        order: 2;
+        /* Move text below visuals on mobile */
+      }
+
+      .hero-visuals {
+        order: 1;
+        /* Move logo/books above text on mobile */
+        height: 520px;
+        margin-top: 20px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+      }
+
+      /* Adjust the huge logo for mobile so it doesn't overlap everything */
+      .hero-main-logo {
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        max-width: 260px;
+        margin-bottom: 0px;
+        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.2));
       }
 
       .hero-actions {
@@ -796,17 +842,17 @@
         justify-content: center;
       }
 
-      .hero-visuals {
-        height: 360px;
-        margin-top: 20px;
-      }
-
+      /* Push books just below the logo (tightening the gap) */
       .hero-book-wrapper.main-book {
-        transform: rotate(-2deg) translateX(-20px) scale(0.9);
+        top: 80px;
+        transform: rotate(15deg) translateX(45px) translateY(-5px);
+        /* Back cover (black) tilted right to act as an open fan base */
       }
 
       .hero-book-wrapper.second-book {
-        transform: rotate(8deg) translateX(40px) scale(0.75);
+        top: 60px;
+        transform: rotate(0deg) translateX(-10px);
+        /* Front cover (blue) upright/horizontal base */
       }
 
       .bento-grid {
@@ -827,7 +873,7 @@
       }
 
       .hero {
-        padding-top: 140px;
+        padding-top: 120px;
         min-height: auto;
       }
 
@@ -859,8 +905,7 @@
   <!-- HEADER -->
   <header id="header">
     <div class="container nav-inner">
-      <a href="#" class="logo">
-        <div class="logo-icon"></div>
+      <a href="#" class="logo-text">
         FlowCore Solutions
       </a>
 
@@ -915,13 +960,14 @@
                 <span>MODEC</span>
                 <span>SBM</span>
                 <span>EQUINOR</span>
-				<span>YINSON</span>
-				<span>BW ENERGY</span>
+                <span>YINSON</span>
+                <span>BW ENERGY</span>
               </div>
             </div>
           </div>
 
           <div class="hero-visuals">
+            <img src="Flow core solutions Color.png" alt="FlowCore Solutions" class="hero-main-logo" />
             <div class="hero-book-wrapper second-book">
               <img src="capa_pro_exc.png" alt="Profissional de Excelência" class="hero-book" />
             </div>
@@ -1003,8 +1049,8 @@
 
             <div class="product-info">
               <h3>Nunca Foi Certo Medir</h3>
-              <p>Este material explora a metrologia como uma ciência essencial que vai além de simples números, 
-			  destacando que a incerteza de medição é um elemento inevitável em qualquer processo técnico.</p>
+              <p>Este material explora a metrologia como uma ciência essencial que vai além de simples números,
+                destacando que a incerteza de medição é um elemento inevitável em qualquer processo técnico.</p>
 
               <ul class="features-list">
                 <li>Desmistificando a incerteza de medição na indústria</li>
@@ -1034,8 +1080,8 @@
 
             <div class="product-info">
               <h3>Profissional de Excelência</h3>
-              <p>O caminho prático para você se destacar. Construa sua reputação, entregue resultados consistentes e 
-				desenvolva as habilidades necessárias para alcançar o próximo nível.</p>
+              <p>O caminho prático para você se destacar. Construa sua reputação, entregue resultados consistentes e
+                desenvolva as habilidades necessárias para alcançar o próximo nível.</p>
 
               <ul class="features-list">
                 <li>Como construir Autoridade Técnica Real</li>
@@ -1069,12 +1115,14 @@
             <div class="badge">O CRIADOR DO MÉTODO</div>
             <h2>De Técnico Executante a<br />Referência Profissional</h2>
 
-            <p>O fundador da FlowCore Solutions viveu a base da indústria. Começou resolvendo problemas no chão de fábrica
+            <p>O fundador da FlowCore Solutions viveu a base da indústria. Começou resolvendo problemas no chão de
+              fábrica
               e em FPSOs, enfrentando diretamente a falta de processos de medição claros e a estagnação de carreira que
               atinge tantos profissionais.</p>
 
             <p>Decidiu não apenas reclamar, mas compilar o conhecimento denso normativo e boas práticas
-              em uma linguagem que o campo entende. Hoje, foca em treinar e orientar a nova geração de profssionais técnicos ajudando
+              em uma linguagem que o campo entende. Hoje, foca em treinar e orientar a nova geração de profssionais
+              técnicos ajudando
               a elevar seus níveis a padrões de confiabilidade operacional.</p>
 
             <div class="author-stats">
@@ -1120,8 +1168,7 @@
   <footer>
     <div class="container">
       <div class="footer-content">
-        <div class="logo">
-          <div class="logo-icon" style="width: 24px; height: 24px;"></div>
+        <div class="logo-text">
           FlowCore Solutions
         </div>
 
@@ -1143,13 +1190,13 @@
     // Set Year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Sticky Nav Shadow on scroll
+    // Sticky Nav Shadow and Glass effect on scroll
     window.addEventListener('scroll', () => {
       const header = document.getElementById('header');
       if (window.scrollY > 50) {
-        header.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+        header.classList.add('scrolled');
       } else {
-        header.style.boxShadow = 'none';
+        header.classList.remove('scrolled');
       }
     });
 
