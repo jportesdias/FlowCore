@@ -1,217 +1,432 @@
 <!doctype html>
 <html lang="pt-br">
+
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Checklist gratuito – Fechamento técnico de Work Orders (CMMS)</title>
+  <meta name="description"
+    content="Baixe grátis o checklist de validação técnica para fechamento de Work Orders em CMMS e avance para a página de treinamentos." />
 
-  <meta name="description" content="Baixe gratuitamente o Checklist de Responsabilidade Técnica para fechamento de Work Orders em CMMS e avance para a página de treinamentos da FlowCore Solutions." />
-  <meta name="theme-color" content="#07090d" />
+  <!-- Fonts: Outfit for sleek modern headings, Inter for high readability body -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
 
   <style>
-    :root{
-      --bg:#07090d;
-      --card:#0c1018;
-      --text:#e9eef8;
-      --muted:#a7b1c2;
-      --gold:#d6b15a;
-      --line:rgba(214,177,90,.25);
+    :root {
+      /* Color Palette Based on Logo (Light Corporate Theme) */
+      --bg-dark: #F8F9FA;
+      /* Off-white, soft background */
+      --bg-card: #FFFFFF;
+      /* Pure white cards */
+      --bg-card-hover: #F1F3F5;
+      /* Slight gray hover */
+      --glass-border: rgba(31, 63, 104, 0.1);
+
+      /* Primary Brand Colors */
+      --accent-main: #E55B13;
+      /* Strong saturated orange */
+      --accent-glow: rgba(229, 91, 19, 0.15);
+      --accent-light: #F48A50;
+      /* Lighter complementary orange */
+      --accent-secondary: #1F3F68;
+      /* Corporate deep blue */
+
+      --text-pure: #111827;
+      /* Near black */
+      --text-heading: #1F2937;
+      /* Dark charcoal for headings */
+      --text-body: #4B5563;
+      /* Medium gray */
+      --text-muted: #6B7280;
+      /* Neutral muted text */
+
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
     }
 
-    *{ box-sizing:border-box; }
-
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 600px at 20% 10%, rgba(214,177,90,.12), transparent 55%),
-        radial-gradient(900px 500px at 85% 40%, rgba(120,170,255,.10), transparent 60%),
-        var(--bg);
-      color:var(--text);
+    * {
+      box-sizing: border-box;
     }
 
-    .wrap{
-      max-width:980px;
-      margin:0 auto;
-      padding:56px 18px;
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at 15% 10%, rgba(229, 91, 19, 0.04), transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(31, 63, 104, 0.05), transparent 50%);
+      color: var(--text-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:18px;
-      padding:32px;
-      box-shadow:0 18px 60px rgba(0,0,0,.45);
+    h1,
+    h2,
+    h3 {
+      font-family: 'Outfit', sans-serif;
+      color: var(--text-heading);
+      line-height: 1.2;
     }
 
-    .badge{
-      display:inline-block;
-      padding:8px 14px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      color:var(--muted);
-      font-size:13px;
-      margin-bottom:18px;
+    /* HEADER & LOGO */
+    .logo-header {
+      width: 100%;
+      padding: 40px 20px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    h1{
-      margin:0 0 14px 0;
-      font-size:34px;
-      line-height:1.1;
+    .logo-header img {
+      width: 100%;
+      max-width: 380px;
+      height: auto;
+      filter: drop-shadow(0 8px 24px rgba(31, 63, 104, 0.1));
     }
 
-    .lead{
-      margin:0 0 22px 0;
-      color:var(--muted);
-      font-size:16px;
-      line-height:1.55;
-      max-width:65ch;
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 20px 24px 60px;
+      flex: 1;
     }
 
-    ul{
-      list-style:none;
-      padding:0;
-      margin:0 0 28px 0;
-      display:grid;
-      gap:12px;
+    .top {
+      display: flex;
+      gap: 32px;
+      align-items: stretch;
+      flex-wrap: wrap;
     }
 
-    ul li{
-      padding:14px 16px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(0,0,0,.22);
-      line-height:1.4;
+    /* MAIN CARD */
+    .card {
+      flex: 1 1 520px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      box-shadow: 0 15px 40px rgba(31, 63, 104, 0.08);
+      position: relative;
     }
 
-    ul li strong{
-      color:var(--gold);
-      margin-right:6px;
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(31, 63, 104, 0.05);
+      border: 1px solid rgba(31, 63, 104, 0.1);
+      color: var(--accent-secondary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
     }
 
-    .actions{
-      display:flex;
-      gap:14px;
-      flex-wrap:wrap;
-      align-items:center;
+    .badge .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-secondary);
+      border-radius: 50%;
     }
 
-    .btn{
-      appearance:none;
-      border:none;
-      border-radius:12px;
-      padding:14px 18px;
-      font-weight:800;
-      cursor:pointer;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-height:48px;
+    h1 {
+      margin: 0 0 16px 0;
+      font-size: 2.4rem;
+      letter-spacing: -0.02em;
+      color: var(--text-heading);
     }
 
-    .btn-primary{
-      background:linear-gradient(180deg, #d6b15a, #b18737);
-      color:#1b1406;
-      box-shadow:0 10px 30px rgba(214,177,90,.22);
+    .lead {
+      margin: 0 0 24px 0;
+      color: var(--text-body);
+      font-size: 1.05rem;
+      max-width: 600px;
     }
 
-    .btn-secondary{
-      background:transparent;
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.16);
+    /* CHECKLIST LIST */
+    .list {
+      margin: 0 0 32px 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 12px;
     }
 
-    .hint{
-      margin-top:14px;
-      font-size:13px;
-      color:var(--muted);
+    .list li {
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      background: var(--bg-dark);
+      border: 1px solid var(--glass-border);
+      color: var(--text-body);
+      font-size: 0.95rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
     }
 
-    .toast{
-      display:none;
-      margin-top:16px;
-      padding:12px 14px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.28);
-      font-size:13px;
+    .list span {
+      color: var(--accent-main);
+      font-weight: 700;
+      font-size: 1.1rem;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    /* BUTTONS */
+    .ctaRow {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn {
+      font-family: 'Outfit', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btnPrimary {
+      background: linear-gradient(135deg, var(--accent-main), var(--accent-light));
+      color: #FFFFFF;
+      box-shadow: 0 8px 24px rgba(229, 91, 19, 0.3);
+    }
+
+    .btnPrimary:hover {
+      box-shadow: 0 12px 32px rgba(229, 91, 19, 0.4);
+      background: linear-gradient(135deg, var(--accent-light), var(--accent-main));
+    }
+
+    .btnPrimary-compact {
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+      display: inline-flex;
+    }
+
+    .btnGhost {
+      background: #FFFFFF;
+      color: var(--accent-secondary);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 10px rgba(31, 63, 104, 0.05);
+    }
+
+    .btnGhost:hover {
+      background: var(--bg-dark);
+      border-color: rgba(31, 63, 104, 0.2);
+    }
+
+    .hint {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 16px;
+    }
+
+    /* RIGHT SIDE ASIDE */
+    .side {
+      flex: 1 1 320px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      box-shadow: 0 10px 30px rgba(31, 63, 104, 0.05);
+      height: fit-content;
+    }
+
+    .side h2 {
+      margin: 0 0 16px 0;
+      font-size: 1.4rem;
+      color: var(--accent-secondary);
+    }
+
+    .side p {
+      margin: 0 0 16px 0;
+      color: var(--text-body);
+      font-size: 0.95rem;
+    }
+
+    .toast {
+      display: none;
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(37, 211, 102, 0.3);
+      background: rgba(37, 211, 102, 0.1);
+      color: #1EBE5D;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    /* MAIN FOOTER */
+    .footer-site {
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      background: var(--bg-card);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .card {
+        padding: 32px 24px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .ctaRow {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+
+      .logo-header {
+        padding-top: 24px;
+        padding-bottom: 10px;
+      }
+
+      .logo-header img {
+        max-width: 280px;
+      }
     }
   </style>
 </head>
 
 <body>
+  <!-- HEADER COM A LOGO GIGANTE EM DESTAQUE -->
+  <header class="logo-header">
+    <img src="Flow core solutions Color.png" alt="FlowCore Solutions - Logo Principal" />
+  </header>
 
   <main class="wrap">
-    <section class="card">
+    <section class="top">
+      <div class="card">
+        <div class="badge">
+          <div class="dot"></div>Guia gratuito • Fechamento técnico de WO
+        </div>
+        <h1>Checklist de responsabilidade técnica para fechar Work Orders sem ficar exposto</h1>
+        <p class="lead">
+          Encerrar uma Work Order não é “mudar status”.
+          É declarar formalmente que a intervenção se sustenta em auditorias, histórico e continuidade operacional.
+        </p>
 
-      <div class="badge">PDF gratuito • Fechamento técnico de Work Orders (CMMS)</div>
+        <button class="btn btnPrimary btnPrimary-compact" id="downloadBtnTop">Baixar Checklist Imediato ↓</button>
 
-      <h1>Checklist de responsabilidade técnica para fechar Work Orders com segurança</h1>
+        <ul class="list">
+          <li><span>1.</span> Verifica se a falha foi resolvida ou tecnicamente delimitada.</li>
+          <li><span>2.</span> Confere se os testes sustentam a liberação em condições reais.</li>
+          <li><span>3.</span> Evita fechamento com registro genérico, pendências ocultas e risco residual.</li>
+          <li><span>4.</span> Garante rastreabilidade para qualquer outro profissional entender o que foi entregue.</li>
+        </ul>
 
-      <p class="lead">
-        Encerrar uma Work Order não é apenas concluir uma tarefa no CMMS.
-        É assumir tecnicamente que aquela intervenção se sustenta em auditoria,
-        histórico e continuidade operacional.
-      </p>
+        <div class="ctaRow">
+          <button class="btn btnPrimary" id="downloadBtn">Baixar Checklist (PDF)</button>
+          <a class="btn btnGhost" href="cursos.html">Ver Treinamentos ↗</a>
+        </div>
 
-      <ul>
-        <li><strong>1.</strong> Confirma se a falha foi resolvida ou tecnicamente delimitada.</li>
-        <li><strong>2.</strong> Verifica se os testes sustentam a liberação do equipamento.</li>
-        <li><strong>3.</strong> Evita fechamento genérico, pendências ocultas e risco residual.</li>
-        <li><strong>4.</strong> Garante rastreabilidade para qualquer profissional assumir depois.</li>
-      </ul>
+        <div class="hint">
+          Ao clicar, o PDF será baixado gratuitamente e você será direcionado para os nossos treinamentos.
+        </div>
 
-      <div class="actions">
-        <!-- Link REAL do PDF -->
-        <a
-          id="downloadBtn"
-          class="btn btn-primary"
-          href="./Checklist-Fechamento-WO-CMMS.pdf"
-          download
-        >
-          Baixar checklist grátis (PDF)
-        </a>
-
-        <a
-          class="btn btn-secondary"
-          href="https://flowcoresolutions.com.br/cursos.html"
-        >
-          Ver treinamentos
-        </a>
+        <div class="toast" id="toast"></div>
       </div>
 
-      <div class="hint">
-        Após iniciar o download, você será direcionado automaticamente para a página de treinamentos.
-      </div>
-
-      <div class="toast" id="toast"></div>
-
+      <aside class="side">
+        <h2>Como usar (na prática)</h2>
+        <p>
+          Use este checklist como “filtro de decisão técnica” antes de encerrar no CMMS. Se houver desconforto técnico,
+          ou falta de informações claras, não feche.
+        </p>
+        <p>
+          Funcionalidade primária da máquina não é critério suficiente para encerramento sem rastros de segurança.
+          Tensão ou pressão por prazo não transfere essa responsabilidade de você.
+        </p>
+      </aside>
     </section>
   </main>
 
+  <footer class="footer-site">
+    <div class="wrap" style="padding: 0;">
+      © 2026 FlowCore Solutions • Gestão de Ativos & Confiabilidade. Todos os direitos reservados.
+    </div>
+  </footer>
+
   <script>
-    const REDIRECT_URL = "https://flowcoresolutions.com.br/cursos.html";
-    const REDIRECT_DELAY = 4000; // 4 segundos (seguro para confirmar o “Salvar”)
+    // 1) Ajuste aqui o caminho onde você vai hospedar o PDF no seu domínio
+    const PDF_URL = "/downloads/checklist-fechamento-wo-cmms.pdf";
+
+    // 2) Para onde redirecionar após iniciar o download
+    const REDIRECT_URL = "cursos.html";
 
     const btn = document.getElementById("downloadBtn");
+    const btnTop = document.getElementById("downloadBtnTop");
     const toast = document.getElementById("toast");
 
-    function showToast(message){
-      toast.textContent = message;
+    function showToast(msg) {
+      toast.textContent = msg;
       toast.style.display = "block";
     }
 
-    btn.addEventListener("click", () => {
-      // NÃO cancelamos o clique: o navegador inicia o download corretamente
-      showToast("Download iniciado. Em instantes você será direcionado para os treinamentos.");
+    function handleDownload() {
+      try {
+        // Inicia download
+        const a = document.createElement("a");
+        a.href = PDF_URL;
+        a.download = "Checklist-Fechamento-WO-CMMS.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
 
-      setTimeout(() => {
-        window.location.href = REDIRECT_URL;
-      }, REDIRECT_DELAY);
-    });
+        showToast("✓ Download iniciado! Levando você aos cursos em instantes...");
+
+        // Redireciona após um pequeno delay
+        setTimeout(() => {
+          window.location.href = REDIRECT_URL;
+        }, 1500);
+
+      } catch (e) {
+        // fallback
+        window.location.href = PDF_URL;
+      }
+    }
+
+    if (btn) btn.addEventListener("click", handleDownload);
+    if (btnTop) btnTop.addEventListener("click", handleDownload);
   </script>
-
 </body>
+
 </html>
