@@ -1,1190 +1,1180 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FlowCore Solutions – Engenharia, Medição e Excelência</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta
-    name="description"
-    content="FlowCore Solutions – Livros, visão e conteúdo para quem leva medição, confiabilidade e excelência na indústria a sério."
-  />
+  <meta name="description"
+    content="Domine a metrologia industrial e impulsione sua carreira com a FlowCore Solutions." />
 
-  <!-- Google Fonts -->
+  <!-- Fonts: Outfit for sleek modern headings, Inter for high readability body -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap"
-    rel="stylesheet"
-  />
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
 
   <style>
     :root {
-      --bg-main: #05070b;
-      --bg-elevated: #101520;
-      --bg-soft: #161b26;
-      --accent: #f0b35a;
-      --accent-soft: rgba(240, 179, 90, 0.15);
-      --text-primary: #f5f6fa;
-      --text-secondary: #b6bdcf;
-      --text-muted: #7a8091;
-      --border-subtle: rgba(255, 255, 255, 0.06);
-      --shadow-soft: 0 22px 60px rgba(0, 0, 0, 0.65);
-      --radius-xl: 22px;
-      --radius-lg: 16px;
-      --radius-pill: 999px;
-      --max-width: 1120px;
+      /* Color Palette */
+      --bg-dark: #050507;
+      --bg-card: rgba(18, 20, 28, 0.4);
+      --bg-card-hover: rgba(28, 30, 42, 0.6);
+      --glass-border: rgba(255, 255, 255, 0.08);
+
+      --accent-main: #F0B35A;
+      --accent-glow: rgba(240, 179, 90, 0.4);
+      --accent-light: #F8E2B4;
+
+      --text-pure: #FFFFFF;
+      --text-heading: #F5F6FA;
+      --text-body: #A0A5B5;
+      --text-muted: #6B7280;
+
+      --max-width: 1200px;
+      --nav-height: 80px;
+
+      /* Radii */
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --radius-pill: 100px;
     }
 
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
-    html, body {
-      height: 100%;
+    html {
       scroll-behavior: smooth;
     }
 
     body {
-      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #141b2d 0, #05070b 46%, #000000 100%);
-      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-body);
+      line-height: 1.6;
+      overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient Glow Backgrounds */
+    .ambient-glow {
+      position: absolute;
+      width: 60vw;
+      height: 60vh;
+      background: radial-gradient(circle, rgba(240, 179, 90, 0.08) 0%, transparent 60%);
+      border-radius: 50%;
+      top: -10%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .ambient-glow-2 {
+      position: absolute;
+      width: 50vw;
+      height: 50vh;
+      background: radial-gradient(circle, rgba(27, 100, 255, 0.05) 0%, transparent 70%);
+      bottom: -20%;
+      right: -10%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      font-family: 'Outfit', sans-serif;
+      color: var(--text-heading);
+      line-height: 1.2;
     }
 
     a {
       text-decoration: none;
       color: inherit;
+      transition: all 0.3s ease;
     }
 
-    .page-wrapper {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    ul {
+      list-style: none;
     }
 
     .container {
-      width: 100%;
       max-width: var(--max-width);
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 24px;
     }
 
-    /* HEADER */
+    /* --- NAVIGATION --- */
     header {
-      position: sticky;
+      position: fixed;
       top: 0;
-      z-index: 20;
-      backdrop-filter: blur(18px);
-      background: linear-gradient(
-        to bottom,
-        rgba(5, 7, 11, 0.95),
-        rgba(5, 7, 11, 0.75),
-        transparent
-      );
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .nav {
+      width: 100%;
+      height: var(--nav-height);
       display: flex;
       align-items: center;
+      z-index: 1000;
+      background: rgba(5, 5, 7, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+      transition: all 0.3s ease;
+    }
+
+    .nav-inner {
+      width: 100%;
+      display: flex;
       justify-content: space-between;
-      padding: 16px 0;
-      gap: 16px;
+      align-items: center;
     }
 
-    .logo-mark {
+    .logo {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: 0.05em;
+      color: var(--text-pure);
     }
 
-    .logo-symbol {
-      width: 32px;
-      height: 32px;
-      border-radius: 14px;
-      background: radial-gradient(circle at 10% 0, #ffffff 0, #f0b35a 22%, #7a5e33 55%, #1a1f2c 100%);
-      box-shadow: 0 0 24px rgba(240, 179, 90, 0.55);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .logo-symbol::after {
-      content: "";
-      position: absolute;
-      inset: 32%;
-      border-radius: 999px;
-      border: 1px solid rgba(10, 12, 18, 0.6);
-      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.9);
-    }
-
-    .logo-text {
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #FFF, var(--accent-main), #8C6221);
+      box-shadow: 0 0 20px var(--accent-glow);
       display: flex;
-      flex-direction: column;
-      line-height: 1.1;
+      align-items: center;
+      justify-content: center;
+      position: relative;
     }
 
-    .logo-text-main {
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-    }
-
-    .logo-text-sub {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--text-muted);
+    .logo-icon::after {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      background: var(--bg-dark);
+      border-radius: 6px;
     }
 
     .nav-links {
       display: flex;
+      gap: 32px;
       align-items: center;
-      gap: 22px;
-      font-size: 0.9rem;
-      color: var(--text-secondary);
     }
 
-    .nav-links a {
-      position: relative;
-      padding-bottom: 4px;
-    }
-
-    .nav-links a::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 0;
-      height: 1px;
-      background: linear-gradient(90deg, #f0b35a, #ffffff);
-      transition: width 0.18s ease-out;
-    }
-
-    .nav-links a:hover::after {
-      width: 100%;
-    }
-
-    .nav-cta {
-      padding: 8px 18px;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(240, 179, 90, 0.55);
-      background: radial-gradient(circle at top left, rgba(240, 179, 90, 0.23), transparent 60%);
-      font-size: 0.85rem;
+    .nav-links a.link {
+      font-size: 0.95rem;
       font-weight: 500;
-      color: var(--accent);
+      color: var(--text-body);
+    }
+
+    .nav-links a.link:hover {
+      color: var(--accent-main);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      border-radius: var(--radius-pill);
+      padding: 14px 28px;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      border: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-main), var(--accent-light));
+      color: #000;
+      box-shadow: 0 8px 24px rgba(240, 179, 90, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(240, 179, 90, 0.5);
+      background: linear-gradient(135deg, var(--accent-light), #fff);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-pure);
+      border: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-nav {
+      padding: 10px 24px;
+      font-size: 0.9rem;
+    }
+
+    /* --- HERO SECTION --- */
+    .hero {
+      position: relative;
+      padding: 160px 0 80px;
+      min-height: 100vh;
       display: flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 0 20px rgba(240, 179, 90, 0.2);
-    }
-
-    .nav-cta span {
-      font-size: 1rem;
-      margin-top: 1px;
-    }
-
-    @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-      }
-    }
-
-    /* HERO */
-    .hero {
-      padding: 64px 0 40px;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .hero-grid {
       display: grid;
-      grid-template-columns: 1.35fr 1fr;
+      grid-template-columns: 1.1fr 0.9fr;
       gap: 40px;
       align-items: center;
+      width: 100%;
     }
 
-    @media (max-width: 900px) {
-      .hero-grid {
-        grid-template-columns: 1fr;
-      }
+    .hero-content {
+      text-align: left;
+      position: relative;
+      z-index: 10;
     }
 
-    .eyebrow {
+    .badge {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      padding: 4px 10px;
+      gap: 8px;
+      padding: 6px 16px;
       border-radius: var(--radius-pill);
-      background: rgba(9, 12, 19, 0.9);
-      border: 1px solid var(--border-subtle);
-      font-size: 0.72rem;
-      letter-spacing: 0.16em;
+      background: rgba(240, 179, 90, 0.1);
+      border: 1px solid rgba(240, 179, 90, 0.2);
+      color: var(--accent-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 16px;
+      margin-bottom: 24px;
+      animation: fadeInDown 0.8s ease-out forwards;
     }
 
-    .eyebrow-badge {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: radial-gradient(circle, #f0b35a 0, #7a5e33 60%, #080a10 100%);
-      box-shadow: 0 0 14px rgba(240, 179, 90, 0.6);
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-main);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-main);
     }
 
     .hero-title {
-      font-family: "Merriweather", "Times New Roman", serif;
-      font-size: clamp(2.2rem, 2.8vw, 2.7rem);
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      margin-bottom: 14px;
+      font-size: clamp(2.5rem, 4.5vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      max-width: 900px;
+      animation: fadeInUp 0.8s ease-out 0.2s forwards;
+      opacity: 0;
     }
 
-    .hero-title span {
-      background: linear-gradient(120deg, #fdfcfb, #f0b35a, #ffffff);
+    .text-gradient {
+      background: linear-gradient(to right, var(--text-pure), var(--accent-main));
       -webkit-background-clip: text;
-      color: transparent;
+      -webkit-text-fill-color: transparent;
     }
 
     .hero-subtitle {
-      max-width: 560px;
-      font-size: 0.98rem;
-      line-height: 1.6;
-      color: var(--text-secondary);
-      margin-bottom: 24px;
+      font-size: clamp(1.1rem, 1.5vw, 1.25rem);
+      max-width: 550px;
+      margin: 0 0 40px;
+      color: var(--text-body);
+      animation: fadeInUp 0.8s ease-out 0.4s forwards;
+      opacity: 0;
     }
 
-    .hero-subtitle strong {
-      color: #ffffff;
-      font-weight: 500;
-    }
-
-    .hero-cta-row {
+    .hero-actions {
       display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-bottom: 22px;
+      gap: 16px;
+      justify-content: flex-start;
+      animation: fadeInUp 0.8s ease-out 0.6s forwards;
+      opacity: 0;
     }
 
-    .btn-primary {
-      padding: 12px 22px;
-      border-radius: var(--radius-pill);
-      border: none;
-      cursor: pointer;
-      font-size: 0.95rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
+    .hero-visuals {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 0.6s forwards;
+    }
+
+    .hero-book-wrapper {
+      position: absolute;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .hero-book-wrapper.main-book {
+      z-index: 3;
+      transform: rotate(-4deg) translateX(-40px);
+    }
+
+    .hero-book-wrapper.main-book:hover {
+      transform: rotate(0deg) translateX(-40px) scale(1.05) translateY(-10px);
+      z-index: 5;
+    }
+
+    .hero-book-wrapper.second-book {
+      z-index: 2;
+      transform: rotate(12deg) translateX(60px) scale(0.85);
+      filter: brightness(0.7);
+    }
+
+    .hero-book-wrapper.second-book:hover {
+      transform: rotate(8deg) translateX(60px) scale(0.95) translateY(-10px);
+      z-index: 5;
+      filter: brightness(1);
+    }
+
+    .hero-book {
+      width: 260px;
+      border-radius: 12px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    /* --- SOCIAL PROOF --- */
+    .social-proof {
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px solid var(--glass-border);
+      animation: fadeIn 1s ease-out 0.8s forwards;
+      opacity: 0;
+      text-align: left;
+    }
+
+    .social-proof p {
+      font-size: 0.85rem;
       text-transform: uppercase;
-      background: linear-gradient(120deg, #f0b35a, #f8e2b4);
-      color: #1a1206;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 22px 52px rgba(0, 0, 0, 0.9);
-    }
-
-    .btn-primary span {
-      font-size: 1.1rem;
-      margin-top: 1px;
-    }
-
-    .btn-ghost {
-      padding: 11px 18px;
-      border-radius: var(--radius-pill);
-      border: 1px solid var(--border-subtle);
-      background: rgba(10, 13, 21, 0.85);
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-
-    .hero-meta {
-      font-size: 0.78rem;
+      letter-spacing: 0.2em;
       color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .logos {
       display: flex;
+      justify-content: flex-start;
+      gap: 40px;
       flex-wrap: wrap;
-      gap: 10px;
+      opacity: 0.5;
     }
 
-    .hero-meta span {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+    .logos span {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
     }
 
-    .hero-meta span::before {
-      content: "";
-      width: 5px;
-      height: 5px;
-      border-radius: 999px;
-      background: rgba(240, 179, 90, 0.7);
+    /* --- PROBLEM / PAIN SECTION --- */
+    .section {
+      padding: 120px 0;
+      position: relative;
     }
 
-    /* HERO – SIDE PANEL (BOOKS PREVIEW) */
-    .hero-panel {
-      background: radial-gradient(circle at top, #202636, #0b0e16 52%, #05070b 100%);
+    .section-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 80px;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 20px;
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 24px;
+    }
+
+    .bento-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
       border-radius: var(--radius-xl);
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-soft);
-      padding: 20px 20px 18px;
+      padding: 40px;
+      transition: all 0.4s ease;
       position: relative;
       overflow: hidden;
     }
 
-    .hero-panel::before {
-      content: "";
+    .bento-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(240, 179, 90, 0.3);
+      transform: translateY(-4px);
+    }
+
+    .bento-card::before {
+      content: '';
       position: absolute;
-      inset: -40%;
-      background:
-        radial-gradient(circle at top right, rgba(240, 179, 90, 0.26), transparent 55%),
-        radial-gradient(circle at bottom left, rgba(27, 212, 255, 0.06), transparent 60%);
-      opacity: 0.9;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at top right, rgba(240, 179, 90, 0.1), transparent 40%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
       pointer-events: none;
     }
 
-    .hero-panel-inner {
+    .bento-card:hover::before {
+      opacity: 1;
+    }
+
+    /* Pain points layout */
+    .pain-card {
+      grid-column: span 4;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pain-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(255, 60, 60, 0.1);
+      color: #FF5A5A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .pain-title {
+      font-size: 1.25rem;
+      color: var(--text-pure);
+    }
+
+    /* --- PRODUCTS / BOOKS SECTION --- */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+    }
+
+    .product-card {
+      background: linear-gradient(145deg, rgba(20, 22, 30, 0.8), rgba(10, 12, 16, 0.9));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .product-card:hover {
+      border-color: rgba(240, 179, 90, 0.4);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(240, 179, 90, 0.1);
+      transform: translateY(-8px);
+    }
+
+    .product-tag {
+      position: absolute;
+      top: 32px;
+      right: 32px;
+      background: rgba(240, 179, 90, 0.15);
+      color: var(--accent-main);
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1px solid rgba(240, 179, 90, 0.3);
+      z-index: 10;
+    }
+
+    .product-image-wrapper {
+      width: 100%;
+      height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 40px;
+      margin-bottom: 32px;
+      perspective: 1000px;
+    }
+
+    .product-image {
+      max-height: 100%;
+      max-width: 80%;
+      border-radius: 12px;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6);
+      transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+
+    .product-card:hover .product-image {
+      transform: rotateY(-10deg) rotateX(5deg) scale(1.05);
+    }
+
+    .product-info h3 {
+      font-size: 1.75rem;
+      margin-bottom: 12px;
+    }
+
+    .product-info p {
+      color: var(--text-body);
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+
+    .features-list {
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .features-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.9rem;
+      color: var(--text-heading);
+    }
+
+    .features-list li::before {
+      content: '✓';
+      color: var(--accent-main);
+      font-weight: bold;
+      background: rgba(240, 179, 90, 0.1);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.7rem;
+      margin-top: 2px;
+    }
+
+    .price-action {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--glass-border);
+      padding-top: 24px;
+    }
+
+    .price-action .format {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .btn-buy {
+      width: 100%;
+      margin-top: 16px;
+    }
+
+
+    /* --- AUTHOR SECTION --- */
+    .author-section {
+      background: linear-gradient(to bottom, transparent, rgba(16, 21, 32, 0.4), transparent);
+    }
+
+    .author-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .author-image {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: var(--radius-xl);
+      background: url('Flow core solutions Color.png') center/contain no-repeat;
+      background-color: #0A0D14;
+      border: 1px solid var(--glass-border);
+      position: relative;
+    }
+
+    .author-image::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(240, 179, 90, 0.4), transparent);
+      z-index: -1;
+      filter: blur(15px);
+    }
+
+    .author-content h2 {
+      font-size: 2.5rem;
+      margin-bottom: 24px;
+    }
+
+    .author-content p {
+      font-size: 1.1rem;
+      color: var(--text-body);
+      margin-bottom: 20px;
+    }
+
+    .author-stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .stat-item h4 {
+      font-size: 2rem;
+      color: var(--accent-main);
+      margin-bottom: 4px;
+    }
+
+    .stat-item span {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+
+    /* --- FINAL CTA --- */
+    .cta-final {
+      padding: 120px 0;
+    }
+
+    .cta-box {
+      background: linear-gradient(145deg, rgba(240, 179, 90, 0.1), rgba(10, 12, 16, 0.8));
+      border: 1px solid rgba(240, 179, 90, 0.3);
+      border-radius: var(--radius-xl);
+      padding: 80px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, rgba(240, 179, 90, 0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .cta-box h2 {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      margin-bottom: 24px;
       position: relative;
       z-index: 1;
     }
 
-    .panel-heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .panel-heading-left {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .panel-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .panel-title {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-    }
-
-    .panel-tag {
-      padding: 4px 10px;
-      border-radius: var(--radius-pill);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      border: 1px solid rgba(240, 179, 90, 0.6);
-      background: rgba(5, 7, 11, 0.7);
-      color: var(--accent);
-    }
-
-    .books-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 10px;
-    }
-
-    .book-card {
-      position: relative;
-      background: linear-gradient(150deg, rgba(0, 0, 0, 0.85), rgba(13, 16, 24, 0.85));
-      border-radius: var(--radius-lg);
-      padding: 12px 12px 13px;
-      border: 1px solid rgba(255, 255, 255, 0.03);
-      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.7);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .book-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text-muted);
-    }
-
-    .book-tag-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-
-    .book-title {
-      font-family: "Merriweather", "Times New Roman", serif;
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      color: #ffffff;
-      text-transform: uppercase;
-      line-height: 1.4;
-    }
-
-    .book-subtitle {
-      font-size: 0.72rem;
-      line-height: 1.4;
-      color: var(--text-secondary);
-    }
-
-    .book-cta {
-      margin-top: 6px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--accent);
-    }
-
-    .book-cta span {
-      font-size: 1rem;
-      margin-top: 1px;
-    }
-
-    .panel-footer {
-      margin-top: 16px;
-      padding-top: 10px;
-      border-top: 1px dashed rgba(255, 255, 255, 0.08);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    .panel-footer strong {
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-
-    .panel-footer-cta {
-      font-size: 0.74rem;
-      padding: 6px 12px;
-      border-radius: var(--radius-pill);
-      background: rgba(5, 7, 11, 0.85);
-      border: 1px solid rgba(240, 179, 90, 0.5);
-      color: var(--accent);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* STORY SECTION */
-    .section {
-      padding: 26px 0 40px;
-    }
-
-    .section-header {
-      max-width: 720px;
-      margin-bottom: 18px;
-    }
-
-    .section-eyebrow {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .section-title {
-      font-family: "Merriweather", "Times New Roman", serif;
-      font-size: 1.4rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    .section-lead {
-      font-size: 0.96rem;
-      color: var(--text-secondary);
-      line-height: 1.7;
-    }
-
-    .story-grid {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr;
-      gap: 28px;
-      margin-top: 10px;
-    }
-
-    @media (max-width: 900px) {
-      .story-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .story-main {
-      background: rgba(8, 11, 18, 0.92);
-      border-radius: var(--radius-xl);
-      padding: 20px 22px;
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75);
-      font-size: 0.94rem;
-      line-height: 1.8;
-      color: var(--text-secondary);
-    }
-
-    .story-main p + p {
-      margin-top: 14px;
-    }
-
-    .story-main strong {
-      color: #ffffff;
-      font-weight: 500;
-    }
-
-    .story-side {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .mini-card {
-      border-radius: var(--radius-lg);
-      background: rgba(9, 12, 19, 0.94);
-      border: 1px solid var(--border-subtle);
-      padding: 14px 16px;
-      font-size: 0.86rem;
-      line-height: 1.5;
-      color: var(--text-secondary);
-    }
-
-    .mini-label {
-      font-size: 0.74rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    .mini-title {
-      font-size: 0.96rem;
-      font-weight: 500;
-      margin-bottom: 4px;
-      color: #ffffff;
-    }
-
-    .mini-list {
-      margin-top: 6px;
-      padding-left: 16px;
-      list-style: none;
-    }
-
-    .mini-list li {
-      position: relative;
-      padding-left: 10px;
-      margin-bottom: 4px;
-    }
-
-    .mini-list li::before {
-      content: "–";
-      position: absolute;
-      left: 0;
-      top: 0;
-      color: var(--accent);
-    }
-
-    /* BOOKS SECTION (GRID DE COMPRA DIRETA) */
-    .books-section {
-      padding: 14px 0 48px;
-    }
-
-    .books-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 12px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .books-header-text {
-      max-width: 520px;
-    }
-
-    .books-header-text p {
-      font-size: 0.92rem;
-      color: var(--text-secondary);
-      margin-top: 4px;
-    }
-
-    .books-header-cta {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      text-align: right;
-    }
-
-    .books-header-cta strong {
-      color: var(--accent);
-      font-weight: 500;
-    }
-
-    .books-grid-main {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px;
-    }
-
-    @media (max-width: 800px) {
-      .books-grid-main {
-        grid-template-columns: 1fr;
-      }
-      .books-header {
-        align-items: flex-start;
-      }
-      .books-header-cta {
-        text-align: left;
-      }
-    }
-
-    .book-main-card {
-      background: var(--bg-elevated);
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--border-subtle);
-      padding: 18px 18px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      box-shadow: var(--shadow-soft);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .book-main-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 9px;
-      border-radius: var(--radius-pill);
-      background: rgba(5, 7, 11, 0.9);
-      border: 1px solid rgba(240, 179, 90, 0.4);
-      font-size: 0.7rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .book-main-badge-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #f0b35a, #ffffff);
-    }
-
-    .book-main-title {
-      font-family: "Merriweather", "Times New Roman", serif;
-      font-size: 1.05rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: #ffffff;
-      margin-top: 2px;
-    }
-
-    .book-main-sub {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-    }
-
-    .book-main-meta {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .book-main-meta strong {
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-
-    .book-main-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .book-main-cta {
-      padding: 10px 18px;
-      border-radius: var(--radius-pill);
-      border: none;
-      cursor: pointer;
-      font-size: 0.86rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      background: linear-gradient(120deg, #f0b35a, #f7e0b2);
-      color: #1a1206;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .book-main-cta span {
-      font-size: 1rem;
-      margin-top: 1px;
-    }
-
-    .book-main-note {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    /* CTA SECTION FINAL */
-    .cta-final {
-      padding: 32px 0 40px;
-    }
-
-    .cta-box {
-      border-radius: var(--radius-xl);
-      border: 1px solid rgba(240, 179, 90, 0.35);
-      background: radial-gradient(circle at top left, rgba(240, 179, 90, 0.23), rgba(5, 7, 11, 0.96) 42%);
-      padding: 22px 22px 20px;
-      box-shadow: var(--shadow-soft);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: flex-start;
-    }
-
-    .cta-text-main {
-      font-family: "Merriweather", "Times New Roman", serif;
+    .cta-box p {
       font-size: 1.2rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      position: relative;
+      z-index: 1;
     }
 
-    .cta-text-sub {
-      font-size: 0.94rem;
-      color: var(--text-secondary);
-      max-width: 520px;
-    }
 
-    .cta-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    /* FOOTER */
+    /* --- FOOTER --- */
     footer {
-      border-top: 1px solid var(--border-subtle);
-      padding: 16px 0 22px;
-      font-size: 0.78rem;
-      color: var(--text-muted);
+      border-top: 1px solid var(--glass-border);
+      padding: 60px 0 40px;
+      background: #000;
     }
 
-    .footer-row {
+    .footer-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
+      margin-bottom: 40px;
     }
 
-    .footer-links {
+    .footer-bottom {
       display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+      justify-content: space-between;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+      color: var(--text-muted);
     }
 
-    .footer-links a {
-      color: var(--text-muted);
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 20px;
+      }
+
+      .hero-content {
+        text-align: center;
+      }
+
+      .hero-actions {
+        justify-content: center;
+      }
+
+      .hero-subtitle {
+        margin-inline: auto;
+      }
+
+      .social-proof {
+        text-align: center;
+      }
+
+      .logos {
+        justify-content: center;
+      }
+
+      .hero-visuals {
+        height: 360px;
+        margin-top: 20px;
+      }
+
+      .hero-book-wrapper.main-book {
+        transform: rotate(-2deg) translateX(-20px) scale(0.9);
+      }
+
+      .hero-book-wrapper.second-book {
+        transform: rotate(8deg) translateX(40px) scale(0.75);
+      }
+
+      .bento-grid {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .author-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 140px;
+        min-height: auto;
+      }
+
+      .product-image-wrapper {
+        height: 300px;
+      }
+
+      .author-image {
+        width: 80%;
+        margin: 0 auto;
+      }
+
+      .footer-content,
+      .footer-bottom {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
     }
   </style>
 </head>
-<body>
-  <div class="page-wrapper">
-    <!-- HEADER -->
-    <header>
-      <div class="container">
-        <nav class="nav">
-          <a href="#top" class="logo-mark">
-            <div class="logo-symbol"></div>
-            <div class="logo-text">
-              <span class="logo-text-main">FlowCore Solutions</span>
-              <span class="logo-text-sub">Measurement • Excellence</span>
-            </div>
-          </a>
 
-          <div class="nav-links">
-            <a href="#inspiracao">Inspiração</a>
-            <a href="#livros">Livros</a>
-            <a href="#cta-final">Começar</a>
-            <a href="cursos.html">Treinamentos</a>
-            <a href="#cta-final" class="nav-cta">
-              Biblioteca FlowCore
-              <span>↗</span>
+<body>
+
+  <!-- Background Ambience -->
+  <div class="ambient-glow"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="container nav-inner">
+      <a href="#" class="logo">
+        <div class="logo-icon"></div>
+        FlowCore Solutions
+      </a>
+
+      <nav class="nav-links">
+        <a href="#solucao" class="link">A Solução</a>
+        <a href="#livros" class="link">Livros Oficiais</a>
+        <a href="#autor" class="link">Sobre o Autor</a>
+        <a href="cursos.html" class="link">Treinamentos</a>
+      </nav>
+
+      <a href="#livros" class="btn btn-primary btn-nav">Acessar Materiais</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <div class="badge">
+              <div class="badge-dot"></div>
+              Engenharia • Medição • Excelência
+            </div>
+
+            <h1 class="hero-title">
+              Eleve o seu padrão.<br />
+              <span class="text-gradient">Domine o que você entrega.</span>
+            </h1>
+
+            <p class="hero-subtitle">
+              A metodologia direta e sem enrolação para técnicos, operadores e engenheiros que querem dominar a
+              metrologia industrial e assumir o controle de suas carreiras.
+            </p>
+
+            <div class="hero-actions">
+              <a href="#livros" class="btn btn-primary">
+                Conhecer os Livros
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </a>
+              <a href="#solucao" class="btn btn-outline">
+                Entender o Método
+              </a>
+            </div>
+
+            <div class="social-proof">
+              <p>Profissionais que atuam nas maiores empresas:</p>
+              <div class="logos">
+                <span>MODEC</span>
+                <span>SBM</span>
+                <span>EQUINOR</span>
+				<span>YINSON</span>
+				<span>BW ENERGY</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-visuals">
+            <div class="hero-book-wrapper second-book">
+              <img src="capa_pro_exc.png" alt="Profissional de Excelência" class="hero-book" />
+            </div>
+            <div class="hero-book-wrapper main-book">
+              <img src="capa_nfcm.png" alt="Nunca Foi Certo Medir" class="hero-book" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAIN POINTS / BENTO GRID -->
+    <section id="solucao" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">O fim do achismo na indústria</h2>
+          <p>Por muito tempo, sistemas de medição foram tratados como caixas pretas e carreiras foram deixadas no modo
+            automático. A FlowCore foi criada para mudar isso.</p>
+        </div>
+
+        <div class="bento-grid">
+          <div class="bento-card pain-card">
+            <div class="pain-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 class="pain-title">Sistemas "Caixa Preta"</h3>
+            <p>Decisões de milhões sendo tomadas baseadas em medidores que ninguém audita. Consequência? Prejuízo
+              invisível.</p>
+          </div>
+
+          <div class="bento-card pain-card">
+            <div class="pain-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="pain-title">Carreiras Estagnadas</h3>
+            <p>Profissionais excelentes no operacional, mas que não sabem traduzir seu valor tático para a alta gestão e
+              acabam esquecidos.</p>
+          </div>
+
+          <div class="bento-card pain-card">
+            <div
+              style="width: 48px; height: 48px; border-radius: 12px; background: rgba(240, 179, 90, 0.1); color: var(--accent-main); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 8px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <h3 class="pain-title">A Solução FlowCore</h3>
+            <p>Conhecimento mastigado, vindo do campo, para você dominar a técnica e a postura corporativa em alto
+              nível.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCTS / BOOKS -->
+    <section id="livros" class="section">
+      <div class="container">
+        <div class="section-header">
+          <div class="badge">O CONTEÚDO OFICIAL</div>
+          <h2 class="section-title">O Ponto de Partida</h2>
+          <p>Mude o seu jogo na indústria com as leituras que já transformaram a mentalidade de centenas de
+            profissionais onshore e offshore.</p>
+        </div>
+
+        <div class="products-grid">
+
+          <!-- Product 1 -->
+          <div class="product-card">
+            <div class="product-tag">Técnico & Operacional</div>
+
+            <div class="product-image-wrapper">
+              <img src="capa_nfcm.png" alt="Nunca Foi Certo Medir" class="product-image" />
+            </div>
+
+            <div class="product-info">
+              <h3>Nunca Foi Certo Medir</h3>
+              <p>Este material explora a metrologia como uma ciência essencial que vai além de simples números, 
+			  destacando que a incerteza de medição é um elemento inevitável em qualquer processo técnico.</p>
+
+              <ul class="features-list">
+                <li>Desmistificando a incerteza de medição na indústria</li>
+                <li>Metrologia é a ciência que todos usam todos os dias, mesmo sem perceber.</li>
+                <li>Não há evolução sem precisão. Isso é Metrologia.</li>
+              </ul>
+            </div>
+
+            <div class="price-action">
+              <div class="format">eBook / PDF (Acesso Imediato)</div>
+            </div>
+            <a href="https://pay.kiwify.com.br/FbceEsd" target="_blank" class="btn btn-primary btn-buy">
+              Comprar via Kiwify
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
             </a>
           </div>
-        </nav>
+
+          <!-- Product 2 -->
+          <div class="product-card">
+            <div class="product-tag">Carreira & Soft Skills</div>
+
+            <div class="product-image-wrapper">
+              <img src="capa_pro_exc.png" alt="Profissional de Excelência na Indústria" class="product-image" />
+            </div>
+
+            <div class="product-info">
+              <h3>Profissional de Excelência</h3>
+              <p>O caminho prático para você se destacar. Construa sua reputação, entregue resultados consistentes e 
+				desenvolva as habilidades necessárias para alcançar o próximo nível.</p>
+
+              <ul class="features-list">
+                <li>Como construir Autoridade Técnica Real</li>
+                <li>Gestão de competências e responsabilidade técnica</li>
+                <li>Networking e posicionamento sem parecer forçado</li>
+              </ul>
+            </div>
+
+            <div class="price-action">
+              <div class="format">eBook / PDF (Acesso Imediato)</div>
+            </div>
+            <a href="https://pay.kiwify.com.br/9TPrEiP" target="_blank" class="btn btn-outline btn-buy">
+              Comprar via Kiwify
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+
+        </div>
       </div>
-    </header>
+    </section>
 
-    <main id="top">
-      <!-- HERO -->
-      <section class="hero">
-        <div class="container">
-          <div class="hero-grid">
-            <div>
-              <div class="eyebrow">
-                <div class="eyebrow-badge"></div>
-                Engenharia, Medição e Carreira em Alto Nível
-              </div>
-
-              <h1 class="hero-title">
-                <span>FlowCore Solutions</span><br />
-                Onde profissionais elevam seus próprios padrões.
-              </h1>
-
-              <p class="hero-subtitle">
-                Um espaço criado para quem leva
-                <strong>medição, confiabilidade e excelência na indústria</strong> a sério.
-                Aqui, teoria, campo e responsabilidade se encontram para formar
-                profissionais que sustentam decisões milionárias sem fazer palco,
-                mas com entrega sólida todos os dias.
-              </p>
-
-              <div class="hero-cta-row">
-                <a href="#livros" class="btn-primary">
-                  Acessar Biblioteca FlowCore
-                  <span>↗</span>
-                </a>
-                <a href="#inspiracao" class="btn-ghost">
-                  Entenda a visão por trás da FlowCore
-                </a>
-              </div>
-
-              <div class="hero-meta">
-                <span>Livros escritos a partir da operação real em FPSOs</span>
-                <span>Foco em metrologia, excelência e desenvolvimento profissional</span>
-              </div>
-            </div>
-
-            <!-- SIDE PANEL (BOOKS PREVIEW) -->
-            <aside class="hero-panel" aria-label="Prévia da biblioteca FlowCore">
-              <div class="hero-panel-inner">
-                <div class="panel-heading">
-                  <div class="panel-heading-left">
-                    <span class="panel-label">FlowCore Library</span>
-                    <span class="panel-title">O ponto de partida da sua nova fase na indústria.</span>
-                  </div>
-                  <div class="panel-tag">Leitura Essencial</div>
-                </div>
-
-                <div class="books-grid">
-                  <a href="#livros" class="book-card">
-                    <div class="book-tag">
-                      <div class="book-tag-dot"></div>
-                      Metrologia & Processo
-                    </div>
-                    <h3 class="book-title">Nunca Foi Certo Medir</h3>
-                    <p class="book-subtitle">
-                      Um olhar direto sobre como pequenos erros de medição
-                      geram grandes consequências na indústria de petróleo e gás.
-                    </p>
-                    <div class="book-cta">
-                      Ver detalhes
-                      <span>↗</span>
-                    </div>
-                  </a>
-
-                  <a href="#livros" class="book-card">
-                    <div class="book-tag">
-                      <div class="book-tag-dot"></div>
-                      Carreira & Excelência
-                    </div>
-                    <h3 class="book-title">Profissional de Excelência</h3>
-                    <p class="book-subtitle">
-                      Um guia honesto sobre entrega, reputação, confiança técnica
-                      e construção de carreira na vida real de planta.
-                    </p>
-                    <div class="book-cta">
-                      Ver detalhes
-                      <span>↗</span>
-                    </div>
-                  </a>
-                </div>
-
-                <div class="panel-footer">
-                  <p>
-                    Comece pela leitura, avance para os treinamentos
-                    e estruture a sua próxima etapa.
-                  </p>
-                  <a href="#livros" class="panel-footer-cta">
-                    Ver livros disponíveis
-                    <span>↗</span>
-                  </a>
-                </div>
-              </div>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      <!-- STORY / INSPIRAÇÃO -->
-      <section class="section" id="inspiracao">
-        <div class="container">
-          <div class="section-header">
-            <div class="section-eyebrow">A inspiração da FlowCore Solutions</div>
-            <h2 class="section-title">Por que esse projeto existe</h2>
-            <p class="section-lead">
-              A FlowCore Solutions nasce de um incômodo real de quem vive a planta,
-              o turno, o alarme e a responsabilidade de assinar sistemas de medição
-              em FPSOs. Não é um projeto de palco. É consequência de chão de fábrica,
-              de offshore e de processos que não permitem “achismo”.
-            </p>
-          </div>
-
-          <div class="story-grid">
-            <article class="story-main">
-              <p>
-                Durante anos, eu vi a mesma cena se repetir: sistemas de medição
-                tratados como detalhe, decisões de milhões apoiadas em números
-                que ninguém conseguia explicar direito e profissionais
-                sobrecarregados, mas sem clareza real do impacto do que faziam.
-              </p>
-
-              <p>
-                Foi nesse contexto que escrevi meu primeiro livro,
-                <strong>“Nunca Foi Certo Medir”</strong> — ainda como técnico — para
-                mostrar, de forma direta, como
-                <strong>metrologia, incerteza e erro de medição</strong> não são
-                conceitos acadêmicos: são o que separa um sistema confiável de um
-                passivo silencioso dentro da planta.
-              </p>
-
-              <p>
-                Mais tarde, ficou claro que o problema não estava apenas nos
-                equipamentos, mas nas pessoas: na falta de estrutura para construir
-                uma carreira sólida, na confusão entre estar cheio de tarefas e ser
-                realmente indispensável, na ausência de um roteiro concreto para
-                sair de “bom operador” e chegar ao nível de
-                <strong>profissional de referência</strong>.
-              </p>
-
-              <p>
-                Daí nasceu o segundo livro,
-                <strong>“Como Se Tornar um Profissional de Excelência na Indústria”</strong>,
-                que virou a base da visão da FlowCore: excelência não é performance
-                de rede social, é responsabilidade com o que se entrega quando
-                ninguém está olhando.
-              </p>
-
-              <p>
-                A <strong>FlowCore Solutions</strong> é a materialização disso:
-                livros, treinamentos e conteúdos pensados para quem quer
-                <strong>entender, dominar e sustentar</strong> o que a indústria
-                pede de verdade — técnica, confiabilidade e postura profissional
-                alinhadas.
-              </p>
-            </article>
-
-            <aside class="story-side">
-              <div class="mini-card">
-                <div class="mini-label">Mini bio do autor</div>
-                <div class="mini-title">De técnico a referência em medição</div>
-                <p>
-                  Profissional de medição e instrumentação atuando em FPSOs, com
-                  foco em sistemas fiscais, confiabilidade de medidores, integridade
-                  metrológica e atendimento às exigências ANP/INMETRO. Alguém que
-                  aprendeu a traduzir norma, certificado e campo em uma linguagem
-                  que a operação entende — e confia.
-                </p>
-              </div>
-
-              <div class="mini-card">
-                <div class="mini-label">Pilares da FlowCore</div>
-                <ul class="mini-list">
-                  <li><strong>Clareza técnica:</strong> sem complicar o que não precisa.</li>
-                  <li><strong>Consistência operacional:</strong> o que funciona todo dia.</li>
-                  <li><strong>Profissionalismo real:</strong> menos discurso, mais entrega.</li>
-                </ul>
-              </div>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      <!-- LIVROS PRINCIPAIS -->
-      <section class="books-section" id="livros">
-        <div class="container">
-          <div class="books-header">
-            <div class="books-header-text">
-              <div class="section-eyebrow">Livros FlowCore</div>
-              <h2 class="section-title">O início da sua nova base</h2>
-              <p>
-                Estes dois livros não são materiais “motivacionais”. São
-                resultado de anos lidando com sistemas reais, falhas reais,
-                pessoas reais e decisões que não podem errar.
-              </p>
-            </div>
-
-            <div class="books-header-cta">
-              Comece pelos livros, depois avance para os
-              <strong>treinamentos e mentorias</strong>.
-            </div>
-          </div>
-
-          <div class="books-grid-main">
-            <!-- BOOK 1 -->
-            <article class="book-main-card">
-              <div class="book-main-badge">
-                <div class="book-main-badge-dot"></div>
-                Metrologia & Processo
-              </div>
-
-              <!-- CAPA LIVRO 1 -->
-              <img
-                src="capa_nfcm.png"
-                alt="Capa do livro Nunca Foi Certo Medir"
-                style="width:70%;border-radius:12px;margin:10px 0 14px;"
-              />
-
-              <h3 class="book-main-title">Nunca Foi Certo Medir</h3>
-              <p class="book-main-sub">
-                Uma visão direta sobre metrologia industrial, incerteza,
-                rastreabilidade, erro de medição e o impacto financeiro e
-                operacional de tratar medidores como “caixas pretas”.
-                Escrito a partir do campo, com linguagem que conversa tanto com
-                a operação quanto com a engenharia.
-              </p>
-              <p class="book-main-meta">
-                Indicado para quem atua com:
-                <strong>medição de vazão, petróleo e gás, sistemas fiscais,
-                automação, instrumentação, operação de FPSOs e plantas de
-                processo</strong>.
-              </p>
-              <div class="book-main-footer">
-                <a
-                  href="https://pay.kiwify.com.br/FbceEsd"
-                  class="book-main-cta"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Comprar agora
-                  <span>↗</span>
-                </a>
-                <p class="book-main-note">
-                  Formato: PDF / eBook
-                </p>
-              </div>
-            </article>
-
-            <!-- BOOK 2 -->
-            <article class="book-main-card">
-              <div class="book-main-badge">
-                <div class="book-main-badge-dot"></div>
-                Carreira & Excelência
-              </div>
-
-              <!-- CAPA LIVRO 2 -->
-              <img
-                src="capa_pro_exc.png"
-                alt="Capa do livro Profissional de Excelência na Indústria"
-                style="width:62%;border-radius:12px;margin:10px 0 14px;"
-              />
-
-              <h3 class="book-main-title">Como Se Tornar um Profissional de Excelência na Indústria</h3>
-              <p class="book-main-sub">
-                Um guia honesto sobre como construir reputação, confiança técnica e
-                maturidade profissional em ambientes de alta pressão. Fala de
-                rotina, comportamento, postura, responsabilidade e visão de longo
-                prazo — sem romantizar a realidade do turno e da planta.
-              </p>
-              <p class="book-main-meta">
-                Indicado para:
-                <strong>técnicos, operadores, engenheiros em formação,
-                coordenadores e líderes</strong> que querem sair do modo automático
-                e assumir a construção de uma carreira de referência.
-              </p>
-              <div class="book-main-footer">
-                <a
-                  href="https://www.amazon.com.br/dp/B0FNYCFNRS"
-                  class="book-main-cta"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Comprar agora
-                  <span>↗</span>
-                </a>
-                <p class="book-main-note">
-                  Formato: Kindle / Amazon
-                </p>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <!-- CTA FINAL -->
-      <section class="cta-final" id="cta-final">
-        <div class="container">
-          <div class="cta-box">
-            <div class="cta-text-main">
-              Eleve seu padrão. Domine o que você entrega.
-            </div>
-            <p class="cta-text-sub">
-              Se você sente que já passou da fase de ser apenas “mais um na escala”
-              e quer construir confiança técnica, clareza e reputação de forma
-              consistente, comece pela base. Leia, reflita e depois avance para
-              os treinamentos FlowCore.
-            </p>
-            <div class="cta-actions">
-              <a href="#livros" class="btn-primary">
-                Começar pela leitura
-                <span>↗</span>
-              </a>
-              <a href="cursos.html" class="btn-ghost">
-                Ver área de treinamentos
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-     <!-- FOOTER -->
-    <footer>
+    <!-- AUTHOR -->
+    <section id="autor" class="section author-section">
       <div class="container">
-        <div class="footer-row">
-          <div>
-            © <span id="year"></span> FlowCore Solutions. Todos os direitos reservados.
-          </div>
-          <div class="footer-links">
-            <span>Desenvolvido por quem vive a planta, não só o slide.</span>
+        <div class="author-grid">
+          <div class="author-image"></div>
+
+          <div class="author-content">
+            <div class="badge">O CRIADOR DO MÉTODO</div>
+            <h2>De Técnico Executante a<br />Referência Profissional</h2>
+
+            <p>O fundador da FlowCore Solutions viveu a base da indústria. Começou resolvendo problemas no chão de fábrica
+              e em FPSOs, enfrentando diretamente a falta de processos de medição claros e a estagnação de carreira que
+              atinge tantos profissionais.</p>
+
+            <p>Decidiu não apenas reclamar, mas compilar o conhecimento denso normativo e boas práticas
+              em uma linguagem que o campo entende. Hoje, foca em treinar e orientar a nova geração de profssionais técnicos ajudando
+              a elevar seus níveis a padrões de confiabilidade operacional.</p>
+
+            <div class="author-stats">
+              <div class="stat-item">
+                <h4>20+</h4>
+                <span>Anos de Campo</span>
+              </div>
+              <div class="stat-item">
+                <h4>2</h4>
+                <span>Livros Publicados</span>
+              </div>
+              <div class="stat-item">
+                <h4>100%</h4>
+                <span>Visão Prática</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </footer>
-  </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="section cta-final">
+      <div class="container">
+        <div class="cta-box">
+          <h2>Ser Valor Antes De Ser Valorizado</h2>
+          <p>É perda de tempo, qualquer tentativa antes disso.</p>
+
+          <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+            <a href="#livros" class="btn btn-primary" style="padding: 16px 32px; font-size: 1.1rem;">
+              Quero os Livros
+            </a>
+            <a href="cursos.html" class="btn btn-outline" style="padding: 16px 32px; font-size: 1.1rem;">
+              Ver Treinamentos ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="logo">
+          <div class="logo-icon" style="width: 24px; height: 24px;"></div>
+          FlowCore Solutions
+        </div>
+
+        <div style="display: flex; gap: 24px;">
+          <a href="#solucao" style="color: var(--text-muted); font-size: 0.9rem;">O Método</a>
+          <a href="#livros" style="color: var(--text-muted); font-size: 0.9rem;">Livros</a>
+          <a href="cursos.html" style="color: var(--text-muted); font-size: 0.9rem;">Treinamentos</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> FlowCore Solutions. Todos os direitos reservados.</p>
+        <p>Desenvolvido por quem vive a planta, não só o slide.</p>
+      </div>
+    </div>
+  </footer>
 
   <script>
-    // Atualiza o ano automaticamente
-    document.getElementById("year").textContent = new Date().getFullYear();
+    // Set Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Sticky Nav Shadow on scroll
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+      } else {
+        header.style.boxShadow = 'none';
+      }
+    });
+
+    // Simple reveal animation observer for sections
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px"
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animation = `fadeInUp 0.8s ease-out forwards`;
+          entry.target.style.opacity = '1';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Initial opacity 0 for staggered sections
+    document.querySelectorAll('.section-header, .bento-card, .product-card, .author-grid, .cta-box').forEach(el => {
+      el.style.opacity = '0';
+      observer.observe(el);
+    });
   </script>
 </body>
+
 </html>
