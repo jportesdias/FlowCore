@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowCore Inventory Manager</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SheetJS for Excel processing -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="inventory_styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Filters -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-layer-group"></i>
+                <h2>FlowCore Manager</h2>
+            </div>
+
+            <div class="upload-section">
+                <label for="fileUpload" class="upload-btn">
+                    <i class="fa-solid fa-file-excel"></i> Load Spreadsheet
+                </label>
+                <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" />
+                <span id="fileName" class="file-name">No file selected</span>
+            </div>
+
+            <div class="filters-section">
+                <h3>Filters</h3>
+
+                <div class="filter-group">
+                    <label>Discipline</label>
+                    <select id="disciplineFilter">
+                        <option value="All">All Disciplines</option>
+                        <option value="Engine Room">Engine Room</option>
+                        <option value="E&I">E&I</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Chemical">Chemical</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Family</label>
+                    <select id="familyFilter">
+                        <option value="All">All Families</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Critical Status</label>
+                    <select id="criticalFilter">
+                        <option value="All">All Items</option>
+                        <option value="Critical">Critical Only</option>
+                        <option value="Non-Critical">Non-Critical Only</option>
+                    </select>
+                </div>
+
+                <div class="filter-group search-group">
+                    <label>Search IFS Code / Desc</label>
+                    <div class="search-input">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search..." />
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions-section">
+                <button id="exportBtn" class="action-btn primary" disabled>
+                    <i class="fa-solid fa-download"></i> Export to Excel
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <div class="stats">
+                    <div class="stat-card">
+                        <span class="stat-value" id="totalItems">0</span>
+                        <span class="stat-label">Total Items</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="criticalItems">0</span>
+                        <span class="stat-label">Critical Items</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="table-container">
+                <div id="loadingState" class="empty-state">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>Load an Excel spreadsheet to begin managing inventory.</p>
+                </div>
+
+                <table id="dataTable" class="hidden">
+                    <thead>
+                        <!-- Headers will be generated here -->
+                    </thead>
+                    <tbody>
+                        <!-- Data rows will be generated here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Item Settings</h3>
+                <button id="closeModal" class="close-btn"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editRowIndex">
+                <div class="form-group">
+                    <label>IFS Code (Part No.)</label>
+                    <input type="text" id="editIfsCode" readonly class="readonly-input">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="editDescription" readonly class="readonly-input">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Discipline</label>
+                        <select id="editDiscipline">
+                            <option value="">Select Discipline...</option>
+                            <option value="Engine Room">Engine Room</option>
+                            <option value="E&I">E&I</option>
+                            <option value="Mechanical">Mechanical</option>
+                            <option value="Chemical">Chemical</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Family</label>
+                        <input type="text" id="editFamily" placeholder="e.g., Filter, Kit">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="editQuantity" min="0">
+                    </div>
+                    <div class="form-group switch-group">
+                        <label>Critical Item</label>
+                        <label class="switch">
+                            <input type="checkbox" id="editCritical">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="saveEditBtn" class="action-btn primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="inventory_app.js"></script>
+</body>
+
+</html>
