@@ -449,39 +449,53 @@ function getCurrentUser() {
 }
 
 // ---- Backup & Export (JSON) ----
+// ---- Backup & Export (JSON) ----
 function exportDatabase() {
+    console.log('📦 Iniciando exportação do banco de dados...');
     try {
         const backup = {};
+        if (typeof KEYS === 'undefined') {
+            console.error('❌ KEYS não está definido!');
+            if (window.toast) toast('Erro interno: KEYS indefinido.', 'error');
+            return;
+        }
+
         Object.values(KEYS).forEach(lsKey => {
             const data = localStorage.getItem(lsKey);
             if (data) {
                 try {
                     backup[lsKey] = JSON.parse(data);
                 } catch (e) {
-                    console.error(`Falha ao processar ${lsKey}:`, e);
-                    backup[lsKey] = data; // Fallback para string pura se não for JSON
+                    console.warn(`⚠️ Dado em ${lsKey} não é JSON válido, salvando como texto.`);
+                    backup[lsKey] = data;
                 }
             }
         });
         
-        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const json = JSON.stringify(backup, null, 2);
+        console.log(`✅ JSON gerado (${json.length} bytes). Preparando download...`);
+
+        const blob = new Blob([json], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
         a.download = `evergreen_backup_${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(a); // Necessário em alguns navegadores
+        document.body.appendChild(a);
+        
+        console.log('🖱️ Disparando clique de download...');
         a.click();
         
         setTimeout(() => {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-        }, 100);
+            console.log('🧹 Cleanup concluído.');
+        }, 500);
         
-        if (window.toast) toast('Arquivo de backup gerado com sucesso!', 'success');
+        if (window.toast) toast('Arquivo de backup gerado!', 'success');
     } catch (err) {
-        console.error('Erro na exportação:', err);
-        if (window.toast) toast('Falha ao gerar exportação.', 'error');
+        console.error('❌ Erro crítico na exportação:', err);
+        if (window.toast) toast('Falha ao gerar exportação. Verifique o console (F12).', 'error');
     }
 }
 
