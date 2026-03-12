@@ -259,6 +259,9 @@
             <div id="cloud-status" class="flex items-center gap-2 px-3 py-1.5 bg-navy-800/50 border border-slate-700/50 rounded-lg backdrop-blur-sm cursor-help" title="Status da Conexão Cloud">
               <div id="cloud-status-dot" class="w-2 h-2 rounded-full bg-slate-500 shadow-[0_0_8px_rgba(148,163,184,0.5)]"></div>
               <span id="cloud-status-text" class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Offline</span>
+              <button onclick="handleGlobalSync(this)" class="ml-1 p-1 hover:bg-navy-700 rounded transition-colors text-slate-400 hover:text-white" title="Sincronizar Agora">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+              </button>
             </div>
             <div id="demo-mode-indicator"
               class="hidden flex items-center gap-1.5 px-2.5 py-1 bg-orange-500/10 border border-orange-500/20 rounded-full">
