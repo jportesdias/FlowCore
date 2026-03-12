@@ -34,6 +34,8 @@
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
   <link rel="stylesheet" href="css/app.css" />
 </head>
 
@@ -251,6 +253,12 @@
                 class="bg-transparent border-none text-sm font-medium text-white focus:ring-0 cursor-pointer min-w-[120px]">
                 <!-- Dynamically populated -->
               </select>
+            </div>
+            
+            <!-- CLOUD STATUS INDICATOR -->
+            <div id="cloud-status" class="flex items-center gap-2 px-3 py-1.5 bg-navy-800/50 border border-slate-700/50 rounded-lg backdrop-blur-sm cursor-help" title="Status da Conexão Cloud">
+              <div id="cloud-status-dot" class="w-2 h-2 rounded-full bg-slate-500 shadow-[0_0_8px_rgba(148,163,184,0.5)]"></div>
+              <span id="cloud-status-text" class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Offline</span>
             </div>
             <div id="demo-mode-indicator"
               class="hidden flex items-center gap-1.5 px-2.5 py-1 bg-orange-500/10 border border-orange-500/20 rounded-full">
