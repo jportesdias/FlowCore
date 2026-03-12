@@ -1,369 +1,1227 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Evergreen Log book — FlowCore Solutions</title>
+  <title>FlowCore Solutions – Engenharia, Medição e Excelência</title>
   <meta name="description"
-    content="Industrial TAG-based perpetual handover platform for offshore metering and instrumentation teams." />
+    content="Domine a metrologia industrial e impulsione sua carreira com a FlowCore Solutions." />
+
+  <!-- Fonts: Outfit for sleek modern headings, Inter for high readability body -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Dancing+Script:wght@700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap"
     rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: {
-            navy: {
-              950: '#0f172a', /* Softer background */
-              900: '#1e293b', /* Softer sidebar/header */
-              800: '#334155',
-              700: '#475569',
-              600: '#64748b'
-            },
-            orange: { 400: '#fb923c', 500: '#f97316', 600: '#ea6b0e' },
-            surface: { DEFAULT: '#111827', 2: '#1f2937', 3: '#374151' },
-          }
-        }
+
+  <style>
+    :root {
+      /* Color Palette Based on Logo (Light Corporate Theme) */
+      --bg-dark: #F8F9FA;
+      /* Off-white, soft background */
+      --bg-card: #FFFFFF;
+      /* Pure white cards */
+      --bg-card-hover: #F1F3F5;
+      /* Slight gray hover */
+      --glass-border: rgba(31, 63, 104, 0.1);
+      /* Subtle dark border instead of white */
+
+      /* Primary Brand Colors from Logo */
+      --accent-main: #E55B13;
+      /* Strong saturated orange from logo */
+      --accent-glow: rgba(229, 91, 19, 0.15);
+      /* Softer glow for light mode */
+      --accent-light: #F48A50;
+      /* Lighter complementary orange */
+      --accent-secondary: #1F3F68;
+      /* Corporate deep blue from logo texts */
+
+      --text-pure: #111827;
+      /* Near black for pure text */
+      --text-heading: #1F2937;
+      /* Dark charcoal for headings */
+      --text-body: #4B5563;
+      /* Medium gray for readability */
+      --text-muted: #6B7280;
+      /* Neutral muted text */
+
+      --max-width: 1200px;
+      --nav-height: 80px;
+
+      /* Radii */
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --radius-pill: 100px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .ambient-glow {
+      position: absolute;
+      width: 60vw;
+      height: 60vh;
+      background: radial-gradient(circle, rgba(229, 91, 19, 0.04) 0%, transparent 60%);
+      border-radius: 50%;
+      top: -10%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .ambient-glow-2 {
+      position: absolute;
+      width: 50vw;
+      height: 50vh;
+      background: radial-gradient(circle, rgba(27, 100, 255, 0.05) 0%, transparent 70%);
+      bottom: -20%;
+      right: -10%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      font-family: 'Outfit', sans-serif;
+      color: var(--text-heading);
+      line-height: 1.2;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s ease;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* --- NAVIGATION --- */
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: var(--nav-height);
+      display: flex;
+      align-items: center;
+      z-index: 1000;
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    header.scrolled {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(31, 63, 104, 0.08);
+      /* Subtle dark border */
+      box-shadow: 0 10px 30px rgba(31, 63, 104, 0.05);
+    }
+
+    .nav-inner {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Navbar Logo Text Fallback (if image is moved) */
+    .logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+      color: var(--accent-secondary);
+      text-transform: uppercase;
+    }
+
+    /* Static Centered Hero Logo */
+    .hero-main-logo {
+      position: absolute;
+      top: -140px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 420px;
+      max-width: 90%;
+      height: auto;
+      z-index: 10;
+      filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.4));
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .nav-links a.link {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-body);
+    }
+
+    .nav-links a.link:hover {
+      color: var(--accent-main);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      border-radius: var(--radius-pill);
+      padding: 14px 28px;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      border: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-main), var(--accent-light));
+      color: #000;
+      box-shadow: 0 8px 24px rgba(240, 179, 90, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(240, 179, 90, 0.5);
+      background: linear-gradient(135deg, var(--accent-light), #fff);
+    }
+
+    .btn-outline {
+      background: #FFFFFF;
+      color: var(--accent-secondary);
+      border: 1px solid var(--accent-secondary);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-outline:hover {
+      background: var(--accent-secondary);
+      color: #FFFFFF;
+      border-color: var(--accent-secondary);
+    }
+
+    .btn-nav {
+      padding: 10px 24px;
+      font-size: 0.9rem;
+    }
+
+    /* --- HERO SECTION --- */
+    .hero {
+      position: relative;
+      padding: 160px 0 80px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hero-content {
+      text-align: left;
+      position: relative;
+      z-index: 10;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      background: rgba(229, 91, 19, 0.08);
+      /* Light orange background */
+      border: 1px solid rgba(229, 91, 19, 0.15);
+      /* Light orange border */
+      color: var(--accent-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      animation: fadeInDown 0.8s ease-out forwards;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-main);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-main);
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 4.5vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      max-width: 900px;
+      animation: fadeInUp 0.8s ease-out 0.2s forwards;
+      opacity: 0;
+    }
+
+    .text-gradient {
+      background: linear-gradient(to right, var(--accent-secondary), var(--accent-main));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 1.5vw, 1.25rem);
+      max-width: 550px;
+      margin: 0 0 40px;
+      color: var(--text-body);
+      animation: fadeInUp 0.8s ease-out 0.4s forwards;
+      opacity: 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: flex-start;
+      animation: fadeInUp 0.8s ease-out 0.6s forwards;
+      opacity: 0;
+    }
+
+    .hero-visuals {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 0.6s forwards;
+    }
+
+    .hero-book-wrapper {
+      position: absolute;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .hero-book-wrapper.main-book {
+      z-index: 2;
+      /* Moved to back */
+      transform: rotate(12deg) translateX(40px);
+      /* Shifted right entirely without shrinking */
+      filter: brightness(0.7);
+    }
+
+    .hero-book-wrapper.main-book:hover {
+      transform: rotate(8deg) translateX(40px) scale(1.05) translateY(-10px);
+      z-index: 5;
+      filter: brightness(1);
+    }
+
+    .hero-book-wrapper.second-book {
+      z-index: 3;
+      /* Moved to front */
+      transform: rotate(-6deg) translateX(-40px);
+      /* Shifted left without shrinking */
+    }
+
+    .hero-book-wrapper.second-book:hover {
+      transform: rotate(-2deg) translateX(-40px) scale(1.05) translateY(-10px);
+      z-index: 5;
+    }
+
+    .hero-book {
+      width: 260px;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(31, 63, 104, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+    }
+
+    /* --- SOCIAL PROOF --- */
+    .social-proof {
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px solid var(--glass-border);
+      animation: fadeIn 1s ease-out 0.8s forwards;
+      opacity: 0;
+      text-align: left;
+    }
+
+    .social-proof p {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .logos {
+      display: flex;
+      justify-content: flex-start;
+      gap: 40px;
+      flex-wrap: wrap;
+      opacity: 0.5;
+    }
+
+    .logos span {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    /* --- PROBLEM / PAIN SECTION --- */
+    .section {
+      padding: 120px 0;
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 80px;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 20px;
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 24px;
+    }
+
+    .bento-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(31, 63, 104, 0.05);
+      /* Soft shadow for light cards */
+    }
+
+    .bento-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(31, 63, 104, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .bento-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at top right, rgba(240, 179, 90, 0.1), transparent 40%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    .bento-card:hover::before {
+      opacity: 1;
+    }
+
+    /* Pain points layout */
+    .pain-card {
+      grid-column: span 4;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pain-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(255, 60, 60, 0.1);
+      color: #FF5A5A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .pain-title {
+      font-size: 1.25rem;
+      color: var(--text-pure);
+    }
+
+    /* --- PRODUCTS / BOOKS SECTION --- */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+    }
+
+    .product-card {
+      background: #FFFFFF;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      box-shadow: 0 12px 35px rgba(31, 63, 104, 0.06);
+    }
+
+    .product-card:hover {
+      border-color: rgba(31, 63, 104, 0.2);
+      box-shadow: 0 20px 40px rgba(31, 63, 104, 0.12);
+      transform: translateY(-8px);
+    }
+
+    .product-tag {
+      position: absolute;
+      top: 32px;
+      right: 32px;
+      background: rgba(240, 179, 90, 0.15);
+      color: var(--accent-main);
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1px solid rgba(240, 179, 90, 0.3);
+      z-index: 10;
+    }
+
+    .product-image-wrapper {
+      width: 100%;
+      height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 40px;
+      margin-bottom: 32px;
+      perspective: 1000px;
+    }
+
+    .product-image {
+      max-height: 100%;
+      max-width: 80%;
+      border-radius: 12px;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6);
+      transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+
+    .product-card:hover .product-image {
+      transform: rotateY(-10deg) rotateX(5deg) scale(1.05);
+    }
+
+    .product-info h3 {
+      font-size: 1.75rem;
+      margin-bottom: 12px;
+    }
+
+    .product-info p {
+      color: var(--text-body);
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+
+    .features-list {
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .features-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.9rem;
+      color: var(--text-heading);
+    }
+
+    .features-list li::before {
+      content: '✓';
+      color: var(--accent-main);
+      font-weight: bold;
+      background: rgba(240, 179, 90, 0.1);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.7rem;
+      margin-top: 2px;
+    }
+
+    .price-action {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--glass-border);
+      padding-top: 24px;
+    }
+
+    .price-action .format {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .btn-buy {
+      width: 100%;
+      margin-top: 16px;
+    }
+
+
+    /* --- AUTHOR SECTION --- */
+    .author-section {
+      background: linear-gradient(to bottom, transparent, rgba(31, 63, 104, 0.03), transparent);
+    }
+
+    .author-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .author-image {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: var(--radius-xl);
+      background: url('Flow core solutions Color.png') center/contain no-repeat;
+      background-color: #FFFFFF;
+      /* Light bg for author image container */
+      border: 1px solid var(--glass-border);
+      position: relative;
+      box-shadow: 0 15px 35px rgba(31, 63, 104, 0.08);
+      /* Soft shadow */
+    }
+
+    .author-image::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(229, 91, 19, 0.15), transparent);
+      z-index: -1;
+      filter: blur(15px);
+    }
+
+    .author-content h2 {
+      font-size: 2.5rem;
+      margin-bottom: 24px;
+    }
+
+    .author-content p {
+      font-size: 1.1rem;
+      color: var(--text-body);
+      margin-bottom: 20px;
+    }
+
+    .author-stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .stat-item h4 {
+      font-size: 2rem;
+      color: var(--accent-main);
+      margin-bottom: 4px;
+    }
+
+    .stat-item span {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+
+    /* --- FINAL CTA --- */
+    .cta-final {
+      padding: 120px 0;
+    }
+
+    .cta-box {
+      background: #F8F9FA;
+      /* Matches the outer page background */
+      border: 1px solid rgba(31, 63, 104, 0.08);
+      /* Very subtle inset border edge */
+      border-radius: var(--radius-xl);
+      padding: 80px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      /* Inset shadows create the "pressed in" / debossed low-relief effect */
+      box-shadow: inset 4px 4px 15px rgba(31, 63, 104, 0.05), inset -4px -4px 15px rgba(255, 255, 255, 1);
+    }
+
+    /* Removed the yellow ambient glow (.cta-box::before) from dark mode */
+
+
+    .cta-box h2 {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-box p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+
+    /* --- FOOTER --- */
+    footer {
+      border-top: 1px solid rgba(31, 63, 104, 0.1);
+      /* Subtle dark border */
+      padding: 60px 0 40px;
+      background: #FFFFFF;
+      /* White footer for clean look */
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
       }
-    };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js"></script>
-  <link rel="stylesheet" href="css/app.css" />
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 30px;
+      }
+
+      .hero-content {
+        text-align: center;
+        order: 2;
+        /* Move text below visuals on mobile */
+      }
+
+      .hero-visuals {
+        order: 1;
+        /* Move logo/books above text on mobile */
+        height: 520px;
+        margin-top: 20px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+      }
+
+      /* Adjust the huge logo for mobile so it doesn't overlap everything */
+      .hero-main-logo {
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        max-width: 260px;
+        margin-bottom: 0px;
+        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.2));
+      }
+
+      .hero-actions {
+        justify-content: center;
+      }
+
+      .hero-subtitle {
+        margin-inline: auto;
+      }
+
+      .social-proof {
+        text-align: center;
+      }
+
+      .logos {
+        justify-content: center;
+      }
+
+      /* Push books just below the logo (tightening the gap) */
+      .hero-book-wrapper.main-book {
+        top: 80px;
+        transform: rotate(15deg) translateX(45px) translateY(-5px);
+        /* Back cover (black) tilted right to act as an open fan base */
+      }
+
+      .hero-book-wrapper.second-book {
+        top: 60px;
+        transform: rotate(0deg) translateX(-10px);
+        /* Front cover (blue) upright/horizontal base */
+      }
+
+      .bento-grid {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .author-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 120px;
+        min-height: auto;
+      }
+
+      .product-image-wrapper {
+        height: 300px;
+      }
+
+      .author-image {
+        width: 80%;
+        margin: 0 auto;
+      }
+
+      .footer-content,
+      .footer-bottom {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+    }
+  </style>
 </head>
 
-<body class="bg-navy-900 text-slate-100 font-sans antialiased min-h-screen login-active">
+<body>
 
-  <!-- EPIC SPLASH SCREEN -->
-  <div id="splash-screen" class="fixed inset-0 z-[9999] flex items-center justify-center bg-navy-950 overflow-hidden">
-    <div class="relative flex items-center justify-center w-full h-full">
-      <img src="Flow core solutions Color.png" alt="Logo" id="splash-logo" class="w-0 opacity-0" />
+  <!-- Background Ambience -->
+  <div class="ambient-glow"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="container nav-inner">
+      <a href="#" class="logo-text">
+        FlowCore Solutions
+      </a>
+
+      <nav class="nav-links">
+        <a href="#solucao" class="link">A Solução</a>
+        <a href="#livros" class="link">Livros Oficiais</a>
+        <a href="#autor" class="link">Sobre o Autor</a>
+        <a href="cursos.html" class="link">Treinamentos</a>
+      </nav>
+
+      <a href="#livros" class="btn btn-primary btn-nav">Acessar Materiais</a>
     </div>
-  </div>
+  </header>
 
-  <!-- LOGIN PAGE -->
-  <!-- LOGIN PAGE -->
-  <div id="page-login" class="page-view active flex items-center justify-center min-h-screen">
-    <div class="w-full max-w-md mx-4">
-      <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center mb-8">
-          <img src="Flow core solutions Color.png" alt="FlowCore Solutions" class="h-32 w-auto logo-hero" />
-        </div>
-        <h1 class="text-4xl font-extrabold text-white mb-2 tracking-tight">Evergreen Log book</h1>
-        <p class="text-slate-400 text-sm">FlowCore Solutions — Handover Management</p>
-      </div>
-
-
-      <div class="bg-surface-2 border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
-        <!-- Login Form -->
-        <form id="login-form" class="space-y-5">
-          <div>
-            <label class="block text-sm font-medium text-slate-300 mb-2">Username</label>
-            <input id="login-user" type="text" placeholder="Enter username"
-              class="w-full bg-navy-800 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-slate-300 mb-2">Password</label>
-            <input id="login-pass" type="password" placeholder="Enter password"
-              class="w-full bg-navy-800 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition" />
-          </div>
-          <div class="flex items-center gap-2">
-            <input type="checkbox" id="login-remember"
-              class="w-4 h-4 rounded border-slate-600 bg-navy-800 text-orange-500 focus:ring-orange-500/20 cursor-pointer">
-            <label for="login-remember" class="text-sm text-slate-400 cursor-pointer select-none">Salvar Senha</label>
-          </div>
-          <p id="login-error" class="text-red-400 text-sm hidden">Invalid username or password.</p>
-          <button type="submit"
-            class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-orange-500/25">
-            Sign In
-          </button>
-          <button type="button" id="btn-demo-login"
-            class="w-full bg-navy-700 hover:bg-navy-600 text-slate-300 font-medium py-3 rounded-lg border border-slate-600 transition-all duration-200">
-            Enter as Demo User
-          </button>
-
-          <div class="pt-4 text-center">
-            <button type="button" id="btn-reset-db"
-              class="text-[10px] uppercase tracking-widest text-slate-500 hover:text-orange-400 transition">
-              Reset Database to Defaults
-            </button>
-          </div>
-        </form>
-      </div>
-      <p class="text-center text-slate-500 text-xs mt-6">Version 1.0.0 · Offshore Demo Mode</p>
-    </div>
-  </div>
-
-  <!-- APP SHELL (authenticated) -->
-  <div id="app-shell" class="hidden">
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar fixed top-0 left-0 h-full z-30 transition-all duration-300">
-      <div class="flex flex-col h-full bg-navy-950 border-r border-slate-800">
-        <!-- Logo/Title Section -->
-        <div class="flex items-center h-[72px] px-5 border-b border-slate-800/10">
-          <div class="sidebar-text overflow-hidden flex-1">
-            <div class="text-white font-bold text-lg tracking-tight leading-tight">Evergreen</div>
-          </div>
-          <button id="sidebar-toggle"
-            class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all duration-200"
-            aria-label="Toggle Sidebar">
-            <svg class="w-5 h-5 transition-transform duration-300" id="sidebar-toggle-icon" fill="none"
-              viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-            </svg>
-          </button>
-        </div>
-
-        <!-- Navigation -->
-        <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
-          <a href="#" class="nav-link" data-page="dashboard">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
-            <span class="sidebar-text">Dashboard</span>
-          </a>
-          <a href="#" class="nav-link" data-page="events">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="nav-icon-handovers">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            <span class="sidebar-text">Handover Events</span>
-          </a>
-          <a href="#" class="nav-link" data-page="activities">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span class="sidebar-text">Priority Activities</span>
-          </a>
-          <a href="#" class="nav-link" data-page="tags">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 012-2z" />
-            </svg>
-            <span class="sidebar-text">TAG Registry</span>
-          </a>
-          <a href="#" class="nav-link" data-page="systems">
-            <svg class="w-5 h-5 nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg>
-            <span class="sidebar-text">System Config</span>
-          </a>
-          <a href="#" class="nav-link" data-page="orifice">
-            <svg class="w-5 h-5 nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
-            <span class="sidebar-text">Orifice Plates</span>
-          </a>
-          <div class="h-px bg-slate-800 my-4 mx-2"></div>
-          <a href="#" class="nav-link" data-page="inspections">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-            <span class="sidebar-text">Maint. & Insp.</span>
-          </a>
-          <a href="#" class="nav-link" data-page="materials">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
-            <span class="sidebar-text">Material Movement</span>
-          </a>
-          <a href="#" class="nav-link" data-page="notes">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            <span class="sidebar-text">Operational Notes</span>
-          </a>
-          <a href="#" class="nav-link" data-page="alerts">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-            <span class="sidebar-text">Alerts & Reminders</span>
-          </a>
-          <a href="#" class="nav-link" data-page="metering">
-            <svg class="nav-icon text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            <span class="sidebar-text text-indigo-400 font-bold uppercase">METERING INTELLIGENCE</span>
-          </a>
-          <a href="#" class="nav-link" data-page="search">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <span class="sidebar-text">Global Search</span>
-          </a>
-          <a href="#" class="nav-link" data-page="reports">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span class="sidebar-text">Handover Report</span>
-          </a>
-          <a href="#" class="nav-link hidden" data-page="users" id="nav-users">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <span class="sidebar-text">User Management</span>
-          </a>
-        </nav>
-
-      </div>
-    </aside>
-
-    <!-- Main content -->
-    <div id="main-content" class="main-content transition-all duration-300">
-      <!-- Topbar -->
-      <header class="sticky top-0 z-20 bg-navy-900/90 backdrop-blur-md border-b border-slate-800/50 px-6 py-3">
-        <div class="flex items-center justify-between gap-4">
-          <div class="flex items-center gap-4">
-            <button id="mobile-menu-btn" class="lg:hidden text-slate-400 hover:text-white">
-              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-
-            <div class="flex items-baseline gap-2">
-              <span class="text-white font-bold text-xl tracking-tight">Evergreen</span>
-              <span
-                class="text-slate-500 text-[10px] uppercase tracking-widest font-bold border-l border-slate-700 pl-2">FlowCore
-                Solutions</span>
+  <!-- HERO -->
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <div class="badge">
+              <div class="badge-dot"></div>
+              Engenharia • Medição • Excelência
             </div>
 
-            <div
-              class="flex items-center gap-2 px-3 py-1.5 bg-navy-800/50 border border-slate-700/50 rounded-lg backdrop-blur-sm">
-              <svg class="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-              <select id="platform-switcher"
-                class="bg-transparent border-none text-sm font-medium text-white focus:ring-0 cursor-pointer min-w-[120px]">
-                <!-- Dynamically populated -->
-              </select>
-            </div>
-            
-            <!-- CLOUD STATUS INDICATOR -->
-            <div id="cloud-status" class="flex items-center gap-2 px-3 py-1.5 bg-navy-800/50 border border-slate-700/50 rounded-lg backdrop-blur-sm cursor-help" title="Status da Conexão Cloud">
-              <div id="cloud-status-dot" class="w-2 h-2 rounded-full bg-slate-500 shadow-[0_0_8px_rgba(148,163,184,0.5)]"></div>
-              <span id="cloud-status-text" class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Offline</span>
-            </div>
-            <div id="demo-mode-indicator"
-              class="hidden flex items-center gap-1.5 px-2.5 py-1 bg-orange-500/10 border border-orange-500/20 rounded-full">
-              <span class="relative flex h-2 w-2">
-                <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
-              </span>
-              <span class="text-[10px] font-black text-orange-400 uppercase tracking-wider">Modo Demo</span>
-            </div>
-          </div>
+            <h1 class="hero-title">
+              Eleve o seu padrão.<br />
+              <span class="text-gradient">Domine o que você entrega.</span>
+            </h1>
 
-          <div class="flex-1 relative max-w-md hidden md:block">
-            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input id="global-search-input" type="search" placeholder="Quick search..."
-              class="w-full bg-navy-800/40 border border-slate-700/50 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-orange-500/50 transition-all" />
-          </div>
+            <p class="hero-subtitle">
+              A metodologia direta e sem enrolação para técnicos, operadores e engenheiros que querem dominar a
+              metrologia industrial e assumir o controle de suas carreiras.
+            </p>
 
-          <div class="flex items-center gap-3">
-            <img src="logo2.png" alt="FlowCore Solutions" class="h-8 w-auto mr-3 header-logo-highlight" />
-
-            <div class="h-8 w-px bg-slate-800/50"></div>
-
-            <button id="notif-btn"
-              class="relative p-2 text-slate-400 hover:text-white transition rounded-lg hover:bg-slate-800/50">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <span id="notif-badge" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-
-            <div class="h-8 w-px bg-slate-800"></div>
-
-            <div class="flex items-center gap-3">
-              <div class="text-right hidden sm:block">
-                <div id="user-name" class="text-sm font-semibold text-white leading-tight">Demo User</div>
-                <div id="user-role" class="text-[10px] text-slate-500 uppercase tracking-tighter">Instrument Technician
-                </div>
-              </div>
-              <div
-                class="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                <span id="user-initials" class="text-orange-400 text-xs font-bold">DU</span>
-              </div>
-              <button id="btn-logout" class="p-2 text-slate-500 hover:text-red-400 transition" title="Logout">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            <div class="hero-actions">
+              <a href="#livros" class="btn btn-primary">
+                Conhecer os Livros
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
-              </button>
+              </a>
+              <a href="#solucao" class="btn btn-outline">
+                Entender o Método
+              </a>
+            </div>
+
+            <div class="social-proof">
+              <p>Profissionais que atuam nas maiores empresas:</p>
+              <div class="logos">
+                <span>MODEC</span>
+                <span>SBM</span>
+                <span>EQUINOR</span>
+                <span>YINSON</span>
+                <span>BW ENERGY</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-visuals">
+            <img src="Flow core solutions Color.png" alt="FlowCore Solutions" class="hero-main-logo" />
+            <div class="hero-book-wrapper second-book">
+              <img src="capa_pro_exc.png" alt="Profissional de Excelência" class="hero-book" />
+            </div>
+            <div class="hero-book-wrapper main-book">
+              <img src="capa_nfcm.png" alt="Nunca Foi Certo Medir" class="hero-book" />
             </div>
           </div>
         </div>
-      </header>
-
-      <!-- Page container -->
-      <main id="page-container" class="p-6 min-h-screen">
-        <!-- Pages are injected here -->
-      </main>
-    </div>
-  </div>
-
-  <!-- Toast container -->
-  <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-3 pointer-events-none"></div>
-
-  <!-- Global Modal -->
-  <div id="global-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="modal-backdrop absolute inset-0 bg-black/70 backdrop-blur-sm" id="modal-backdrop"></div>
-    <div id="global-modal-container"
-      class="relative bg-surface-2 border border-slate-700/60 rounded-2xl shadow-2xl w-full max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between px-6 py-5 border-b border-slate-700/60">
-        <h2 id="modal-title" class="text-lg font-semibold text-white"></h2>
-        <button id="modal-close" class="text-slate-400 hover:text-white transition p-1 rounded">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
       </div>
-      <div id="modal-body" class="p-6"></div>
-    </div>
-  </div>
+    </section>
 
-  <!-- TAG Detail Side Panel -->
-  <div id="tag-panel" class="hidden fixed inset-y-0 right-0 z-40 w-full max-w-2xl">
-    <div class="absolute inset-0 bg-black/50" id="tag-panel-backdrop"></div>
-    <div class="relative h-full bg-navy-800 border-l border-slate-700 flex flex-col shadow-2xl overflow-y-auto"
-      id="tag-panel-content">
-    </div>
-  </div>
+    <!-- PAIN POINTS / BENTO GRID -->
+    <section id="solucao" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">O fim do achismo na indústria</h2>
+          <p>Por muito tempo, sistemas de medição foram tratados como caixas pretas e carreiras foram deixadas no modo
+            automático. A FlowCore foi criada para mudar isso.</p>
+        </div>
 
-  <script src="js/data-excel.js"></script>
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/pages-dashboard.js"></script>
-  <script src="js/pages-events.js"></script>
-  <script src="js/pages-tags.js"></script>
-  <script src="js/pages-metering.js"></script>
-  <script src="js/pages-reports.js"></script>
-  <script src="js/pages-orifice.js"></script>
-  <script src="js/pages-modules.js"></script>
-  <script src="js/pages-admin.js"></script>
+        <div class="bento-grid">
+          <div class="bento-card pain-card">
+            <div class="pain-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 class="pain-title">Sistemas "Caixa Preta"</h3>
+            <p>Decisões de milhões sendo tomadas baseadas em medidores que ninguém audita. Consequência? Prejuízo
+              invisível.</p>
+          </div>
+
+          <div class="bento-card pain-card">
+            <div class="pain-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="pain-title">Carreiras Estagnadas</h3>
+            <p>Profissionais excelentes no operacional, mas que não sabem traduzir seu valor tático para a alta gestão e
+              acabam esquecidos.</p>
+          </div>
+
+          <div class="bento-card pain-card">
+            <div
+              style="width: 48px; height: 48px; border-radius: 12px; background: rgba(240, 179, 90, 0.1); color: var(--accent-main); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 8px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <h3 class="pain-title">A Solução FlowCore</h3>
+            <p>Conhecimento mastigado, vindo do campo, para você dominar a técnica e a postura corporativa em alto
+              nível.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCTS / BOOKS -->
+    <section id="livros" class="section">
+      <div class="container">
+        <div class="section-header">
+          <div class="badge">O CONTEÚDO OFICIAL</div>
+          <h2 class="section-title">O Ponto de Partida</h2>
+          <p>Mude o seu jogo na indústria com as leituras que já transformaram a mentalidade de centenas de
+            profissionais onshore e offshore.</p>
+        </div>
+
+        <div class="products-grid">
+
+          <!-- Product 1 -->
+          <div class="product-card">
+            <div class="product-tag">Técnico & Operacional</div>
+
+            <div class="product-image-wrapper">
+              <img src="capa_nfcm.png" alt="Nunca Foi Certo Medir" class="product-image" />
+            </div>
+
+            <div class="product-info">
+              <h3>Nunca Foi Certo Medir</h3>
+              <p>Este material explora a metrologia como uma ciência essencial que vai além de simples números,
+                destacando que a incerteza de medição é um elemento inevitável em qualquer processo técnico.</p>
+
+              <ul class="features-list">
+                <li>Desmistificando a incerteza de medição na indústria</li>
+                <li>Metrologia é a ciência que todos usam todos os dias, mesmo sem perceber.</li>
+                <li>Não há evolução sem precisão. Isso é Metrologia.</li>
+              </ul>
+            </div>
+
+            <div class="price-action">
+              <div class="format">eBook / PDF (Acesso Imediato)</div>
+            </div>
+            <a href="https://pay.kiwify.com.br/FbceEsd" target="_blank" class="btn btn-primary btn-buy">
+              Comprar via Kiwify
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Product 2 -->
+          <div class="product-card">
+            <div class="product-tag">Carreira & Soft Skills</div>
+
+            <div class="product-image-wrapper">
+              <img src="capa_pro_exc.png" alt="Profissional de Excelência na Indústria" class="product-image" />
+            </div>
+
+            <div class="product-info">
+              <h3>Profissional de Excelência</h3>
+              <p>O caminho prático para você se destacar. Construa sua reputação, entregue resultados consistentes e
+                desenvolva as habilidades necessárias para alcançar o próximo nível.</p>
+
+              <ul class="features-list">
+                <li>Como construir Autoridade Técnica Real</li>
+                <li>Gestão de competências e responsabilidade técnica</li>
+                <li>Networking e posicionamento sem parecer forçado</li>
+              </ul>
+            </div>
+
+            <div class="price-action">
+              <div class="format">eBook / PDF (Acesso Imediato)</div>
+            </div>
+            <a href="https://pay.kiwify.com.br/9TPrEiP" target="_blank" class="btn btn-outline btn-buy">
+              Comprar via Kiwify
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- AUTHOR -->
+    <section id="autor" class="section author-section">
+      <div class="container">
+        <div class="author-grid">
+          <div class="author-image"></div>
+
+          <div class="author-content">
+            <div class="badge">O CRIADOR DO MÉTODO</div>
+            <h2>De Técnico Executante a<br />Referência Profissional</h2>
+
+            <p>O fundador da FlowCore Solutions viveu a base da indústria. Começou resolvendo problemas no chão de
+              fábrica
+              e em FPSOs, enfrentando diretamente a falta de processos de medição claros e a estagnação de carreira que
+              atinge tantos profissionais.</p>
+
+            <p>Decidiu não apenas reclamar, mas compilar o conhecimento denso normativo e boas práticas
+              em uma linguagem que o campo entende. Hoje, foca em treinar e orientar a nova geração de profssionais
+              técnicos ajudando
+              a elevar seus níveis a padrões de confiabilidade operacional.</p>
+
+            <div class="author-stats">
+              <div class="stat-item">
+                <h4>20+</h4>
+                <span>Anos de Campo</span>
+              </div>
+              <div class="stat-item">
+                <h4>2</h4>
+                <span>Livros Publicados</span>
+              </div>
+              <div class="stat-item">
+                <h4>100%</h4>
+                <span>Visão Prática</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="section cta-final">
+      <div class="container">
+        <div class="cta-box">
+          <h2>Ser Valor Antes De Ser Valorizado</h2>
+          <p>É perda de tempo, qualquer tentativa antes disso.</p>
+
+          <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+            <a href="#livros" class="btn btn-primary" style="padding: 16px 32px; font-size: 1.1rem;">
+              Quero os Livros
+            </a>
+            <a href="cursos.html" class="btn btn-outline" style="padding: 16px 32px; font-size: 1.1rem;">
+              Ver Treinamentos ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="logo-text">
+          FlowCore Solutions
+        </div>
+
+        <div style="display: flex; gap: 24px;">
+          <a href="#solucao" style="color: var(--text-muted); font-size: 0.9rem;">O Método</a>
+          <a href="#livros" style="color: var(--text-muted); font-size: 0.9rem;">Livros</a>
+          <a href="cursos.html" style="color: var(--text-muted); font-size: 0.9rem;">Treinamentos</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> FlowCore Solutions. Todos os direitos reservados.</p>
+        <p>Desenvolvido por quem vive a planta, não só o slide.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Set Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Sticky Nav Shadow and Glass effect on scroll
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Simple reveal animation observer for sections
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px"
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animation = `fadeInUp 0.8s ease-out forwards`;
+          entry.target.style.opacity = '1';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Initial opacity 0 for staggered sections
+    document.querySelectorAll('.section-header, .bento-card, .product-card, .author-grid, .cta-box').forEach(el => {
+      el.style.opacity = '0';
+      observer.observe(el);
+    });
+  </script>
 </body>
 
 </html>
