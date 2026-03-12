@@ -569,6 +569,47 @@ async function pullFromCloud() {
     }
 }
 
+// Push Local Data to Cloud - Uploads all local records to Supabase
+async function pushLocalToCloud() {
+    if (!window.supabaseClient) {
+        alert('Supabase não conectado. Verifique as chaves.');
+        return;
+    }
+
+    const tableMap = {
+        [KEYS.events]: 'events',
+        [KEYS.tags]: 'tags',
+        [KEYS.activities]: 'activities',
+        [KEYS.inspections]: 'inspections',
+        [KEYS.materials]: 'materials',
+        [KEYS.systems]: 'systems',
+        [KEYS.notes]: 'notes',
+        [KEYS.alerts]: 'alerts',
+        [KEYS.orifice_plates]: 'orifice_plates',
+        [KEYS.users]: 'users',
+        [KEYS.platforms]: 'platforms'
+    };
+
+    console.log('🚀 Iniciando upload massivo para nuvem...');
+    
+    let totalSynced = 0;
+    for (const [localKey, tableName] of Object.entries(tableMap)) {
+        const localData = JSON.parse(localStorage.getItem(localKey)) || [];
+        if (localData.length > 0) {
+            console.log(`📡 Enviando ${localData.length} registros para ${tableName}...`);
+            const { error } = await window.supabaseClient
+                .from(tableName)
+                .upsert(localData, { onConflict: 'id' });
+            
+            if (error) console.error(`❌ Erro em ${tableName}:`, error);
+            else totalSynced += localData.length;
+        }
+    }
+    
+    console.log(`✅ Upload concluído! ${totalSynced} registros sincronizados.`);
+    return totalSynced;
+}
+
 function initSeed() {
   const latestV = '1.19'; // v19: Protect User Wells
   if (localStorage.getItem(KEYS.seeded) === latestV) return;
@@ -1408,7 +1449,10 @@ window.DB = {
       return s[i].op_mode;
     }
     return null;
-  }
+  },
+
+  // Manual Cloud Control
+  pushLocalToCloud: pushLocalToCloud
 };
 
 // Initialize seed on load
