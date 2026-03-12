@@ -165,7 +165,7 @@ window.bindFollowUpForm = function(eventId, fupId = null) {
     if (!event.follow_ups) event.follow_ups = [];
 
     const comment = document.getElementById('ff-comment').value.trim();
-    const currentUser = window.getUser ? window.getUser() : null;
+    const user = window.getUser();
 
     if (fupId) {
       const fup = event.follow_ups.find(x => x.id === fupId);
@@ -176,8 +176,8 @@ window.bindFollowUpForm = function(eventId, fupId = null) {
     } else {
       const followUp = {
         id: window.genId('fup'),
-        author: currentUser ? currentUser.name : 'Unknown',
-        author_id: currentUser ? currentUser.id : null,
+        author: user ? user.name : 'Unknown',
+        author_id: user ? user.id : null,
         comment,
         date: new Date().toISOString()
       };
@@ -231,7 +231,7 @@ window.eventDetail = function(e) {
     <div class="space-y-4">
       <div class="flex flex-wrap gap-2 mb-2">
         ${window.tagChip(e.tag_code)} ${window.priorityBadge(e.priority)} ${window.statusBadge(e.status)}
-        ${e.status !== 'closed' ? `<button class="badge hover:brightness-125 transition-all cursor-pointer" style="background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)" onclick="window.openFollowUpModal('${e.id}')">↩ Register Follow-up</button>` : ''}
+        ${window.canEdit(e) ? `<button class="badge hover:brightness-125 transition-all cursor-pointer" style="background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)" onclick="window.openFollowUpModal('${e.id}')">↩ Register Follow-up</button>` : ''}
       </div>
       <div><div class="section-label">Category / System</div><div class="text-slate-300">${window.escHtml(e.category)} · ${window.escHtml(e.system || '—')}</div></div>
       <div><div class="section-label">Timestamp</div><div class="text-slate-300">${window.fmt(e.created_at)}</div></div>
@@ -241,7 +241,7 @@ window.eventDetail = function(e) {
       <div class="mt-6">
         <div class="flex items-center justify-between mb-3">
           <div class="section-label mb-0">Follow-up History</div>
-          ${e.status !== 'closed' ? `<button class="btn btn-sm btn-primary" onclick="window.openFollowUpModal('${e.id}')">+ Add Follow-up</button>` : ''}
+          ${window.canEdit(e) ? `<button class="btn btn-sm btn-primary" onclick="window.openFollowUpModal('${e.id}')">+ Add Follow-up</button>` : ''}
         </div>
         <div class="space-y-3">
           ${followUps.length === 0 ? '<p class="text-xs text-slate-500 italic">No follow-ups recorded yet.</p>' :
@@ -343,7 +343,7 @@ window.renderEvents = function(container, params) {
               <div class="flex items-center gap-1.5 text-slate-400 bg-navy-900 px-2 py-0.5 rounded-full border border-slate-700">
                 <span class="font-bold text-slate-200">${followUps.length}</span> follow-ups
               </div>
-              ${e.status !== 'closed' ? `<button class="text-amber-500 hover:text-amber-400 font-bold transition-all cursor-pointer flex items-center gap-1 group" onclick="event.stopPropagation(); window.openFollowUpModal('${e.id}')">
+              ${window.canEdit(e) ? `<button class="text-amber-500 hover:text-amber-400 font-bold transition-all cursor-pointer flex items-center gap-1 group" onclick="event.stopPropagation(); window.openFollowUpModal('${e.id}')">
                 <span class="group-hover:translate-x-1 transition-transform">↩ Register Follow-up</span>
               </button>` : ''}
             </div>

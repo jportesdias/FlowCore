@@ -6,8 +6,45 @@
 // ============================================================
 
 const SEED_TAGS = [
-  { id: 'tag-009', platform_id: 'plat-flowcore', tag_code: 'WELL-A1', name: 'Production Well A1', system: 'Production', location: 'Subsea Cluster 1', type: 'Well', status: 'ok', notes: 'High-pressure producer.' },
-  { id: 'tag-010', platform_id: 'plat-flowcore', tag_code: 'WELL-B5', name: 'Production Well B5', system: 'Production', location: 'Subsea Cluster 2', type: 'Well', status: 'ok', notes: 'Water injector candidate.' },
+  // --- 10 METROLOGY & FISCAL TAGS ---
+  { id: 'tag-fc-101', platform_id: 'plat-flowcore', tag_code: 'FT-1101', name: 'Gas Export Meter A', system: 'Gas Custody Transfer', location: 'Skid 01 - Main Deck', type: 'Meter', status: 'ok', notes: 'Ultrasonic 6-path Daniel meter. Serial: 24-001.' },
+  { id: 'tag-fc-102', platform_id: 'plat-flowcore', tag_code: 'FT-1102', name: 'Gas Export Meter B', system: 'Gas Custody Transfer', location: 'Skid 01 - Main Deck', type: 'Meter', status: 'ok', notes: 'Ultrasonic 6-path Daniel meter. Serial: 24-002.' },
+  { id: 'tag-fc-103', platform_id: 'plat-flowcore', tag_code: 'FT-2101', name: 'Oil Export Coriolis A', system: 'Oil Custody Transfer', location: 'Skid 02 - Lower Deck', type: 'Meter', status: 'ok', notes: 'MicroMotion CMF400. Serial: MM-8821.' },
+  { id: 'tag-fc-104', platform_id: 'plat-flowcore', tag_code: 'FT-2102', name: 'Oil Export Coriolis B', system: 'Oil Custody Transfer', location: 'Skid 02 - Lower Deck', type: 'Meter', status: 'ok', notes: 'MicroMotion CMF400. Serial: MM-8822.' },
+  { id: 'tag-fc-105', platform_id: 'plat-flowcore', tag_code: 'AT-1101', name: 'Gas Chromatograph', system: 'Gas Analysis', location: 'Skid 01 - Analyzer Room', type: 'Analyzer', status: 'ok', notes: 'Rosemount 700XA. C6+ analysis.' },
+  { id: 'tag-fc-106', platform_id: 'plat-flowcore', tag_code: 'DS-2101', name: 'Oil Density Meter', system: 'Oil Analysis', location: 'Skid 02 - Analyzer Room', type: 'Analyzer', status: 'ok', notes: 'Sarasota PD3000.' },
+  { id: 'tag-fc-107', platform_id: 'plat-flowcore', tag_code: 'FT-3001', name: 'Fuel Gas Meter', system: 'Fuel Gas', location: 'Module M05', type: 'Meter', status: 'ok', notes: 'Turbine meter for turbine consumption.' },
+  { id: 'tag-fc-108', platform_id: 'plat-flowcore', tag_code: 'FT-4001', name: 'Flare Gas Meter', system: 'Flare', location: 'Flare Deck', type: 'Meter', status: 'ok', notes: 'Fluenta Ultrasonic flare meter.' },
+  { id: 'tag-fc-109', platform_id: 'plat-flowcore', tag_code: 'ST-5001', name: 'Automatic Sampler', system: 'Oil Sampling', location: 'Offloading Skids', type: 'Sampler', status: 'ok', notes: 'Jiskoot controlled sampler unit.' },
+  { id: 'tag-fc-110', platform_id: 'plat-flowcore', tag_code: '30XX001', name: 'Compact Prover FC', system: 'Proproving System', location: 'Metering Skid', type: 'Prover', status: 'ok', notes: 'Main calibration standard for liquid meters.', is_available: true },
+
+  // --- 10 PROCESS & INSTRUMENTATION TAGS ---
+  { id: 'tag-fc-111', platform_id: 'plat-flowcore', tag_code: 'PT-1101A', name: 'Header Pressure A', system: 'Gas Export', location: 'Skid 01', type: 'Instrument', status: 'ok' },
+  { id: 'tag-fc-112', platform_id: 'plat-flowcore', tag_code: 'PT-1101B', name: 'Header Pressure B', system: 'Gas Export', location: 'Skid 01', type: 'Instrument', status: 'ok' },
+  { id: 'tag-fc-113', platform_id: 'plat-flowcore', tag_code: 'TT-1101A', name: 'Header Temp A', system: 'Gas Export', location: 'Skid 01', type: 'Instrument', status: 'ok' },
+  { id: 'tag-fc-114', platform_id: 'plat-flowcore', tag_code: 'TT-1101B', name: 'Header Temp B', system: 'Gas Export', location: 'Skid 01', type: 'Instrument', status: 'ok' },
+  { id: 'tag-fc-115', platform_id: 'plat-flowcore', tag_code: 'PT-2101A', name: 'Oil Pressure A', system: 'Oil Export', location: 'Skid 02', type: 'Instrument', status: 'ok' },
+  { id: 'tag-fc-116', platform_id: 'plat-flowcore', tag_code: 'TT-2101A', name: 'Oil Temp A', system: 'Oil Export', location: 'Skid 02', type: 'Instrument', status: 'ok' },
+  { id: 'tag-fc-117', platform_id: 'plat-flowcore', tag_code: 'PDT-1101', name: 'Filter Diff Pressure', system: 'Gas Intake', location: 'Skid 01', type: 'Instrument', status: 'ok' },
+  { id: 'tag-fc-118', platform_id: 'plat-flowcore', tag_code: 'LT-2001', name: 'Separator Level', system: 'Separation', location: 'M01 1st Level', type: 'Instrument', status: 'ok' },
+  { id: 'tag-fc-119', platform_id: 'plat-flowcore', tag_code: 'PIT-3001', name: 'Tank Pressure', system: 'Storage', location: 'Hull Tank 4', type: 'Instrument', status: 'ok' },
+  { id: 'tag-fc-120', platform_id: 'plat-flowcore', tag_code: 'ZT-901', name: 'SDV Position', system: 'Safety', location: 'Riser Balcony', type: 'Instrument', status: 'ok' },
+
+  // --- 5 WELL TAGS ---
+  { id: 'tag-fc-121', platform_id: 'plat-flowcore', tag_code: 'WELL-P01', name: 'Production Well South', system: 'Production', location: 'Subsea Cluster 1', type: 'Well', status: 'ok' },
+  { id: 'tag-fc-122', platform_id: 'plat-flowcore', tag_code: 'WELL-P02', name: 'Production Well North', system: 'Production', location: 'Subsea Cluster 1', type: 'Well', status: 'ok' },
+  { id: 'tag-fc-123', platform_id: 'plat-flowcore', tag_code: 'WELL-I01', name: 'Water Injector Alpha', system: 'Injection', location: 'Subsea Cluster 2', type: 'Well', status: 'ok' },
+  { id: 'tag-fc-124', platform_id: 'plat-flowcore', tag_code: 'WELL-I02', name: 'Gas Injector Beta', system: 'Injection', location: 'Subsea Cluster 2', type: 'Well', status: 'ok' },
+  { id: 'tag-fc-125', platform_id: 'plat-flowcore', tag_code: 'WELL-P03', name: 'Production Well East', system: 'Production', location: 'Subsea Cluster 3', type: 'Well', status: 'ok' },
+
+  // --- 5 VALVES & CONTROL TAGS ---
+  { id: 'tag-fc-126', platform_id: 'plat-flowcore', tag_code: 'FC-1101', name: 'Flow Computer Gas', system: 'Gas Metering', location: 'CCR Central', type: 'Flow Computer', status: 'ok' },
+  { id: 'tag-fc-127', platform_id: 'plat-flowcore', tag_code: 'FC-2101', name: 'Flow Computer Oil', system: 'Oil Metering', location: 'CCR Central', type: 'Flow Computer', status: 'ok' },
+  { id: 'tag-fc-128', platform_id: 'plat-flowcore', tag_code: 'SDV-9001', name: 'Main Inlet SDV', system: 'Safety', location: 'Riser Inlet', type: 'Valve', status: 'ok' },
+  { id: 'tag-fc-129', platform_id: 'plat-flowcore', tag_code: 'BDV-1001', name: 'Flare Blowdown Valve', system: 'Safety', location: 'Flare Bridge', type: 'Valve', status: 'ok' },
+  { id: 'tag-fc-130', platform_id: 'plat-flowcore', tag_code: 'SIS-001', name: 'Safety Logic Solver', system: 'SIS', location: 'Telecom Room', type: 'Electronic', status: 'ok' },
+
+  // --- PROTECTED ATLANTA DATA ---
   { 
     id: 'tag-prover-001', 
     platform_id: 'plat-atlanta', 
@@ -31,365 +68,507 @@ const SEED_TAGS = [
 
 const SEED_EVENTS = [
   {
-    id: 'evt-001',
+    id: 'evt-fc-001',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-001',
-    tag_code: 'FT-1001',
-    title: 'Fuel Gas Meter — Flow Drop Below Threshold',
-    description: 'FT-1001 recorded an unexpected 23% reduction in flow rate during night shift. DCS alarm triggered at 02:14. Initial investigation suggests partial blockage at strainer upstream. Differential pressure across strainer above normal range (3.2 bar vs normal 0.8 bar). Flow not recovered after manual drain.',
+    tag_id: 'tag-fc-126',
+    tag_code: 'FC-1101',
+    title: 'Morning Shift Handover — 07:00',
+    description: 'Relief of night shift (R. Costa). All custody transfer skids operating normally. No active alarms in the Metering Room. Allocation factor for previous day calculated at 0.9982.',
     author: 'J. Santos',
-    category: 'Process Anomaly',
-    priority: 'critical',
-    status: 'open',
-    system: 'Gas Metering',
-    actions_taken: 'Isolated strainer for cleaning. Notified production supervisor. Opened bypass valve to maintain minimal flow.',
-    follow_up_required: true,
-    created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
-    updated_at: new Date(Date.now() - 1 * 3600000).toISOString(),
+    category: 'Handover',
+    priority: 'medium',
+    status: 'closed',
+    system: 'Management',
+    actions_taken: 'Verbal briefing completed. Daily reports signed and filed.',
+    follow_up_required: false,
+    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
+    updated_at: new Date(Date.now() - 3600000 * 12).toISOString(),
   },
   {
-    id: 'evt-002',
+    id: 'evt-fc-002',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-002',
-    tag_code: 'PT-2045',
-    title: 'PT-2045 — Impulse Line Obstruction Suspected',
-    description: 'Pressure reading from PT-2045 showing deviation of +1.8 bar vs redundant instruments PT-2046 and PT-2047. Sluggish response observed during pressure test. Technician suspects wax deposition in impulse line. Equipment recently returned from corrective maintenance on diaphragm seal.',
+    tag_id: 'tag-fc-103',
+    tag_code: 'FT-2101',
+    title: 'Coriolis Calibration Successful — FT-2101',
+    description: 'Verification with Compact Prover (30XX001) completed on Oil Export line A. All five runs showed repeatability within 0.05%. Meter factor adjusted from 0.9984 to 0.9987.',
     author: 'A. Ferreira',
-    category: 'Calibration / Obstruction',
-    priority: 'high',
-    status: 'in-progress',
-    system: 'Separation',
-    actions_taken: 'Raised AVO for impulse line winterization. Requested instrument engineer evaluation. Scheduled manifold blowdown for next shift.',
-    follow_up_required: true,
-    created_at: new Date(Date.now() - 24 * 3600000).toISOString(),
-    updated_at: new Date(Date.now() - 8 * 3600000).toISOString(),
-  },
-  {
-    id: 'evt-003',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-003',
-    tag_code: 'PB-0012',
-    title: 'Pilot Flare PB-0012 — Intermittent Flame Loss',
-    description: 'South flare pilot PB-0012 extinguished 3 times during current shift. Ambient temperature 4°C. Igniter cycling detected in SCADA. Each re-ignition took between 2 and 7 minutes. Root cause suspected: moisture in fuel gas line causing intermittent flame starvation during cold weather. Freeze protection trace heating checked — appears functional but thermostat setpoint may be too low.',
-    author: 'M. Oliveira',
-    category: 'Safety Critical',
-    priority: 'critical',
-    status: 'open',
-    system: 'Flare System',
-    actions_taken: 'Increased fuel gas flow to pilot. Raised thermostat setpoint from 5°C to 12°C. Notified Safety Officer. Standby operator assigned to monitor flare deck.',
-    follow_up_required: true,
-    created_at: new Date(Date.now() - 6 * 3600000).toISOString(),
-    updated_at: new Date(Date.now() - 4 * 3600000).toISOString(),
-  },
-  {
-    id: 'evt-004',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-004',
-    tag_code: 'TT-3301',
-    title: 'TT-3301 — 4-20mA Return Signal Loss to DCS',
-    description: 'Gas export temperature transmitter TT-3301 lost communication to DCS I/O card at 09:45. Field instrument reading correct locally (38.4°C on HART communicator). DCS showing signal failure alarm. Cable continuity test performed — loop resistance abnormal (1.2 kΩ vs expected 500 Ω). Cable splice at junction box JB-T33 suspected.',
-    author: 'R. Costa',
-    category: 'Communication / Instrument Fault',
-    priority: 'high',
-    status: 'in-progress',
-    system: 'Gas Export',
-    actions_taken: 'Raised work permit for cable repair. Tagged out signal at DCS. Instrument using HART bypass value as temporary measure. Spare cable identified in workshop.',
-    follow_up_required: true,
-    created_at: new Date(Date.now() - 36 * 3600000).toISOString(),
-    updated_at: new Date(Date.now() - 12 * 3600000).toISOString(),
-  },
-  {
-    id: 'evt-005',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-006',
-    tag_code: 'FT-0501',
-    title: 'FT-0501 — Sent for Laboratory Calibration',
-    description: 'Allocation meter FT-0501 removed from service and dispatched to onshore calibration lab. Last calibration was 13 months ago — exceeded 12-month interval per company procedure INS-CAL-007. K-factor deviation of 0.3% observed during in-situ verification. Meter serial: 7840-FT-01.',
-    author: 'J. Santos',
     category: 'Calibration',
-    priority: 'medium',
+    priority: 'high',
     status: 'closed',
-    system: 'Gas Metering',
-    actions_taken: 'Meter isolated and removed. Spare meter installed (FT-0501-SPARE). Calibration certificate requested from lab.',
+    system: 'Oil Metering',
+    actions_taken: 'New MF updated in Flow Computer FC-2101. Report signed by third-party witness.',
     follow_up_required: false,
-    created_at: new Date(Date.now() - 5 * 24 * 3600000).toISOString(),
-    updated_at: new Date(Date.now() - 5 * 24 * 3600000).toISOString(),
+    created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
+    updated_at: new Date(Date.now() - 3600000 * 24).toISOString(),
   },
   {
-    id: 'evt-006',
+    id: 'evt-fc-003',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-007',
-    tag_code: 'SKID-001',
-    title: 'SKID-001 — Configuration Update After Flow Computer Replacement',
-    description: 'Fiscal metering skid flow computer (FC-OMC7) replaced following CPU failure. All configuration parameters re-entered per as-built documentation. K-factor, meter factors, base conditions, and composition tables reloaded. Comparison test between old and new FC showed <0.01% difference.',
-    author: 'A. Ferreira',
-    category: 'Configuration Change',
+    tag_id: 'tag-fc-117',
+    tag_code: 'PDT-1101',
+    title: 'Minor Oil Leak — Strainer Flange F-101',
+    description: 'A small weeping leak (approx. 2 drops per minute) detected at the upstream strainer flange of Skid 01. No immediate fire hazard, but requires gasket replacement during next maintenance window.',
+    author: 'M. Oliveira',
+    category: 'Maintenance',
+    priority: 'low',
+    status: 'open',
+    system: 'Gas Intake',
+    actions_taken: 'Spillage contained with absorbent pads. Tightened bolts — leak persists at reduced rate.',
+    follow_up_required: true,
+    created_at: new Date(Date.now() - 3600000 * 48).toISOString(),
+    updated_at: new Date(Date.now() - 3600000 * 48).toISOString(),
+  },
+  {
+    id: 'evt-fc-004',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-126',
+    tag_code: 'FC-1101',
+    title: 'Flow Computer Firmware Patch — Security Fix',
+    description: 'Applied critical security patch (v2.4.1) to Flow Computer FC-1101 following corporate IT directive. Patch addresses vulnerabilities in the Modbus over IP communication layer.',
+    author: 'R. Costa',
+    category: 'IT/Automation',
+    priority: 'high',
+    status: 'closed',
+    system: 'Control Systems',
+    actions_taken: 'Backup configuration saved before update. Post-patch hashing confirmed integrity.',
+    follow_up_required: false,
+    created_at: new Date(Date.now() - 3600000 * 72).toISOString(),
+    updated_at: new Date(Date.now() - 3600000 * 72).toISOString(),
+  },
+  {
+    id: 'evt-fc-005',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-130',
+    tag_code: 'SIS-001',
+    title: 'Quarterly Safety Loop Test — Pass',
+    description: 'Annual functional safety test for SIS logic solver and final elements (SDVs). All response times remained below 2.0 seconds. No diagnostic failures found.',
+    author: 'J. Santos',
+    category: 'Safety',
     priority: 'medium',
     status: 'closed',
-    system: 'Gas Metering',
-    actions_taken: 'New flow computer commissioned. All parameters verified by lead metering engineer. Configuration backup saved to shared drive.',
+    system: 'ESD System',
+    actions_taken: 'Logged into the SIS maintenance register. Bypass removed post-test.',
     follow_up_required: false,
-    created_at: new Date(Date.now() - 10 * 24 * 3600000).toISOString(),
-    updated_at: new Date(Date.now() - 10 * 24 * 3600000).toISOString(),
+    created_at: new Date(Date.now() - 3600000 * 96).toISOString(),
+    updated_at: new Date(Date.now() - 3600000 * 96).toISOString(),
   },
 ];
 
 const SEED_ACTIVITIES = [
   {
-    id: 'act-001',
+    id: 'act-fc-001',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-001',
-    tag_code: 'FT-1001',
-    title: 'Clean FT-1001 Upstream Strainer',
-    description: 'Remove, clean, and reinstall strainer element. Verify DP returns to normal range post-cleaning.',
-    responsible: 'J. Santos',
-    due_date: new Date(Date.now() + 8 * 3600000).toISOString().split('T')[0],
-    priority: 'critical',
-    status: 'open',
-    comments: ['Strainer bypass confirmed open — do not close until cleaning complete.'],
-    created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
-  },
-  {
-    id: 'act-002',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-003',
-    tag_code: 'PB-0012',
-    title: 'PB-0012 — Inspect and Replace Fuel Gas KO Drum Drain',
-    description: 'Possible carried liquid in pilot fuel gas. KO drum drain inspection required. Check level and drain if necessary.',
+    tag_id: 'tag-fc-117',
+    tag_code: 'PDT-1101',
+    title: 'Gasket Replacement — Skid 01 Flange',
+    description: 'Isolate strainer S-101, vent to flare, and replace defective gasket at the upstream flange. Torque to design specs.',
     responsible: 'M. Oliveira',
-    due_date: new Date(Date.now() + 4 * 3600000).toISOString().split('T')[0],
-    priority: 'critical',
-    status: 'in-progress',
-    comments: ['Standby operator monitoring continuously.'],
-    created_at: new Date(Date.now() - 4 * 3600000).toISOString(),
-  },
-  {
-    id: 'act-003',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-004',
-    tag_code: 'TT-3301',
-    title: 'Cable Repair — JB-T33 Splice for TT-3301',
-    description: 'Repair or replace cable splice at junction box JB-T33. Verify 4-20mA signal integrity end-to-end after repair.',
-    responsible: 'R. Costa',
-    due_date: new Date(Date.now() + 24 * 3600000).toISOString().split('T')[0],
+    due_date: new Date(Date.now() + 3600000 * 48).toISOString().split('T')[0],
     priority: 'high',
     status: 'open',
-    comments: ['Spare cable confirmed available. Work permit pending approval.'],
-    created_at: new Date(Date.now() - 12 * 3600000).toISOString(),
+    comments: ['Absorbent pads already in place. Verify depressurization before opening.'],
+    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
   },
   {
-    id: 'act-004',
+    id: 'act-fc-002',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-006',
-    tag_code: 'FT-0501',
-    title: 'Receive and Reinstall FT-0501 After Calibration',
-    description: 'Receive calibration certificate from lab. Reinstall FT-0501 with updated K-factor. Perform in-service verification.',
+    tag_id: 'tag-fc-126',
+    tag_code: 'FC-1101',
+    title: 'Monthly Data Dump and Verification',
+    description: 'Extract monthly totalization and event logs from Gas Flow Computer. Reconcile against DCS daily averages.',
     responsible: 'J. Santos',
-    due_date: new Date(Date.now() + 15 * 24 * 3600000).toISOString().split('T')[0],
+    due_date: new Date(Date.now() + 3600000 * 24).toISOString().split('T')[0],
+    priority: 'medium',
+    status: 'in-progress',
+    comments: ['USB token collected from CCR safe.'],
+    created_at: new Date(Date.now() - 3600000 * 6).toISOString(),
+  },
+  {
+    id: 'act-fc-003',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-130',
+    tag_code: 'SIS-001',
+    title: 'Annual Alarm Logic Validation',
+    description: 'Ensure cross-departmental witnesses are available for the annual SIL-3 loop certification. Test SDV travel times.',
+    responsible: 'R. Costa',
+    due_date: new Date(Date.now() + 3600000 * 720).toISOString().split('T')[0],
+    priority: 'low',
+    status: 'open',
+    comments: ['Third-party specialist arriving on Monday flight.'],
+    created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
+  },
+  {
+    id: 'act-fc-004',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-105',
+    tag_code: 'AT-1101',
+    title: 'Replacement of Calibration Gas Cylinder',
+    description: 'The current GC calibration gas (N2/Methane/Ethane mix) is at 150 psi. Replace with new certified cylinder before night shift.',
+    responsible: 'A. Ferreira',
+    due_date: new Date(Date.now() + 3600000 * 2).toISOString().split('T')[0],
+    priority: 'critical',
+    status: 'open',
+    comments: ['New cylinder SN: 88442 confirmed in analyzer house.'],
+    created_at: new Date(Date.now() - 3600000 * 1).toISOString(),
+  },
+  {
+    id: 'act-fc-005',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-109',
+    tag_code: 'ST-5001',
+    title: 'Purge Oil Sampling Bottle Rack',
+    description: 'Empty and clean all 15 production sampling bottles. Ensure vacuum sealing is intact for upcoming offloading.',
+    responsible: 'M. Oliveira',
+    due_date: new Date(Date.now() + 3600000 * 12).toISOString().split('T')[0],
     priority: 'medium',
     status: 'open',
-    comments: [],
-    created_at: new Date(Date.now() - 5 * 24 * 3600000).toISOString(),
+    comments: ['Chemical cleaning agent identified in storage.'],
+    created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
   },
 ];
 
 const SEED_INSPECTIONS = [
   {
-    id: 'insp-001',
+    id: 'insp-fc-001',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-005',
-    tag_code: 'SP-4402',
-    date: new Date(Date.now() - 3 * 24 * 3600000).toISOString().split('T')[0],
+    tag_id: 'tag-fc-101',
+    tag_code: 'FT-1101',
+    date: new Date(Date.now() - 3600000 * 24 * 5).toISOString().split('T')[0],
     inspector: 'G. Almeida',
-    condition: 'Degraded',
-    findings: 'Crude oil sampler SP-4402 inspected during scheduled maintenance window. Relief valve RV-SP44 found with setpoint deviation: lifting pressure observed at 8.5 bar vs design 10 bar. Possible spring fatigue. Internal sampler cylinder O-rings showing minor extrusion — within tolerance but to be monitored.',
-    recommendation: 'Replace RV-SP44 at earliest opportunity. Re-inspect O-rings at next 3-month check. Review sampler pressure rating vs current operating conditions.',
-    status: 'open',
-    created_at: new Date(Date.now() - 3 * 24 * 3600000).toISOString(),
+    condition: 'Excellent',
+    findings: 'Visual inspection of meter FT-1101 body and impulse lines. No corrosion detected. Cable glands tight and no moisture ingress in the junction box. Grounding straps confirmed low resistance.',
+    recommendation: 'Next visual check due in 90 days.',
+    status: 'closed',
+    created_at: new Date(Date.now() - 3600000 * 24 * 5).toISOString(),
   },
   {
-    id: 'insp-002',
+    id: 'insp-fc-002',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-001',
-    tag_code: 'FT-1001',
-    date: new Date(Date.now() - 30 * 24 * 3600000).toISOString().split('T')[0],
+    tag_id: 'tag-fc-128',
+    tag_code: 'SDV-9001',
+    date: new Date(Date.now() - 3600000 * 24 * 2).toISOString().split('T')[0],
     inspector: 'J. Santos',
     condition: 'Good',
-    findings: 'Monthly physical inspection. No external leaks detected. Transmitter housing in good condition. Upstream isolation valve confirmed operational. Impulse lines dry and well insulated.',
-    recommendation: 'Continue routine monitoring. Schedule next inspection in 30 days.',
+    findings: 'Full stroke test during planned shutdown. Valve closure time: 1.8s (Limit < 2s). Local indicator matches DCS feedback. No stem leaks observed during high pressure hold.',
+    recommendation: 'Scheduled for annual overhaul in Q4.',
     status: 'closed',
-    created_at: new Date(Date.now() - 30 * 24 * 3600000).toISOString(),
+    created_at: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
+  },
+  {
+    id: 'insp-fc-003',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-117',
+    tag_code: 'PDT-1101',
+    date: new Date(Date.now() - 3600000 * 24 * 1).toISOString().split('T')[0],
+    inspector: 'M. Oliveira',
+    condition: 'Degraded',
+    findings: 'External weeping at flange connection. Gasket appears brittle. Tightening attempt was unsuccessful. No sign of impulse line plugging.',
+    recommendation: 'Replace gasket. See related Activity act-fc-001.',
+    status: 'open',
+    created_at: new Date(Date.now() - 3600000 * 24 * 1).toISOString(),
+  },
+  {
+    id: 'insp-fc-004',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-130',
+    tag_code: 'SIS-001',
+    date: new Date(Date.now() - 3600000 * 24 * 10).toISOString().split('T')[0],
+    inspector: 'R. Costa',
+    condition: 'Excellent',
+    findings: 'Logic solver diagnostic battery check. Voltage: 3.61V (Nominal 3.6V). No memory parity errors. Cabinet cooling fans operating within current limits.',
+    recommendation: 'Replace internal backup battery in 6 months.',
+    status: 'closed',
+    created_at: new Date(Date.now() - 3600000 * 24 * 10).toISOString(),
+  },
+  {
+    id: 'insp-fc-005',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-110',
+    tag_code: '30XX001',
+    date: new Date(Date.now()).toISOString().split('T')[0],
+    inspector: 'F. Silva',
+    condition: 'Good',
+    findings: 'Compact Prover pre-operation check. Piston seal leak test performed successfully (0 pressure drop in 5 mins). Optical switches cleaned.',
+    recommendation: 'Ready for use in next calibration campaign.',
+    status: 'closed',
+    created_at: new Date().toISOString(),
   },
 ];
 
 const SEED_MATERIALS = [
   {
-    id: 'mat-001',
+    id: 'mat-fc-001',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-006',
-    tag_code: 'FT-0501',
+    tag_id: 'tag-fc-103',
+    tag_code: 'FT-2101',
     ifs_code: 'IFS-99201',
-    serial_number: '7840-FT-01',
-    shipment_date: new Date(Date.now() - 5 * 24 * 3600000).toISOString().split('T')[0],
-    destination: 'Onshore Calibration Lab — FlowTech Metrology',
+    serial_number: 'MM-8821',
+    shipment_date: new Date(Date.now() - 3600000 * 24 * 7).toISOString().split('T')[0],
+    destination: 'Onshore Lab — Metroland',
     status: 'in-transit',
-    expected_return: new Date(Date.now() + 15 * 24 * 3600000).toISOString().split('T')[0],
-    notes: 'K-factor deviation triggered lab cal. Spare installed (FT-0501-SPARE). AWB: FT-2026-0305.',
-    created_at: new Date(Date.now() - 5 * 24 * 3600000).toISOString(),
+    expected_return: new Date(Date.now() + 3600000 * 24 * 14).toISOString().split('T')[0],
+    notes: 'Meter pulled for recertification. AWB: ML-2026-001.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 7).toISOString(),
   },
   {
-    id: 'mat-002',
+    id: 'mat-fc-002',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-005',
-    tag_code: 'SP-4402',
+    tag_id: 'tag-fc-127',
+    tag_code: 'FC-2101',
     ifs_code: 'IFS-99205',
-    serial_number: 'RV-SP44-2019',
+    serial_number: 'S-77442',
     shipment_date: '',
-    destination: 'Pending workshop evaluation',
-    status: 'pending',
+    destination: 'Site Storage — Zone 1',
+    status: 'available',
     expected_return: '',
-    notes: 'Relief valve to be removed and sent for setpoint adjustment. Not yet dispatched.',
-    created_at: new Date(Date.now() - 1 * 24 * 3600000).toISOString(),
+    notes: 'Spare CPU card for Flow Computer. Tested and functional.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 30).toISOString(),
+  },
+  {
+    id: 'mat-fc-003',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-121',
+    tag_code: 'WELL-P01',
+    ifs_code: 'IFS-99208',
+    serial_number: 'DH-GAUGE-99',
+    shipment_date: new Date(Date.now() - 3600000 * 24 * 2).toISOString().split('T')[0],
+    destination: 'Workshop — Maintenance Area',
+    status: 'in-overhaul',
+    expected_return: new Date(Date.now() + 3600000 * 24 * 5).toISOString().split('T')[0],
+    notes: 'Downhole gauge retrieved for battery replacement.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
+  },
+  {
+    id: 'mat-fc-004',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-105',
+    tag_code: 'AT-1101',
+    ifs_code: 'IFS-99210',
+    serial_number: 'GC-PROC-33',
+    shipment_date: '',
+    destination: 'Onboard Spare',
+    status: 'available',
+    expected_return: '',
+    notes: 'Set of replacement solenoid valves for GC analyzer.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 60).toISOString(),
+  },
+  {
+    id: 'mat-fc-005',
+    platform_id: 'plat-flowcore',
+    tag_id: null,
+    tag_code: 'M-TOOLS',
+    ifs_code: 'IFS-99215',
+    serial_number: 'HART-475-01',
+    shipment_date: '',
+    destination: 'Instrumentation Shop',
+    status: 'available',
+    expected_return: '',
+    notes: 'Portable HART Communicator (Field Unit 1). Battery healthy.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 90).toISOString(),
   },
 ];
 
 const SEED_SYSTEMS = [
   {
-    id: 'sys-001',
+    id: 'sys-fc-001',
     platform_id: 'plat-flowcore',
-    system_name: 'Fiscal Gas Metering — Train 1',
-    tag_id: 'tag-007',
-    tag_code: 'SKID-001',
-    serial_number: 'FC-OMC7-2024',
-    expire_date: '2027-03-01',
+    system_name: 'Main Metering Station',
+    tag_id: 'tag-fc-126',
+    tag_code: 'FC-1101',
+    serial_number: 'FC-FLOWCORE-01',
+    expire_date: '2027-12-31',
     active: true,
-    notes: 'Flow computer replaced March 2026. K-factor and meter factors updated. Configuration backup at \\\\OFFSHORE-NAS\\Metering\\SKID-001-config-2026.xml',
-    created_at: new Date(Date.now() - 10 * 24 * 3600000).toISOString(),
+    notes: 'Central custody transfer system for gas export. v2.4.1 firmware.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 365).toISOString(),
   },
   {
-    id: 'sys-002',
+    id: 'sys-fc-002',
     platform_id: 'plat-flowcore',
-    system_name: 'Crude Sampling System — Module C',
-    tag_id: 'tag-005',
-    tag_code: 'SP-4402',
-    serial_number: 'SPL-CRD-C-07',
-    expire_date: '2026-09-15',
+    system_name: 'Oil Export Control',
+    tag_id: 'tag-fc-127',
+    tag_code: 'FC-2101',
+    serial_number: 'FC-FLOWCORE-02',
+    expire_date: '2027-12-31',
     active: true,
-    notes: 'Next scheduled maintenance: September 2026. Relief valve inspection overdue.',
-    created_at: new Date(Date.now() - 60 * 24 * 3600000).toISOString(),
+    notes: 'Central custody transfer system for liquid export.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 365).toISOString(),
+  },
+  {
+    id: 'sys-fc-003',
+    platform_id: 'plat-flowcore',
+    system_name: 'Gas Analysis Rack',
+    tag_id: 'tag-fc-105',
+    tag_code: 'AT-1101',
+    serial_number: 'ANALYZER-FC-01',
+    expire_date: '2026-06-30',
+    active: true,
+    notes: 'Online GC for calorific value determination.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 180).toISOString(),
+  },
+  {
+    id: 'sys-fc-004',
+    platform_id: 'plat-flowcore',
+    system_name: 'Safety & ESD Logic',
+    tag_id: 'tag-fc-130',
+    tag_code: 'SIS-001',
+    serial_number: 'SIS-SIL3-FC',
+    expire_date: '2030-01-01',
+    active: true,
+    notes: 'Main logic solver for functional safety. All cards healthy.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 500).toISOString(),
+  },
+  {
+    id: 'sys-fc-005',
+    platform_id: 'plat-flowcore',
+    system_name: 'Flare Monitoring Unit',
+    tag_id: 'tag-fc-108',
+    tag_code: 'FT-4001',
+    serial_number: 'FLARE-MON-01',
+    expire_date: '2026-11-20',
+    active: true,
+    notes: 'Environmental monitoring system for venting/flaring logs.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 100).toISOString(),
   },
 ];
 
 const SEED_NOTES = [
   {
-    id: 'note-001',
+    id: 'note-fc-001',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-001',
-    tag_code: 'FT-1001',
-    note_type: 'offloading',
-    system: 'Gas Metering',
-    condition: 'Normal — Strainer issue active',
-    guidance: 'FT-1001 is the primary custody transfer flow meter. Monitor hourly during current strainer cleaning.',
-    created_at: new Date(Date.now() - 15 * 24 * 3600000).toISOString(),
-  },
-  {
-    id: 'note-003',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-009',
-    tag_code: 'WELL-A1',
+    tag_id: 'tag-fc-121',
+    tag_code: 'WELL-P01',
     note_type: 'well-test',
     system: 'Production',
-    condition: 'Stable Production',
-    test_date: new Date(Date.now() - 10 * 24 * 3600000).toISOString().split('T')[0],
-    deadline_date: new Date(Date.now() + 80 * 24 * 3600000).toISOString().split('T')[0],
-    guidance: 'Well A1 performing within expected parameters. Water cut at 2%.',
-    created_at: new Date(Date.now() - 10 * 24 * 3600000).toISOString(),
+    condition: 'Optimal flow',
+    test_date: new Date(Date.now() - 3600000 * 24 * 5).toISOString().split('T')[0],
+    deadline_date: new Date(Date.now() + 3600000 * 24 * 85).toISOString().split('T')[0],
+    guidance: 'Well steady at 2400 bopd. BSW: 0.5%. RGO: 120.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 5).toISOString(),
   },
   {
-    id: 'note-004',
+    id: 'note-fc-002',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-006',
-    tag_code: 'FT-0501',
-    note_type: 'offloading',
-    system: 'Offloading',
-    condition: 'Tanker Alpha Load Out',
-    vessel_name: 'Tanker Alpha',
-    volume: '250000.50',
-    guidance: 'Offloading completed successfully. No spills reported. All documentation signed.',
-    created_at: new Date(Date.now() - 2 * 24 * 3600000).toISOString(),
-  }
+    tag_id: 'tag-fc-122',
+    tag_code: 'WELL-P02',
+    note_type: 'well-test',
+    system: 'Production',
+    condition: 'Stable',
+    test_date: new Date(Date.now() - 3600000 * 24 * 2).toISOString().split('T')[0],
+    deadline_date: new Date(Date.now() + 3600000 * 24 * 88).toISOString().split('T')[0],
+    guidance: 'Stable performance. Sand detection trace only.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
+  },
+  {
+    id: 'note-fc-003',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-125',
+    tag_code: 'WELL-P03',
+    note_type: 'well-test',
+    system: 'Production',
+    condition: 'High Pressure',
+    test_date: new Date(Date.now() - 3600000 * 24 * 45).toISOString().split('T')[0],
+    deadline_date: new Date(Date.now() + 3600000 * 24 * 45).toISOString().split('T')[0],
+    guidance: 'Monitoring choke setting closely. No acidification required yet.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 45).toISOString(),
+  },
+  {
+    id: 'note-fc-004',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-121',
+    tag_code: 'WELL-P01',
+    note_type: 'well-test',
+    system: 'Production',
+    condition: 'Follow up',
+    test_date: new Date(Date.now() - 3600000 * 24 * 1).toISOString().split('T')[0],
+    deadline_date: new Date(Date.now() + 3600000 * 24 * 89).toISOString().split('T')[0],
+    guidance: 'Small adjustment to choke. Recovery observed.',
+    created_at: new Date(Date.now() - 3600000 * 24 * 1).toISOString(),
+  },
+  {
+    id: 'note-fc-005',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-122',
+    tag_code: 'WELL-P02',
+    note_type: 'well-test',
+    system: 'Production',
+    condition: 'Verification',
+    test_date: new Date().toISOString().split('T')[0],
+    deadline_date: new Date(Date.now() + 3600000 * 24 * 90).toISOString().split('T')[0],
+    guidance: 'Routine verification complete. No deviations found.',
+    created_at: new Date().toISOString(),
+  },
 ];
 
 const SEED_ALERTS = [
   {
-    id: 'alert-001',
+    id: 'alert-fc-001',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-001',
-    tag_code: 'FT-1001',
-    title: 'CRITICAL: FT-1001 Strainer DP Exceeding Limit',
-    description: 'Differential pressure across FT-1001 strainer has exceeded 3 bar. Immediate action required to prevent meter damage and flow disruption.',
+    tag_id: 'tag-fc-117',
+    tag_code: 'PDT-1101',
+    title: 'OBSERVATION: Gasket Leak on Skid 01',
+    description: 'Minor weeping confirmed by mechanical crew. Scheduled for repair.',
+    reminder_type: 'alert',
+    recurrence: 'none',
+    priority: 'medium',
+    due_date: new Date(Date.now() + 3600000 * 24).toISOString().split('T')[0],
+    status: 'open',
+    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
+  },
+  {
+    id: 'alert-fc-002',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-105',
+    tag_code: 'AT-1101',
+    title: 'CRITICAL: Gas Calibration Cylinder Low',
+    description: 'Analyzer House Skid 01 pressure at critical level. Replacement required before shift ends.',
     reminder_type: 'alert',
     recurrence: 'none',
     priority: 'critical',
-    due_date: new Date(Date.now() - 1 * 3600000).toISOString().split('T')[0],
+    due_date: new Date().toISOString().split('T')[0],
     status: 'overdue',
-    created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
+    created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
   },
   {
-    id: 'alert-002',
+    id: 'alert-fc-003',
     platform_id: 'plat-flowcore',
-    tag_id: 'tag-003',
-    tag_code: 'PB-0012',
-    title: 'SAFETY: Pilot Flare Monitoring — 1hr Check',
-    description: 'Pilot flare PB-0012 showing intermittent extinguishing. Manual 1-hour monitoring check required on flare deck. Log all observations.',
+    tag_id: 'tag-fc-128',
+    tag_code: 'SDV-9001',
+    title: 'REMINDER: SDV Travel Time Review',
+    description: 'Review stroke test results from yesterday. Final entry in logbook needed.',
     reminder_type: 'reminder',
-    recurrence: 'hourly',
-    priority: 'critical',
+    recurrence: 'none',
+    priority: 'low',
+    due_date: new Date(Date.now() + 3600000 * 48).toISOString().split('T')[0],
+    status: 'open',
+    created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
+  },
+  {
+    id: 'alert-fc-004',
+    platform_id: 'plat-flowcore',
+    tag_id: 'tag-fc-130',
+    tag_code: 'SIS-001',
+    title: 'Quarterly Safety Loop Audit',
+    description: 'Ensure all proof test records for the current quarter are uploaded to the shared repository.',
+    reminder_type: 'reminder',
+    recurrence: 'quarterly',
+    priority: 'medium',
+    due_date: new Date(Date.now() + 3600000 * 24 * 15).toISOString().split('T')[0],
+    status: 'open',
+    created_at: new Date(Date.now() - 3600000 * 24 * 5).toISOString(),
+  },
+  {
+    id: 'alert-fc-005',
+    platform_id: 'plat-flowcore',
+    tag_id: null,
+    tag_code: 'GEN-ADMIN',
+    title: 'Weekly Management Report Generation',
+    description: 'Compile event and activity logs from Evergreen for the weekly production meeting.',
+    reminder_type: 'reminder',
+    recurrence: 'weekly',
+    priority: 'low',
     due_date: new Date().toISOString().split('T')[0],
     status: 'open',
-    created_at: new Date(Date.now() - 6 * 3600000).toISOString(),
-  },
-  {
-    id: 'alert-003',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-005',
-    tag_code: 'SP-4402',
-    title: 'Reminder: Replace RV-SP44 Relief Valve',
-    description: 'Relief valve found with setpoint deviation during inspection. Must be replaced before next production increase cycle.',
-    reminder_type: 'reminder',
-    recurrence: 'none',
-    priority: 'high',
-    due_date: new Date(Date.now() + 2 * 24 * 3600000).toISOString().split('T')[0],
-    status: 'open',
-    created_at: new Date(Date.now() - 3 * 24 * 3600000).toISOString(),
-  },
-  {
-    id: 'alert-004',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-006',
-    tag_code: 'FT-0501',
-    title: 'Track: FT-0501 Calibration Return',
-    description: 'Monitor calibration lab for certificate and return shipping. Update material movement record on arrival.',
-    reminder_type: 'reminder',
-    recurrence: 'none',
-    priority: 'medium',
-    due_date: new Date(Date.now() + 15 * 24 * 3600000).toISOString().split('T')[0],
-    status: 'open',
-    created_at: new Date(Date.now() - 5 * 24 * 3600000).toISOString(),
-  },
-  {
-    id: 'alert-005',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-007',
-    tag_code: 'SKID-001',
-    title: 'Calibration Certificate — SKID-001 Flow Computer Due',
-    description: 'Annual verification of flow computer FC-OMC7 configuration and output signals against reference standards. Due per INS-CAL-007.',
-    reminder_type: 'reminder',
-    recurrence: 'annually',
-    priority: 'medium',
-    due_date: new Date(Date.now() + 60 * 24 * 3600000).toISOString().split('T')[0],
-    status: 'open',
-    created_at: new Date(Date.now() - 10 * 24 * 3600000).toISOString(),
+    created_at: new Date(Date.now() - 3600000 * 24 * 3).toISOString(),
   },
 ];
 
@@ -420,15 +599,17 @@ const KEYS = {
   users: 'ph_users',
   platforms: 'ph_platforms',
   activePlatform: 'ph_active_platform',
-  seeded: 'ph_seeded_v17', // v17: Calibration Embarkation Plan
+  seeded: 'ph_seeded_v20', // v2.00: Evergreen Pro Demo Reconstruction
   calibrations: 'ph_calibrations',
 };
 
 // Sandbox storage for GUEST mode (memory only)
 const SEED_ORIFICE_PLATES = [
-  { id: 'op-001', platform_id: 'plat-flowcore', tag_code: '30-FE-001', serial_number: 'OP-23441', system: 'Gas Header A', material: 'SS316', inner_diameter: '154.22 mm', thickness: '6.35 mm', beta: '0.6022', op_mode: 'Duty', status: 'ok', last_inspection: '2024-01-15', deadline: '2025-01-15', notes: 'Perfect edge condition.' },
-  { id: 'op-002', platform_id: 'plat-flowcore', tag_code: '30-FE-002', serial_number: 'OP-23442', system: 'Gas Header B', material: 'SS316', inner_diameter: '154.22 mm', thickness: '6.35 mm', beta: '0.6022', op_mode: 'Duty', status: 'minor-wear', last_inspection: '2023-11-10', deadline: '2024-11-10', notes: 'Slight discoloration on downstream face.' },
-  { id: 'op-003', platform_id: 'plat-flowcore', tag_code: '21-FE-601', serial_number: 'OP-9981', system: 'Fuel Gas Skid', material: 'Monel 400', inner_diameter: '42.10 mm', thickness: '3.18 mm', beta: '0.4501', op_mode: 'Idle', status: 'ok', last_inspection: '2024-02-20', deadline: '2025-02-20', notes: 'Spare plate in storage.' }
+  { id: 'op-fc-001', platform_id: 'plat-flowcore', tag_code: '21-FE-601', serial_number: 'OP-23441', system: 'Gas Flare HP', material: 'SS316', inner_diameter: '154.22 mm', thickness: '6.35 mm', beta: '0.6022', op_mode: 'Duty', status: 'ok', last_inspection: '2025-01-15', deadline: '2026-01-15', notes: 'Edge integrity confirmed. No pitting.' },
+  { id: 'op-fc-002', platform_id: 'plat-flowcore', tag_code: '21-FE-602', serial_number: 'OP-23442', system: 'Gas Flare LP', material: 'SS316', inner_diameter: '154.22 mm', thickness: '6.35 mm', beta: '0.6022', op_mode: 'Duty', status: 'minor-wear', last_inspection: '2024-11-10', deadline: '2025-11-10', notes: 'Slight discoloration on downstream face. Measured within tolerance.' },
+  { id: 'op-fc-003', platform_id: 'plat-flowcore', tag_code: '45-FE-001', serial_number: 'OP-9981', system: 'Fuel Gas Skid', material: 'Monel 400', inner_diameter: '42.10 mm', thickness: '3.18 mm', beta: '0.4501', op_mode: 'Idle', status: 'ok', last_inspection: '2025-02-20', deadline: '2026-02-20', notes: 'Spare plate in storage. Greased.' },
+  { id: 'op-fc-004', platform_id: 'plat-flowcore', tag_code: '45-FE-002', serial_number: 'OP-9982', system: 'Fuel Gas Skid', material: 'Monel 400', inner_diameter: '42.10 mm', thickness: '3.18 mm', beta: '0.4501', op_mode: 'Duty', status: 'ok', last_inspection: '2025-03-01', deadline: '2026-03-01', notes: 'Installed during last turnaround.' },
+  { id: 'op-fc-005', platform_id: 'plat-flowcore', tag_code: '77-FE-001', serial_number: 'OP-8811', system: 'Test Separator Gas', material: 'SS316', inner_diameter: '80.00 mm', thickness: '4.00 mm', beta: '0.5500', op_mode: 'Duty', status: 'ok', last_inspection: '2025-01-05', deadline: '2026-01-05', notes: 'Checked against ISO 5167 specs.' },
 ];
 
 let GUEST_SESSIONS = {
@@ -628,6 +809,8 @@ async function syncToCloud(key, data) {
         [KEYS.notes]: 'notes',
         [KEYS.alerts]: 'alerts',
         [KEYS.orifice_plates]: 'orifice_plates',
+        [KEYS.calibrations]: 'calibrations',
+        [KEYS.embarkations]: 'embarkations',
         [KEYS.users]: 'users',
         [KEYS.platforms]: 'platforms'
     };
@@ -681,7 +864,9 @@ async function syncDeleteToCloud(key, id) {
         [KEYS.systems]: 'systems',
         [KEYS.notes]: 'notes',
         [KEYS.alerts]: 'alerts',
-        [KEYS.orifice_plates]: 'orifice_plates'
+        [KEYS.orifice_plates]: 'orifice_plates',
+        [KEYS.calibrations]: 'calibrations',
+        [KEYS.embarkations]: 'embarkations'
     };
 
     const tableName = tableMap[key];
@@ -717,6 +902,8 @@ async function pullFromCloud() {
         'notes': KEYS.notes,
         'alerts': KEYS.alerts,
         'orifice_plates': KEYS.orifice_plates,
+        'calibrations': KEYS.calibrations,
+        'embarkations': KEYS.embarkations,
         'users': KEYS.users,
         'platforms': KEYS.platforms
     };
@@ -870,8 +1057,12 @@ function initRealtimeListeners() {
 }
 
 function initSeed() {
-  const latestV = '1.19'; // v19: Protect User Wells
-  if (localStorage.getItem(KEYS.seeded) === latestV) return;
+  const latestV = '2.00'; // v2.00: Evergreen Pro Demo Reconstruction
+  const currentV = localStorage.getItem(KEYS.seeded);
+  
+  if (currentV === latestV) return;
+
+  console.log(`🚀 Initing Seed Evolution: ${currentV || 'INITIAL'} -> ${latestV}`);
 
   const seedIfEmpty = (key, data) => {
     const existing = localStorage.getItem(key);
@@ -882,89 +1073,52 @@ function initSeed() {
 
   // Ensure Admin account always exists
   const users = loadStore(KEYS.users);
-  const adminIdx = users.findIndex(u => u.username === 'admin');
-  if (adminIdx === -1) {
-    users.push(SEED_USERS[0]);
-    saveStore(KEYS.users, users);
+  if (users.length === 0) {
+    saveStore(KEYS.users, SEED_USERS);
+  } else {
+    const adminIdx = users.findIndex(u => u.username === 'admin');
+    if (adminIdx === -1) {
+      users.push(SEED_USERS[0]);
+      saveStore(KEYS.users, users);
+    }
   }
 
-  // --- CORE INVENTORY SYNC ---
+  // --- SURGICAL RESET (FlowCore ONLY) ---
+  // We keep records from plat-atlanta or global (*), but reset plat-flowcore to the new Seed.
+  const resetFlowCoreStore = (key, seedData) => {
+    let current = loadStore(key);
+    const protectedData = current.filter(x => x && (x.platform_id === 'plat-atlanta' || x.platform_id === '*'));
+    const merged = [...protectedData, ...seedData];
+    saveStore(key, merged);
+  };
+
+  resetFlowCoreStore(KEYS.tags, SEED_TAGS);
+  resetFlowCoreStore(KEYS.events, SEED_EVENTS);
+  resetFlowCoreStore(KEYS.activities, SEED_ACTIVITIES);
+  resetFlowCoreStore(KEYS.inspections, SEED_INSPECTIONS);
+  resetFlowCoreStore(KEYS.materials, SEED_MATERIALS);
+  resetFlowCoreStore(KEYS.systems, SEED_SYSTEMS);
+  resetFlowCoreStore(KEYS.notes, SEED_NOTES);
+  resetFlowCoreStore(KEYS.alerts, SEED_ALERTS);
+  resetFlowCoreStore(KEYS.orifice_plates, SEED_ORIFICE_PLATES);
+
+  // Post-process: Ensure Atlanta Excel tags are merged into the registry
   let currentTags = loadStore(KEYS.tags);
   const excelPool = (typeof EXCEL_TAGS !== 'undefined' ? EXCEL_TAGS : []);
-  const activePlat = window.DB?.getActivePlatform();
   
-  // 1. CLEANUP Stage: Remove any dummy tags NOT in Excel AND NOT Prover AND NOT official SEED Wells
-  // Also remove previous random seeds (tag-001 to tag-008)
-  currentTags = currentTags.filter(t => {
-    // Keep it if it's in Excel
-    if (excelPool.some(et => et.tag_code === t.tag_code)) return true;
-    // Keep it if it's the Prover
-    if (t.tag_code === '30XX001') return true;
-    // Keep it if it's a Well (User added or SEED)
-    if (t.type === 'Well') return true;
-    // Keep it if it's a real Flow Computer already registered in systems
-    if (t.type === 'Flow Computer') return true;
-    
-    return false; // Remove random tags
-  });
-
-  // 2. BASE Stage: Merge Spreadsheet (Excel) + Core SEED (Wells)
-  const basePool = [
-    ...SEED_TAGS, 
-    ...excelPool.map(t => ({ ...t, id: t.id || genId('tag') }))
-  ];
-
-  basePool.forEach(newTag => {
+  excelPool.forEach(newTag => {
     const exists = currentTags.find(t => t.tag_code === newTag.tag_code && t.platform_id === newTag.platform_id);
     if (!exists) {
-      currentTags.push({ ...newTag, status: newTag.status || 'ok' });
-    }
-  });
-
-  // 3. SYSTEM SYNC Stage: Bring the 19 Flow Computers from "System Config" session
-  const realSystems = loadStore(KEYS.systems);
-  realSystems.forEach(sys => {
-    if (sys.tag_code) {
-      const tagExists = currentTags.find(t => t.tag_code === sys.tag_code);
-      if (!tagExists) {
-        currentTags.push({
-          id: genId('tag'),
-          platform_id: sys.platform_id || (activePlat ? activePlat.id : 'plat-flowcore'),
-          tag_code: sys.tag_code,
-          name: sys.system_name || 'Flow Computer',
-          system: 'Flow Control',
-          location: 'Metering Station',
-          type: 'Flow Computer',
-          status: 'ok',
-          op_mode: sys.status === 'Duty' ? 'Duty' : 'Idle',
-          notes: sys.notes || 'Synced from System Configuration.'
-        });
-      } else {
-        // Just ensure type and op_mode are correct for the registry view logic
-        tagExists.type = 'Flow Computer';
-        if (sys.status === 'Duty') tagExists.op_mode = 'Duty';
-      }
+      currentTags.push({ ...newTag, id: newTag.id || genId('tag'), status: newTag.status || 'ok' });
     }
   });
 
   saveStore(KEYS.tags, currentTags);
-
-  seedIfEmpty(KEYS.events, SEED_EVENTS);
-  seedIfEmpty(KEYS.activities, SEED_ACTIVITIES);
-  seedIfEmpty(KEYS.inspections, SEED_INSPECTIONS);
-  seedIfEmpty(KEYS.materials, SEED_MATERIALS);
-  seedIfEmpty(KEYS.systems, SEED_SYSTEMS);
-  seedIfEmpty(KEYS.notes, SEED_NOTES);
-  seedIfEmpty(KEYS.alerts, SEED_ALERTS);
-  seedIfEmpty(KEYS.orifice_plates, SEED_ORIFICE_PLATES);
-  seedIfEmpty(KEYS.platforms, SEED_PLATFORMS);
-  seedIfEmpty(KEYS.embarkations, []);
-
-  // Basic backup for rest of users if empty
-  seedIfEmpty(KEYS.users, SEED_USERS);
-
   localStorage.setItem(KEYS.seeded, latestV);
+  console.log('✅ Surgical Seed Reconstruction Complete.');
 }
+
+// Data Migration Patch (v1.1) - Sync new field 'overhaul_comments' from Excel source if missing in localStorage
 
 // Data Migration Patch (v1.1) - Sync new field 'overhaul_comments' from Excel source if missing in localStorage
 function migrateData() {

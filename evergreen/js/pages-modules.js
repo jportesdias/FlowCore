@@ -66,8 +66,8 @@ function bindMaintInspForm(existingId, requestedType = 'Inspection') {
       type: type,
       tag_id: s.value,
       tag_code: o && o.dataset.code || '',
-      inspector: currentUser ? currentUser.name : 'Unknown',
-      author_id: existingId ? (DB.getInspections().find(x => x.id === existingId).author_id) : (currentUser ? currentUser.id : null),
+      inspector: (window.getUser().name || 'Unknown'),
+      author_id: existingId ? (DB.getInspections().find(x => x.id === existingId).author_id) : ((window.getUser().id || null)),
       date: document.getElementById('mif-date').value,
       condition: document.getElementById('mif-cond').value,
       findings: document.getElementById('mif-find').value,
@@ -231,7 +231,7 @@ function bindMatForm(existingId) {
 
     // If it's a new record, set the author. If it's an update, DB.saveMaterial will preserve it.
     if (!existingId) {
-      matData.author_id = currentUser ? currentUser.id : null;
+      matData.author_id = (window.getUser().id || null);
     }
 
     const result = DB.saveMaterial(matData);
@@ -526,7 +526,7 @@ function bindSysForm(existingId) {
           status: document.getElementById('sf-status').value,
           notes: document.getElementById('sf-notes').value,
           media: currentMedia,
-          author_id: existing ? (existing.author_id || (currentUser ? currentUser.id : null)) : (currentUser ? currentUser.id : null)
+          author_id: existing ? (existing.author_id || ((window.getUser().id || null))) : ((window.getUser().id || null))
         };
 
         const result = DB.saveSystem(sysData);
@@ -945,7 +945,7 @@ function bindNoteForm(existingId) {
       note_type: type,
       tag_id: s ? s.value : null,
       tag_code: o && o.dataset.code || '',
-      author_id: existingId ? (DB.getNotes().find(x => x.id === existingId).author_id) : (currentUser ? currentUser.id : null),
+      author_id: existingId ? (DB.getNotes().find(x => x.id === existingId).author_id) : ((window.getUser().id || null)),
       system: document.getElementById('nf-system') ? document.getElementById('nf-system').value : 'Offloading',
       condition: document.getElementById('nf-cond').value,
       cargo_number: type === 'offloading' ? document.getElementById('nf-cond').value : null,
@@ -992,7 +992,7 @@ function generateOffloadingReport() {
 
   const totalTanker = notes.reduce((acc, n) => acc + (parseFloat(n.tanker_volume) || 0), 0);
   const totalBBL = totalTanker * 6.28981;
-  const userName = currentUser ? currentUser.name : 'Unknown User';
+  const userName = window.getUser() ? (window.getUser().name) : 'Unknown User';
   const reportDate = new Date().toLocaleDateString('pt-BR');
 
   const win = window.open('', '_blank');
@@ -1247,7 +1247,7 @@ function renderOffloadingCards(notes) {
         <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-800/50">
           ${renderGallery(item.media)}
           <div class="flex gap-2">
-            ${(canEdit(item) || currentUser?.role === 'Admin') ? `
+            ${(canEdit(item) || window.getUser()?.role === 'Admin') ? `
               <button class="btn btn-sm btn-secondary h-7 px-3 text-[10px] flex items-center gap-1" onclick="editNote('${item.id}')">
                 <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                 Edit
@@ -1517,7 +1517,7 @@ function bindAlertForm(existingId) {
     const o = s.options[s.selectedIndex];
     const result = DB.saveAlert({
       id: existingId || null, tag_id: s.value, tag_code: o && o.dataset.code || '',
-      author_id: existingId ? (DB.getAlerts().find(x => x.id === existingId).author_id) : (currentUser ? currentUser.id : null),
+      author_id: existingId ? (DB.getAlerts().find(x => x.id === existingId).author_id) : ((window.getUser().id || null)),
       title: document.getElementById('alf-title').value, description: document.getElementById('alf-desc').value,
       reminder_type: document.getElementById('alf-type').value, priority: document.getElementById('alf-pri').value,
       status: document.getElementById('alf-status').value, due_date: document.getElementById('alf-due').value,
@@ -1694,7 +1694,7 @@ function bindCalibrationForm(tag, existingId = null) {
       deadline: document.getElementById('clf-deadline').value,
       notes: document.getElementById('clf-notes').value,
       media: mediaArray,
-      author: currentUser ? currentUser.name : 'Unknown'
+      author: (window.getUser().name || 'Unknown')
     });
 
     if (!handleSaveResult(result)) return;
