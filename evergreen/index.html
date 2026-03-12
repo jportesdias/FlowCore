@@ -26,6 +26,12 @@
               700: '#475569',
               600: '#64748b'
             },
+            evergreen: {
+              400: '#4ade80',
+              500: '#10b981', /* Technological Green */
+              600: '#059669',
+              700: '#047857'
+            },
             orange: { 400: '#fb923c', 500: '#f97316', 600: '#ea6b0e' },
             surface: { DEFAULT: '#111827', 2: '#1f2937', 3: '#374151' },
           }
@@ -107,10 +113,9 @@
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar fixed top-0 left-0 h-full z-30 transition-all duration-300">
       <div class="flex flex-col h-full bg-navy-950 border-r border-slate-800">
-        <!-- Logo/Title Section -->
-        <div class="flex items-center h-[72px] px-5 border-b border-slate-800/10">
+        <div class="flex items-end pb-1 h-[120px] px-2 border-b border-slate-800/10 mb-8">
           <div class="sidebar-text overflow-hidden flex-1">
-            <div class="text-white font-bold text-lg tracking-tight leading-tight">Evergreen</div>
+            <img src="evergreen.png" alt="Evergreen" class="w-full h-auto filter drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
           </div>
           <button id="sidebar-toggle"
             class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all duration-200"
@@ -238,9 +243,7 @@
 
             <div class="flex items-baseline gap-2">
               <span class="text-white font-bold text-xl tracking-tight">Evergreen</span>
-              <span
-                class="text-slate-500 text-[10px] uppercase tracking-widest font-bold border-l border-slate-700 pl-2">FlowCore
-                Solutions</span>
+              <span class="text-slate-500 text-[10px] uppercase tracking-widest font-bold border-l border-slate-700 pl-2">FlowCore Solutions</span>
             </div>
 
             <div
@@ -285,7 +288,6 @@
           </div>
 
           <div class="flex items-center gap-3">
-            <img src="logo2.png" alt="FlowCore Solutions" class="h-8 w-auto mr-3 header-logo-highlight" />
 
             <div class="h-8 w-px bg-slate-800/50"></div>
 
