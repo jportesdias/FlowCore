@@ -615,6 +615,7 @@ function saveStore(key, data) {
 // Background Cloud Sync - Pushes local changes to Supabase
 async function syncToCloud(key, data) {
     if (!window.supabaseClient || !data) return;
+    const user = getCurrentUser();
 
     // Map local keys to Supabase tables
     const tableMap = {
@@ -635,12 +636,10 @@ async function syncToCloud(key, data) {
     if (!tableName) return;
 
     try {
-        // Prepare data for upsert (handle arrays vs single objects if needed)
         const rows = Array.isArray(data) ? data : [data];
         if (rows.length === 0) return;
 
         updateStatusUI('syncing');
-        console.log(`☁️ Syncing ${rows.length} records to Cloud table: ${tableName}...`);
         
         const { error } = await window.supabaseClient
             .from(tableName)
@@ -648,18 +647,50 @@ async function syncToCloud(key, data) {
 
         if (error) {
             updateStatusUI('offline');
-            // Usually happens if table doesn't exist yet in Supabase
-            if (error.code === 'PGRST116' || error.message.includes('not found')) {
-                console.warn(`⚠️ Table "${tableName}" not yet created in Supabase. Run SQL in dashboard.`);
-            } else {
-                console.error(`❌ Cloud Sync Error (${tableName}):`, error);
-            }
+            console.error(`❌ Cloud Sync Error (${tableName}):`, error);
         } else {
             updateStatusUI('online');
         }
     } catch (e) {
         updateStatusUI('offline');
         console.error('❌ Cloud Sync Critical Failure:', e);
+    }
+}
+
+// Global Delete Sync - Removes from Cloud if local is deleted (Admin Only)
+async function syncDeleteToCloud(key, id) {
+    if (!window.supabaseClient) return;
+    const user = getCurrentUser();
+    if (!user || user.role !== 'Admin') return; // Only Admins can modify the Master structure
+
+    const tableMap = {
+        [KEYS.events]: 'events',
+        [KEYS.tags]: 'tags',
+        [KEYS.activities]: 'activities',
+        [KEYS.inspections]: 'inspections',
+        [KEYS.materials]: 'materials',
+        [KEYS.systems]: 'systems',
+        [KEYS.notes]: 'notes',
+        [KEYS.alerts]: 'alerts',
+        [KEYS.orifice_plates]: 'orifice_plates'
+    };
+
+    const tableName = tableMap[key];
+    if (!tableName) return;
+
+    try {
+        updateStatusUI('syncing');
+        const { error } = await window.supabaseClient
+            .from(tableName)
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error(`❌ Cloud Delete Error (${tableName}):`, error);
+        }
+        updateStatusUI('online');
+    } catch (e) {
+        console.error('❌ Deletion Sync Failure:', e);
     }
 }
 
@@ -689,29 +720,43 @@ async function pullFromCloud() {
                 .from(tableName)
                 .select('*');
 
-            if (data && data.length > 0) {
-                const localData = JSON.parse(localStorage.getItem(localKey)) || [];
-                const merged = [...localData];
+            if (error) throw error;
 
+            // If we have data (or even an empty array if correctly queried), we reconcile
+            if (data) {
+                const localData = JSON.parse(localStorage.getItem(localKey)) || [];
+                
+                // Identify IDs from Cloud
+                const cloudIds = new Set(data.map(r => r.id));
+                
+                // 1. Merge Strategy: Update existing or add new
+                const merged = [...localData];
                 data.forEach(cloudRow => {
                     const idx = merged.findIndex(l => l.id === cloudRow.id);
                     if (idx >= 0) {
                         const localItem = merged[idx];
-                        // RELAXED SAFETY LOCK: Always prefer cloud if cloud has updated_at and it's equal or newer
-                        // Or if local has NO updated_at, trust the cloud.
                         const cloudTime = new Date(cloudRow.updated_at || cloudRow.created_at || 0).getTime();
                         const localTime = new Date(localItem.updated_at || localItem.created_at || 0).getTime();
-                        
-                        if (cloudTime >= localTime) {
-                            merged[idx] = cloudRow;
-                        }
+                        if (cloudTime >= localTime) merged[idx] = cloudRow;
                     } else {
                         merged.push(cloudRow);
                     }
                 });
 
-                localStorage.setItem(localKey, JSON.stringify(merged));
-                console.log(`✅ ${tableName}: ${data.length} registros sincronizados via Pull.`);
+                // 2. RECONCILIATION: Remove local items NOT in Cloud (Mirroring Deletions)
+                // We only do this for the core engineering tables to ensure consistency.
+                const coreTables = ['tags', 'platforms', 'events', 'activities', 'orifice_plates', 'systems'];
+                let reconciled;
+                
+                if (coreTables.includes(tableName)) {
+                    // Match the cloud state exactly (If it's gone from Master, it's gone from Local)
+                    reconciled = merged.filter(item => cloudIds.has(item.id));
+                } else {
+                    reconciled = merged;
+                }
+
+                localStorage.setItem(localKey, JSON.stringify(reconciled));
+                console.log(`✅ ${tableName}: ${data.length} registros (Reconciliado).`);
             }
         } catch (e) {
             console.warn(`⚠️ Erro ao puxar tabela ${tableName}:`, e);
@@ -1062,7 +1107,10 @@ window.DB = {
     saveStore(KEYS.events, s);
     return { success: true };
   },
-  deleteEvent: (id) => saveStore(KEYS.events, loadStore(KEYS.events).filter(x => x.id !== id)),
+  deleteEvent: (id) => {
+    syncDeleteToCloud(KEYS.events, id);
+    return saveStore(KEYS.events, loadStore(KEYS.events).filter(x => x.id !== id));
+  },
   getEvent: (id) => loadStore(KEYS.events).find(x => x.id === id) || GUEST_SESSIONS.events.find(x => x.id === id),
 
   // Activities
@@ -1098,7 +1146,10 @@ window.DB = {
     saveStore(KEYS.activities, s);
     return { success: true };
   },
-  deleteActivity: (id) => saveStore(KEYS.activities, loadStore(KEYS.activities).filter(x => x.id !== id)),
+  deleteActivity: (id) => {
+    syncDeleteToCloud(KEYS.activities, id);
+    return saveStore(KEYS.activities, loadStore(KEYS.activities).filter(x => x.id !== id));
+  },
   getActivity: (id) => loadStore(KEYS.activities).find(x => x.id === id) || GUEST_SESSIONS.activities.find(x => x.id === id),
 
   // Inspections
@@ -1129,7 +1180,10 @@ window.DB = {
     saveStore(KEYS.inspections, s);
     return { success: true };
   },
-  deleteInspection: (id) => saveStore(KEYS.inspections, loadStore(KEYS.inspections).filter(x => x.id !== id)),
+  deleteInspection: (id) => {
+    syncDeleteToCloud(KEYS.inspections, id);
+    return saveStore(KEYS.inspections, loadStore(KEYS.inspections).filter(x => x.id !== id));
+  },
   getInspection: (id) => loadStore(KEYS.inspections).find(x => x.id === id) || GUEST_SESSIONS.inspections.find(x => x.id === id),
 
   // Materials
@@ -1205,7 +1259,10 @@ window.DB = {
     saveStore(KEYS.materials, s);
     return { success: true };
   },
-  deleteMaterial: (id) => saveStore(KEYS.materials, loadStore(KEYS.materials).filter(x => x.id !== id)),
+  deleteMaterial: (id) => {
+    syncDeleteToCloud(KEYS.materials, id);
+    return saveStore(KEYS.materials, loadStore(KEYS.materials).filter(x => x.id !== id));
+  },
   getMaterial: (id) => loadStore(KEYS.materials).find(x => x.id === id) || GUEST_SESSIONS.materials.find(x => x.id === id),
 
   // Systems
@@ -1254,7 +1311,10 @@ window.DB = {
     saveStore(KEYS.systems, a);
     return { success: true };
   },
-  deleteSystem: (id) => saveStore(KEYS.systems, loadStore(KEYS.systems).filter(x => x.id !== id)),
+  deleteSystem: (id) => {
+    syncDeleteToCloud(KEYS.systems, id);
+    return saveStore(KEYS.systems, loadStore(KEYS.systems).filter(x => x.id !== id));
+  },
   getSystem: (id) => loadStore(KEYS.systems).find(x => x.id === id) || GUEST_SESSIONS.systems.find(x => x.id === id),
 
   // Notes
@@ -1285,7 +1345,10 @@ window.DB = {
     saveStore(KEYS.notes, s);
     return { success: true };
   },
-  deleteNote: (id) => saveStore(KEYS.notes, loadStore(KEYS.notes).filter(x => x.id !== id)),
+  deleteNote: (id) => {
+    syncDeleteToCloud(KEYS.notes, id);
+    return saveStore(KEYS.notes, loadStore(KEYS.notes).filter(x => x.id !== id));
+  },
   getNote: (id) => loadStore(KEYS.notes).find(x => x.id === id) || GUEST_SESSIONS.notes.find(x => x.id === id),
 
   // Alerts
@@ -1316,7 +1379,10 @@ window.DB = {
     saveStore(KEYS.alerts, s);
     return { success: true };
   },
-  deleteAlert: (id) => saveStore(KEYS.alerts, loadStore(KEYS.alerts).filter(x => x.id !== id)),
+  deleteAlert: (id) => {
+    syncDeleteToCloud(KEYS.alerts, id);
+    return saveStore(KEYS.alerts, loadStore(KEYS.alerts).filter(x => x.id !== id));
+  },
   getAlert: (id) => loadStore(KEYS.alerts).find(x => x.id === id) || GUEST_SESSIONS.alerts.find(x => x.id === id),
 
   // Orifice Plates
@@ -1346,7 +1412,10 @@ window.DB = {
     saveStore(KEYS.orifice_plates, s);
     return { success: true };
   },
-  deleteOrificePlate: (id) => saveStore(KEYS.orifice_plates, loadStore(KEYS.orifice_plates).filter(x => x.id !== id)),
+  deleteOrificePlate: (id) => {
+    syncDeleteToCloud(KEYS.orifice_plates, id);
+    return saveStore(KEYS.orifice_plates, loadStore(KEYS.orifice_plates).filter(x => x.id !== id));
+  },
   getOrificePlate: (id) => loadStore(KEYS.orifice_plates).find(x => x.id === id) || GUEST_SESSIONS.orifice_plates.find(x => x.id === id),
 
   // Calibrations
@@ -1395,7 +1464,10 @@ window.DB = {
     }
     return { success: true };
   },
-  deleteCalibration: (id) => saveStore(KEYS.calibrations, loadStore(KEYS.calibrations).filter(x => x.id !== id)),
+  deleteCalibration: (id) => {
+    syncDeleteToCloud(KEYS.calibrations, id);
+    return saveStore(KEYS.calibrations, loadStore(KEYS.calibrations).filter(x => x.id !== id));
+  },
 
   // Platforms
   getPlatforms: () => loadStore(KEYS.platforms),
@@ -1406,7 +1478,10 @@ window.DB = {
     else s.push({ ...p, id: genId('plat'), created_at: new Date().toISOString() });
     saveStore(KEYS.platforms, s);
   },
-  deletePlatform: (id) => saveStore(KEYS.platforms, loadStore(KEYS.platforms).filter(x => x.id !== id)),
+  deletePlatform: (id) => {
+    syncDeleteToCloud(KEYS.platforms, id);
+    return saveStore(KEYS.platforms, loadStore(KEYS.platforms).filter(x => x.id !== id));
+  },
   getPlatform: (id) => loadStore(KEYS.platforms).find(x => x.id === id),
   getActivePlatform: () => { const id = localStorage.getItem(KEYS.activePlatform); return id ? loadStore(KEYS.platforms).find(x => x.id === id) || null : null; },
   setActivePlatform: (id) => localStorage.setItem(KEYS.activePlatform, id),
@@ -1441,7 +1516,10 @@ window.DB = {
     else s.push({ ...u, id: genId('user'), created_at: new Date().toISOString() });
     saveStore(KEYS.users, s);
   },
-  deleteUser: (id) => saveStore(KEYS.users, loadStore(KEYS.users).filter(x => x.id !== id)),
+  deleteUser: (id) => {
+    syncDeleteToCloud(KEYS.users, id);
+    return saveStore(KEYS.users, loadStore(KEYS.users).filter(x => x.id !== id));
+  },
   loginUser: (username, password) => {
     const users = loadStore(KEYS.users);
     const u = (username || '').toLowerCase().trim();
@@ -1668,14 +1746,28 @@ window.DB = {
     return null;
   },
 
+  deleteEvent: (id) => {
+    syncDeleteToCloud(KEYS.events, id);
+    const s = loadStore(KEYS.events);
+    const filtered = s.filter(e => e.id !== id);
+    saveStore(KEYS.events, filtered);
+    return { success: true };
+  },
+
   // Manual Cloud Control
   pushLocalToCloud: pushLocalToCloud,
   pullFromCloud: pullFromCloud,
   forceSync: async () => {
+    const user = getCurrentUser();
     try {
         updateStatusUI('syncing');
-        await pushLocalToCloud(); // Upload changes
-        await pullFromCloud();    // Download updates
+        
+        // Push Master changes if user is Admin
+        await pushLocalToCloud(); 
+        
+        // Pull latest updates
+        await pullFromCloud(); 
+        
         if (window.refreshCurrentPage) window.refreshCurrentPage();
         updateStatusUI('online');
         return true;
