@@ -448,6 +448,63 @@ function getCurrentUser() {
   try { return JSON.parse(localStorage.getItem('ph_user')); } catch { return null; }
 }
 
+// ---- Data Shielding (Blindagem) ----
+function createLocalSnapshot() {
+    try {
+        const snapshot = {};
+        Object.values(KEYS).forEach(k => {
+            const data = localStorage.getItem(k);
+            if (data) snapshot[k] = data;
+        });
+        localStorage.setItem('evergreen_backup_snapshot', JSON.stringify(snapshot));
+        localStorage.setItem('evergreen_backup_date', new Date().toISOString());
+        console.log('🛡️ Snapshot local criado com sucesso. Seus dados estão protegidos.');
+    } catch (e) {
+        console.error('❌ Falha ao criar snapshot local:', e);
+    }
+}
+
+function restoreLocalSnapshot() {
+    const raw = localStorage.getItem('evergreen_backup_snapshot');
+    if (!raw) return alert('Nenhum backup encontrado.');
+    if (!confirm('Deseja restaurar o backup local? Isso substituirá os dados atuais.')) return;
+    
+    const snapshot = JSON.parse(raw);
+    Object.entries(snapshot).forEach(([k, v]) => {
+        localStorage.setItem(k, v);
+    });
+    alert('Dados restaurados. A página será reiniciada.');
+    location.reload();
+}
+
+// ---- Data Sync UI ----
+function updateStatusUI(status) {
+    const dot = document.getElementById('cloud-status-dot');
+    const text = document.getElementById('cloud-status-text');
+    if (!dot || !text) return;
+
+    // Remove existing animations
+    dot.classList.remove('animate-pulse');
+
+    switch (status) {
+        case 'online':
+            dot.className = 'w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]';
+            text.innerText = 'Online';
+            text.className = 'text-[10px] font-bold uppercase tracking-wider text-green-400';
+            break;
+        case 'syncing':
+            dot.className = 'w-2 h-2 rounded-full bg-orange-400 animate-pulse';
+            text.innerText = 'Sincronizando';
+            text.className = 'text-[10px] font-bold uppercase tracking-wider text-orange-400';
+            break;
+        case 'offline':
+        default:
+            dot.className = 'w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]';
+            text.innerText = 'Offline';
+            text.className = 'text-[10px] font-bold uppercase tracking-wider text-red-400';
+    }
+}
+
 function loadStore(key) {
   const stored = JSON.parse(localStorage.getItem(key)) || [];
   const user = getCurrentUser();
@@ -504,6 +561,7 @@ async function syncToCloud(key, data) {
         const rows = Array.isArray(data) ? data : [data];
         if (rows.length === 0) return;
 
+        updateStatusUI('syncing');
         console.log(`☁️ Syncing ${rows.length} records to Cloud table: ${tableName}...`);
         
         const { error } = await window.supabaseClient
@@ -511,14 +569,18 @@ async function syncToCloud(key, data) {
             .upsert(rows, { onConflict: 'id' });
 
         if (error) {
+            updateStatusUI('offline');
             // Usually happens if table doesn't exist yet in Supabase
             if (error.code === 'PGRST116' || error.message.includes('not found')) {
                 console.warn(`⚠️ Table "${tableName}" not yet created in Supabase. Run SQL in dashboard.`);
             } else {
                 console.error(`❌ Cloud Sync Error (${tableName}):`, error);
             }
+        } else {
+            updateStatusUI('online');
         }
     } catch (e) {
+        updateStatusUI('offline');
         console.error('❌ Cloud Sync Critical Failure:', e);
     }
 }
@@ -556,8 +618,20 @@ async function pullFromCloud() {
 
                 data.forEach(cloudRow => {
                     const idx = merged.findIndex(l => l.id === cloudRow.id);
-                    if (idx >= 0) merged[idx] = cloudRow;
-                    else merged.push(cloudRow);
+                    if (idx >= 0) {
+                        // SAFETY LOCK: Only overwrite if cloud data has an updated_at field and it's newer, 
+                        // or if we're explicitly in "cloud priority" mode.
+                        // For now, if local has description and cloud doesn't, PRESERVE LOCAL.
+                        const localItem = merged[idx];
+                        const isLocalBetter = (localItem.description && !cloudRow.description) || 
+                                           (new Date(localItem.updated_at || 0) > new Date(cloudRow.updated_at || 0));
+                        
+                        if (!isLocalBetter) {
+                            merged[idx] = cloudRow;
+                        }
+                    } else {
+                        merged.push(cloudRow);
+                    }
                 });
 
                 localStorage.setItem(localKey, JSON.stringify(merged));
@@ -608,6 +682,47 @@ async function pushLocalToCloud() {
     
     console.log(`✅ Upload concluído! ${totalSynced} registros sincronizados.`);
     return totalSynced;
+}
+
+// Real-time Cloud Listeners - Reage a mudanças vindas de outros usuários
+function initRealtimeListeners() {
+    if (!window.supabaseClient) return;
+
+    const tables = ['events', 'tags', 'activities', 'inspections', 'materials', 'systems', 'notes', 'alerts', 'orifice_plates'];
+    
+    tables.forEach(table => {
+        window.supabaseClient
+            .channel(`realtime:${table}`)
+            .on('postgres_changes', { event: '*', schema: 'public', table: table }, payload => {
+                console.log(`☁️ Mudança em tempo real (${table}):`, payload.eventType);
+                
+                // Get the local key for this table
+                const localKey = Object.keys(KEYS).find(k => k === (table === 'orifice_plates' ? 'orifice_plates' : table));
+                const key = KEYS[localKey] || `ph_${table}`;
+
+                const localData = JSON.parse(localStorage.getItem(key)) || [];
+                let merged = [...localData];
+
+                if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+                    const idx = merged.findIndex(i => i.id === payload.new.id);
+                    if (idx >= 0) merged[idx] = payload.new;
+                    else merged.push(payload.new);
+                } else if (payload.eventType === 'DELETE') {
+                    merged = merged.filter(i => i.id === payload.old.id);
+                }
+
+                localStorage.setItem(key, JSON.stringify(merged));
+                
+                // Refresh UI if necessary
+                if (window.refreshCurrentPage) {
+                    window.refreshCurrentPage();
+                    toast('Dados atualizados via nuvem.', 'info');
+                }
+            })
+            .subscribe();
+    });
+    
+    updateStatusUI('online');
 }
 
 function initSeed() {
@@ -1456,6 +1571,8 @@ window.DB = {
 };
 
 // Initialize seed on load
+createLocalSnapshot(); // Guardar 90% atual antes de tudo
 initSeed();
 migrateData();
 pullFromCloud();
+initRealtimeListeners();
