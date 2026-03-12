@@ -714,6 +714,32 @@ async function pullFromCloud() {
             // Silently fail for missing tables
         }
     }
+    // If we reach here and supabaseClient is active, we are effectively Online
+    updateStatusUI('online');
+}
+
+function initRealtimeListeners() {
+    if (!window.supabaseClient) return;
+
+    console.log('📡 Initializing Realtime Listeners for Matrix Sync...');
+
+    const tables = ['events', 'tags', 'activities', 'inspections', 'materials', 'systems', 'notes', 'alerts'];
+    
+    tables.forEach(table => {
+        window.supabaseClient
+            .channel(`public:${table}`)
+            .on('postgres_changes', { event: '*', schema: 'public', table: table }, payload => {
+                console.log(`🔔 Cloud Change detected in ${table}:`, payload);
+                
+                // Reload data to reflect cloud changes
+                pullFromCloud().then(() => {
+                    if (window.refreshCurrentPage) {
+                        window.refreshCurrentPage();
+                    }
+                });
+            })
+            .subscribe();
+    });
 }
 
 // Push Local Data to Cloud - Uploads all local records to Supabase
