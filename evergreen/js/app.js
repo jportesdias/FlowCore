@@ -352,6 +352,9 @@ window.navigate = function(page, params) {
     document.querySelectorAll('.nav-link').forEach(el => el.classList.toggle('active', el.dataset.page === page));
     renderPage(page, params);
 }
+window.refreshCurrentPage = function() {
+    if (currentPage) renderPage(currentPage);
+}
 function renderPage(page, params) {
     const container = document.getElementById('page-container');
     const renderers = {

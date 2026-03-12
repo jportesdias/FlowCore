@@ -448,6 +448,136 @@ function getCurrentUser() {
   try { return JSON.parse(localStorage.getItem('ph_user')); } catch { return null; }
 }
 
+// ---- Backup & Export (JSON) ----
+// ---- Backup & Export (JSON) ----
+function exportDatabase() {
+    console.log('📦 Iniciando exportação do banco de dados...');
+    try {
+        const backup = {};
+        if (typeof KEYS === 'undefined') {
+            console.error('❌ KEYS não está definido!');
+            if (window.toast) toast('Erro interno: KEYS indefinido.', 'error');
+            return;
+        }
+
+        Object.values(KEYS).forEach(lsKey => {
+            const data = localStorage.getItem(lsKey);
+            if (data) {
+                try {
+                    backup[lsKey] = JSON.parse(data);
+                } catch (e) {
+                    console.warn(`⚠️ Dado em ${lsKey} não é JSON válido, salvando como texto.`);
+                    backup[lsKey] = data;
+                }
+            }
+        });
+        
+        const json = JSON.stringify(backup, null, 2);
+        console.log(`✅ JSON gerado (${json.length} bytes). Preparando download...`);
+
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `evergreen_backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        
+        console.log('🖱️ Disparando clique de download...');
+        a.click();
+        
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            console.log('🧹 Cleanup concluído.');
+        }, 500);
+        
+        if (window.toast) toast('Arquivo de backup gerado!', 'success');
+    } catch (err) {
+        console.error('❌ Erro crítico na exportação:', err);
+        if (window.toast) toast('Falha ao gerar exportação. Verifique o console (F12).', 'error');
+    }
+}
+
+async function importDatabase(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (confirm('Isso substituirá todos os seus dados locais. Continuar?')) {
+                    Object.entries(data).forEach(([lsKey, content]) => {
+                        localStorage.setItem(lsKey, JSON.stringify(content));
+                    });
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            } catch (err) {
+                reject(err);
+            }
+        };
+        reader.readAsText(file);
+    });
+}
+
+// ---- Data Shielding (Blindagem) ----
+function createLocalSnapshot() {
+    try {
+        const snapshot = {};
+        Object.values(KEYS).forEach(k => {
+            const data = localStorage.getItem(k);
+            if (data) snapshot[k] = data;
+        });
+        localStorage.setItem('evergreen_backup_snapshot', JSON.stringify(snapshot));
+        localStorage.setItem('evergreen_backup_date', new Date().toISOString());
+        console.log('🛡️ Snapshot local criado com sucesso. Seus dados estão protegidos.');
+    } catch (e) {
+        console.error('❌ Falha ao criar snapshot local:', e);
+    }
+}
+
+function restoreLocalSnapshot() {
+    const raw = localStorage.getItem('evergreen_backup_snapshot');
+    if (!raw) return alert('Nenhum backup encontrado.');
+    if (!confirm('Deseja restaurar o backup local? Isso substituirá os dados atuais.')) return;
+    
+    const snapshot = JSON.parse(raw);
+    Object.entries(snapshot).forEach(([k, v]) => {
+        localStorage.setItem(k, v);
+    });
+    alert('Dados restaurados. A página será reiniciada.');
+    location.reload();
+}
+
+// ---- Data Sync UI ----
+function updateStatusUI(status) {
+    const dot = document.getElementById('cloud-status-dot');
+    const text = document.getElementById('cloud-status-text');
+    if (!dot || !text) return;
+
+    // Remove existing animations
+    dot.classList.remove('animate-pulse');
+
+    switch (status) {
+        case 'online':
+            dot.className = 'w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]';
+            text.innerText = 'Online';
+            text.className = 'text-[10px] font-bold uppercase tracking-wider text-green-400';
+            break;
+        case 'syncing':
+            dot.className = 'w-2 h-2 rounded-full bg-orange-400 animate-pulse';
+            text.innerText = 'Sincronizando';
+            text.className = 'text-[10px] font-bold uppercase tracking-wider text-orange-400';
+            break;
+        case 'offline':
+        default:
+            dot.className = 'w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]';
+            text.innerText = 'Offline';
+            text.className = 'text-[10px] font-bold uppercase tracking-wider text-red-400';
+    }
+}
+
 function loadStore(key) {
   const stored = JSON.parse(localStorage.getItem(key)) || [];
   const user = getCurrentUser();
@@ -465,6 +595,8 @@ function loadStore(key) {
 function saveStore(key, data) {
   try {
     localStorage.setItem(key, JSON.stringify(data));
+    // Trigger background cloud sync if available
+    syncToCloud(key, data);
     return true;
   } catch (e) {
     if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
@@ -473,6 +605,197 @@ function saveStore(key, data) {
     console.error('Storage error:', e);
     return false;
   }
+}
+
+// Background Cloud Sync - Pushes local changes to Supabase
+async function syncToCloud(key, data) {
+    if (!window.supabaseClient || !data) return;
+
+    // Map local keys to Supabase tables
+    const tableMap = {
+        [KEYS.events]: 'events',
+        [KEYS.tags]: 'tags',
+        [KEYS.activities]: 'activities',
+        [KEYS.inspections]: 'inspections',
+        [KEYS.materials]: 'materials',
+        [KEYS.systems]: 'systems',
+        [KEYS.notes]: 'notes',
+        [KEYS.alerts]: 'alerts',
+        [KEYS.orifice_plates]: 'orifice_plates',
+        [KEYS.users]: 'users',
+        [KEYS.platforms]: 'platforms'
+    };
+
+    const tableName = tableMap[key];
+    if (!tableName) return;
+
+    try {
+        // Prepare data for upsert (handle arrays vs single objects if needed)
+        const rows = Array.isArray(data) ? data : [data];
+        if (rows.length === 0) return;
+
+        updateStatusUI('syncing');
+        console.log(`☁️ Syncing ${rows.length} records to Cloud table: ${tableName}...`);
+        
+        const { error } = await window.supabaseClient
+            .from(tableName)
+            .upsert(rows, { onConflict: 'id' });
+
+        if (error) {
+            updateStatusUI('offline');
+            // Usually happens if table doesn't exist yet in Supabase
+            if (error.code === 'PGRST116' || error.message.includes('not found')) {
+                console.warn(`⚠️ Table "${tableName}" not yet created in Supabase. Run SQL in dashboard.`);
+            } else {
+                console.error(`❌ Cloud Sync Error (${tableName}):`, error);
+            }
+        } else {
+            updateStatusUI('online');
+        }
+    } catch (e) {
+        updateStatusUI('offline');
+        console.error('❌ Cloud Sync Critical Failure:', e);
+    }
+}
+
+// Pull Data from Cloud - Downloads all cloud records into LocalStorage
+async function pullFromCloud() {
+    if (!window.supabaseClient) return;
+
+    const tableMap = {
+        'events': KEYS.events,
+        'tags': KEYS.tags,
+        'activities': KEYS.activities,
+        'inspections': KEYS.inspections,
+        'materials': KEYS.materials,
+        'systems': KEYS.systems,
+        'notes': KEYS.notes,
+        'alerts': KEYS.alerts,
+        'orifice_plates': KEYS.orifice_plates,
+        'users': KEYS.users,
+        'platforms': KEYS.platforms
+    };
+
+    console.log('🔄 Pulling global data from Supabase Cloud...');
+
+    for (const [tableName, localKey] of Object.entries(tableMap)) {
+        try {
+            const { data, error } = await window.supabaseClient
+                .from(tableName)
+                .select('*');
+
+            if (data && data.length > 0) {
+                // Merge cloud data into local storage (Cloud takes priority for existing IDs)
+                const localData = JSON.parse(localStorage.getItem(localKey)) || [];
+                const merged = [...localData];
+
+                data.forEach(cloudRow => {
+                    const idx = merged.findIndex(l => l.id === cloudRow.id);
+                    if (idx >= 0) {
+                        // SAFETY LOCK: Only overwrite if cloud data has an updated_at field and it's newer, 
+                        // or if we're explicitly in "cloud priority" mode.
+                        // For now, if local has description and cloud doesn't, PRESERVE LOCAL.
+                        const localItem = merged[idx];
+                        const isLocalBetter = (localItem.description && !cloudRow.description) || 
+                                           (new Date(localItem.updated_at || 0) > new Date(cloudRow.updated_at || 0));
+                        
+                        if (!isLocalBetter) {
+                            merged[idx] = cloudRow;
+                        }
+                    } else {
+                        merged.push(cloudRow);
+                    }
+                });
+
+                localStorage.setItem(localKey, JSON.stringify(merged));
+                console.log(`✅ ${tableName}: ${data.length} records pulled.`);
+            }
+        } catch (e) {
+            // Silently fail for missing tables
+        }
+    }
+}
+
+// Push Local Data to Cloud - Uploads all local records to Supabase
+async function pushLocalToCloud() {
+    if (!window.supabaseClient) {
+        alert('Supabase não conectado. Verifique as chaves.');
+        return;
+    }
+
+    const tableMap = {
+        [KEYS.events]: 'events',
+        [KEYS.tags]: 'tags',
+        [KEYS.activities]: 'activities',
+        [KEYS.inspections]: 'inspections',
+        [KEYS.materials]: 'materials',
+        [KEYS.systems]: 'systems',
+        [KEYS.notes]: 'notes',
+        [KEYS.alerts]: 'alerts',
+        [KEYS.orifice_plates]: 'orifice_plates',
+        [KEYS.users]: 'users',
+        [KEYS.platforms]: 'platforms'
+    };
+
+    console.log('🚀 Iniciando upload massivo para nuvem...');
+    
+    let totalSynced = 0;
+    for (const [localKey, tableName] of Object.entries(tableMap)) {
+        const localData = JSON.parse(localStorage.getItem(localKey)) || [];
+        if (localData.length > 0) {
+            console.log(`📡 Enviando ${localData.length} registros para ${tableName}...`);
+            const { error } = await window.supabaseClient
+                .from(tableName)
+                .upsert(localData, { onConflict: 'id' });
+            
+            if (error) console.error(`❌ Erro em ${tableName}:`, error);
+            else totalSynced += localData.length;
+        }
+    }
+    
+    console.log(`✅ Upload concluído! ${totalSynced} registros sincronizados.`);
+    return totalSynced;
+}
+
+// Real-time Cloud Listeners - Reage a mudanças vindas de outros usuários
+function initRealtimeListeners() {
+    if (!window.supabaseClient) return;
+
+    const tables = ['events', 'tags', 'activities', 'inspections', 'materials', 'systems', 'notes', 'alerts', 'orifice_plates'];
+    
+    tables.forEach(table => {
+        window.supabaseClient
+            .channel(`realtime:${table}`)
+            .on('postgres_changes', { event: '*', schema: 'public', table: table }, payload => {
+                console.log(`☁️ Mudança em tempo real (${table}):`, payload.eventType);
+                
+                // Get the local key for this table
+                const localKey = Object.keys(KEYS).find(k => k === (table === 'orifice_plates' ? 'orifice_plates' : table));
+                const key = KEYS[localKey] || `ph_${table}`;
+
+                const localData = JSON.parse(localStorage.getItem(key)) || [];
+                let merged = [...localData];
+
+                if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+                    const idx = merged.findIndex(i => i.id === payload.new.id);
+                    if (idx >= 0) merged[idx] = payload.new;
+                    else merged.push(payload.new);
+                } else if (payload.eventType === 'DELETE') {
+                    merged = merged.filter(i => i.id === payload.old.id);
+                }
+
+                localStorage.setItem(key, JSON.stringify(merged));
+                
+                // Refresh UI if necessary
+                if (window.refreshCurrentPage) {
+                    window.refreshCurrentPage();
+                    toast('Dados atualizados via nuvem.', 'info');
+                }
+            })
+            .subscribe();
+    });
+    
+    updateStatusUI('online');
 }
 
 function initSeed() {
@@ -1314,9 +1637,19 @@ window.DB = {
       return s[i].op_mode;
     }
     return null;
-  }
+  },
+
+  // Manual Cloud Control
+  pushLocalToCloud: pushLocalToCloud,
+
+  // Export/Import
+  exportDatabase,
+  importDatabase
 };
 
 // Initialize seed on load
+createLocalSnapshot(); // Guardar 90% atual antes de tudo
 initSeed();
 migrateData();
+pullFromCloud();
+initRealtimeListeners();

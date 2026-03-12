@@ -101,7 +101,84 @@ function renderUserManagement(container) {
         </tbody>
       </table>
     </div>
+
+    <!-- Cloud Sync Section -->
+    <div class="page-header mt-12">
+      <div>
+        <h1 class="page-title">Cloud & Backup Management</h1>
+        <p class="page-subtitle">Sincronize com o Supabase ou gerencie backups físicos dos seus dados.</p>
+      </div>
+    </div>
+
+    <div class="grid-2 gap-6">
+      <!-- Supabase Card -->
+      <div class="card p-6 border-l-4 border-orange-500 bg-orange-500/5">
+        <div class="flex items-start gap-4">
+          <div class="p-3 bg-orange-500/20 rounded-xl text-orange-500">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v8" /></svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-white mb-1">Upload para Supabase</h3>
+            <p class="text-sm text-slate-400 mb-4">Envia todo o seu histórico local para o servidor. Requer que o **RLS esteja desativado** no painel do Supabase.</p>
+            <button class="btn btn-primary" onclick="handleCloudUpload(this)">
+              Sincronizar com Nuvem
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- JSON Backup Card -->
+      <div class="card p-6 border-l-4 border-blue-500 bg-blue-500/5">
+        <div class="flex items-start gap-4">
+          <div class="p-3 bg-blue-500/20 rounded-xl text-blue-500">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-white mb-1">Backup Físico (JSON)</h3>
+            <p class="text-sm text-slate-400 mb-4">Exporte ou importe seus dados manualmente via arquivo. Ideal para migração rápida sem nuvem.</p>
+            <div class="flex gap-2">
+              <button class="btn btn-secondary btn-sm" onclick="DB.exportDatabase()">Exportar JSON</button>
+              <button class="btn btn-secondary btn-sm" onclick="document.getElementById('import-db-input').click()">Importar JSON</button>
+              <input type="file" id="import-db-input" class="hidden" accept=".json" onchange="handleImportDatabase(this)" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   `;
+}
+
+async function handleImportDatabase(input) {
+    if (!input.files || !input.files[0]) return;
+    try {
+        const success = await DB.importDatabase(input.files[0]);
+        if (success) {
+            toast('Banco de dados restaurado!', 'success');
+            setTimeout(() => location.reload(), 1000);
+        }
+    } catch (e) {
+        toast('Erro ao importar arquivo.', 'error');
+        console.error(e);
+    }
+}
+
+async function handleCloudUpload(btn) {
+    if (!confirm('Isso enviará todos os seus dados locais para o Supabase. Deseja continuar?')) return;
+    
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = 'Sincronizando...';
+    
+    try {
+        const count = await DB.pushLocalToCloud();
+        toast(`${count} registros sincronizados com sucesso!`, 'success');
+    } catch (e) {
+        toast('Erro na sincronização.', 'error');
+        console.error(e);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+    }
 }
 
 function userFormHtml(u = null) {
