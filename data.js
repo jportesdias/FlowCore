@@ -448,6 +448,65 @@ function getCurrentUser() {
   try { return JSON.parse(localStorage.getItem('ph_user')); } catch { return null; }
 }
 
+// ---- Backup & Export (JSON) ----
+function exportDatabase() {
+    try {
+        const backup = {};
+        Object.values(KEYS).forEach(lsKey => {
+            const data = localStorage.getItem(lsKey);
+            if (data) {
+                try {
+                    backup[lsKey] = JSON.parse(data);
+                } catch (e) {
+                    console.error(`Falha ao processar ${lsKey}:`, e);
+                    backup[lsKey] = data; // Fallback para string pura se não for JSON
+                }
+            }
+        });
+        
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `evergreen_backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a); // Necessário em alguns navegadores
+        a.click();
+        
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+        
+        if (window.toast) toast('Arquivo de backup gerado com sucesso!', 'success');
+    } catch (err) {
+        console.error('Erro na exportação:', err);
+        if (window.toast) toast('Falha ao gerar exportação.', 'error');
+    }
+}
+
+async function importDatabase(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (confirm('Isso substituirá todos os seus dados locais. Continuar?')) {
+                    Object.entries(data).forEach(([lsKey, content]) => {
+                        localStorage.setItem(lsKey, JSON.stringify(content));
+                    });
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            } catch (err) {
+                reject(err);
+            }
+        };
+        reader.readAsText(file);
+    });
+}
+
 // ---- Data Shielding (Blindagem) ----
 function createLocalSnapshot() {
     try {
@@ -1567,7 +1626,11 @@ window.DB = {
   },
 
   // Manual Cloud Control
-  pushLocalToCloud: pushLocalToCloud
+  pushLocalToCloud: pushLocalToCloud,
+
+  // Export/Import
+  exportDatabase,
+  importDatabase
 };
 
 // Initialize seed on load
