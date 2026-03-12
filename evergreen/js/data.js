@@ -635,6 +635,15 @@ async function syncToCloud(key, data) {
     const tableName = tableMap[key];
     if (!tableName) return;
 
+    // --- SOBERANIA MASTER (ADMIN ONLY FOR STRUCTURAL TABLES) ---
+    const structuralTables = ['tags', 'platforms', 'systems', 'orifice_plates', 'users'];
+    if (structuralTables.includes(tableName)) {
+        if (!user || user.role !== 'Admin') {
+            console.warn(`🛡️ Bloqueio de Sincronização: Usuário ${user?.name || 'anônimo'} tentou alterar a Engenharia (Master).`);
+            return;
+        }
+    }
+
     try {
         const rows = Array.isArray(data) ? data : [data];
         if (rows.length === 0) return;
@@ -744,14 +753,16 @@ async function pullFromCloud() {
                 });
 
                 // 2. RECONCILIATION: Remove local items NOT in Cloud (Mirroring Deletions)
-                // We only do this for the core engineering tables to ensure consistency.
+                // SAFETY LOCK: Only reconcile if the Cloud HAS records. 
+                // If Cloud is empty, we DON'T assume a wipe; we assume it's a first run or sync failure.
                 const coreTables = ['tags', 'platforms', 'events', 'activities', 'orifice_plates', 'systems'];
                 let reconciled;
                 
-                if (coreTables.includes(tableName)) {
+                if (coreTables.includes(tableName) && data.length > 0) {
                     // Match the cloud state exactly (If it's gone from Master, it's gone from Local)
                     reconciled = merged.filter(item => cloudIds.has(item.id));
                 } else {
+                    // Keep merged local data if cloud is empty
                     reconciled = merged;
                 }
 
@@ -766,34 +777,12 @@ async function pullFromCloud() {
     updateStatusUI('online');
 }
 
-function initRealtimeListeners() {
-    if (!window.supabaseClient) return;
-
-    console.log('📡 Initializing Realtime Listeners for Matrix Sync...');
-
-    const tables = ['events', 'tags', 'activities', 'inspections', 'materials', 'systems', 'notes', 'alerts'];
-    
-    tables.forEach(table => {
-        window.supabaseClient
-            .channel(`public:${table}`)
-            .on('postgres_changes', { event: '*', schema: 'public', table: table }, payload => {
-                console.log(`🔔 Cloud Change detected in ${table}:`, payload);
-                
-                // Reload data to reflect cloud changes
-                pullFromCloud().then(() => {
-                    if (window.refreshCurrentPage) {
-                        window.refreshCurrentPage();
-                    }
-                });
-            })
-            .subscribe();
-    });
-}
+// --- END REALTIME LISTENERS ---
 
 // Push Local Data to Cloud - Uploads all local records to Supabase
 async function pushLocalToCloud() {
     if (!window.supabaseClient) {
-        alert('Supabase não conectado. Verifique as chaves.');
+        console.warn('Supabase não conectado.');
         return;
     }
 
@@ -811,23 +800,31 @@ async function pushLocalToCloud() {
         [KEYS.platforms]: 'platforms'
     };
 
-    console.log('🚀 Iniciando upload massivo para nuvem...');
+    const user = getCurrentUser();
+    if (!user || user.role !== 'Admin') {
+        console.warn('Push Master negado: Requer privilégios de Administrador.');
+        return;
+    }
+
+    console.log('🚀 Executando Push Master para a Matrix...');
+    updateStatusUI('syncing');
     
     let totalSynced = 0;
     for (const [localKey, tableName] of Object.entries(tableMap)) {
         const localData = JSON.parse(localStorage.getItem(localKey)) || [];
         if (localData.length > 0) {
-            console.log(`📡 Enviando ${localData.length} registros para ${tableName}...`);
+            // Upsert all records (Engineers Master overwrites Cloud)
             const { error } = await window.supabaseClient
                 .from(tableName)
                 .upsert(localData, { onConflict: 'id' });
             
-            if (error) console.error(`❌ Erro em ${tableName}:`, error);
+            if (error) console.error(`❌ Erro de Push em ${tableName}:`, error);
             else totalSynced += localData.length;
         }
     }
     
-    console.log(`✅ Upload concluído! ${totalSynced} registros sincronizados.`);
+    console.log(`✅ Push Master concluído: ${totalSynced} registros atualizados na Matrix.`);
+    updateStatusUI('online');
     return totalSynced;
 }
 
@@ -1057,7 +1054,10 @@ window.DB = {
     saveStore(KEYS.tags, s);
     return { success: true };
   },
-  deleteTag: (id) => saveStore(KEYS.tags, loadStore(KEYS.tags).filter(x => x.id !== id)),
+  deleteTag: (id) => {
+    syncDeleteToCloud(KEYS.tags, id);
+    return saveStore(KEYS.tags, loadStore(KEYS.tags).filter(x => x.id !== id));
+  },
   getTag: (id) => loadStore(KEYS.tags).find(x => x.id === id),
 
   // Events
