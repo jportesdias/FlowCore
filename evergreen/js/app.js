@@ -355,6 +355,23 @@ window.navigate = function(page, params) {
 window.refreshCurrentPage = function() {
     if (currentPage) renderPage(currentPage);
 }
+window.handleGlobalSync = async function(btn) {
+    if (!DB.forceSync) return;
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>';
+    btn.disabled = true;
+    
+    const success = await DB.forceSync();
+    
+    if (success) {
+        toast('Sincronização global concluída!', 'success');
+    } else {
+        toast('Falha na sincronização. Verifique a conexão.', 'error');
+    }
+    
+    btn.innerHTML = originalContent;
+    btn.disabled = false;
+}
 function renderPage(page, params) {
     const container = document.getElementById('page-container');
     const renderers = {

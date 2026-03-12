@@ -502,13 +502,18 @@ function exportDatabase() {
 async function importDatabase(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
             try {
                 const data = JSON.parse(e.target.result);
                 if (confirm('Isso substituirá todos os seus dados locais. Continuar?')) {
                     Object.entries(data).forEach(([lsKey, content]) => {
                         localStorage.setItem(lsKey, JSON.stringify(content));
                     });
+                    
+                    // AUTO-SYNC AFTER IMPORT: Crucial to make it global
+                    if (window.toast) toast('Processando importação e sincronizando com a nuvem...', 'syncing');
+                    await pushLocalToCloud();
+                    
                     resolve(true);
                 } else {
                     resolve(false);
@@ -685,21 +690,19 @@ async function pullFromCloud() {
                 .select('*');
 
             if (data && data.length > 0) {
-                // Merge cloud data into local storage (Cloud takes priority for existing IDs)
                 const localData = JSON.parse(localStorage.getItem(localKey)) || [];
                 const merged = [...localData];
 
                 data.forEach(cloudRow => {
                     const idx = merged.findIndex(l => l.id === cloudRow.id);
                     if (idx >= 0) {
-                        // SAFETY LOCK: Only overwrite if cloud data has an updated_at field and it's newer, 
-                        // or if we're explicitly in "cloud priority" mode.
-                        // For now, if local has description and cloud doesn't, PRESERVE LOCAL.
                         const localItem = merged[idx];
-                        const isLocalBetter = (localItem.description && !cloudRow.description) || 
-                                           (new Date(localItem.updated_at || 0) > new Date(cloudRow.updated_at || 0));
+                        // RELAXED SAFETY LOCK: Always prefer cloud if cloud has updated_at and it's equal or newer
+                        // Or if local has NO updated_at, trust the cloud.
+                        const cloudTime = new Date(cloudRow.updated_at || cloudRow.created_at || 0).getTime();
+                        const localTime = new Date(localItem.updated_at || localItem.created_at || 0).getTime();
                         
-                        if (!isLocalBetter) {
+                        if (cloudTime >= localTime) {
                             merged[idx] = cloudRow;
                         }
                     } else {
@@ -708,10 +711,10 @@ async function pullFromCloud() {
                 });
 
                 localStorage.setItem(localKey, JSON.stringify(merged));
-                console.log(`✅ ${tableName}: ${data.length} records pulled.`);
+                console.log(`✅ ${tableName}: ${data.length} registros sincronizados via Pull.`);
             }
         } catch (e) {
-            // Silently fail for missing tables
+            console.warn(`⚠️ Erro ao puxar tabela ${tableName}:`, e);
         }
     }
     // If we reach here and supabaseClient is active, we are effectively Online
@@ -1667,6 +1670,21 @@ window.DB = {
 
   // Manual Cloud Control
   pushLocalToCloud: pushLocalToCloud,
+  pullFromCloud: pullFromCloud,
+  forceSync: async () => {
+    try {
+        updateStatusUI('syncing');
+        await pushLocalToCloud(); // Upload changes
+        await pullFromCloud();    // Download updates
+        if (window.refreshCurrentPage) window.refreshCurrentPage();
+        updateStatusUI('online');
+        return true;
+    } catch (e) {
+        console.error('Force Sync failed:', e);
+        updateStatusUI('offline');
+        return false;
+    }
+  },
 
   // Export/Import
   exportDatabase,
