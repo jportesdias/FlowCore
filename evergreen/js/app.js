@@ -190,14 +190,26 @@ function renderGallery(mediaArray) {
     return `
         <div class="gallery-grid">
             ${mediaArray.map((m, idx) => {
-        if (m.startsWith('data:application/pdf')) {
+        const isPdf = m.startsWith('data:application/pdf');
+        const isTxt = m.startsWith('data:text/plain') || m.includes('text/plain') || (m.startsWith('data:') && !m.startsWith('data:image/'));
+        
+        if (isPdf) {
             return `
-                    <a href="${m}" download="document-${idx}.pdf" class="gallery-thumb pdf-thumb flex flex-col items-center justify-center bg-navy-900 border border-slate-700/50 rounded-lg hover:border-red-500 transition-colors">
-                        <svg class="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z" /><path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" /></svg>
-                        <span class="text-[8px] font-bold text-slate-400 mt-1">DOWNLOAD PDF</span>
-                    </a>`;
+                <a href="${m}" download="document-${idx + 1}.pdf" class="gallery-thumb pdf-thumb flex flex-col items-center justify-center bg-navy-900 border border-slate-700/50 rounded-lg hover:border-red-500 transition-colors group">
+                    <svg class="w-8 h-8 text-red-500 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z" /><path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" /></svg>
+                    <span class="text-[8px] font-bold text-slate-400 mt-1 uppercase">Download PDF</span>
+                </a>`;
         }
-        return `<img src="${m}" class="gallery-thumb" onclick="openLightbox('${m}')" />`;
+        
+        if (isTxt) {
+            return `
+                <a href="${m}" download="log-${idx + 1}.txt" class="gallery-thumb pdf-thumb flex flex-col items-center justify-center bg-navy-900 border border-slate-700/50 rounded-lg hover:border-blue-500 transition-colors group">
+                    <svg class="w-8 h-8 text-blue-500 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    <span class="text-[8px] font-bold text-slate-400 mt-1 uppercase">Download TXT</span>
+                </a>`;
+        }
+        
+        return `<img src="${m}" class="gallery-thumb" onclick="openLightbox('${m}')" title="Click to enlarge" />`;
     }).join('')}
         </div>`;
 }
