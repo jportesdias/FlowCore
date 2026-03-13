@@ -4,12 +4,14 @@ console.log('Evergreen: pages-events.js loading...');
 //  pages-events.js — Handover Events & Priority Activities
 // ============================================================
 
-window.eventFormHtml = function(e) {
+window.eventFormHtml = function(e, context = {}) {
   const tags = window.DB.getTags ? window.DB.getTags() : [];
   const activePlat = window.DB.getActivePlatform ? window.DB.getActivePlatform() : null;
+  const subId = context.subsystem_id || (e ? e.subsystem_id : '');
   
   return `
     <form id="event-form" class="space-y-4">
+      <input type="hidden" id="ef-subsystem-id" value="${subId}" />
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="form-group">
           <label class="form-label">Title</label>
@@ -19,7 +21,15 @@ window.eventFormHtml = function(e) {
           <label class="form-label">Related TAG</label>
           <select class="form-select" id="ef-tag">
             <option value="">— Select TAG (if applicable) —</option>
-            ${tags.map(t => `<option value="${t.id}" data-code="${t.tag_code}" ${e && e.tag_id === t.id ? 'selected' : ''}>${t.tag_code} — ${t.system || t.name}</option>`).join('')}
+            ${(() => {
+              // Ensure the context tag is in the list even if it's from another platform
+              let list = tags;
+              if (e && e.tag_id && !list.find(t => t.id === e.tag_id)) {
+                const contextTag = window.DB.getTag(e.tag_id);
+                if (contextTag) list = [contextTag, ...list];
+              }
+              return list.map(t => `<option value="${t.id}" data-code="${t.tag_code}" ${e && e.tag_id === t.id ? 'selected' : ''}>${t.tag_code} — ${t.system || t.name}</option>`).join('');
+            })()}
           </select>
         </div>
       </div>
@@ -60,6 +70,11 @@ window.eventFormHtml = function(e) {
         <label for="ef-follow" class="text-sm text-slate-300 cursor-pointer">Follow-up actions required</label>
       </div>
 
+      <div class="form-group mb-4">
+        <label class="form-label">Attachments (Photos & PDFs)</label>
+        <div id="ef-media-container"></div>
+      </div>
+
       <div class="flex gap-3 items-center pt-4 border-t border-slate-700/50">
         ${e ? `
           <button type="button" class="btn bg-red-600/10 text-red-400 border border-red-500/30 hover:bg-red-600/20 transition-all text-xs font-black uppercase tracking-widest px-4" 
@@ -75,6 +90,12 @@ window.eventFormHtml = function(e) {
 }
 
 window.bindEventForm = function(existingId) {
+  const e = existingId && typeof existingId !== 'object' ? window.DB.getEvent(existingId) : null;
+  let mediaArray = e ? [...(e.media || [])] : [];
+  
+  // Initialize Dropzone
+  window.setupMediaDropzone('ef-media-container', (m) => { mediaArray = m; }, mediaArray);
+
   const form = document.getElementById('event-form');
   if (!form) return;
   
@@ -97,14 +118,24 @@ window.bindEventForm = function(existingId) {
       priority: document.getElementById('ef-pri').value,
       status: document.getElementById('ef-status').value,
       follow_up_required: document.getElementById('ef-follow').checked,
+      subsystem_id: document.getElementById('ef-subsystem-id').value || null,
       author: window.getUser ? (window.getUser() ? window.getUser().name : 'Unknown') : 'Unknown',
       author_id: window.getUser ? (window.getUser() ? window.getUser().id : null) : null,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
+      media: mediaArray
     };
 
-    if (!existingId) {
+    // If it's a new event (no existingId or existingId is an object/context)
+    if (!existingId || typeof existingId === 'object') {
       eventData.created_at = new Date().toISOString();
       eventData.follow_ups = [];
+    } else {
+      // Preserve original creation date if editing
+      const original = window.DB.getEvent(existingId);
+      if (original) {
+        eventData.created_at = original.created_at;
+        eventData.follow_ups = original.follow_ups || [];
+      }
     }
 
     const result = window.DB.saveEvent(eventData);
@@ -115,7 +146,13 @@ window.bindEventForm = function(existingId) {
 
     window.toast(existingId ? 'Event updated' : 'Event created', 'success');
     window.closeModal();
-    window.navigate('events');
+    
+    // Smart redirect: if we came from a subsystem, refresh current view
+    if (document.getElementById('ef-subsystem-id').value && window.refreshCurrentPage) {
+        window.refreshCurrentPage();
+    } else {
+        window.navigate('events');
+    }
   });
 }
 
@@ -231,17 +268,24 @@ window.eventDetail = function(e) {
     <div class="space-y-4">
       <div class="flex flex-wrap gap-2 mb-2">
         ${window.tagChip(e.tag_code)} ${window.priorityBadge(e.priority)} ${window.statusBadge(e.status)}
-        ${window.canEdit(e) ? `<button class="badge hover:brightness-125 transition-all cursor-pointer" style="background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)" onclick="window.openFollowUpModal('${e.id}')">↩ Register Follow-up</button>` : ''}
+        ${window.canEdit(e) && e.follow_up_required ? `<button class="badge hover:brightness-125 transition-all cursor-pointer" style="background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)" onclick="window.openFollowUpModal('${e.id}')">↩ Register Follow-up</button>` : ''}
       </div>
       <div><div class="section-label">Category / System</div><div class="text-slate-300">${window.escHtml(e.category)} · ${window.escHtml(e.system || '—')}</div></div>
       <div><div class="section-label">Timestamp</div><div class="text-slate-300">${window.fmt(e.created_at)}</div></div>
       <div><div class="section-label">Description</div><div class="text-slate-300 whitespace-pre-wrap">${window.escHtml(e.description)}</div></div>
       ${e.actions_taken ? `<div><div class="section-label">Actions Taken</div><div class="text-slate-300 whitespace-pre-wrap">${window.escHtml(e.actions_taken)}</div></div>` : ''}
       
+      ${e.media && e.media.length > 0 ? `
+        <div class="mt-4 border-t border-slate-800/50 pt-4">
+          <div class="section-label">Attachments</div>
+          ${window.renderGallery(e.media)}
+        </div>
+      ` : ''}
+      
       <div class="mt-6">
         <div class="flex items-center justify-between mb-3">
           <div class="section-label mb-0">Follow-up History</div>
-          ${window.canEdit(e) ? `<button class="btn btn-sm btn-primary" onclick="window.openFollowUpModal('${e.id}')">+ Add Follow-up</button>` : ''}
+          ${window.canEdit(e) && e.follow_up_required ? `<button class="btn btn-sm btn-primary" onclick="window.openFollowUpModal('${e.id}')">+ Add Follow-up</button>` : ''}
         </div>
         <div class="space-y-3">
           ${followUps.length === 0 ? '<p class="text-xs text-slate-500 italic">No follow-ups recorded yet.</p>' :
@@ -340,10 +384,15 @@ window.renderEvents = function(container, params) {
           <div class="flex items-center justify-between text-xs pt-3 border-t border-slate-700/50">
             <div class="flex items-center gap-4">
               ${window.tagChip(e.tag_code)}
+              ${e.media && e.media.length > 0 ? `
+                <div class="flex items-center gap-1 text-slate-400 bg-navy-900 px-2 py-0.5 rounded-full border border-slate-700" title="Attachments">
+                  📎 <span class="font-bold text-slate-200">${e.media.length}</span>
+                </div>
+              ` : ''}
               <div class="flex items-center gap-1.5 text-slate-400 bg-navy-900 px-2 py-0.5 rounded-full border border-slate-700">
                 <span class="font-bold text-slate-200">${followUps.length}</span> follow-ups
               </div>
-              ${window.canEdit(e) ? `<button class="text-amber-500 hover:text-amber-400 font-bold transition-all cursor-pointer flex items-center gap-1 group" onclick="event.stopPropagation(); window.openFollowUpModal('${e.id}')">
+              ${window.canEdit(e) && e.follow_up_required ? `<button class="text-amber-500 hover:text-amber-400 font-bold transition-all cursor-pointer flex items-center gap-1 group" onclick="event.stopPropagation(); window.openFollowUpModal('${e.id}')">
                 <span class="group-hover:translate-x-1 transition-transform">↩ Register Follow-up</span>
               </button>` : ''}
             </div>
@@ -398,28 +447,54 @@ window.renderActivities = function(container) {
   function draw(f) {
     filter = f;
     let list = acts;
-    if (f === 'open') list = list.filter(a => a.status !== 'closed');
-    if (f === 'critical') list = list.filter(a => a.priority === 'critical');
-    if (f === 'overdue') list = list.filter(a => window.isOverdue(a.due_date) && a.status !== 'closed');
+    if (f === 'open') list = list.filter(a => a.status !== 'closed' && !a.archived);
+    if (f === 'critical') list = list.filter(a => a.priority === 'critical' && !a.archived);
+    if (f === 'overdue') list = list.filter(a => window.isOverdue(a.due_date) && a.status !== 'closed' && !a.archived);
+    if (f === 'archived') list = list.filter(a => a.archived);
+    if (f === 'all') list = list.filter(a => !a.archived);
+    
+    list.sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
     
     const listEl = document.getElementById('act-list');
     if (!listEl) return;
 
     listEl.innerHTML = list.length === 0 ?
       `<div class="empty-state"><p>No activities found.</p></div>` :
-      `<table class="data-table"><thead><tr><th>TAG</th><th>Title</th><th>Responsible</th><th>Due Date</th><th>Priority</th><th>Status</th><th></th></tr></thead><tbody>
-        ${list.map(a => `<tr>
-          <td>${window.tagChip(a.tag_code)}</td>
-          <td class="text-white font-medium">${window.escHtml(a.title)}</td>
-          <td class="text-slate-400">${window.escHtml(a.responsible)}</td>
-          <td class="${window.isOverdue(a.due_date) && a.status !== 'closed' ? 'overdue font-semibold' : 'text-slate-400'}">${window.fmtDate(a.due_date)}</td>
-          <td>${window.priorityBadge(a.priority)}</td>
-          <td>${window.statusBadge(a.status)}</td>
-          <td>
-            <button class="btn btn-sm btn-secondary" onclick="window.editActivity('${a.id}')">Edit</button>
-          </td>
-        </tr>`).join('')}
-      </tbody></table>`;
+      list.map(a => `
+        <div class="card card-interactive p-5 mb-3 ${a.archived ? 'opacity-50 grayscale' : ''}" onclick="window.editActivity('${a.id}')">
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <div class="flex-1">
+              <div class="text-white font-bold text-lg hover:text-orange-400 transition-colors mb-1">${window.escHtml(a.title)}</div>
+              <div class="text-[10px] text-slate-500 uppercase font-bold">${window.fmtDate(a.due_date) ? `Due: ${window.fmtDate(a.due_date)}` : window.fmt(a.created_at)}</div>
+            </div>
+            <div class="flex gap-1.5 flex-shrink-0">
+              ${window.canEdit(a) ? `
+                <button class="p-1.5 rounded-lg ${a.archived ? 'bg-slate-700/50 hover:bg-slate-600' : 'bg-white/5 border border-white/10 hover:bg-white/10'} text-slate-400 hover:text-orange-400 transition-all font-bold text-xs flex items-center gap-1" 
+                        title="${a.archived ? 'Unarchive' : 'Archive'}" 
+                        onclick="event.stopPropagation(); window.toggleArchiveActivity('${a.id}')">
+                  📦 ${a.archived ? 'Unarchive' : 'Archive'}
+                </button>
+                <button class="p-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-slate-400 hover:text-orange-400 transition-all" 
+                        title="Edit Activity" 
+                        onclick="event.stopPropagation(); window.editActivity('${a.id}')">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                </button>
+              ` : ''}
+              ${window.priorityBadge(a.priority)} ${window.statusBadge(a.status)}
+            </div>
+          </div>
+          <div class="text-sm text-slate-300 mb-4 line-clamp-2">${window.escHtml(a.description)}</div>
+          <div class="flex items-center justify-between text-xs pt-3 border-t border-slate-700/50">
+            <div class="flex items-center gap-4">
+              ${window.tagChip(a.tag_code)}
+              <div class="flex items-center gap-1.5 text-slate-400 uppercase font-bold tracking-wider">
+                👤 ${window.escHtml(a.responsible)}
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
     document.querySelectorAll('.act-filter').forEach(c => c.classList.toggle('active', c.dataset.filter === f));
   }
 
@@ -435,11 +510,21 @@ window.renderActivities = function(container) {
       <button class="filter-chip act-filter" data-filter="open">Open</button>
       <button class="filter-chip act-filter" data-filter="critical">Critical</button>
       <button class="filter-chip act-filter" data-filter="overdue">Overdue</button>
+      <button class="filter-chip act-filter" data-filter="archived">Archived</button>
     </div>
-    <div id="act-list" class="card overflow-x-auto"></div>`;
+    <div id="act-list"></div>`;
 
   draw('all');
   document.querySelectorAll('.act-filter').forEach(b => b.addEventListener('click', () => draw(b.dataset.filter)));
+  
+  window.toggleArchiveActivity = (id) => {
+    const a = window.DB.getActivity(id);
+    if (!a) return;
+    a.archived = !a.archived;
+    window.DB.saveActivity(a);
+    window.toast(a.archived ? 'Activity archived' : 'Activity restored', 'success');
+    draw(filter);
+  };
 }
 
 // Support functions for activities

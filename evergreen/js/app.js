@@ -257,6 +257,9 @@ function clearUser() { localStorage.removeItem('ph_user'); localStorage.removeIt
 
 window.canEdit = function(item) {
     if (!item) return false;
+    const user = window.getUser();
+    if (!user) return false;
+    
     // For this specific Demo/Handover app, we allow editing if:
     // 1. User is Admin
     // 2. User is the author
@@ -265,10 +268,10 @@ window.canEdit = function(item) {
     const activePlat = DB.getActivePlatform();
     const isFlowCore = activePlat && activePlat.id === 'plat-flowcore';
     
-    if (currentUser && currentUser.role === 'Admin') return true;
+    if (user.role === 'Admin') return true;
     if (isFlowCore) return true;
     if (!item.author_id) return true;
-    return currentUser && item.author_id === currentUser.id;
+    return item.author_id === user.id;
 }
 
 function handleSaveResult(result) {
@@ -374,8 +377,9 @@ window.handleGlobalSync = async function(btn) {
 }
 function renderPage(page, params) {
     const container = document.getElementById('page-container');
+    const activeModule = document.body.getAttribute('data-module') || 'metering';
     const renderers = {
-        dashboard: () => window.renderDashboard(container),
+        dashboard: () => activeModule === 'supervisor' ? window.renderSupervisorDashboard(container) : window.renderDashboard(container),
         events: () => window.renderEvents(container, params),
         activities: () => window.renderActivities(container),
         tags: () => window.renderTags(container),
@@ -390,6 +394,14 @@ function renderPage(page, params) {
         search: () => window.renderSearch(container, params),
         orifice: () => window.renderOrifice(container),
         users: () => window.renderUserManagement(container),
+        // Supervisor pages
+        'sup-water':    () => window.renderWaterSystem(container),
+        'sup-gas':      () => window.renderGasSystem(container),
+        'sup-oil':      () => window.renderOilSystem(container),
+        'sup-utilities': () => window.renderUtilities(container),
+        'sup-people':   () => window.renderPeopleManagement(container),
+        'sup-crew':     () => window.renderCrewManager(container),
+        'sup-vacations': () => window.renderVacationRanking(container),
     };
     if (renderers[page]) renderers[page]();
     else container.innerHTML = `<div class="empty-state"><p>Page not found: ${page}</p></div>`;
@@ -444,11 +456,41 @@ function initGlobalSearch() {
 
 // ---- App Boot ----
 function showApp(user) {
+    currentUser = user; // SYNC GLOBAL STATE
     document.body.classList.remove('login-active');
     document.getElementById('page-login').classList.remove('active');
-    document.getElementById('page-login').classList.add('hidden'); // Ensure hidden
+    document.getElementById('page-login').classList.add('hidden');
     document.getElementById('app-shell').classList.remove('hidden');
-    document.getElementById('app-shell').classList.add('active'); // Ensure shell is active
+    document.getElementById('app-shell').classList.add('active');
+
+    // ---- Module Routing (role-based) ----
+    const isSupervisor = (user.role === 'Supervisor' || user.module === 'supervisor');
+    const isAdmin = (user.role === 'Admin');
+    const activeModule = isSupervisor ? 'supervisor' : 'metering';
+    document.body.setAttribute('data-module', activeModule);
+
+    // Sidebar visibility helper
+    const syncSidebar = (mod) => {
+        const navMetering = document.getElementById('nav-metering-group');
+        const navSupervisor = document.getElementById('nav-supervisor-group');
+        if (navMetering) navMetering.classList.toggle('hidden', mod !== 'metering');
+        if (navSupervisor) navSupervisor.classList.toggle('hidden', mod !== 'supervisor');
+    };
+
+    syncSidebar(activeModule);
+
+    // Admin module switcher
+    const modSwitcher = document.getElementById('module-switcher');
+    if (modSwitcher) {
+        modSwitcher.classList.toggle('hidden', !isAdmin);
+        modSwitcher.value = activeModule;
+        modSwitcher.onchange = () => {
+            document.body.setAttribute('data-module', modSwitcher.value);
+            syncSidebar(modSwitcher.value);
+            navigate('dashboard');
+            toast(`Switched to ${modSwitcher.value === 'supervisor' ? 'Production Supv' : 'Metering'} Mode`, 'info');
+        };
+    }
 
     // Update Topbar/Header User Info
     document.getElementById('user-name').textContent = user.name;

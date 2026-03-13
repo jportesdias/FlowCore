@@ -280,19 +280,7 @@ const SEED_INSPECTIONS = [
     status: 'closed',
     created_at: new Date(Date.now() - 3600000 * 24 * 10).toISOString(),
   },
-  {
-    id: 'insp-fc-005',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-110',
-    tag_code: '30XX001',
-    date: new Date(Date.now()).toISOString().split('T')[0],
-    inspector: 'F. Silva',
-    condition: 'Good',
-    findings: 'Compact Prover pre-operation check. Piston seal leak test performed successfully (0 pressure drop in 5 mins). Optical switches cleaned.',
-    recommendation: 'Ready for use in next calibration campaign.',
-    status: 'closed',
-    created_at: new Date().toISOString(),
-  },
+
 ];
 
 const SEED_MATERIALS = [
@@ -384,7 +372,7 @@ const SEED_SYSTEMS = [
   {
     id: 'sys-fc-002',
     platform_id: 'plat-flowcore',
-    system_name: 'Oil Export Control',
+    system_name: 'Oil Export Flow Computer',
     tag_id: 'tag-fc-127',
     tag_code: 'FC-2101',
     serial_number: 'FC-FLOWCORE-02',
@@ -579,7 +567,16 @@ const SEED_PLATFORMS = [
 
 // ---- Seed Users ----
 const SEED_USERS = [
-  { id: 'user-admin', name: 'Administrator', username: 'admin', password: 'admin', role: 'Admin', platforms: ['plat-atlanta', 'plat-flowcore'], created_at: new Date().toISOString() },
+  { id: 'user-admin', name: 'Administrator', username: 'admin', password: 'admin', role: 'Admin', module: 'all', platforms: ['plat-atlanta', 'plat-flowcore'], created_at: new Date().toISOString() },
+  { id: 'user-supervisor', name: 'Production Supervisor', username: 'supervisor', password: 'supervisor123', role: 'Supervisor', module: 'supervisor', platforms: ['plat-atlanta', 'plat-flowcore'], created_at: new Date().toISOString() },
+];
+
+const SEED_SUBSYSTEMS = [
+  { id: 'sub-gas-001', platform_id: 'plat-flowcore', parent_system: 'Gas', name: 'HP Fuel Gas', status: 'ok', description: 'High pressure fuel gas system for main turbines.', tags: ['21-FG-101', '21-FG-102'] },
+  { id: 'sub-gas-002', platform_id: 'plat-flowcore', parent_system: 'Gas', name: 'LP Fuel Gas', status: 'ok', description: 'Low pressure fuel gas for boiler and auxiliary systems.', tags: ['21-FG-201'] },
+  { id: 'sub-gas-003', platform_id: 'plat-flowcore', parent_system: 'Gas', name: 'Flare System', status: 'minor-issue', description: 'HP and LP flare headers and knock-out drums.', tags: ['flare-01'] },
+  { id: 'sub-gas-004', platform_id: 'plat-flowcore', parent_system: 'Gas', name: 'VRU Compressor', status: 'ok', description: 'Vapor Recovery Unit for low pressure stabilization.', tags: ['K-501', 'K-502'] },
+  { id: 'sub-gas-005', platform_id: 'plat-flowcore', parent_system: 'Gas', name: 'HP Compressor', status: 'ok', description: 'Main export gas compression train.', tags: ['K-101A/B', 'K-201'] },
 ];
 
 // ---- LocalStorage helpers ----
@@ -601,6 +598,10 @@ const KEYS = {
   activePlatform: 'ph_active_platform',
   seeded: 'ph_seeded_v20', // v2.00: Evergreen Pro Demo Reconstruction
   calibrations: 'ph_calibrations',
+  crew: 'ph_crew',
+  personnel: 'ph_personnel',
+  vacations: 'ph_vacations',
+  subsystems: 'ph_subsystems',
 };
 
 // Sandbox storage for GUEST mode (memory only)
@@ -1057,7 +1058,7 @@ function initRealtimeListeners() {
 }
 
 function initSeed() {
-  const latestV = '2.00'; // v2.00: Evergreen Pro Demo Reconstruction
+  const latestV = '2.07'; // v2.07: Fixed missing platform_id in SEED_SUBSYSTEMS
   const currentV = localStorage.getItem(KEYS.seeded);
   
   if (currentV === latestV) return;
@@ -1071,24 +1072,25 @@ function initSeed() {
     }
   };
 
-  // Ensure Admin account always exists
+  // Ensure Default accounts exist
   const users = loadStore(KEYS.users);
-  if (users.length === 0) {
-    saveStore(KEYS.users, SEED_USERS);
-  } else {
-    const adminIdx = users.findIndex(u => u.username === 'admin');
-    if (adminIdx === -1) {
-      users.push(SEED_USERS[0]);
-      saveStore(KEYS.users, users);
+  SEED_USERS.forEach(seedUser => {
+    const exists = users.find(u => u.username === seedUser.username);
+    if (!exists) {
+      users.push(seedUser);
     }
-  }
+  });
+  saveStore(KEYS.users, users);
 
   // --- SURGICAL RESET (FlowCore ONLY) ---
   // We keep records from plat-atlanta or global (*), but reset plat-flowcore to the new Seed.
   const resetFlowCoreStore = (key, seedData) => {
     let current = loadStore(key);
+    // Keep Atlanta data
     const protectedData = current.filter(x => x && (x.platform_id === 'plat-atlanta' || x.platform_id === '*'));
-    const merged = [...protectedData, ...seedData];
+    // Filter Seed data to ONLY include FlowCore items (preventing re-adding Atlanta items from seed)
+    const filteredSeed = seedData.filter(x => x.platform_id === 'plat-flowcore' || x.platform_id === '*');
+    const merged = [...protectedData, ...filteredSeed];
     saveStore(key, merged);
   };
 
@@ -1101,19 +1103,23 @@ function initSeed() {
   resetFlowCoreStore(KEYS.notes, SEED_NOTES);
   resetFlowCoreStore(KEYS.alerts, SEED_ALERTS);
   resetFlowCoreStore(KEYS.orifice_plates, SEED_ORIFICE_PLATES);
+  resetFlowCoreStore(KEYS.subsystems, SEED_SUBSYSTEMS);
 
   // Post-process: Ensure Atlanta Excel tags are merged into the registry
+  // Final deduplication for safety (Global)
   let currentTags = loadStore(KEYS.tags);
-  const excelPool = (typeof EXCEL_TAGS !== 'undefined' ? EXCEL_TAGS : []);
+  let cleanTags = [];
+  let seen = new Set();
   
-  excelPool.forEach(newTag => {
-    const exists = currentTags.find(t => t.tag_code === newTag.tag_code && t.platform_id === newTag.platform_id);
-    if (!exists) {
-      currentTags.push({ ...newTag, id: newTag.id || genId('tag'), status: newTag.status || 'ok' });
+  currentTags.forEach(t => {
+    const key = `${t.tag_code}|${t.platform_id}`;
+    if (!seen.has(key)) {
+      cleanTags.push(t);
+      seen.add(key);
     }
   });
 
-  saveStore(KEYS.tags, currentTags);
+  saveStore(KEYS.tags, cleanTags);
   localStorage.setItem(KEYS.seeded, latestV);
   console.log('✅ Surgical Seed Reconstruction Complete.');
 }
@@ -1931,6 +1937,57 @@ window.DB = {
         return false;
     }
   },
+
+
+  // ===== Production Supervisor Module =====
+
+  // Crew / Turmas
+  getCrew: () => loadStore(KEYS.crew),
+  saveCrew: (item) => {
+    const s = loadStore(KEYS.crew);
+    const i = s.findIndex(x => x.id === item.id);
+    if (i >= 0) s[i] = { ...s[i], ...item };
+    else s.unshift({ ...item, id: genId('crw'), created_at: new Date().toISOString() });
+    saveStore(KEYS.crew, s);
+    return { success: true };
+  },
+  deleteCrew: (id) => saveStore(KEYS.crew, loadStore(KEYS.crew).filter(x => x.id !== id)),
+
+  // Personnel
+  getPersonnel: () => loadStore(KEYS.personnel),
+  savePersonnel: (item) => {
+    const s = loadStore(KEYS.personnel);
+    const i = s.findIndex(x => x.id === item.id);
+    if (i >= 0) s[i] = { ...s[i], ...item };
+    else s.unshift({ ...item, id: genId('per'), created_at: new Date().toISOString() });
+    saveStore(KEYS.personnel, s);
+    return { success: true };
+  },
+  deletePersonnel: (id) => saveStore(KEYS.personnel, loadStore(KEYS.personnel).filter(x => x.id !== id)),
+
+  // Vacations
+  getVacations: () => loadStore(KEYS.vacations),
+  saveVacation: (item) => {
+    const s = loadStore(KEYS.vacations);
+    const i = s.findIndex(x => x.id === item.id);
+    if (i >= 0) s[i] = { ...s[i], ...item };
+    else s.unshift({ ...item, id: genId('vac'), created_at: new Date().toISOString() });
+    saveStore(KEYS.vacations, s);
+    return { success: true };
+  },
+  deleteVacation: (id) => saveStore(KEYS.vacations, loadStore(KEYS.vacations).filter(x => x.id !== id)),
+
+  // Sub-systems
+  getSubsystems: () => loadStore(KEYS.subsystems),
+  saveSubsystem: (item) => {
+    const s = loadStore(KEYS.subsystems);
+    const i = s.findIndex(x => x.id === item.id);
+    if (i >= 0) s[i] = { ...s[i], ...item };
+    else s.unshift({ ...item, id: genId('sub'), created_at: new Date().toISOString() });
+    saveStore(KEYS.subsystems, s);
+    return { success: true };
+  },
+  deleteSubsystem: (id) => saveStore(KEYS.subsystems, loadStore(KEYS.subsystems).filter(x => x.id !== id)),
 
   // Export/Import
   exportDatabase,
