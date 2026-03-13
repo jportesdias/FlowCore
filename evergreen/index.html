@@ -129,6 +129,7 @@
 
         <!-- Navigation -->
         <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+          <!-- Dashboard: Always visible -->
           <a href="#" class="nav-link" data-page="dashboard">
             <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -136,8 +137,10 @@
             </svg>
             <span class="sidebar-text">Dashboard</span>
           </a>
-          <a href="#" class="nav-link" data-page="events">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="nav-icon-handovers">
+          <!-- ========== METERING GROUP (shown for Metering/Admin) ========== -->
+          <div id="nav-metering-group" class="space-y-1">
+            <a href="#" class="nav-link" data-page="events">
+              <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="nav-icon-handovers">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
@@ -217,13 +220,49 @@
             </svg>
             <span class="sidebar-text">Handover Report</span>
           </a>
-          <a href="#" class="nav-link hidden" data-page="users" id="nav-users">
-            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <span class="sidebar-text">User Management</span>
-          </a>
+            <a href="#" class="nav-link hidden" data-page="users" id="nav-users">
+              <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <span class="sidebar-text">User Management</span>
+            </a>
+          </div><!-- end nav-metering-group -->
+
+          <!-- ========== SUPERVISOR GROUP ========== -->
+          <div id="nav-supervisor-group" class="hidden space-y-1">
+            <div class="text-[9px] font-black uppercase tracking-widest text-slate-600 px-2 py-1 mt-2">Production Systems</div>
+            <a href="#" class="nav-link" data-page="sup-water">
+              <span class="nav-icon text-base">💧</span>
+              <span class="sidebar-text">Water System</span>
+            </a>
+            <a href="#" class="nav-link" data-page="sup-gas">
+              <span class="nav-icon text-base">🔥</span>
+              <span class="sidebar-text">Gas System</span>
+            </a>
+            <a href="#" class="nav-link" data-page="sup-oil">
+              <span class="nav-icon text-base">🛢️</span>
+              <span class="sidebar-text">Oil System</span>
+            </a>
+            <a href="#" class="nav-link" data-page="sup-utilities">
+              <span class="nav-icon text-base">⚡</span>
+              <span class="sidebar-text">Utilities</span>
+            </a>
+            <div class="h-px bg-slate-800 my-3 mx-2"></div>
+            <div class="text-[9px] font-black uppercase tracking-widest text-slate-600 px-2 py-1">People & Teams</div>
+            <a href="#" class="nav-link" data-page="sup-people">
+              <span class="nav-icon text-base">👥</span>
+              <span class="sidebar-text">People Management</span>
+            </a>
+            <a href="#" class="nav-link" data-page="sup-crew">
+              <span class="nav-icon text-base">⚓</span>
+              <span class="sidebar-text">Crew Manager</span>
+            </a>
+            <a href="#" class="nav-link" data-page="sup-vacations">
+              <span class="nav-icon text-base">🏖️</span>
+              <span class="sidebar-text">Vacation Ranking</span>
+            </a>
+          </div><!-- end nav-supervisor-group -->
         </nav>
 
       </div>
@@ -290,6 +329,12 @@
           <div class="flex items-center gap-3">
 
             <div class="h-8 w-px bg-slate-800/50"></div>
+
+            <!-- MODULE SWITCHER (Admin only) -->
+            <select id="module-switcher" class="hidden bg-navy-800/50 border border-slate-700/50 text-[10px] font-black uppercase tracking-wider text-slate-400 px-2 py-1 rounded-lg focus:ring-0 cursor-pointer">
+              <option value="metering">Metering Mode</option>
+              <option value="supervisor">Production Supv</option>
+            </select>
 
             <button id="notif-btn"
               class="relative p-2 text-slate-400 hover:text-white transition rounded-lg hover:bg-slate-800/50">
@@ -369,6 +414,7 @@
   <script src="js/pages-orifice.js"></script>
   <script src="js/pages-modules.js"></script>
   <script src="js/pages-admin.js"></script>
+  <script src="js/pages-supervisor.js"></script>
 </body>
 
 </html>
