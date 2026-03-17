@@ -531,11 +531,101 @@ function showApp(user) {
 
     navigate('dashboard');
 
+    // Master Local Flow: Check for updates at boot (only for Master console)
+    if (DB.isMasterLocal()) {
+        setTimeout(async () => {
+            const updates = await DB.checkCloudUpdates();
+            if (updates) {
+                window.showSyncNotification(updates);
+            }
+        }, 3000);
+    }
+
     // Update alert badge
     const overdueCount = DB.getAlerts().filter(a => a.status === 'overdue' || isOverdue(a.due_date)).length;
     if (overdueCount === 0) document.getElementById('notif-badge').style.display = 'none';
     else document.getElementById('notif-badge').style.display = 'block';
 }
+
+// Master Local Sync UI Logic
+window.showSyncNotification = function(updates) {
+    const badge = document.getElementById('sync-notification');
+    if (!badge) return;
+    badge.classList.remove('hidden');
+    badge.classList.add('flex');
+    toast('Cloud updates detected. Authorization required.', 'info');
+};
+
+window.DB.showSyncAuthorizationModal = async function() {
+    const updates = await DB.checkCloudUpdates();
+    if (!updates) {
+        toast('Sincronização já está em dia.', 'success');
+        document.getElementById('sync-notification')?.classList.add('hidden');
+        return;
+    }
+
+    let summaryHtml = '<div class="space-y-4">';
+    let totalCount = 0;
+    
+    for (const [table, items] of Object.entries(updates)) {
+        totalCount += items.length;
+        summaryHtml += `
+            <div class="flex items-center justify-between p-3 bg-navy-800 rounded-lg border border-slate-700/50">
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+                    <span class="text-sm font-semibold text-navy uppercase">${table.replace('_', ' ')}</span>
+                </div>
+                <span class="text-xs font-bold text-slate-400">${items.length} pendentes</span>
+            </div>
+        `;
+    }
+    summaryHtml += '</div>';
+
+    openModal('🛡️ Autorização de Sincronização Cloud', `
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center p-4 bg-orange-500/10 rounded-full mb-4">
+                <svg class="w-8 h-8 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-navy mb-2">Atualizações Disponíveis na Web</h3>
+            <p class="text-sm text-slate-400">Existem <strong>${totalCount}</strong> alterações registradas na versão web que ainda não foram aplicadas à sua base local.</p>
+        </div>
+
+        <div class="max-h-[300px] overflow-y-auto mb-8 px-2">
+            ${summaryHtml}
+        </div>
+
+        <div class="bg-navy-800/50 border border-slate-700/30 rounded-xl p-4 mb-8">
+            <p class="text-[11px] text-slate-500 leading-relaxed italic">
+                * Ao autorizar, as alterações da nuvem serão mescladas. A base local é soberana: dados locais mais novos que a versão web NÃO serão sobrescritos.
+            </p>
+        </div>
+
+        <div class="flex gap-3">
+            <button class="btn btn-secondary flex-1" onclick="closeModal()">Revisar Depois</button>
+            <button id="btn-authorize-sync" class="btn btn-primary flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-navy font-black shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+                AUTORIZAR ATUALIZAÇÃO
+            </button>
+        </div>
+    `, () => {
+        document.getElementById('btn-authorize-sync').onclick = async () => {
+            const btn = document.getElementById('btn-authorize-sync');
+            btn.disabled = true;
+            btn.innerHTML = 'Sincronizando...';
+            
+            const success = await DB.authorizeSync();
+            if (success) {
+                document.getElementById('sync-notification')?.classList.add('hidden');
+                closeModal();
+                toast('Base local atualizada com sucesso!', 'success');
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = 'AUTORIZAR ATUALIZAÇÃO';
+            }
+        };
+    });
+};
 
 function showLogin() {
     document.body.classList.add('login-active');

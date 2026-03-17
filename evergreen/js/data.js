@@ -253,6 +253,13 @@ function restoreLocalSnapshot() {
 }
 
 // ---- Data Sync UI ----
+// Environment Detection: Master Console (Local) vs Field Collector (Web)
+function isMasterLocal() {
+    const h = window.location.hostname;
+    const p = window.location.protocol;
+    return h === 'localhost' || h === '127.0.0.1' || p === 'file:';
+}
+
 function updateStatusUI(status) {
     const dot = document.getElementById('cloud-status-dot');
     const text = document.getElementById('cloud-status-text');
@@ -297,8 +304,14 @@ function loadStore(key) {
 function saveStore(key, data, delta = null) {
   try {
     localStorage.setItem(key, JSON.stringify(data));
-    // Automatic cloud sync disabled per user request. 
-    // Synchronize manually via window.DB.forceSync()
+    
+    // --- COLLECTOR FLOW (WEB ONLY) ---
+    // If we are on the web, we push changes automatically.
+    // If we are on Local (Master), we wait for manual sync.
+    if (!isMasterLocal()) {
+        syncToCloud(key, delta || data);
+    }
+    
     return true;
   } catch (e) {
     if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
@@ -406,8 +419,9 @@ async function syncDeleteToCloud(key, id) {
 }
 
 // Pull Data from Cloud - Downloads all cloud records into LocalStorage
-async function pullFromCloud() {
-    if (!window.supabaseClient) return;
+// Check Cloud Updates - Compares cloud state with local without applying
+async function checkCloudUpdates() {
+    if (!window.supabaseClient) return null;
 
     const tableMap = {
         'events': KEYS.events,
@@ -425,24 +439,70 @@ async function pullFromCloud() {
         'platforms': KEYS.platforms
     };
 
-    console.log('🔄 Pulling global data from Supabase Cloud...');
+    console.log('🔍 Checking for cloud updates...');
+    const pendingUpdates = {};
+    let totalPending = 0;
 
     for (const [tableName, localKey] of Object.entries(tableMap)) {
         try {
             const { data, error } = await window.supabaseClient
                 .from(tableName)
-                .select('*');
+                .select('id, updated_at, created_at');
 
             if (error) throw error;
 
-            // If we have data (or even an empty array if correctly queried), we reconcile
             if (data) {
                 const localData = JSON.parse(localStorage.getItem(localKey)) || [];
-                
-                // Identify IDs from Cloud
-                const cloudIds = new Set(data.map(r => r.id));
-                
-                // 1. Merge Strategy: Update existing or add new
+                const localMap = new Map(localData.map(item => [item.id, item]));
+
+                const tableUpdates = [];
+                data.forEach(cloudRow => {
+                    const localItem = localMap.get(cloudRow.id);
+                    const cloudTime = new Date(cloudRow.updated_at || cloudRow.created_at || 0).getTime();
+                    
+                    if (!localItem) {
+                        tableUpdates.push({ id: cloudRow.id, type: 'new' });
+                    } else {
+                        const localTime = new Date(localItem.updated_at || localItem.created_at || 0).getTime();
+                        if (cloudTime > localTime) {
+                            tableUpdates.push({ id: cloudRow.id, type: 'update' });
+                        }
+                    }
+                });
+
+                if (tableUpdates.length > 0) {
+                    pendingUpdates[tableName] = tableUpdates;
+                    totalPending += tableUpdates.length;
+                }
+            }
+        } catch (e) {
+            console.warn(`⚠️ Erro ao verificar tabela ${tableName}:`, e);
+        }
+    }
+
+    updateStatusUI(totalPending > 0 ? 'syncing' : 'online');
+    return totalPending > 0 ? pendingUpdates : null;
+}
+
+// Internal logic for pulling (moved from public to private-ish)
+async function performPullSync() {
+    if (!window.supabaseClient) return;
+
+    const tableMap = {
+        'events': KEYS.events, 'tags': KEYS.tags, 'activities': KEYS.activities,
+        'inspections': KEYS.inspections, 'materials': KEYS.materials,
+        'systems': KEYS.systems, 'notes': KEYS.notes, 'alerts': KEYS.alerts,
+        'orifice_plates': KEYS.orifice_plates, 'calibrations': KEYS.calibrations,
+        'embarkations': KEYS.embarkations, 'users': KEYS.users, 'platforms': KEYS.platforms
+    };
+
+    console.log('🔄 Executing Authorized Pull Sync...');
+    for (const [tableName, localKey] of Object.entries(tableMap)) {
+        try {
+            const { data, error } = await window.supabaseClient.from(tableName).select('*');
+            if (error) throw error;
+            if (data) {
+                const localData = JSON.parse(localStorage.getItem(localKey)) || [];
                 const merged = [...localData];
                 data.forEach(cloudRow => {
                     const idx = merged.findIndex(l => l.id === cloudRow.id);
@@ -455,21 +515,17 @@ async function pullFromCloud() {
                         merged.push(cloudRow);
                     }
                 });
-
-                // 2. RECONCILIATION: Disabled for manual sync strategy
-                // Previously it removed local items NOT in Cloud.
-                // Now we only merge (Update/Add) to protect unsynced local data.
-                reconciled = merged;
-
-                localStorage.setItem(localKey, JSON.stringify(reconciled));
-                console.log(`✅ ${tableName}: ${data.length} registros (Reconciliado).`);
+                localStorage.setItem(localKey, JSON.stringify(merged));
             }
-        } catch (e) {
-            console.warn(`⚠️ Erro ao puxar tabela ${tableName}:`, e);
-        }
+        } catch (e) { console.error(`Sync error (${tableName}):`, e); }
     }
-    // If we reach here and supabaseClient is active, we are effectively Online
     updateStatusUI('online');
+    if (window.refreshCurrentPage) window.refreshCurrentPage();
+}
+
+async function pullFromCloud() {
+    // legacy wrapper, now calls performPullSync if user wants
+    return performPullSync();
 }
 
 // --- END REALTIME LISTENERS ---
@@ -523,7 +579,7 @@ async function pushLocalToCloud() {
     return totalSynced;
 }
 
-// Real-time Cloud Listeners - Reage a mudanças vindas de outros usuários
+// Real-time Cloud Listeners - DETECT ONLY (Master Local Flow)
 function initRealtimeListeners() {
     if (!window.supabaseClient) return;
 
@@ -533,35 +589,33 @@ function initRealtimeListeners() {
         window.supabaseClient
             .channel(`realtime:${table}`)
             .on('postgres_changes', { event: '*', schema: 'public', table: table }, payload => {
-                console.log(`☁️ Mudança em tempo real (${table}):`, payload.eventType);
+                console.log(`☁️ Cloud modification detected (${table}):`, payload.eventType);
                 
-                // Get the local key for this table
-                const localKey = Object.keys(KEYS).find(k => k === (table === 'orifice_plates' ? 'orifice_plates' : table));
-                const key = KEYS[localKey] || `ph_${table}`;
+                if (isMasterLocal()) {
+                    // MASTER FLOW: Only notify, don't apply automatically
+                    if (window.showSyncNotification) window.showSyncNotification();
+                    updateStatusUI('syncing');
+                } else {
+                    // COLLECTOR FLOW: Apply immediately to keep web in sync
+                    const localKey = Object.keys(KEYS).find(k => k === (table === 'orifice_plates' ? 'orifice_plates' : table));
+                    const key = KEYS[localKey] || `ph_${table}`;
+                    const localData = JSON.parse(localStorage.getItem(key)) || [];
+                    let merged = [...localData];
 
-                const localData = JSON.parse(localStorage.getItem(key)) || [];
-                let merged = [...localData];
+                    if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+                        const idx = merged.findIndex(i => i.id === payload.new.id);
+                        if (idx >= 0) merged[idx] = payload.new;
+                        else merged.push(payload.new);
+                    } else if (payload.eventType === 'DELETE') {
+                        merged = merged.filter(i => i.id !== payload.old.id);
+                    }
 
-                if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-                    const idx = merged.findIndex(i => i.id === payload.new.id);
-                    if (idx >= 0) merged[idx] = payload.new;
-                    else merged.push(payload.new);
-                } else if (payload.eventType === 'DELETE') {
-                    merged = merged.filter(i => i.id === payload.old.id);
-                }
-
-                localStorage.setItem(key, JSON.stringify(merged));
-                
-                // Refresh UI if necessary
-                if (window.refreshCurrentPage) {
-                    window.refreshCurrentPage();
-                    toast('Dados atualizados via nuvem.', 'info');
+                    localStorage.setItem(key, JSON.stringify(merged));
+                    if (window.refreshCurrentPage) window.refreshCurrentPage();
                 }
             })
             .subscribe();
     });
-    
-    updateStatusUI('online');
 }
 
 function initSeed() {
@@ -1473,17 +1527,21 @@ window.DB = {
     return null;
   },
 
-  deleteEvent: (id) => {
-    // syncDeleteToCloud removed per manual sync request
-    const s = loadStore(KEYS.events);
-    const filtered = s.filter(e => e.id !== id);
-    saveStore(KEYS.events, filtered);
-    return { success: true };
-  },
-
   // Manual Cloud Control
   pushLocalToCloud: pushLocalToCloud,
   pullFromCloud: pullFromCloud,
+  checkCloudUpdates: checkCloudUpdates,
+  authorizeSync: async () => {
+    try {
+        updateStatusUI('syncing');
+        await performPullSync();
+        toast('Sincronização concluída com sucesso.', 'success');
+        return true;
+    } catch (e) {
+        console.error('Authorization sync failed:', e);
+        return false;
+    }
+  },
   forceSync: async () => {
     const user = getCurrentUser();
     try {
@@ -1504,7 +1562,6 @@ window.DB = {
         return false;
     }
   },
-
 
   // ===== Production Supervisor Module =====
 
@@ -1558,12 +1615,24 @@ window.DB = {
 
   // Export/Import
   exportDatabase,
-  importDatabase
+  importDatabase,
+
+  // Environment
+  isMasterLocal: isMasterLocal
 };
 
 // Initialize seed on load
-createLocalSnapshot(); // Guardar 90% atual antes de tudo
+createLocalSnapshot();
 initSeed();
 migrateData();
-pullFromCloud();
+
+// BOOT SYNC LOGIC
+if (isMasterLocal()) {
+    console.log('🛡️ Master Local Mode: Skipping auto-pull. Waiting for engineer authorization.');
+    // We already do a checkCloudUpdates in app.js at boot
+} else {
+    console.log('📡 Field Collector Mode (Web): Automatic pull active.');
+    pullFromCloud(); 
+}
+
 initRealtimeListeners();
