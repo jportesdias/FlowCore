@@ -169,17 +169,17 @@ window.renderSupervisorDashboard = function(container) {
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div class="card p-5">
         <div class="text-slate-400 text-xs uppercase font-bold tracking-wider mb-1">Onboard Today</div>
-        <div class="text-3xl font-black text-white">${onboard.length}</div>
+        <div class="text-3xl font-black text-navy">${onboard.length}</div>
         <div class="text-slate-500 text-xs mt-1">personnel aboard</div>
       </div>
       <div class="card p-5">
         <div class="text-slate-400 text-xs uppercase font-bold tracking-wider mb-1">On Vacation</div>
-        <div class="text-3xl font-black text-slate-300">${onVacation.length}</div>
+        <div class="text-3xl font-black text-navy opacity-80">${onVacation.length}</div>
         <div class="text-slate-500 text-xs mt-1">off rotation</div>
       </div>
       <div class="card p-5">
         <div class="text-slate-400 text-xs uppercase font-bold tracking-wider mb-1">Covering</div>
-        <div class="text-3xl font-black text-slate-300">${covering.length}</div>
+        <div class="text-3xl font-black text-navy opacity-80">${covering.length}</div>
         <div class="text-slate-500 text-xs mt-1">covering vacations</div>
       </div>
     </div>
@@ -193,11 +193,11 @@ window.renderSupervisorDashboard = function(container) {
           : onboard.map(c => `
           <div class="flex items-center justify-between py-2 border-b border-slate-800/50 last:border-0">
             <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-sm">
+              <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center text-navy font-bold text-sm">
                 ${(c.name || 'X').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
               </div>
               <div>
-                <div class="text-white font-medium text-sm">${window.escHtml(c.name)}</div>
+                <div class="text-navy font-medium text-sm">${window.escHtml(c.name)}</div>
                 <div class="text-slate-500 text-xs">${window.escHtml(c.role || '—')}</div>
               </div>
             </div>
@@ -215,7 +215,7 @@ window.renderSupervisorDashboard = function(container) {
           return `
           <div class="flex items-center justify-between py-2 border-b border-slate-800/50 last:border-0">
             <div>
-              <div class="text-white font-medium text-sm">${window.escHtml(p ? p.name : v.personnel_name || '—')}</div>
+              <div class="text-navy font-medium text-sm">${window.escHtml(p ? p.name : v.personnel_name || '—')}</div>
               <div class="text-slate-500 text-xs">Returns: ${window.fmtDate(v.end_date)}</div>
             </div>
             <span class="badge badge-medium text-[9px]">Vacation</span>
@@ -252,7 +252,7 @@ function renderSystemPage(container, systemName, icon) {
         : events.slice(0, 8).map(e => `
         <div class="card p-4">
           <div class="flex items-center justify-between">
-            <div class="text-white font-medium">${window.escHtml(e.title)}</div>
+            <div class="text-navy font-medium">${window.escHtml(e.title)}</div>
             <div class="flex gap-2">${window.priorityBadge(e.priority)} ${window.statusBadge(e.status)}</div>
           </div>
           <div class="text-slate-400 text-xs mt-1">${window.escHtml(e.description).slice(0,120)}…</div>
@@ -267,7 +267,7 @@ function renderSystemPage(container, systemName, icon) {
         : alerts.slice(0, 6).map(a => `
         <div class="card p-4">
           <div class="flex items-center justify-between">
-            <div class="text-white font-medium">${window.escHtml(a.title)}</div>
+            <div class="text-navy font-medium">${window.escHtml(a.title)}</div>
             ${window.priorityBadge(a.priority)}
           </div>
           <div class="text-slate-400 text-xs mt-1">${window.escHtml(a.description).slice(0,100)}…</div>
@@ -312,7 +312,7 @@ window.renderGasSystem = function(container) {
               </div>
             </div>
             
-            <div class="text-white font-bold text-lg mb-1">${window.escHtml(s.name)}</div>
+            <div class="text-navy font-bold text-lg mb-1">${window.escHtml(s.name)}</div>
             <p class="text-slate-500 text-xs line-clamp-2 mb-4">${window.escHtml(s.description || 'No description.')}</p>
             
             <div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-800/50">
@@ -320,11 +320,11 @@ window.renderGasSystem = function(container) {
                  ${(s.tags || []).map(t => `<span class="tag-chip text-[9px]">${t}</span>`).join('')}
                </div>
                <div class="flex gap-2">
-                 <button class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition" 
+                 <button class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-navy hover:bg-slate-700 transition" 
                    onclick="window.editSubsystem('${s.id}')" title="Edit Unit">
                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                  </button>
-                 <button class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-400 hover:bg-orange-500 hover:text-white transition text-xs font-bold" 
+                 <button class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-400 hover:bg-orange-500 hover:text-navy transition text-xs font-bold" 
                    onclick="window.openAddEventFromSubsystem('${s.id}', '${window.escHtml(s.name)}', 'Gas')" title="Add Event">
                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                    EVENT
@@ -342,7 +342,7 @@ window.renderGasSystem = function(container) {
           ${gasEvents.length === 0 ? '<div class="empty-state">No events.</div>' : gasEvents.slice(0, 5).map(e => `
             <div class="card p-4">
               <div class="flex items-center justify-between mb-1">
-                <span class="text-white font-medium text-sm">${window.escHtml(e.title)}</span>
+                <span class="text-navy font-medium text-sm">${window.escHtml(e.title)}</span>
                 ${window.priorityBadge(e.priority)}
               </div>
               <div class="flex justify-between items-center text-xs">
@@ -358,7 +358,7 @@ window.renderGasSystem = function(container) {
         <div class="space-y-3">
           ${alerts.length === 0 ? '<div class="empty-state">No alerts.</div>' : alerts.slice(0, 5).map(a => `
             <div class="card p-4 border-l-2 ${a.priority === 'critical' ? 'border-l-red-500' : 'border-l-orange-500'}">
-              <div class="text-white font-medium text-sm">${window.escHtml(a.title)}</div>
+              <div class="text-navy font-medium text-sm">${window.escHtml(a.title)}</div>
               <div class="text-slate-500 text-xs mt-1">${window.escHtml(a.description)}</div>
             </div>
           `).join('')}
@@ -392,7 +392,7 @@ window.renderPeopleManagement = function(container) {
         <div class="flex items-start justify-between gap-4 mb-4">
           <div class="flex items-center gap-4">
             <div class="relative">
-              <div class="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center text-white font-black text-lg flex-shrink-0">
+              <div class="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center text-navy font-black text-lg flex-shrink-0">
                 ${(p.name||'X').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}
               </div>
               ${(() => {
@@ -403,7 +403,7 @@ window.renderPeopleManagement = function(container) {
               })()}
             </div>
             <div>
-              <div class="text-white font-bold text-base line-clamp-1">${window.escHtml(p.name)}</div>
+              <div class="text-navy font-bold text-base line-clamp-1">${window.escHtml(p.name)}</div>
               <div class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">${window.escHtml(p.position || '—')}</div>
             </div>
           </div>
@@ -421,7 +421,7 @@ window.renderPeopleManagement = function(container) {
                <div class="flex justify-between items-center">
                  <div>
                    <div class="text-[9px] uppercase font-black text-slate-500 mb-0.5">${rot.isOnboard ? 'Current Boarding' : 'Next Boarding'}</div>
-                   <div class="text-xs text-white font-mono">${window.fmtDate(rot.boardDate)} → ${window.fmtDate(rot.offboardDate)}</div>
+                   <div class="text-xs text-navy font-mono">${window.fmtDate(rot.boardDate)} → ${window.fmtDate(rot.offboardDate)}</div>
                  </div>
                  <span class="text-[9px] font-black uppercase tracking-widest ${rot.isOnboard ? 'text-green-400' : 'text-slate-500'}">${rot.isOnboard ? 'ONBOARD' : 'OFFBOARD'}</span>
                </div>
@@ -437,15 +437,15 @@ window.renderPeopleManagement = function(container) {
 
         <div class="grid grid-cols-3 gap-2 text-center text-[10px] pt-3 border-t border-slate-800/50">
           <div>
-            <div class="text-white font-bold">${(p.evaluations||[]).length}</div>
+            <div class="text-navy font-bold">${(p.evaluations||[]).length}</div>
             <div class="text-slate-500">Evaluations</div>
           </div>
           <div>
-            <div class="text-white font-bold">${(p.trainings||[]).length}</div>
+            <div class="text-navy font-bold">${(p.trainings||[]).length}</div>
             <div class="text-slate-500">Trainings</div>
           </div>
           <div>
-            <div class="text-white font-bold">${p.seniority_years || 0}y</div>
+            <div class="text-navy font-bold">${p.seniority_years || 0}y</div>
             <div class="text-slate-500">Seniority</div>
           </div>
         </div>
@@ -475,14 +475,14 @@ window.openPersonnelDetail = function(id) {
   const evalList = (p.evaluations||[]).map(ev => `
     <div class="bg-slate-800/50 border border-slate-700/50 rounded-lg p-3 mb-2">
       <div class="flex justify-between text-xs text-slate-500 mb-1"><span>${window.fmtDate(ev.date)}</span><span>${window.escHtml(ev.type||'')}</span></div>
-      <div class="text-sm text-slate-300">${window.escHtml(ev.notes||'')}</div>
+      <div class="text-sm text-navy opacity-80">${window.escHtml(ev.notes||'')}</div>
       <div class="text-xs mt-1 font-bold ${ev.score >= 7 ? 'text-green-400' : ev.score >= 5 ? 'text-amber-400' : 'text-red-400'}">Score: ${ev.score||'—'}/10</div>
     </div>`).join('') || '<p class="text-slate-500 text-xs italic">No evaluations yet.</p>';
 
   const trainList = (p.trainings||[]).map(t => `
     <div class="bg-slate-800/50 border border-slate-700/50 rounded-lg p-3 mb-2">
       <div class="flex justify-between">
-        <div class="text-sm text-slate-300 font-medium">${window.escHtml(t.name||'')}</div>
+        <div class="text-sm text-navy opacity-80 font-medium">${window.escHtml(t.name||'')}</div>
         <span class="badge ${t.completed ? 'status-closed' : 'status-pending'} text-[10px]">${t.completed ? 'Done' : 'Pending'}</span>
       </div>
       <div class="text-xs text-slate-500 mt-1">${window.fmtDate(t.date)} · ${window.escHtml(t.institution||'')}</div>
@@ -491,12 +491,12 @@ window.openPersonnelDetail = function(id) {
   window.openModal(p.name, `
     <div class="space-y-4">
       <div class="grid grid-cols-2 gap-4 text-sm">
-        <div><div class="section-label">Position</div><div class="text-slate-300">${window.escHtml(p.position||'—')}</div></div>
-        <div><div class="section-label">Area</div><div class="text-slate-300">${window.escHtml(p.area||'—')}</div></div>
-        <div><div class="section-label">Seniority</div><div class="text-slate-300">${p.seniority_years||0} years</div></div>
-        <div><div class="section-label">Since</div><div class="text-slate-300">${window.fmtDate(p.hire_date)||'—'}</div></div>
-        <div><div class="section-label">Base Boarding</div><div class="text-slate-300">${window.fmtDate(p.base_boarding_date)||'—'}</div></div>
-        <div><div class="section-label">Vacation Sold</div><div class="text-slate-300">${p.vacation_sold ? 'Yes (10 days)' : 'No'}</div></div>
+        <div><div class="section-label">Position</div><div class="text-navy opacity-80">${window.escHtml(p.position||'—')}</div></div>
+        <div><div class="section-label">Area</div><div class="text-navy opacity-80">${window.escHtml(p.area||'—')}</div></div>
+        <div><div class="section-label">Seniority</div><div class="text-navy opacity-80">${p.seniority_years||0} years</div></div>
+        <div><div class="section-label">Since</div><div class="text-navy opacity-80">${window.fmtDate(p.hire_date)||'—'}</div></div>
+        <div><div class="section-label">Base Boarding</div><div class="text-navy opacity-80">${window.fmtDate(p.base_boarding_date)||'—'}</div></div>
+        <div><div class="section-label">Vacation Sold</div><div class="text-navy opacity-80">${p.vacation_sold ? 'Yes (10 days)' : 'No'}</div></div>
       </div>
       ${window.generate12MonthScale(p)}
       <div>
@@ -551,7 +551,7 @@ window.personnelFormHtml = function(p) {
       <div class="form-group flex items-end">
         <label class="flex items-center gap-2 cursor-pointer pb-2">
           <input type="checkbox" id="pf-vac-sold" class="w-4 h-4" ${p && p.vacation_sold ? 'checked' : ''} />
-          <span class="text-sm text-slate-300">Sold 10 days (Abono)</span>
+          <span class="text-sm text-navy opacity-80">Sold 10 days (Abono)</span>
         </label>
       </div>
     </div>
@@ -643,7 +643,7 @@ window.openAddTrainingModal = function(personnelId) {
         <input type="date" class="form-input" id="tf-date" value="${new Date().toISOString().split('T')[0]}" /></div>
       <div class="flex items-center gap-2">
         <input type="checkbox" id="tf-done" class="w-4 h-4" checked />
-        <label for="tf-done" class="text-sm text-slate-300">Completed</label>
+        <label for="tf-done" class="text-sm text-navy opacity-80">Completed</label>
       </div>
       <div class="flex gap-3 justify-end pt-4">
         <button type="button" class="btn btn-secondary" onclick="window.closeModal()">Cancel</button>
@@ -697,7 +697,7 @@ window.renderCrewManager = function(container) {
         <div class="card p-4">
           <div class="flex items-center justify-between">
             <div>
-              <div class="text-white font-bold">${window.escHtml(c.name)}</div>
+              <div class="text-navy font-bold">${window.escHtml(c.name)}</div>
               <div class="text-slate-400 text-xs">${window.escHtml(c.role||'—')}</div>
             </div>
             <div class="text-right text-xs text-slate-500">
@@ -718,7 +718,7 @@ window.renderCrewManager = function(container) {
             ? '<tr><td colspan="6"><div class="empty-state"><p>No rotation entries.</p></div></td></tr>'
             : crew.map(c => `
             <tr>
-              <td class="text-white font-medium">${window.escHtml(c.name)}</td>
+              <td class="text-navy font-medium">${window.escHtml(c.name)}</td>
               <td class="text-slate-400">${window.escHtml(c.role||'—')}</td>
               <td class="text-slate-400 font-mono text-xs">${window.fmtDate(c.boarding_date)}</td>
               <td class="text-slate-400 font-mono text-xs">${window.fmtDate(c.offboarding_date)}</td>
@@ -836,12 +836,12 @@ window.renderVacationRanking = function(container) {
             : ranked.map((p,i) => `
             <tr class="${i < 3 ? 'opacity-100' : ''}">
               <td><span class="font-black text-lg ${i===0?'text-amber-400':i===1?'text-slate-400':i===2?'text-orange-600':'text-slate-600'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`}</span></td>
-              <td class="text-white font-medium">${window.escHtml(p.name)}</td>
+              <td class="text-navy font-medium">${window.escHtml(p.name)}</td>
               <td class="text-slate-400 text-xs">${window.escHtml(p.position||'—')}</td>
-              <td class="text-slate-300">${p.seniority_years||0}y</td>
+              <td class="text-navy opacity-80">${p.seniority_years||0}y</td>
               <td class="text-slate-400 text-xs">${p.lastVac ? window.fmtDate(p.lastVac.end_date) : '<span class="text-red-400">Never</span>'}</td>
               <td class="${p.daysSince >= 365 ? 'text-red-400 font-bold' : p.daysSince >= 180 ? 'text-amber-400' : 'text-slate-400'}">${p.daysSince >= 9999 ? '—' : p.daysSince+'d'}</td>
-              <td class="text-white font-black">${p.score}</td>
+              <td class="text-navy font-black">${p.score}</td>
             </tr>`).join('')}
         </tbody>
       </table>
@@ -856,7 +856,7 @@ window.renderVacationRanking = function(container) {
           return `
           <div class="card p-3 flex items-center justify-between">
             <div>
-              <span class="text-white font-medium text-sm">${window.escHtml(p ? p.name : v.personnel_name||'—')}</span>
+              <span class="text-navy font-medium text-sm">${window.escHtml(p ? p.name : v.personnel_name||'—')}</span>
               <span class="text-slate-500 text-xs ml-3">${window.fmtDate(v.start_date)} → ${window.fmtDate(v.end_date)}</span>
             </div>
             <button class="btn btn-sm btn-danger" onclick="window.DB.deleteVacation('${v.id}'); window.renderVacationRanking(document.getElementById('page-container'))">Remove</button>

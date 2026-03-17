@@ -66,499 +66,14 @@ const SEED_TAGS = [
   },
 ];
 
-const SEED_EVENTS = [
-  {
-    id: 'evt-fc-001',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-126',
-    tag_code: 'FC-1101',
-    title: 'Morning Shift Handover — 07:00',
-    description: 'Relief of night shift (R. Costa). All custody transfer skids operating normally. No active alarms in the Metering Room. Allocation factor for previous day calculated at 0.9982.',
-    author: 'J. Santos',
-    category: 'Handover',
-    priority: 'medium',
-    status: 'closed',
-    system: 'Management',
-    actions_taken: 'Verbal briefing completed. Daily reports signed and filed.',
-    follow_up_required: false,
-    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-    updated_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-  },
-  {
-    id: 'evt-fc-002',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-103',
-    tag_code: 'FT-2101',
-    title: 'Coriolis Calibration Successful — FT-2101',
-    description: 'Verification with Compact Prover (30XX001) completed on Oil Export line A. All five runs showed repeatability within 0.05%. Meter factor adjusted from 0.9984 to 0.9987.',
-    author: 'A. Ferreira',
-    category: 'Calibration',
-    priority: 'high',
-    status: 'closed',
-    system: 'Oil Metering',
-    actions_taken: 'New MF updated in Flow Computer FC-2101. Report signed by third-party witness.',
-    follow_up_required: false,
-    created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-    updated_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-  },
-  {
-    id: 'evt-fc-003',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-117',
-    tag_code: 'PDT-1101',
-    title: 'Minor Oil Leak — Strainer Flange F-101',
-    description: 'A small weeping leak (approx. 2 drops per minute) detected at the upstream strainer flange of Skid 01. No immediate fire hazard, but requires gasket replacement during next maintenance window.',
-    author: 'M. Oliveira',
-    category: 'Maintenance',
-    priority: 'low',
-    status: 'open',
-    system: 'Gas Intake',
-    actions_taken: 'Spillage contained with absorbent pads. Tightened bolts — leak persists at reduced rate.',
-    follow_up_required: true,
-    created_at: new Date(Date.now() - 3600000 * 48).toISOString(),
-    updated_at: new Date(Date.now() - 3600000 * 48).toISOString(),
-  },
-  {
-    id: 'evt-fc-004',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-126',
-    tag_code: 'FC-1101',
-    title: 'Flow Computer Firmware Patch — Security Fix',
-    description: 'Applied critical security patch (v2.4.1) to Flow Computer FC-1101 following corporate IT directive. Patch addresses vulnerabilities in the Modbus over IP communication layer.',
-    author: 'R. Costa',
-    category: 'IT/Automation',
-    priority: 'high',
-    status: 'closed',
-    system: 'Control Systems',
-    actions_taken: 'Backup configuration saved before update. Post-patch hashing confirmed integrity.',
-    follow_up_required: false,
-    created_at: new Date(Date.now() - 3600000 * 72).toISOString(),
-    updated_at: new Date(Date.now() - 3600000 * 72).toISOString(),
-  },
-  {
-    id: 'evt-fc-005',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-130',
-    tag_code: 'SIS-001',
-    title: 'Quarterly Safety Loop Test — Pass',
-    description: 'Annual functional safety test for SIS logic solver and final elements (SDVs). All response times remained below 2.0 seconds. No diagnostic failures found.',
-    author: 'J. Santos',
-    category: 'Safety',
-    priority: 'medium',
-    status: 'closed',
-    system: 'ESD System',
-    actions_taken: 'Logged into the SIS maintenance register. Bypass removed post-test.',
-    follow_up_required: false,
-    created_at: new Date(Date.now() - 3600000 * 96).toISOString(),
-    updated_at: new Date(Date.now() - 3600000 * 96).toISOString(),
-  },
-];
+const SEED_EVENTS = [];
 
-const SEED_ACTIVITIES = [
-  {
-    id: 'act-fc-001',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-117',
-    tag_code: 'PDT-1101',
-    title: 'Gasket Replacement — Skid 01 Flange',
-    description: 'Isolate strainer S-101, vent to flare, and replace defective gasket at the upstream flange. Torque to design specs.',
-    responsible: 'M. Oliveira',
-    due_date: new Date(Date.now() + 3600000 * 48).toISOString().split('T')[0],
-    priority: 'high',
-    status: 'open',
-    comments: ['Absorbent pads already in place. Verify depressurization before opening.'],
-    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-  },
-  {
-    id: 'act-fc-002',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-126',
-    tag_code: 'FC-1101',
-    title: 'Monthly Data Dump and Verification',
-    description: 'Extract monthly totalization and event logs from Gas Flow Computer. Reconcile against DCS daily averages.',
-    responsible: 'J. Santos',
-    due_date: new Date(Date.now() + 3600000 * 24).toISOString().split('T')[0],
-    priority: 'medium',
-    status: 'in-progress',
-    comments: ['USB token collected from CCR safe.'],
-    created_at: new Date(Date.now() - 3600000 * 6).toISOString(),
-  },
-  {
-    id: 'act-fc-003',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-130',
-    tag_code: 'SIS-001',
-    title: 'Annual Alarm Logic Validation',
-    description: 'Ensure cross-departmental witnesses are available for the annual SIL-3 loop certification. Test SDV travel times.',
-    responsible: 'R. Costa',
-    due_date: new Date(Date.now() + 3600000 * 720).toISOString().split('T')[0],
-    priority: 'low',
-    status: 'open',
-    comments: ['Third-party specialist arriving on Monday flight.'],
-    created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-  },
-  {
-    id: 'act-fc-004',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-105',
-    tag_code: 'AT-1101',
-    title: 'Replacement of Calibration Gas Cylinder',
-    description: 'The current GC calibration gas (N2/Methane/Ethane mix) is at 150 psi. Replace with new certified cylinder before night shift.',
-    responsible: 'A. Ferreira',
-    due_date: new Date(Date.now() + 3600000 * 2).toISOString().split('T')[0],
-    priority: 'critical',
-    status: 'open',
-    comments: ['New cylinder SN: 88442 confirmed in analyzer house.'],
-    created_at: new Date(Date.now() - 3600000 * 1).toISOString(),
-  },
-  {
-    id: 'act-fc-005',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-109',
-    tag_code: 'ST-5001',
-    title: 'Purge Oil Sampling Bottle Rack',
-    description: 'Empty and clean all 15 production sampling bottles. Ensure vacuum sealing is intact for upcoming offloading.',
-    responsible: 'M. Oliveira',
-    due_date: new Date(Date.now() + 3600000 * 12).toISOString().split('T')[0],
-    priority: 'medium',
-    status: 'open',
-    comments: ['Chemical cleaning agent identified in storage.'],
-    created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
-  },
-];
-
-const SEED_INSPECTIONS = [
-  {
-    id: 'insp-fc-001',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-101',
-    tag_code: 'FT-1101',
-    date: new Date(Date.now() - 3600000 * 24 * 5).toISOString().split('T')[0],
-    inspector: 'G. Almeida',
-    condition: 'Excellent',
-    findings: 'Visual inspection of meter FT-1101 body and impulse lines. No corrosion detected. Cable glands tight and no moisture ingress in the junction box. Grounding straps confirmed low resistance.',
-    recommendation: 'Next visual check due in 90 days.',
-    status: 'closed',
-    created_at: new Date(Date.now() - 3600000 * 24 * 5).toISOString(),
-  },
-  {
-    id: 'insp-fc-002',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-128',
-    tag_code: 'SDV-9001',
-    date: new Date(Date.now() - 3600000 * 24 * 2).toISOString().split('T')[0],
-    inspector: 'J. Santos',
-    condition: 'Good',
-    findings: 'Full stroke test during planned shutdown. Valve closure time: 1.8s (Limit < 2s). Local indicator matches DCS feedback. No stem leaks observed during high pressure hold.',
-    recommendation: 'Scheduled for annual overhaul in Q4.',
-    status: 'closed',
-    created_at: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
-  },
-  {
-    id: 'insp-fc-003',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-117',
-    tag_code: 'PDT-1101',
-    date: new Date(Date.now() - 3600000 * 24 * 1).toISOString().split('T')[0],
-    inspector: 'M. Oliveira',
-    condition: 'Degraded',
-    findings: 'External weeping at flange connection. Gasket appears brittle. Tightening attempt was unsuccessful. No sign of impulse line plugging.',
-    recommendation: 'Replace gasket. See related Activity act-fc-001.',
-    status: 'open',
-    created_at: new Date(Date.now() - 3600000 * 24 * 1).toISOString(),
-  },
-  {
-    id: 'insp-fc-004',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-130',
-    tag_code: 'SIS-001',
-    date: new Date(Date.now() - 3600000 * 24 * 10).toISOString().split('T')[0],
-    inspector: 'R. Costa',
-    condition: 'Excellent',
-    findings: 'Logic solver diagnostic battery check. Voltage: 3.61V (Nominal 3.6V). No memory parity errors. Cabinet cooling fans operating within current limits.',
-    recommendation: 'Replace internal backup battery in 6 months.',
-    status: 'closed',
-    created_at: new Date(Date.now() - 3600000 * 24 * 10).toISOString(),
-  },
-
-];
-
-const SEED_MATERIALS = [
-  {
-    id: 'mat-fc-001',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-103',
-    tag_code: 'FT-2101',
-    ifs_code: 'IFS-99201',
-    serial_number: 'MM-8821',
-    shipment_date: new Date(Date.now() - 3600000 * 24 * 7).toISOString().split('T')[0],
-    destination: 'Onshore Lab — Metroland',
-    status: 'in-transit',
-    expected_return: new Date(Date.now() + 3600000 * 24 * 14).toISOString().split('T')[0],
-    notes: 'Meter pulled for recertification. AWB: ML-2026-001.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 7).toISOString(),
-  },
-  {
-    id: 'mat-fc-002',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-127',
-    tag_code: 'FC-2101',
-    ifs_code: 'IFS-99205',
-    serial_number: 'S-77442',
-    shipment_date: '',
-    destination: 'Site Storage — Zone 1',
-    status: 'available',
-    expected_return: '',
-    notes: 'Spare CPU card for Flow Computer. Tested and functional.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 30).toISOString(),
-  },
-  {
-    id: 'mat-fc-003',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-121',
-    tag_code: 'WELL-P01',
-    ifs_code: 'IFS-99208',
-    serial_number: 'DH-GAUGE-99',
-    shipment_date: new Date(Date.now() - 3600000 * 24 * 2).toISOString().split('T')[0],
-    destination: 'Workshop — Maintenance Area',
-    status: 'in-overhaul',
-    expected_return: new Date(Date.now() + 3600000 * 24 * 5).toISOString().split('T')[0],
-    notes: 'Downhole gauge retrieved for battery replacement.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
-  },
-  {
-    id: 'mat-fc-004',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-105',
-    tag_code: 'AT-1101',
-    ifs_code: 'IFS-99210',
-    serial_number: 'GC-PROC-33',
-    shipment_date: '',
-    destination: 'Onboard Spare',
-    status: 'available',
-    expected_return: '',
-    notes: 'Set of replacement solenoid valves for GC analyzer.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 60).toISOString(),
-  },
-  {
-    id: 'mat-fc-005',
-    platform_id: 'plat-flowcore',
-    tag_id: null,
-    tag_code: 'M-TOOLS',
-    ifs_code: 'IFS-99215',
-    serial_number: 'HART-475-01',
-    shipment_date: '',
-    destination: 'Instrumentation Shop',
-    status: 'available',
-    expected_return: '',
-    notes: 'Portable HART Communicator (Field Unit 1). Battery healthy.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 90).toISOString(),
-  },
-];
-
-const SEED_SYSTEMS = [
-  {
-    id: 'sys-fc-001',
-    platform_id: 'plat-flowcore',
-    system_name: 'Main Metering Station',
-    tag_id: 'tag-fc-126',
-    tag_code: 'FC-1101',
-    serial_number: 'FC-FLOWCORE-01',
-    expire_date: '2027-12-31',
-    active: true,
-    notes: 'Central custody transfer system for gas export. v2.4.1 firmware.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 365).toISOString(),
-  },
-  {
-    id: 'sys-fc-002',
-    platform_id: 'plat-flowcore',
-    system_name: 'Oil Export Flow Computer',
-    tag_id: 'tag-fc-127',
-    tag_code: 'FC-2101',
-    serial_number: 'FC-FLOWCORE-02',
-    expire_date: '2027-12-31',
-    active: true,
-    notes: 'Central custody transfer system for liquid export.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 365).toISOString(),
-  },
-  {
-    id: 'sys-fc-003',
-    platform_id: 'plat-flowcore',
-    system_name: 'Gas Analysis Rack',
-    tag_id: 'tag-fc-105',
-    tag_code: 'AT-1101',
-    serial_number: 'ANALYZER-FC-01',
-    expire_date: '2026-06-30',
-    active: true,
-    notes: 'Online GC for calorific value determination.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 180).toISOString(),
-  },
-  {
-    id: 'sys-fc-004',
-    platform_id: 'plat-flowcore',
-    system_name: 'Safety & ESD Logic',
-    tag_id: 'tag-fc-130',
-    tag_code: 'SIS-001',
-    serial_number: 'SIS-SIL3-FC',
-    expire_date: '2030-01-01',
-    active: true,
-    notes: 'Main logic solver for functional safety. All cards healthy.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 500).toISOString(),
-  },
-  {
-    id: 'sys-fc-005',
-    platform_id: 'plat-flowcore',
-    system_name: 'Flare Monitoring Unit',
-    tag_id: 'tag-fc-108',
-    tag_code: 'FT-4001',
-    serial_number: 'FLARE-MON-01',
-    expire_date: '2026-11-20',
-    active: true,
-    notes: 'Environmental monitoring system for venting/flaring logs.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 100).toISOString(),
-  },
-];
-
-const SEED_NOTES = [
-  {
-    id: 'note-fc-001',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-121',
-    tag_code: 'WELL-P01',
-    note_type: 'well-test',
-    system: 'Production',
-    condition: 'Optimal flow',
-    test_date: new Date(Date.now() - 3600000 * 24 * 5).toISOString().split('T')[0],
-    deadline_date: new Date(Date.now() + 3600000 * 24 * 85).toISOString().split('T')[0],
-    guidance: 'Well steady at 2400 bopd. BSW: 0.5%. RGO: 120.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 5).toISOString(),
-  },
-  {
-    id: 'note-fc-002',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-122',
-    tag_code: 'WELL-P02',
-    note_type: 'well-test',
-    system: 'Production',
-    condition: 'Stable',
-    test_date: new Date(Date.now() - 3600000 * 24 * 2).toISOString().split('T')[0],
-    deadline_date: new Date(Date.now() + 3600000 * 24 * 88).toISOString().split('T')[0],
-    guidance: 'Stable performance. Sand detection trace only.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
-  },
-  {
-    id: 'note-fc-003',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-125',
-    tag_code: 'WELL-P03',
-    note_type: 'well-test',
-    system: 'Production',
-    condition: 'High Pressure',
-    test_date: new Date(Date.now() - 3600000 * 24 * 45).toISOString().split('T')[0],
-    deadline_date: new Date(Date.now() + 3600000 * 24 * 45).toISOString().split('T')[0],
-    guidance: 'Monitoring choke setting closely. No acidification required yet.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 45).toISOString(),
-  },
-  {
-    id: 'note-fc-004',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-121',
-    tag_code: 'WELL-P01',
-    note_type: 'well-test',
-    system: 'Production',
-    condition: 'Follow up',
-    test_date: new Date(Date.now() - 3600000 * 24 * 1).toISOString().split('T')[0],
-    deadline_date: new Date(Date.now() + 3600000 * 24 * 89).toISOString().split('T')[0],
-    guidance: 'Small adjustment to choke. Recovery observed.',
-    created_at: new Date(Date.now() - 3600000 * 24 * 1).toISOString(),
-  },
-  {
-    id: 'note-fc-005',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-122',
-    tag_code: 'WELL-P02',
-    note_type: 'well-test',
-    system: 'Production',
-    condition: 'Verification',
-    test_date: new Date().toISOString().split('T')[0],
-    deadline_date: new Date(Date.now() + 3600000 * 24 * 90).toISOString().split('T')[0],
-    guidance: 'Routine verification complete. No deviations found.',
-    created_at: new Date().toISOString(),
-  },
-];
-
-const SEED_ALERTS = [
-  {
-    id: 'alert-fc-001',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-117',
-    tag_code: 'PDT-1101',
-    title: 'OBSERVATION: Gasket Leak on Skid 01',
-    description: 'Minor weeping confirmed by mechanical crew. Scheduled for repair.',
-    reminder_type: 'alert',
-    recurrence: 'none',
-    priority: 'medium',
-    due_date: new Date(Date.now() + 3600000 * 24).toISOString().split('T')[0],
-    status: 'open',
-    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-  },
-  {
-    id: 'alert-fc-002',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-105',
-    tag_code: 'AT-1101',
-    title: 'CRITICAL: Gas Calibration Cylinder Low',
-    description: 'Analyzer House Skid 01 pressure at critical level. Replacement required before shift ends.',
-    reminder_type: 'alert',
-    recurrence: 'none',
-    priority: 'critical',
-    due_date: new Date().toISOString().split('T')[0],
-    status: 'overdue',
-    created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
-  },
-  {
-    id: 'alert-fc-003',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-128',
-    tag_code: 'SDV-9001',
-    title: 'REMINDER: SDV Travel Time Review',
-    description: 'Review stroke test results from yesterday. Final entry in logbook needed.',
-    reminder_type: 'reminder',
-    recurrence: 'none',
-    priority: 'low',
-    due_date: new Date(Date.now() + 3600000 * 48).toISOString().split('T')[0],
-    status: 'open',
-    created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-  },
-  {
-    id: 'alert-fc-004',
-    platform_id: 'plat-flowcore',
-    tag_id: 'tag-fc-130',
-    tag_code: 'SIS-001',
-    title: 'Quarterly Safety Loop Audit',
-    description: 'Ensure all proof test records for the current quarter are uploaded to the shared repository.',
-    reminder_type: 'reminder',
-    recurrence: 'quarterly',
-    priority: 'medium',
-    due_date: new Date(Date.now() + 3600000 * 24 * 15).toISOString().split('T')[0],
-    status: 'open',
-    created_at: new Date(Date.now() - 3600000 * 24 * 5).toISOString(),
-  },
-  {
-    id: 'alert-fc-005',
-    platform_id: 'plat-flowcore',
-    tag_id: null,
-    tag_code: 'GEN-ADMIN',
-    title: 'Weekly Management Report Generation',
-    description: 'Compile event and activity logs from Evergreen for the weekly production meeting.',
-    reminder_type: 'reminder',
-    recurrence: 'weekly',
-    priority: 'low',
-    due_date: new Date().toISOString().split('T')[0],
-    status: 'open',
-    created_at: new Date(Date.now() - 3600000 * 24 * 3).toISOString(),
-  },
-];
+const SEED_ACTIVITIES = [];
+const SEED_INSPECTIONS = [];
+const SEED_MATERIALS = [];
+const SEED_SYSTEMS = [];
+const SEED_NOTES = [];
+const SEED_ALERTS = [];
 
 const SEED_PLATFORMS = [
   { id: 'plat-atlanta', name: 'FPSO Atlanta', type: 'FPSO', basin: 'Santos Basin', operator: 'Enauta', active: true },
@@ -779,11 +294,11 @@ function loadStore(key) {
   return stored;
 }
 
-function saveStore(key, data) {
+function saveStore(key, data, delta = null) {
   try {
     localStorage.setItem(key, JSON.stringify(data));
-    // Trigger background cloud sync if available
-    syncToCloud(key, data);
+    // Automatic cloud sync disabled per user request. 
+    // Synchronize manually via window.DB.forceSync()
     return true;
   } catch (e) {
     if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
@@ -834,6 +349,7 @@ async function syncToCloud(key, data) {
 
         updateStatusUI('syncing');
         
+        // Use upsert for delta sync
         const { error } = await window.supabaseClient
             .from(tableName)
             .upsert(rows, { onConflict: 'id' });
@@ -940,19 +456,10 @@ async function pullFromCloud() {
                     }
                 });
 
-                // 2. RECONCILIATION: Remove local items NOT in Cloud (Mirroring Deletions)
-                // SAFETY LOCK: Only reconcile if the Cloud HAS records. 
-                // If Cloud is empty, we DON'T assume a wipe; we assume it's a first run or sync failure.
-                const coreTables = ['tags', 'platforms', 'events', 'activities', 'orifice_plates', 'systems'];
-                let reconciled;
-                
-                if (coreTables.includes(tableName) && data.length > 0) {
-                    // Match the cloud state exactly (If it's gone from Master, it's gone from Local)
-                    reconciled = merged.filter(item => cloudIds.has(item.id));
-                } else {
-                    // Keep merged local data if cloud is empty
-                    reconciled = merged;
-                }
+                // 2. RECONCILIATION: Disabled for manual sync strategy
+                // Previously it removed local items NOT in Cloud.
+                // Now we only merge (Update/Add) to protect unsynced local data.
+                reconciled = merged;
 
                 localStorage.setItem(localKey, JSON.stringify(reconciled));
                 console.log(`✅ ${tableName}: ${data.length} registros (Reconciliado).`);
@@ -1058,19 +565,19 @@ function initRealtimeListeners() {
 }
 
 function initSeed() {
-  const latestV = '2.07'; // v2.07: Fixed missing platform_id in SEED_SUBSYSTEMS
+  const latestV = '2.11'; // v2.11: Forced Cloud Wipe of Demo Data
   const currentV = localStorage.getItem(KEYS.seeded);
   
   if (currentV === latestV) return;
 
   console.log(`🚀 Initing Seed Evolution: ${currentV || 'INITIAL'} -> ${latestV}`);
 
-  const seedIfEmpty = (key, data) => {
-    const existing = localStorage.getItem(key);
-    if (!existing || existing === '[]' || existing === 'null') {
-      saveStore(key, data);
-    }
-  };
+  // FORCE CLEANUP OF OLD SYSTEMS LOGS (FlowCore only)
+  if (currentV !== latestV) {
+     const systems = loadStore(KEYS.systems);
+     const cleaned = systems.filter(s => s.platform_id !== 'plat-flowcore' || (s.tag_id && !s.id.startsWith('sys-fc-')));
+     saveStore(KEYS.systems, cleaned);
+  }
 
   // Ensure Default accounts exist
   const users = loadStore(KEYS.users);
@@ -1086,6 +593,18 @@ function initSeed() {
   // We keep records from plat-atlanta or global (*), but reset plat-flowcore to the new Seed.
   const resetFlowCoreStore = (key, seedData) => {
     let current = loadStore(key);
+    
+    // Cloud Cleanup: If upgrading to 2.11, explicitly remove common demo IDs from Cloud
+    if (currentV !== latestV && latestV === '2.11') {
+        const demoPrefixes = ['evt-fc-', 'act-fc-', 'insp-fc-', 'mat-fc-', 'note-fc-', 'alert-fc-'];
+        const itemsToDelete = current.filter(x => x.id && demoPrefixes.some(p => x.id.startsWith(p)));
+        itemsToDelete.forEach(item => {
+            // Use existing sync function (Admin only, but if user is not admin, it fails silently as expected)
+            syncDeleteToCloud(key, item.id);
+        });
+    }
+
+    // Keep Atlanta data
     // Keep Atlanta data
     const protectedData = current.filter(x => x && (x.platform_id === 'plat-atlanta' || x.platform_id === '*'));
     // Filter Seed data to ONLY include FlowCore items (preventing re-adding Atlanta items from seed)
@@ -1171,6 +690,10 @@ function migrateData() {
     updated = true;
   }
 
+  // Phase 125 Cleanup: Disabled to prevent data loss.
+  // Root cause fixed via metadata inheritance.
+  console.log('🛡️ Persistence Shield Active: No auto-cleanup performed.');
+
   if (updated) saveStore(KEYS.tags, tags);
 }
 
@@ -1223,8 +746,16 @@ window.DB = {
   // Events
   getEvents: () => {
     const active = window.DB.getActivePlatform();
-    const all = loadStore(KEYS.events);
-    return active ? all.filter(x => x.platform_id === active.id) : all;
+    const user = getCurrentUser();
+    const all = [...loadStore(KEYS.events), ...GUEST_SESSIONS.events];
+    
+    // Fallback: If no active platform is selected (or Admin), show all relevant
+    if (!active || (user && user.role === 'Admin')) return all;
+    
+    return all.filter(x => {
+        // Show if explicitly matches active platform OR has no platform_id (legacy/shared)
+        return x.platform_id === active.id || !x.platform_id;
+    });
   },
   saveEvent: (e) => {
     const user = getCurrentUser();
@@ -1251,6 +782,10 @@ window.DB = {
 
     const s = loadStore(KEYS.events);
     const active = window.DB.getActivePlatform();
+    
+    // Robustness: fallback to user's first platform if active is missing
+    const pid = active ? active.id : (user && user.platforms ? user.platforms[0] : null);
+    
     const i = s.findIndex(x => x.id === e.id);
     if (i >= 0) {
       s[i] = { ...s[i], ...e, updated_at: new Date().toISOString() };
@@ -1259,7 +794,7 @@ window.DB = {
         ...e,
         id: genId('evt'),
         follow_ups: [],
-        platform_id: active ? active.id : null,
+        platform_id: pid,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       });
@@ -1276,8 +811,9 @@ window.DB = {
   // Activities
   getActivities: () => {
     const active = window.DB.getActivePlatform();
-    const all = loadStore(KEYS.activities);
-    return active ? all.filter(x => x.platform_id === active.id) : all;
+    const all = [...loadStore(KEYS.activities), ...GUEST_SESSIONS.activities];
+    if (!active) return all;
+    return all.filter(x => x.platform_id === active.id || !x.platform_id);
   },
   saveActivity: (a) => {
     const user = getCurrentUser();
@@ -1301,7 +837,12 @@ window.DB = {
     if (i >= 0) {
       s[i] = { ...s[i], ...a };
     } else {
-      s.unshift({ ...a, id: genId('act'), platform_id: active ? active.id : null, created_at: new Date().toISOString() });
+      s.unshift({ 
+        ...a, 
+        id: genId('act'), 
+        platform_id: active ? active.id : null, 
+        created_at: new Date().toISOString() 
+      });
     }
     saveStore(KEYS.activities, s);
     return { success: true };
@@ -1315,8 +856,9 @@ window.DB = {
   // Inspections
   getInspections: () => {
     const active = window.DB.getActivePlatform();
-    const all = loadStore(KEYS.inspections);
-    return active ? all.filter(x => x.platform_id === active.id) : all;
+    const all = [...loadStore(KEYS.inspections), ...GUEST_SESSIONS.inspections];
+    if (!active) return all;
+    return all.filter(x => x.platform_id === active.id || !x.platform_id);
   },
   saveInspection: (insp) => {
     const user = getCurrentUser();
@@ -1349,7 +891,7 @@ window.DB = {
   // Materials
   getMaterials: () => {
     const active = window.DB.getActivePlatform();
-    const all = loadStore(KEYS.materials);
+    const all = [...loadStore(KEYS.materials), ...GUEST_SESSIONS.materials];
     return active ? all.filter(x => x.platform_id === active.id) : all;
   },
   saveMaterial: (m) => {
@@ -1428,8 +970,9 @@ window.DB = {
   // Systems
   getSystems: () => {
     const active = window.DB.getActivePlatform();
-    const all = loadStore(KEYS.systems);
-    return active ? all.filter(x => x.platform_id === active.id) : all;
+    const all = [...loadStore(KEYS.systems), ...GUEST_SESSIONS.systems];
+    if (!active) return all;
+    return all.filter(x => x.platform_id === active.id || !x.platform_id);
   },
   saveSystem: (s_obj) => {
     const user = getCurrentUser();
@@ -1447,8 +990,7 @@ window.DB = {
           id: 'demo-' + Date.now(), 
           platform_id: active ? active.id : null, 
           created_at: now, 
-          updated_at: now,
-          author_name: user ? user.name : 'Guest'
+          updated_at: now
         });
       }
       return { success: true };
@@ -1456,23 +998,43 @@ window.DB = {
 
     const a = loadStore(KEYS.systems);
     const i = a.findIndex(x => x.id === s_obj.id);
+    let finalItem;
+
+    // SANITIZATION: Ensure only Supabase-compatible fields are sent/saved
+    const cleanObj = {
+      id: s_obj.id,
+      platform_id: s_obj.platform_id || (active ? active.id : null),
+      tag_id: s_obj.tag_id,
+      tag_code: s_obj.tag_code,
+      system_name: s_obj.system_name,
+      manufacturer: s_obj.manufacturer,
+      model: s_obj.model,
+      firmware: s_obj.firmware,
+      serial_number: s_obj.serial_number,
+      expire_date: s_obj.expire_date,
+      status: s_obj.status,
+      notes: s_obj.notes,
+      media: s_obj.media,
+      created_at: s_obj.created_at || now,
+      updated_at: now
+    };
+
     if (i >= 0) {
-      a[i] = { ...a[i], ...s_obj, updated_at: now };
+      a[i] = { ...a[i], ...cleanObj };
+      finalItem = a[i];
     } else {
-      a.unshift({ 
-        ...s_obj, 
-        id: genId('sys'), 
-        platform_id: active ? active.id : null, 
-        created_at: now, 
-        updated_at: now,
-        author_name: user ? user.name : 'System'
-      });
+      finalItem = { 
+        ...cleanObj, 
+        id: s_obj.id || genId('sys'), 
+        created_at: now 
+      };
+      a.unshift(finalItem);
     }
-    saveStore(KEYS.systems, a);
+    saveStore(KEYS.systems, a, finalItem);
     return { success: true };
   },
   deleteSystem: (id) => {
-    syncDeleteToCloud(KEYS.systems, id);
+    // syncDeleteToCloud(KEYS.systems, id); // Disabled for manual sync
     return saveStore(KEYS.systems, loadStore(KEYS.systems).filter(x => x.id !== id));
   },
   getSystem: (id) => loadStore(KEYS.systems).find(x => x.id === id) || GUEST_SESSIONS.systems.find(x => x.id === id),
@@ -1480,8 +1042,9 @@ window.DB = {
   // Notes
   getNotes: () => {
     const active = window.DB.getActivePlatform();
-    const all = loadStore(KEYS.notes);
-    return active ? all.filter(x => x.platform_id === active.id) : all;
+    const all = [...loadStore(KEYS.notes), ...GUEST_SESSIONS.notes];
+    if (!active) return all;
+    return all.filter(x => x.platform_id === active.id || !x.platform_id);
   },
   saveNote: (n) => {
     const user = getCurrentUser();
@@ -1514,8 +1077,9 @@ window.DB = {
   // Alerts
   getAlerts: () => {
     const active = window.DB.getActivePlatform();
-    const all = loadStore(KEYS.alerts);
-    return active ? all.filter(x => x.platform_id === active.id) : all;
+    const all = [...loadStore(KEYS.alerts), ...GUEST_SESSIONS.alerts];
+    if (!active) return all;
+    return all.filter(x => x.platform_id === active.id || !x.platform_id);
   },
   saveAlert: (a) => {
     const user = getCurrentUser();
@@ -1548,7 +1112,7 @@ window.DB = {
   // Orifice Plates
   getOrificePlates: () => {
     const active = window.DB.getActivePlatform();
-    const all = loadStore(KEYS.orifice_plates);
+    const all = [...loadStore(KEYS.orifice_plates), ...GUEST_SESSIONS.orifice_plates];
     return active ? all.filter(x => x.platform_id === active.id) : all;
   },
   saveOrificePlate: (p) => {
@@ -1581,7 +1145,7 @@ window.DB = {
   // Calibrations
   getCalibrations: () => {
     const active = window.DB.getActivePlatform();
-    const all = loadStore(KEYS.calibrations);
+    const all = [...loadStore(KEYS.calibrations), ...GUEST_SESSIONS.calibrations];
     return active ? all.filter(x => x.platform_id === active.id) : all;
   },
   saveCalibration: (c) => {
@@ -1598,18 +1162,21 @@ window.DB = {
 
     const s = loadStore(KEYS.calibrations);
     const i = s.findIndex(x => x.id === c.id);
+    let finalItem;
     if (i >= 0) {
       s[i] = { ...s[i], ...c, updated_at: now };
+      finalItem = s[i];
     } else {
-      s.unshift({ 
+      finalItem = { 
         ...c, 
         id: genId('cal'), 
         platform_id: active ? active.id : null, 
         created_at: now, 
         updated_at: now 
-      });
+      };
+      s.unshift(finalItem);
     }
-    saveStore(KEYS.calibrations, s);
+    saveStore(KEYS.calibrations, s, finalItem);
 
     // Sync back to TAG
     if (c.tag_id) {
@@ -1907,7 +1474,7 @@ window.DB = {
   },
 
   deleteEvent: (id) => {
-    syncDeleteToCloud(KEYS.events, id);
+    // syncDeleteToCloud removed per manual sync request
     const s = loadStore(KEYS.events);
     const filtered = s.filter(e => e.id !== id);
     saveStore(KEYS.events, filtered);

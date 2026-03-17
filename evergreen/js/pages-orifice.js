@@ -119,7 +119,7 @@ function renderOrifice(container) {
     <div class="space-y-6">
       <div class="card p-0 overflow-hidden">
         <div class="px-6 py-4 border-b border-white/5 bg-white/2 flex justify-between items-center">
-          <h3 class="font-bold text-white uppercase text-xs tracking-widest">Master Plate Index</h3>
+          <h3 class="font-bold text-navy uppercase text-xs tracking-widest">Master Plate Index</h3>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
@@ -139,12 +139,12 @@ function renderOrifice(container) {
               plates.map(p => `
                 <tr class="hover:bg-white/5 transition-colors">
                   <td class="px-8 py-6">
-                    <div class="text-white font-black text-lg">${p.tag_code}</div>
+                    <div class="text-navy font-black text-lg">${p.tag_code}</div>
                     <div class="text-xs text-slate-500 uppercase font-black tracking-widest mt-1">${p.serial_number}</div>
                   </td>
-                  <td class="px-8 py-6 text-slate-300 font-bold">${escHtml(p.system)}</td>
-                  <td class="px-8 py-6 text-blue-400 font-black text-lg">${p.inner_diameter ? (p.inner_diameter.toLowerCase().includes('mm') ? p.inner_diameter : p.inner_diameter + ' mm') : '---'}</td>
-                  <td class="px-8 py-6 text-white font-black text-lg">${p.beta || '---'}</td>
+                  <td class="px-8 py-6 text-navy opacity-80 font-bold">${escHtml(p.system)}</td>
+                  <td class="px-8 py-6 text-navy font-black text-lg">${p.inner_diameter ? (p.inner_diameter.toLowerCase().includes('mm') ? p.inner_diameter : p.inner_diameter + ' mm') : '---'}</td>
+                  <td class="px-8 py-6 text-navy font-black text-lg">${p.beta || '---'}</td>
                   <td class="px-8 py-6">
                      <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${p.op_mode === 'Duty' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-slate-500/10 text-slate-500 border border-slate-700'}">
                       ${p.op_mode || 'Idle'}

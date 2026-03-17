@@ -34,10 +34,10 @@ function renderUserManagement(container) {
         <tbody>
           ${users.map(u => `
             <tr class="hover:bg-navy-800/30">
-              <td class="font-medium text-white">${escHtml(u.name)}</td>
+              <td class="font-medium text-navy">${escHtml(u.name)}</td>
               <td><code class="text-xs bg-navy-800 px-1.5 py-0.5 rounded text-orange-400">${escHtml(u.username)}</code></td>
               <td><span class="badge ${u.role === 'Admin' ? 'status-closed' : 'status-pending'}">${u.role}</span></td>
-              <td class="text-slate-400 text-sm">
+              <td class="text-navy opacity-70 text-sm">
                 ${u.platforms.map(pid => {
         const p = platforms.find(x => x.id === pid);
         return p ? `<span class="inline-block bg-navy-800 px-2 py-0.5 rounded mr-1 mb-1">${p.name}</span>` : '';
@@ -86,10 +86,10 @@ function renderUserManagement(container) {
           ${platforms.map(p => `
             <tr class="hover:bg-navy-800/30">
               <td><code class="text-[10px] bg-navy-800 px-1.5 py-0.5 rounded text-slate-500">${p.id}</code></td>
-              <td class="font-medium text-white">${escHtml(p.name)}</td>
-              <td><span class="text-xs text-slate-400">${escHtml(p.type)}</span></td>
-              <td><span class="text-xs text-slate-400">${escHtml(p.basin)}</span></td>
-              <td><span class="text-xs text-slate-400 font-bold">${escHtml(p.operator)}</span></td>
+              <td class="font-medium text-navy">${escHtml(p.name)}</td>
+              <td><span class="text-xs text-navy opacity-70">${escHtml(p.type)}</span></td>
+              <td><span class="text-xs text-navy opacity-70">${escHtml(p.basin)}</span></td>
+              <td><span class="text-xs text-navy opacity-70 font-bold">${escHtml(p.operator)}</span></td>
               <td>
                 <div class="flex gap-2">
                   <button class="btn btn-sm btn-ghost text-slate-500" onclick="editSite('${p.id}')">Edit</button>
@@ -118,8 +118,8 @@ function renderUserManagement(container) {
             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v8" /></svg>
           </div>
           <div class="flex-1">
-            <h3 class="text-lg font-semibold text-white mb-1">Upload para Supabase</h3>
-            <p class="text-sm text-slate-400 mb-4">Envia todo o seu histórico local para o servidor. Requer que o **RLS esteja desativado** no painel do Supabase.</p>
+            <h3 class="text-lg font-semibold text-navy mb-1">Upload para Supabase</h3>
+            <p class="text-sm text-navy opacity-70 mb-4">Envia todo o seu histórico local para o servidor. Requer que o **RLS esteja desativado** no painel do Supabase.</p>
             <button class="btn btn-primary" onclick="handleCloudUpload(this)">
               Sincronizar com Nuvem
             </button>
@@ -134,8 +134,8 @@ function renderUserManagement(container) {
             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
           </div>
           <div class="flex-1">
-            <h3 class="text-lg font-semibold text-white mb-1">Backup Físico (JSON)</h3>
-            <p class="text-sm text-slate-400 mb-4">Exporte ou importe seus dados manualmente via arquivo. Ideal para migração rápida sem nuvem.</p>
+            <h3 class="text-lg font-semibold text-navy mb-1">Backup Físico (JSON)</h3>
+            <p class="text-sm text-navy opacity-70 mb-4">Exporte ou importe seus dados manualmente via arquivo. Ideal para migração rápida sem nuvem.</p>
             <div class="flex gap-2">
               <button class="btn btn-secondary btn-sm" onclick="DB.exportDatabase()">Exportar JSON</button>
               <button class="btn btn-secondary btn-sm" onclick="document.getElementById('import-db-input').click()">Importar JSON</button>
@@ -284,7 +284,7 @@ function acuError(msg) {
 function openResetPasswordModal(id, username) {
     const bodyHtml = `
     <div class="p-2">
-      <p class="text-slate-400 mb-4">Resetting password for <strong>${escHtml(username)}</strong>.</p>
+      <p class="text-navy opacity-70 mb-4">Resetting password for <strong>${escHtml(username)}</strong>.</p>
       <div class="form-group">
         <label class="form-label">New Password</label>
         <input type="password" id="reset-new-pass" class="form-input" placeholder="Enter new password">

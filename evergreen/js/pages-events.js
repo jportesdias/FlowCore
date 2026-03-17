@@ -67,7 +67,7 @@ window.eventFormHtml = function(e, context = {}) {
 
       <div class="flex items-center gap-2 py-2">
         <input type="checkbox" id="ef-follow" class="w-4 h-4 rounded border-slate-600 bg-navy-900 text-orange-500" ${e && e.follow_up_required ? 'checked' : ''}>
-        <label for="ef-follow" class="text-sm text-slate-300 cursor-pointer">Follow-up actions required</label>
+        <label for="ef-follow" class="text-sm text-navy opacity-80 cursor-pointer">Follow-up actions required</label>
       </div>
 
       <div class="form-group mb-4">
@@ -80,6 +80,10 @@ window.eventFormHtml = function(e, context = {}) {
           <button type="button" class="btn bg-red-600/10 text-red-400 border border-red-500/30 hover:bg-red-600/20 transition-all text-xs font-black uppercase tracking-widest px-4" 
             onclick="window.deleteEventPermanently('${e.id}')">
             Delete Event
+          </button>
+          <button type="button" class="btn ${e.archived ? 'btn-secondary' : 'btn-primary'} text-xs font-black uppercase tracking-widest px-4" 
+            onclick="window.toggleArchiveEvent('${e.id}')">
+            ${e.archived ? '📦 Unarchive' : '📦 Archive Note'}
           </button>
         ` : ''}
         <div class="flex-grow"></div>
@@ -144,12 +148,13 @@ window.bindEventForm = function(existingId) {
       return;
     }
 
-    window.toast(existingId ? 'Event updated' : 'Event created', 'success');
+    window.toast(existingId ? 'Note updated' : 'Note created', 'success');
     window.closeModal();
     
-    // Smart redirect: if we came from a subsystem, refresh current view
-    if (document.getElementById('ef-subsystem-id').value && window.refreshCurrentPage) {
-        window.refreshCurrentPage();
+    // Forced Refresh: ensure the current view is re-rendered from scratch
+    const container = document.getElementById('page-container');
+    if (container) {
+        window.renderEvents(container);
     } else {
         window.navigate('events');
     }
@@ -270,10 +275,10 @@ window.eventDetail = function(e) {
         ${window.tagChip(e.tag_code)} ${window.priorityBadge(e.priority)} ${window.statusBadge(e.status)}
         ${window.canEdit(e) && e.follow_up_required ? `<button class="badge hover:brightness-125 transition-all cursor-pointer" style="background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)" onclick="window.openFollowUpModal('${e.id}')">↩ Register Follow-up</button>` : ''}
       </div>
-      <div><div class="section-label">Category / System</div><div class="text-slate-300">${window.escHtml(e.category)} · ${window.escHtml(e.system || '—')}</div></div>
-      <div><div class="section-label">Timestamp</div><div class="text-slate-300">${window.fmt(e.created_at)}</div></div>
-      <div><div class="section-label">Description</div><div class="text-slate-300 whitespace-pre-wrap">${window.escHtml(e.description)}</div></div>
-      ${e.actions_taken ? `<div><div class="section-label">Actions Taken</div><div class="text-slate-300 whitespace-pre-wrap">${window.escHtml(e.actions_taken)}</div></div>` : ''}
+      <div><div class="section-label">Category / System</div><div class="text-navy opacity-80">${window.escHtml(e.category)} · ${window.escHtml(e.system || '—')}</div></div>
+      <div><div class="section-label">Timestamp</div><div class="text-navy opacity-80">${window.fmt(e.created_at)}</div></div>
+      <div><div class="section-label">Description</div><div class="text-navy opacity-80 whitespace-pre-wrap">${window.escHtml(e.description)}</div></div>
+      ${e.actions_taken ? `<div><div class="section-label">Actions Taken</div><div class="text-navy opacity-80 whitespace-pre-wrap">${window.escHtml(e.actions_taken)}</div></div>` : ''}
       
       ${e.media && e.media.length > 0 ? `
         <div class="mt-4 border-t border-slate-800/50 pt-4">
@@ -304,7 +309,7 @@ window.eventDetail = function(e) {
                   </button>
                 </div>` : ''}
               </div>
-              <div class="text-sm text-slate-300 whitespace-pre-wrap">${window.escHtml(f.comment)}</div>
+              <div class="text-sm text-navy opacity-80 whitespace-pre-wrap">${window.escHtml(f.comment)}</div>
             </div>
           `).join('')}
         </div>
@@ -312,14 +317,14 @@ window.eventDetail = function(e) {
       
       ${tag ? `<hr class="divider"><div class="section-label">Related Equipment</div>
         <div class="card card-interactive p-3" onclick="window.navigate('tag-detail',{id:'${tag.id}'})">
-          <div class="flex items-center gap-3"><span class="tag-chip">${tag.tag_code}</span><span class="text-sm text-white">${window.escHtml(tag.system || tag.name)}</span>${window.statusBadge(tag.status)}</div>
+          <div class="flex items-center gap-3"><span class="tag-chip">${tag.tag_code}</span><span class="text-sm text-navy">${window.escHtml(tag.system || tag.name)}</span>${window.statusBadge(tag.status)}</div>
         </div>` : ''}
       
       <div class="flex gap-3 pt-4 border-t border-slate-700">
         ${window.canEdit(e) ? `<button class="btn btn-secondary btn-sm" onclick="window.editEvent('${e.id}')">Edit</button>` : ''}
-        ${e.status === 'closed' ? `
+        ${e.status && e.status.toLowerCase() === 'closed' ? `
           <button class="btn ${e.archived ? 'btn-secondary' : 'btn-primary'} btn-sm" onclick="window.toggleArchiveEvent('${e.id}')">
-            ${e.archived ? '📦 Unarchive' : '📦 Archive Event'}
+            ${e.archived ? '📦 Unarchive' : '📦 Archive Note'}
           </button>
         ` : ''}
       </div>
@@ -366,7 +371,7 @@ window.renderEvents = function(container, params) {
         <div class="card card-interactive p-5 mb-3" onclick="window.openEventDetail('${e.id}')">
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="flex-1">
-              <div class="text-white font-bold text-lg hover:text-orange-400 transition-colors mb-1">${window.escHtml(e.title)}</div>
+              <div class="text-navy font-bold text-lg hover:text-orange-400 transition-colors mb-1">${window.escHtml(e.title)}</div>
               <div class="text-[10px] text-slate-500 uppercase font-bold">${window.fmt(e.created_at)}</div>
             </div>
             <div class="flex gap-1.5 flex-shrink-0">
@@ -380,17 +385,17 @@ window.renderEvents = function(container, params) {
               ${window.priorityBadge(e.priority)} ${window.statusBadge(e.status)}
             </div>
           </div>
-          <div class="text-sm text-slate-300 mb-4 line-clamp-2">${window.escHtml(e.description)}</div>
+          <div class="text-sm text-navy opacity-80 mb-4 line-clamp-2">${window.escHtml(e.description)}</div>
           <div class="flex items-center justify-between text-xs pt-3 border-t border-slate-700/50">
             <div class="flex items-center gap-4">
               ${window.tagChip(e.tag_code)}
               ${e.media && e.media.length > 0 ? `
                 <div class="flex items-center gap-1 text-slate-400 bg-navy-900 px-2 py-0.5 rounded-full border border-slate-700" title="Attachments">
-                  📎 <span class="font-bold text-slate-200">${e.media.length}</span>
+                  📎 <span class="font-bold text-navy opacity-90">${e.media.length}</span>
                 </div>
               ` : ''}
               <div class="flex items-center gap-1.5 text-slate-400 bg-navy-900 px-2 py-0.5 rounded-full border border-slate-700">
-                <span class="font-bold text-slate-200">${followUps.length}</span> follow-ups
+                <span class="font-bold text-navy opacity-90">${followUps.length}</span> follow-ups
               </div>
               ${window.canEdit(e) && e.follow_up_required ? `<button class="text-amber-500 hover:text-amber-400 font-bold transition-all cursor-pointer flex items-center gap-1 group" onclick="event.stopPropagation(); window.openFollowUpModal('${e.id}')">
                 <span class="group-hover:translate-x-1 transition-transform">↩ Register Follow-up</span>
@@ -405,7 +410,7 @@ window.renderEvents = function(container, params) {
 
   container.innerHTML = `
     <div class="page-header">
-      <div><h1 class="page-title">Handover Events</h1><p class="page-subtitle">${events.length} total records</p></div>
+      <div><h1 class="page-title">Handover Notes</h1><p class="page-subtitle">${events.length} total records</p></div>
       <button class="btn btn-primary" id="btn-new-event">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Event
       </button>
@@ -423,22 +428,35 @@ window.renderEvents = function(container, params) {
   draw('all');
 
   document.getElementById('btn-new-event').addEventListener('click', () => {
-     window.openModal('New Handover Event', window.eventFormHtml(null), () => window.bindEventForm(null));
+     window.openModal('New Handover Note', window.eventFormHtml(null), () => window.bindEventForm(null));
   });
 
   document.querySelectorAll('.filter-chip').forEach(b => b.addEventListener('click', () => draw(b.dataset.filter, document.getElementById('event-search').value)));
   document.getElementById('event-search').addEventListener('input', e => draw(filter, e.target.value));
-
-  window.toggleArchiveEvent = (id) => {
-    const e = window.DB.getEvent(id);
-    if (!e) return;
-    e.archived = !e.archived;
-    window.DB.saveEvent(e);
-    window.toast(e.archived ? 'Event archived' : 'Event restored', 'success');
-    window.openModal(e.title, window.eventDetail(window.DB.getEvent(id)));
-    window.renderEvents(container);
-  };
 }
+
+window.toggleArchiveEvent = (id) => {
+  const e = window.DB.getEvent(id);
+  if (!e) return;
+  e.archived = !e.archived;
+  window.DB.saveEvent(e);
+  window.toast(e.archived ? 'Event archived' : 'Event restored', 'success');
+  
+  // Refresh modal if open
+  const modalTitle = document.getElementById('modal-title');
+  if (modalTitle && modalTitle.textContent === e.title) {
+    window.openModal(e.title, window.eventDetail(window.DB.getEvent(id)));
+  } else if (modalTitle && modalTitle.textContent === 'Edit Event') {
+     // If we are in the edit form, we might want to refresh it to show updated button label
+     window.editEvent(id);
+  }
+
+  // Refresh list if visible
+  const list = document.getElementById('events-list');
+  if (list) {
+    window.renderEvents(document.getElementById('page-container'));
+  }
+};
 
 window.renderActivities = function(container) {
   const acts = window.DB.getActivities ? window.DB.getActivities() : [];
@@ -464,7 +482,7 @@ window.renderActivities = function(container) {
         <div class="card card-interactive p-5 mb-3 ${a.archived ? 'opacity-50 grayscale' : ''}" onclick="window.editActivity('${a.id}')">
           <div class="flex items-start justify-between gap-3 mb-4">
             <div class="flex-1">
-              <div class="text-white font-bold text-lg hover:text-orange-400 transition-colors mb-1">${window.escHtml(a.title)}</div>
+              <div class="text-navy font-bold text-lg hover:text-orange-400 transition-colors mb-1">${window.escHtml(a.title)}</div>
               <div class="text-[10px] text-slate-500 uppercase font-bold">${window.fmtDate(a.due_date) ? `Due: ${window.fmtDate(a.due_date)}` : window.fmt(a.created_at)}</div>
             </div>
             <div class="flex gap-1.5 flex-shrink-0">
@@ -483,7 +501,7 @@ window.renderActivities = function(container) {
               ${window.priorityBadge(a.priority)} ${window.statusBadge(a.status)}
             </div>
           </div>
-          <div class="text-sm text-slate-300 mb-4 line-clamp-2">${window.escHtml(a.description)}</div>
+          <div class="text-sm text-navy opacity-80 mb-4 line-clamp-2">${window.escHtml(a.description)}</div>
           <div class="flex items-center justify-between text-xs pt-3 border-t border-slate-700/50">
             <div class="flex items-center gap-4">
               ${window.tagChip(a.tag_code)}

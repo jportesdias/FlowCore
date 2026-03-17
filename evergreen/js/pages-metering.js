@@ -21,13 +21,13 @@ function renderMetering(container) {
             <div class="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
           </div>
           <div class="relative z-10">
-            <h2 class="text-2xl font-bold text-white mb-2">Instrument Search</h2>
+            <h2 class="text-2xl font-bold text-navy mb-2">Instrument Search</h2>
             <p class="text-slate-400 mb-6 max-w-md">Search by TAG or Instrument Name to view calibration history, technical specs, and handover events.</p>
             
             <div class="flex flex-col md:flex-row gap-2 items-stretch relative max-w-5xl">
               <!-- Select Tag Dropdown (First) -->
               <div class="flex-shrink-0 min-w-[220px]">
-                <select id="metering-dropdown" class="h-full w-full bg-navy-900 border-2 border-slate-700 rounded-xl px-4 py-3 text-white font-semibold focus:outline-none focus:border-orange-500 transition-all cursor-pointer shadow-2xl">
+                <select id="metering-dropdown" class="h-full w-full bg-navy-900 border-2 border-slate-700 rounded-xl px-4 py-3 text-navy font-semibold focus:outline-none focus:border-orange-500 transition-all cursor-pointer shadow-2xl">
                   <option value="">Select TAG...</option>
                   ${tags.sort((a, b) => a.tag_code.localeCompare(b.tag_code)).map(t => `
                     <option value="${t.id}" ${selectedTag && selectedTag.id === t.id ? 'selected' : ''}>${escHtml(t.tag_code)}</option>
@@ -41,14 +41,14 @@ function renderMetering(container) {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input id="metering-search" type="text" placeholder="Type TAG..." 
-                  class="w-full bg-navy-900 border-2 border-slate-700 rounded-xl pl-10 pr-4 py-3 text-white text-base focus:outline-none focus:border-orange-500 transition-all shadow-2xl"
+                  class="w-full bg-navy-900 border-2 border-slate-700 rounded-xl pl-10 pr-4 py-3 text-navy text-base focus:outline-none focus:border-orange-500 transition-all shadow-2xl"
                   value="${escHtml(searchQuery)}" />
                 
                 ${q && filtered.length > 0 ? `
                 <div class="absolute left-0 right-0 top-full mt-2 bg-navy-800 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden">
                   ${filtered.map(t => `
                     <div class="p-3 hover:bg-slate-700/50 cursor-pointer border-b border-slate-700/50 last:border-0 transition" onclick="selectMeteringTag('${t.id}')">
-                      <div class="flex justify-between items-center text-sm text-white">
+                      <div class="flex justify-between items-center text-sm text-navy">
                         <span class="font-bold">${escHtml(t.tag_code)}</span>
                         <span class="text-[10px] text-slate-400 uppercase tracking-widest">${escHtml(t.system || t.instrument || '')}</span>
                       </div>
@@ -58,7 +58,7 @@ function renderMetering(container) {
               </div>
 
               <!-- Search Button (Right) -->
-              <button onclick="triggerMeteringSearch()" class="flex-shrink-0 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition-all shadow-lg flex items-center gap-2">
+              <button onclick="triggerMeteringSearch()" class="flex-shrink-0 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-navy font-bold rounded-xl transition-all shadow-lg flex items-center gap-2">
                 <span>Search</span>
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               </button>
@@ -134,7 +134,7 @@ function renderMetering(container) {
 }
 
 function renderMeteringDetail(t) {
-  const events = DB.getEvents().filter(e => e.tag_id === t.id || e.tag_code === t.tag_code);
+  const events = DB.getEvents().filter(e => (e.tag_id === t.id || e.tag_code === t.tag_code) && !e.archived);
   const isOperational = events.every(e => e.status === 'closed' || e.priority !== 'critical');
   const isOverdue = t.deadline && new Date(t.deadline) < new Date();
 
@@ -146,14 +146,14 @@ function renderMeteringDetail(t) {
           <div class="flex items-start justify-between mb-8">
             <div>
               <div class="flex items-center gap-3 mb-1">
-                <h3 class="text-3xl font-black text-white tracking-tight">${escHtml(t.tag_code)}</h3>
+                <h3 class="text-3xl font-black text-navy tracking-tight">${escHtml(t.tag_code)}</h3>
                 <div class="flex bg-navy-950 p-1 rounded-lg border border-slate-800 shadow-inner">
                   <button onclick="setOpMode('${t.id}', 'Duty')" 
-                    class="px-3 py-1 rounded-md text-[10px] uppercase font-bold transition-all ${t.op_mode !== 'Idle' ? 'bg-green-500 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}">
+                    class="px-3 py-1 rounded-md text-[10px] uppercase font-bold transition-all ${t.op_mode !== 'Idle' ? 'bg-green-500 text-navy shadow-lg' : 'text-slate-500 hover:text-slate-300'}">
                     Duty
                   </button>
                   <button onclick="setOpMode('${t.id}', 'Idle')" 
-                    class="px-3 py-1 rounded-md text-[10px] uppercase font-bold transition-all ${t.op_mode === 'Idle' ? 'bg-orange-500 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}">
+                    class="px-3 py-1 rounded-md text-[10px] uppercase font-bold transition-all ${t.op_mode === 'Idle' ? 'bg-orange-500 text-navy shadow-lg' : 'text-slate-500 hover:text-slate-300'}">
                     Idle
                   </button>
                 </div>
@@ -162,32 +162,32 @@ function renderMeteringDetail(t) {
             </div>
             <div class="text-right">
               <span class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Serial Number</span>
-              <span class="text-white font-mono bg-slate-800 px-3 py-1 rounded border border-slate-700">${escHtml(t.serial_number || 'TBD')}</span>
+              <span class="text-navy font-mono bg-slate-800 px-3 py-1 rounded border border-slate-700">${escHtml(t.serial_number || 'TBD')}</span>
             </div>
           </div>
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div class="p-4 bg-navy-900/50 rounded-xl border border-slate-800/50">
               <span class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">System</span>
-              <span class="text-sm text-slate-200 font-semibold">${escHtml(t.system || '—')}</span>
+              <span class="text-sm text-navy opacity-90 font-semibold">${escHtml(t.system || '—')}</span>
             </div>
             <div class="p-4 bg-navy-900/50 rounded-xl border border-slate-800/50">
               <span class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Classification</span>
-              <span class="text-sm text-slate-200 font-semibold">${escHtml(t.classification || '—')}</span>
+              <span class="text-sm text-navy opacity-90 font-semibold">${escHtml(t.classification || '—')}</span>
             </div>
             <div class="p-4 bg-navy-900/50 rounded-xl border border-slate-800/50">
               <span class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Location</span>
-              <span class="text-sm text-slate-200 font-semibold">${escHtml(t.location || '—')}</span>
+              <span class="text-sm text-navy opacity-90 font-semibold">${escHtml(t.location || '—')}</span>
             </div>
             <div class="p-4 bg-navy-900/50 rounded-xl border border-slate-800/50">
               <span class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Type</span>
-              <span class="text-sm text-slate-200 font-semibold">${escHtml(t.type || 'Instrument')}</span>
+              <span class="text-sm text-navy opacity-90 font-semibold">${escHtml(t.type || 'Instrument')}</span>
             </div>
           </div>
         </div>
 
         <div class="card p-6 border-slate-700/50">
-          <h4 class="text-sm font-bold text-white uppercase tracking-widest mb-6 border-b border-slate-800 pb-4 flex items-center gap-2">
+          <h4 class="text-sm font-bold text-navy uppercase tracking-widest mb-6 border-b border-slate-800 pb-4 flex items-center gap-2">
             <svg class="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             Handover Registry
           </h4>
@@ -199,7 +199,7 @@ function renderMeteringDetail(t) {
             ` : events.map(e => `
               <div class="p-4 bg-slate-800/40 rounded-xl border border-slate-700/30 hover:border-slate-600 transition cursor-pointer" onclick="openEventDetail('${e.id}')">
                 <div class="flex justify-between items-start mb-2">
-                  <span class="text-white font-semibold">${escHtml(e.title)}</span>
+                  <span class="text-navy font-semibold">${escHtml(e.title)}</span>
                   ${priorityBadge(e.priority)}
                 </div>
                 <div class="text-xs text-slate-400 line-clamp-2">${escHtml(e.description)}</div>
@@ -216,7 +216,7 @@ function renderMeteringDetail(t) {
       <!-- Calibration Card -->
       <div class="space-y-6">
         <div class="card p-6 bg-navy-800/50 border-slate-700/50">
-          <h4 class="text-sm font-bold text-white uppercase tracking-widest mb-6">Calibration Context</h4>
+          <h4 class="text-sm font-bold text-navy uppercase tracking-widest mb-6">Calibration Context</h4>
           
           <div class="space-y-6">
             <div class="flex items-center gap-4">
@@ -225,7 +225,7 @@ function renderMeteringDetail(t) {
               </div>
               <div>
                 <span class="text-[10px] uppercase tracking-widest text-slate-500 block">Last Calibration</span>
-                <span class="text-lg text-slate-200 font-bold">${escHtml(t.last_calibration || 'N/A')}</span>
+                <span class="text-lg text-navy opacity-90 font-bold">${escHtml(t.last_calibration || 'N/A')}</span>
               </div>
             </div>
 
@@ -246,7 +246,7 @@ function renderMeteringDetail(t) {
               </p>
             </div>
             
-            <button class="w-full py-3 bg-navy-700 hover:bg-navy-600 text-white rounded-xl text-sm font-semibold border border-slate-600 transition" onclick="navigate('tag-detail', {id: '${t.id}'})">
+            <button class="w-full py-3 bg-navy-700 hover:bg-navy-600 text-navy rounded-xl text-sm font-semibold border border-slate-600 transition" onclick="navigate('tag-detail', {id: '${t.id}'})">
               Full Asset Timeline
             </button>
           </div>

@@ -86,6 +86,17 @@ function bindMaintInspForm(existingId, requestedType = 'Inspection') {
 
 function renderInspections(container) {
   let items = DB.getInspections();
+  
+  // Adiciona função global para toggle de arquivo
+  window.toggleArchiveInspection = (id) => {
+    const i = DB.getInspections().find(x => x.id === id);
+    if (!i) return;
+    i.archived = !i.archived;
+    DB.saveInspection(i);
+    toast(i.archived ? 'Record archived' : 'Record restored', 'success');
+    renderInspections(document.getElementById('page-container'));
+  };
+
   container.innerHTML = `
     <div class="page-header">
       <div><h1 class="page-title">Maint. & Inspections</h1><p class="page-subtitle">${items.length} records</p></div>
@@ -94,16 +105,33 @@ function renderInspections(container) {
         <button class="btn btn-primary" onclick="openModal('New Inspection', maintInspFormHtml(null, 'Inspection'), () => bindMaintInspForm(null, 'Inspection'))">🔍 + Inspection</button>
       </div>
     </div>
+    <div class="filter-bar mb-2">
+      <button class="filter-chip mi-filter active" data-filter="open" onclick="renderInspectionsFilter('open')">Active</button>
+      <button class="filter-chip mi-filter" data-filter="archived" onclick="renderInspectionsFilter('archived')">Archived</button>
+    </div>
     <div class="card overflow-x-auto">
       <table class="data-table">
         <thead><tr><th>Type</th><th>TAG</th><th>Date</th><th>Findings / Work</th><th>Condition</th><th>Status</th><th></th></tr></thead>
-        <tbody>
-          ${items.length === 0 ? '<tr><td colspan="7"><div class="empty-state"><p>No records yet.</p></div></td></tr>' :
-      items.map(item => `
-              <tr>
+        <tbody id="mi-table-body">
+          ${renderInspectionsRows(items.filter(i => !i.archived))}
+        </tbody>
+      </table>
+    </div>`;
+
+  window.renderInspectionsFilter = (filterType) => {
+    document.querySelectorAll('.mi-filter').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === filterType));
+    const isArchived = filterType === 'archived';
+    document.getElementById('mi-table-body').innerHTML = renderInspectionsRows(DB.getInspections().filter(i => (i.archived || false) === isArchived));
+  };
+}
+
+function renderInspectionsRows(filteredItems) {
+  return filteredItems.length === 0 ? '<tr><td colspan="7"><div class="empty-state"><p>No records found.</p></div></td></tr>' :
+      filteredItems.map(item => `
+              <tr class="${item.archived ? 'opacity-50 grayscale' : ''}">
                 <td><span class="text-[10px] font-bold uppercase tracking-wider ${item.type === 'Maintenance' ? 'text-orange-400' : 'text-blue-400'}">${item.type || 'Inspection'}</span></td>
                 <td>${tagChip(item.tag_code)}</td>
-                <td class="text-slate-300 font-mono text-xs">${fmtDate(item.date)}</td>
+                <td class="text-navy opacity-80 font-mono text-xs">${fmtDate(item.date)}</td>
                 <td class="text-slate-400 max-w-xs">
                   <div class="truncate" title="${escHtml(item.findings)}">${escHtml(item.findings)}</div>
                   ${renderGallery(item.media)}
@@ -114,14 +142,12 @@ function renderInspections(container) {
                   <div class="flex gap-2">
                     ${canEdit(item) ? `
                     <button class="btn btn-sm btn-secondary" onclick="openModal('Edit ${item.type || 'Record'}', maintInspFormHtml(DB.getInspections().find(x=>x.id==='${item.id}')), () => bindMaintInspForm('${item.id}'))">Edit</button>
+                    <button class="btn ${item.archived ? 'btn-secondary' : 'btn-primary'} btn-sm" onclick="toggleArchiveInspection('${item.id}')">${item.archived ? '📦 Unarchive' : '📦 Archive'}</button>
                     <button class="btn btn-sm btn-danger" onclick="confirmDelete('${item.type || 'Record'} for ${item.tag_code}', () => { DB.deleteInspection('${item.id}'); renderInspections(document.getElementById('page-container')); })">Del</button>
                     ` : ''}
                   </div>
                 </td>
-              </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>`;
+              </tr>`).join('');
 }
 
 // ========== MATERIAL MOVEMENT ==========
@@ -297,14 +323,14 @@ function renderMaterials(container) {
         list.map(item => `
                 <tr class="cursor-pointer" onclick="openMaterialDetail('${item.id}')">
                   <td>${item.tag_code ? tagChip(item.tag_code) : `<span class="text-slate-500 italic text-xs">No TAG</span>`}</td>
-                  <td class="text-white font-medium">${escHtml(item.material_name || item.tag_code || '—')}</td>
+                  <td class="text-navy font-medium">${escHtml(item.material_name || item.tag_code || '—')}</td>
                   <td class="text-slate-400 font-mono text-xs">
                     ${item.pr_number ? `<div class="text-[10px] text-slate-500">PR: ${escHtml(item.pr_number)}</div>` : ''}
                     ${item.po_number ? `<div class="text-[10px] text-orange-400">PO: ${escHtml(item.po_number)}</div>` : ''}
                     ${!item.pr_number && !item.po_number ? '—' : ''}
                   </td>
-                  <td class="text-slate-300 font-mono text-xs">${escHtml(item.ifs_code || '—')}</td>
-                  <td class="text-slate-300 font-mono text-xs">
+                  <td class="text-navy opacity-80 font-mono text-xs">${escHtml(item.ifs_code || '—')}</td>
+                  <td class="text-navy opacity-80 font-mono text-xs">
                     <div class="flex items-center gap-2">
                       ${escHtml(item.serial_number)}
                       ${item.media && item.media.length > 0 ? `<span class="text-orange-500" title="${item.media.length} attachments">📸</span>` : ''}
@@ -373,11 +399,11 @@ function materialDetail(m) {
       <div class="flex items-center gap-2 mb-2">
         ${m.tag_code ? tagChip(m.tag_code) : ''} ${statusBadge(m.status)}
       </div>
-      <div><div class="section-label">Material Name / Description</div><div class="text-xl font-bold text-white">${escHtml(m.material_name || m.tag_code || '—')}</div></div>
+      <div><div class="section-label">Material Name / Description</div><div class="text-xl font-bold text-navy">${escHtml(m.material_name || m.tag_code || '—')}</div></div>
       <div class="grid-2">
         <div class="bg-navy-700/30 p-3 rounded-xl border border-slate-700/50">
           <div class="section-label mb-1">PR Number</div>
-          <div class="text-white font-bold font-mono">${escHtml(m.pr_number || '—')}</div>
+          <div class="text-navy font-bold font-mono">${escHtml(m.pr_number || '—')}</div>
         </div>
         <div class="bg-navy-700/30 p-3 rounded-xl border border-slate-700/50">
           <div class="section-label mb-1">PO Number</div>
@@ -385,14 +411,14 @@ function materialDetail(m) {
         </div>
       </div>
       <div class="grid-2">
-        <div><div class="section-label">IFS Code</div><div class="text-white font-mono">${escHtml(m.ifs_code || '—')}</div></div>
-        <div><div class="section-label">Serial / AWB</div><div class="text-white font-mono">${escHtml(m.serial_number)}</div></div>
+        <div><div class="section-label">IFS Code</div><div class="text-navy font-mono">${escHtml(m.ifs_code || '—')}</div></div>
+        <div><div class="section-label">Serial / AWB</div><div class="text-navy font-mono">${escHtml(m.serial_number)}</div></div>
       </div>
-      <div><div class="section-label">Destination</div><div class="text-slate-300 font-bold">${escHtml(m.destination)}</div></div>
+      <div><div class="section-label">Destination</div><div class="text-navy opacity-80 font-bold">${escHtml(m.destination)}</div></div>
       <div class="grid-2">
         <div class="bg-navy-700/30 p-3 rounded-xl border border-slate-700/50">
           <div class="section-label mb-1">Shipment Date</div>
-          <div class="text-white font-bold flex items-center gap-2">
+          <div class="text-navy font-bold flex items-center gap-2">
             <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
             ${fmtDate(m.shipment_date)}
           </div>
@@ -407,7 +433,7 @@ function materialDetail(m) {
           </div>
         </div>
       </div>
-      <div><div class="section-label">Notes / Justification</div><div class="text-slate-300 whitespace-pre-wrap">${escHtml(m.notes)}</div></div>
+      <div><div class="section-label">Notes / Justification</div><div class="text-navy opacity-80 whitespace-pre-wrap">${escHtml(m.notes)}</div></div>
       
       ${m.media && m.media.length > 0 ? `
         <div class="mt-6">
@@ -435,71 +461,61 @@ function materialDetail(m) {
     </div>`;
 }
 
-// ========== SYSTEM CONFIGURATION ==========
+// ========== FC CONFIG LOG (AUDIT TRAIL) ==========
 function sysFormHtml(item) {
-  return `<form id="sys-form" class="space-y-0">
-      <div class="form-group"><label class="form-label">Flow Computer (TAG)</label>
-        <select class="form-select" id="sf-tag" required><option value="">— Select TAG —</option>${getTagOptions(item && item.tag_id, 'Flow Computer')}</select>
+  const isIoPerformed = item && item.expire_date ? true : false;
+  return `<form id="sys-form" class="space-y-4">
+      <div class="form-group" style="${item && item.tag_id ? 'display:none' : ''}">
+        <label class="form-label">Flow Computer (TAG)</label>
+        <select class="form-select" id="sf-tag" ${item && item.tag_id ? '' : 'required'} ${item && item.id ? 'disabled' : ''}><option value="">— Select TAG —</option>${getTagOptions(item && item.tag_id, 'Flow Computer')}</select>
       </div>
-      <div class="grid-2">
-        <div class="form-group"><label class="form-label">Current Status</label>
-          <select class="form-select" id="sf-status">
-            <option value="Duty" ${item && item.status === 'Duty' ? 'selected' : ''}>🟢 Duty</option>
-            <option value="Idle" ${item && (item.status === 'Idle' || !item.status) ? 'selected' : !item ? 'selected' : ''}>🔵 Idle</option>
-            <option value="Maintenance" ${item && item.status === 'Maintenance' ? 'selected' : ''}>🟡 Maintenance</option>
-            <option value="Spare" ${item && item.status === 'Spare' ? 'selected' : ''}>⚪ Spare</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label text-orange-400 font-bold">Flow I/O Verification?</label>
-          <select class="form-select border-orange-500/30" id="sf-io-toggle">
-            <option value="no" ${!item || !item.expire_date ? 'selected' : ''}>No</option>
-            <option value="yes" ${item && item.expire_date ? 'selected' : ''}>Yes</option>
-          </select>
+      
+      <div class="form-group p-4 bg-orange-500/5 border border-orange-500/10 rounded-xl">
+        <label class="relative inline-flex items-center cursor-pointer group">
+          <input type="checkbox" id="sf-io-check" class="sr-only peer" ${isIoPerformed ? 'checked' : ''}>
+          <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+          <span class="ms-3 text-sm font-bold text-orange-400 uppercase tracking-tighter group-hover:text-orange-300 transition-colors">Flow I/O Verification performed</span>
+        </label>
+        <div id="sf-exp-group" class="mt-3 ${isIoPerformed ? '' : 'hidden'}">
+          <label class="form-label text-[10px] text-slate-500 uppercase">Verification Expiry Date</label>
+          <input type="date" class="form-input" id="sf-exp" value="${item && item.expire_date ? item.expire_date : ''}" />
         </div>
       </div>
-      <div id="sf-exp-group" class="form-group fade-in" style="display: ${item && item.expire_date ? 'block' : 'none'}">
-        <label class="form-label text-orange-400">Verification Date (Expiration)</label>
-        <input type="date" class="form-input" id="sf-exp" value="${item ? item.expire_date : ''}" />
+
+      <div class="form-group"><label class="form-label">Log Note / Diagnostic Details</label>
+        <textarea class="form-textarea" id="sf-notes" style="min-height:100px" placeholder="Write the technical note or findings...">${escHtml(item ? item.notes : '')}</textarea>
       </div>
-      <div class="form-group"><label class="form-label">Notes</label>
-        <textarea class="form-textarea" id="sf-notes">${escHtml(item ? item.notes : '')}</textarea>
-      </div>
+
       <div class="form-group">
-        <label class="form-label text-blue-400">Attachments (.TXT Only)</label>
+        <label class="form-label text-blue-400">Config Files (.TXT Audit)</label>
         <div id="sf-media-container" data-accept="txt"></div>
       </div>
+
       <div class="flex flex-wrap gap-3 justify-end pt-2">
-        ${item && canEdit(item) ? `<button type="button" class="btn btn-danger btn-sm mr-auto" onclick="closeModal(); confirmDelete('System ${item.tag_code}', () => { DB.deleteSystem('${item.id}'); navigate('systems'); })">Delete</button>` : ''}
         <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary">${item ? 'Update' : 'Add'} Configuration</button>
+        <button type="submit" class="btn btn-primary">Save Log Entry</button>
       </div>
     </form>`;
 }
 
-function bindSysForm(existingId) {
+function bindSysForm(existingId, isNewLog = false) {
   try {
     const systems = DB.getSystems();
     const existing = existingId ? systems.find(x => x.id === existingId) : null;
-    let currentMedia = existing ? (existing.media || []) : [];
+    let currentMedia = isNewLog ? [] : (existing ? (existing.media || []) : []);
 
     setupMediaDropzone('sf-media-container', (m) => { currentMedia = m; }, currentMedia);
 
-    // Toggle logic for Flow I/O Verification
-    const ioToggle = document.getElementById('sf-io-toggle');
-    const expInput = document.getElementById('sf-exp');
+    // Toggle logic for Flow I/O Verification (Simpler Checkbox)
+    const ioCheck = document.getElementById('sf-io-check');
     const expGroup = document.getElementById('sf-exp-group');
-    if (ioToggle && expInput && expGroup) {
-      ioToggle.addEventListener('change', () => {
-        const isYes = ioToggle.value === 'yes';
-        expInput.disabled = !isYes;
-        expGroup.style.display = isYes ? 'block' : 'none';
-        if (isYes) {
-          expGroup.classList.remove('fade-in');
-          void expGroup.offsetWidth; // Trigger reflow to restart animation
-          expGroup.classList.add('fade-in');
-        }
-        if (!isYes) expInput.value = '';
-      });
+    const expInput = document.getElementById('sf-exp');
+    
+    if (ioCheck && expGroup && expInput) {
+      ioCheck.onchange = () => {
+        expGroup.classList.toggle('hidden', !ioCheck.checked);
+        if (!ioCheck.checked) expInput.value = '';
+      };
     }
 
     const form = document.getElementById('sys-form');
@@ -510,34 +526,43 @@ function bindSysForm(existingId) {
       try {
         const tagSelect = document.getElementById('sf-tag');
         const selectedOption = tagSelect.options[tagSelect.selectedIndex];
+        const isIo = document.getElementById('sf-io-check').checked;
         
         const sysData = {
-          id: existingId || null,
-          // Preserve existing metadata if updating
-          metering_point: existing ? existing.metering_point : '—',
+          id: isNewLog ? null : (existingId || null),
+          // CORE STABILITY: Force inheritance of technical identity
+          tag_id: tagSelect.value || (existing ? existing.tag_id : null),
+          tag_code: (selectedOption && selectedOption.dataset.code) || (existing ? existing.tag_code : ''),
           system_name: existing ? existing.system_name : (selectedOption ? selectedOption.textContent.split(' — ')[1] : 'Flow Computer'),
-          tag_id: tagSelect.value,
-          tag_code: selectedOption && selectedOption.dataset.code || '',
+          metering_point: existing ? existing.metering_point : (selectedOption ? selectedOption.dataset.point : '—'),
           manufacturer: existing ? existing.manufacturer : '—',
           model: existing ? existing.model : '—',
           firmware: existing ? existing.firmware : '—',
           serial_number: existing ? existing.serial_number : '—',
-          expire_date: ioToggle.value === 'yes' ? expInput.value : '',
-          status: document.getElementById('sf-status').value,
+          // Simplified Log Fields
+          expire_date: isIo ? expInput.value : null,
+          status: existing ? (existing.status || 'LOG') : 'LOG', // Neutral status for logs
           notes: document.getElementById('sf-notes').value,
           media: currentMedia,
-          author_id: existing ? (existing.author_id || ((window.getUser().id || null))) : ((window.getUser().id || null))
+          author_id: window.getUser().id || null,
+          created_at: isNewLog ? new Date().toISOString() : (existing ? existing.created_at : new Date().toISOString()),
+          updated_at: new Date().toISOString()
         };
+
+        if (!sysData.tag_code) {
+          toast('Please select a Flow Computer', 'warning');
+          return;
+        }
 
         const result = DB.saveSystem(sysData);
         if (!handleSaveResult(result)) return;
 
-        toast(existingId ? 'Record Updated' : 'Record Created', 'success');
+        toast(isNewLog ? 'Log Entry Saved' : 'Record Updated', 'success');
         closeModal();
         renderSystems(document.getElementById('page-container'));
       } catch (innerErr) {
         console.error('Submit error:', innerErr);
-        toast('Error saving configuration', 'error');
+        toast('Error saving log', 'error');
       }
     });
   } catch (err) {
@@ -546,188 +571,261 @@ function bindSysForm(existingId) {
 }
 
 function renderSystems(container) {
-  let items = DB.getSystems();
-  // Sort by TAG (alphanumeric naturally)
-  items.sort((a, b) => (a.tag_code || '').localeCompare(b.tag_code || '', undefined, { numeric: true, sensitivity: 'base' }));
+  // DRIVE BY TAGS: Every Flow Computer in the registry gets a card
+  const allTags = DB.getTags();
+  const fcTags = allTags.filter(t => t.type === 'Flow Computer');
+  
+  // Sort by TAG code naturally
+  fcTags.sort((a, b) => (a.tag_code || '').localeCompare(b.tag_code || '', undefined, { numeric: true, sensitivity: 'base' }));
 
   container.innerHTML = `
     <div class="page-header">
-      <div><h1 class="page-title">System Configuration</h1><p class="page-subtitle">${items.length} records</p></div>
+      <div><h1 class="page-title">FC Config Log</h1><p class="page-subtitle">${fcTags.length} units</p></div>
       <div class="flex gap-2">
         <input type="file" id="fc-xml-input" accept=".xml" style="display:none" onchange="handleFCImport(this)">
         <button class="btn btn-secondary" onclick="document.getElementById('fc-xml-input').click()">
           <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
           Import FC XML
         </button>
-        <button class="btn btn-primary" onclick="openModal('New Configuration', sysFormHtml(null), () => bindSysForm(null))">+ Add Config</button>
+        <button class="btn btn-primary" onclick="openModal('New Configuration', sysFormHtml(null), () => bindSysForm(null))">Add Config</button>
       </div>
     </div>
     
     <div id="systems-list-container" class="space-y-4">
-      ${renderSystemsList(items)}
+      ${renderSystemsList(fcTags)}
     </div>`;
 }
 
-function renderSystemsList(items) {
-  // Group by tag_code and take the latest for the main view
-  const latestByTag = {};
-  items.forEach(item => {
-    const code = item.tag_code || 'UNTYPED';
-    if (!latestByTag[code] || new Date(item.updated_at || item.created_at) > new Date(latestByTag[code].updated_at || latestByTag[code].created_at)) {
-      latestByTag[code] = item;
-    }
-  });
+function renderSystemsList(fcTags) {
+  const allSystems = DB.getSystems();
+  
+  if (fcTags.length === 0) return '<div class="empty-state"><p>No Flow Computers found in Tag Registry.</p></div>';
 
-  const uniqueItems = Object.values(latestByTag).sort((a, b) => (a.tag_code || '').localeCompare(b.tag_code || '', undefined, { numeric: true, sensitivity: 'base' }));
+  return fcTags.map(tag => {
+    // Cross-reference: Get the latest log for this specific tag
+    const reports = allSystems.filter(s => s.tag_id === tag.id || s.tag_code === tag.tag_code);
+    const latest = reports.sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at))[0];
 
-  if (uniqueItems.length === 0) return '<div class="empty-state"><p>No system configurations found. Use "Import FC XML" to load data.</p></div>';
-
-  return uniqueItems.map(item => `
+    // Data merging: Prefer latest log, fallback to Tag data
+    const sn = tag.serial_number || (latest ? latest.serial_number : '—');
+    const name = tag.name || (latest ? latest.system_name : 'Flow Computer');
+    const updateTime = latest ? fmt(latest.updated_at || latest.created_at) : 'No entries yet';
+    
+    return `
     <div class="card p-5 hover:border-orange-500/30 transition-all border border-slate-700/50 cursor-pointer group/card" 
-         onclick="openSystemHistory('${item.tag_code}')">
+         onclick="openSystemHistory('${tag.tag_code}')">
       <div class="flex items-start justify-between gap-3 mb-4">
         <div class="flex-1">
           <div class="flex items-center gap-3 mb-2">
-            <span class="text-orange-400 font-bold font-mono text-sm bg-orange-400/10 px-2 py-0.5 rounded border border-orange-400/20">${escHtml(item.metering_point || '—')}</span>
-            <div class="text-white font-bold text-lg group-hover/card:text-orange-400 transition-colors">${escHtml(item.system_name || '—')}</div>
+            <span class="text-orange-400 font-bold font-mono text-sm bg-orange-400/10 px-2 py-0.5 rounded border border-orange-400/20" title="Tag Code">${escHtml(tag.tag_code)}</span>
+            <span class="text-blue-400 font-bold font-mono text-[11px] uppercase bg-blue-500/10 px-2 py-1.5 rounded border border-blue-500/20 shadow-sm" title="Serial Number">S/N: ${escHtml(sn)}</span>
+            <div class="text-navy font-bold text-lg group-hover/card:text-orange-400 transition-colors">${escHtml(name)}</div>
           </div>
           
           <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
             <div class="text-[10px] text-slate-500 uppercase tracking-widest font-bold flex items-center gap-1.5 bg-navy-950 px-2 py-1 rounded border border-slate-800 shadow-inner">
               <svg class="w-3.5 h-3.5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              <span>Latest Update: <span class="text-orange-400">${fmt(item.updated_at || item.created_at)}</span></span>
+              <span>Latest Log: <span class="text-orange-400 font-black">${updateTime}</span></span>
             </div>
             <div class="text-[10px] text-slate-500 font-bold flex items-center gap-1 opacity-0 group-hover/card:opacity-100 transition-all text-blue-400">
               <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.082.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-              <span>Click to view history</span>
+              <span>Click for Audit Trail</span>
             </div>
           </div>
-        </div>
-        
-        <div class="flex flex-col items-end gap-2">
-          <div class="flex gap-1.5">
-            ${(item.status || 'Idle') === 'Duty' ? '<span class="badge badge-low">🟢 Duty</span>' : 
-              item.status === 'Maintenance' ? '<span class="badge badge-medium">🟡 Maint</span>' :
-              item.status === 'Spare' ? '<span class="badge" style="background:rgba(148,163,184,.1);color:#94a3b8;border:1px solid #475569">⚪ Spare</span>' :
-              '<span class="badge" style="background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid #2563eb">🔵 Idle</span>'}
-          </div>
-          <div class="text-[10px] text-slate-500 font-mono uppercase">${escHtml(item.serial_number || 'S/N: —')}</div>
         </div>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-navy-900/40 p-3 rounded-lg border border-slate-700/30 mb-4">
         <div class="flex flex-col">
           <span class="text-[9px] uppercase tracking-wider text-slate-500 font-bold mb-1">Manufacturer / Model</span>
-          <span class="text-xs text-slate-300">${escHtml(item.manufacturer || '—')} / ${escHtml(item.model || '—')}</span>
+          <span class="text-xs text-navy opacity-80">${escHtml(latest ? latest.manufacturer : '—')} / ${escHtml(latest ? latest.model : '—')}</span>
         </div>
         <div class="flex flex-col">
           <span class="text-[9px] uppercase tracking-wider text-slate-500 font-bold mb-1">Firmware Version</span>
-          <span class="text-xs font-mono text-slate-300">${escHtml(item.firmware || '—')}</span>
+          <span class="text-xs font-mono text-navy opacity-80">${escHtml(latest ? latest.firmware : '—')}</span>
         </div>
         <div class="flex flex-col">
           <span class="text-[9px] uppercase tracking-wider text-slate-500 font-bold mb-1">Flow I/O Verification</span>
-          <span class="text-xs ${isOverdue(item.expire_date) ? 'text-red-400 font-bold' : 'text-slate-300'}">${fmtDate(item.expire_date)}</span>
+          <span class="text-xs ${latest && isOverdue(latest.expire_date) ? 'text-red-400 font-bold' : 'text-navy opacity-80'}">${latest ? fmtDate(latest.expire_date) : 'Pending'}</span>
         </div>
       </div>
       
       <div class="flex items-center justify-between pt-3 border-t border-slate-700/50">
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-2 border-r border-slate-700 pr-4">
-            ${tagChip(item.tag_code)}
+            ${tagChip(tag.tag_code)}
           </div>
-          ${item.media && item.media.length > 0 ? `
+          ${(latest && latest.media && latest.media.length > 0) ? `
             <div class="flex items-center gap-1.5 text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full border border-blue-500/20 text-[10px] font-bold">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
-              <span>${item.media.length} ATTACHMENTS</span>
+              <span>${latest.media.length} AUDIT FILES</span>
             </div>
           ` : ''}
         </div>
         
         <div class="flex gap-2">
-          ${canEdit(item) ? `
-            <button class="btn btn-sm btn-secondary flex items-center gap-1.5 h-8" 
-                    onclick="event.stopPropagation(); openModal('Edit Configuration', sysFormHtml(DB.getSystems().find(x=>x.id==='${item.id}')), () => bindSysForm('${item.id}'))">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-              <span>Edit</span>
-            </button>
-          ` : ''}
+          <button class="btn btn-sm btn-primary flex items-center gap-1.5 h-8 px-4" 
+                  onclick="event.stopPropagation(); openModal('New log for ${tag.tag_code}', sysFormHtml({tag_id: '${tag.id}'}), () => bindSysForm('${latest ? latest.id : ''}', true))">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+            <span>Log Entry</span>
+          </button>
         </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 window.openSystemHistory = function(tagCode) {
   openModal(`History: ${tagCode}`, systemHistoryHtml(tagCode));
 }
 
-function systemHistoryHtml(tagCode, query = '') {
+function systemHistoryHtml(tagCode) {
   const records = DB.getSystems()
     .filter(r => r.tag_code === tagCode)
     .sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at));
 
-  const q = query.toLowerCase().trim();
-  const filtered = q ? records.filter(r => 
-    (r.notes || '').toLowerCase().includes(q) || 
-    (r.status || '').toLowerCase().includes(q) ||
-    fmtDate(r.expire_date).toLowerCase().includes(q) ||
-    fmt(r.updated_at || r.created_at).toLowerCase().includes(q)
-  ) : records;
-
-  const listHtml = filtered.map(r => `
-    <div class="bg-navy-900/50 border border-slate-800 rounded-xl p-4 mb-3">
-      <div class="flex justify-between items-start mb-2">
-        <div class="flex flex-col">
-          <span class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Updated At</span>
-          <span class="text-white font-bold text-sm">${fmt(r.updated_at || r.created_at)}</span>
-        </div>
-        <div class="flex gap-1.5">
-          ${r.status === 'Duty' ? '<span class="badge badge-low">🟢 Duty</span>' : 
-            r.status === 'Maintenance' ? '<span class="badge badge-medium">🟡 Maint</span>' :
-            r.status === 'Spare' ? '<span class="badge badge-secondary">⚪ Spare</span>' :
-            '<span class="badge badge-info">🔵 Idle</span>'}
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-3 mb-3">
-        <div class="bg-navy-950/50 p-2 rounded border border-slate-800/50">
-          <span class="text-[9px] text-slate-500 uppercase block mb-0.5">Flow I/O Verification</span>
-          <span class="text-xs text-slate-300 font-medium">${fmtDate(r.expire_date) || '—'}</span>
-        </div>
-        <div class="bg-navy-950/50 p-2 rounded border border-slate-800/50">
-          <span class="text-[9px] text-slate-500 uppercase block mb-0.5">Attachments</span>
-          <span class="text-xs text-slate-300 font-medium">${r.media ? r.media.length : 0} Files</span>
-        </div>
-      </div>
-      ${r.notes ? `<div class="text-xs text-slate-400 italic bg-navy-950/30 p-2 rounded border border-slate-800/30">${escHtml(r.notes)}</div>` : ''}
-    </div>
-  `).join('');
+  if (records.length === 0) return '<div class="empty-state"><p>No history records found for this unit.</p></div>';
 
   return `
-    <div class="space-y-4">
-      <div class="relative">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <input type="text" id="hist-search" placeholder="Search in history..." value="${escHtml(query)}"
-               class="w-full bg-navy-950 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-orange-500 transition-all font-medium"
-               oninput="updateSystemHistoryModal('${tagCode}', this.value)" />
+    <div class="space-y-3 pb-4">
+      <div class="flex items-center justify-between mb-4 bg-navy-950/40 p-3 rounded-lg border border-slate-800/50">
+        <div class="text-[10px] text-slate-500 uppercase tracking-widest font-black">History Timeline: ${tagCode}</div>
+        <div class="text-[10px] text-orange-400 font-bold uppercase tracking-widest">${records.length} Records</div>
       </div>
-      <div class="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-        ${records.length === 0 ? '<p class="text-center text-slate-500 py-8 italic text-sm">No records found for this unit.</p>' : 
-          filtered.length === 0 ? '<p class="text-center text-slate-500 py-8 italic text-sm">No results match your search.</p>' : listHtml}
+      
+      <div class="max-h-[60vh] overflow-y-auto pr-1 custom-scrollbar space-y-3 px-1">
+        ${records.map(r => {
+          const hasMedia = r.media && r.media.length > 0;
+          return `
+          <div class="group/row flex items-center justify-between p-4 bg-navy-900/60 border border-slate-800/60 rounded-xl hover:border-orange-500/40 hover:bg-navy-800/80 transition-all cursor-pointer shadow-sm relative overflow-hidden"
+               onclick="downloadLogAttachments('${r.id}')">
+            
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-orange-500 transform -translate-x-full group-hover/row:translate-x-0 transition-transform"></div>
+
+            <div class="flex items-center gap-4 flex-1">
+               <div class="flex flex-col min-w-[110px]">
+                  <span class="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">${fmt(r.updated_at || r.created_at)}</span>
+                   
+               </div>
+               
+               <div class="h-8 w-px bg-slate-800/50"></div>
+
+               <div class="flex-1 px-2">
+                  <div class="text-xs text-slate-200 font-medium line-clamp-1 group-hover/row:text-navy transition-colors">
+                     ${escHtml(r.notes || '')}
+                  </div>
+                  <div class="text-[10px] text-slate-500 mt-0.5 flex items-center gap-2">
+                     ${r.expire_date ? `<span class="text-blue-400/80">Calibration: ${fmtDate(r.expire_date)}</span>` : ''}
+                  </div>
+               </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+               ${hasMedia ? `
+                 <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-400 shadow-sm transition-all group-hover/row:bg-orange-500/20">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                    <span class="text-[10px] font-black uppercase tracking-widest">${r.media.length} TXT</span>
+                 </div>
+               ` : `
+                 <span class="text-[9px] text-slate-700 uppercase font-black tracking-widest">No Evid.</span>
+               `}
+               
+               <div class="p-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-500 group-hover/row:text-orange-400 group-hover/row:bg-white/10 transition-all opacity-0 group-hover/row:opacity-100">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" /></svg>
+               </div>
+
+               ${canEdit(r) ? `
+                 <button class="p-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-all ml-2" 
+                         onclick="event.stopPropagation(); deleteHistoryEntry('${r.id}', '${tagCode}')">
+                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                 </button>
+               ` : ''}
+            </div>
+          </div>`;
+        }).join('')}
       </div>
-    </div>`;
+      
+      <p class="text-[10px] text-slate-500 text-center mt-2 italic px-4 py-2 border border-slate-800/20 rounded bg-navy-950/20">
+        💡 Standard Log View: Click any row to download the attached TXT configuration and Audit Trail files.
+      </p>
+    </div>
+  `;
 }
 
-window.updateSystemHistoryModal = function(tagCode, query) {
-  const container = document.querySelector('.modal-body');
-  if (container) {
-    container.innerHTML = systemHistoryHtml(tagCode, query);
-    // Keep focus on input
-    const input = document.getElementById('hist-search');
-    if (input) {
-      input.focus();
-      input.setSelectionRange(query.length, query.length);
+window.deleteHistoryEntry = function(id, tagCode) {
+  confirmDelete('this history log entry', () => {
+    try {
+      DB.deleteSystem(id);
+      toast('History entry deleted', 'success');
+      
+      // Refresh the main view
+      const container = document.getElementById('page-container');
+      renderSystems(container);
+
+      // Refresh the history modal (effectively closing and reopening)
+      closeModal();
+      setTimeout(() => {
+        window.openSystemHistory(tagCode);
+      }, 300);
+    } catch (err) {
+      console.error('Delete history error:', err);
+      toast('Error deleting entry', 'error');
     }
+  });
+}
+
+window.downloadLogAttachments = async function(recordId) {
+  try {
+    const r = DB.getSystems().find(x => x.id === recordId);
+    if (!r || !r.media || r.media.length === 0) {
+      toast('No files to download for this entry', 'info');
+      return;
+    }
+
+    const tagCode = r.tag_code || 'FC-LOG';
+    const dateStr = new Date(r.updated_at || r.created_at).toISOString().split('T')[0];
+    
+    if (r.media.length === 1) {
+      const file = r.media[0];
+      const link = document.createElement('a');
+      link.href = file.data;
+      link.download = file.name || `${tagCode}_Audit_${dateStr}.txt`;
+      document.body.appendChild(link); // Better browser compatibility
+      link.click();
+      document.body.removeChild(link);
+      toast('Downloading file...', 'success');
+    } else {
+      if (typeof JSZip === 'undefined') {
+        toast('ZIP library still loading. Please wait...', 'warning');
+        console.error('JSZip not found. Checking CDN...');
+        return;
+      }
+
+      toast('Generating ZIP package...', 'info');
+      const zip = new JSZip();
+      
+      for (const file of r.media) {
+        if (!file.data) continue;
+        const name = file.name || `audit_${Date.now()}.txt`;
+        // Handle potential different data formats
+        const base64Part = file.data.includes(',') ? file.data.split(',')[1] : file.data;
+        zip.file(name, base64Part, { base64: true });
+      }
+
+      const content = await zip.generateAsync({ type: 'blob' });
+      const url = window.URL.createObjectURL(content);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${tagCode}_Full_Audit_${dateStr}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast('ZIP Package downloaded!', 'success');
+    }
+  } catch (err) {
+    console.error('Download error:', err);
+    toast('Error downloading log evidence', 'error');
   }
 }
 
@@ -888,6 +986,11 @@ function noteFormHtml(item) {
       </div>
 
       <div class="flex gap-3 justify-end pt-2">
+        ${item && item.id ? `
+          <button type="button" class="btn ${item.archived ? 'btn-secondary' : 'btn-primary'} btn-sm mr-auto" onclick="toggleArchiveNote('${item.id}')">
+            ${item.archived ? '📦 Unarchive' : '📦 Archive Note'}
+          </button>
+        ` : ''}
         <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
         <button type="submit" class="btn btn-primary">${item && item.id ? 'Update' : 'Create'} Record</button>
       </div>
@@ -1108,7 +1211,7 @@ function generateOffloadingReport() {
 
 function renderNotes(container) {
   let allNotes = DB.getNotes();
-  
+
   container.innerHTML = `
     <div class="page-header relative">
       <div>
@@ -1116,11 +1219,11 @@ function renderNotes(container) {
         <p class="page-subtitle">${allNotes.length} total records</p>
       </div>
       <div class="flex items-center gap-4 bg-navy-950/50 p-1 rounded-xl border border-slate-800 shadow-inner">
-        <button class="px-4 py-2 rounded-lg text-xs font-bold transition-all ${notesSection === 'offloading' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'text-slate-500 hover:text-slate-300'}"
+        <button class="px-4 py-2 rounded-lg text-xs font-bold transition-all ${notesSection === 'offloading' ? 'bg-orange-500 text-navy shadow-lg shadow-orange-500/20' : 'text-slate-500 hover:text-navy opacity-80'}"
                 onclick="notesSection='offloading'; renderNotes(document.getElementById('page-container'))">
           🚢 Offloading
         </button>
-        <button class="px-4 py-2 rounded-lg text-xs font-bold transition-all ${notesSection === 'well-test' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'text-slate-500 hover:text-slate-300'}"
+        <button class="px-4 py-2 rounded-lg text-xs font-bold transition-all ${notesSection === 'well-test' ? 'bg-orange-500 text-navy shadow-lg shadow-orange-500/20' : 'text-slate-500 hover:text-navy opacity-80'}"
                 onclick="notesSection='well-test'; renderNotes(document.getElementById('page-container'))">
           🛰️ Well Test
         </button>
@@ -1144,8 +1247,8 @@ function renderNotes(container) {
 }
 
 function renderOffloadingCards(notes) {
-  const items = notes.filter(n => n.note_type === 'offloading' || (!n.note_type && n.system !== 'Production'));
-  if (items.length === 0) return '<div class="empty-state"><p>No offloading records found.</p></div>';
+  const items = notes.filter(n => !n.archived && (n.note_type === 'offloading' || (!n.note_type && n.system !== 'Production')));
+  if (items.length === 0) return '<div class="empty-state"><p>No active offloading records found.</p></div>';
 
   // Natural sort by Cargo Number (Descending)
   items.sort((a, b) => {
@@ -1198,11 +1301,11 @@ function renderOffloadingCards(notes) {
             <div class="flex flex-col justify-center">
               <div class="text-[8px] text-slate-500 uppercase font-black mb-1">${item.operation_date ? 'Op. Date' : 'Cargo Number'}</div>
               <div class="flex flex-col gap-1">
-                <div class="${item.operation_date ? 'text-[11px] text-slate-300 font-bold' : 'text-sm text-white font-black tracking-tighter bg-navy-950/50 px-2 py-0.5 rounded border border-slate-700/50 w-fit'}">
+                <div class="${item.operation_date ? 'text-[11px] text-navy opacity-80 font-bold' : 'text-sm text-navy font-black tracking-tighter bg-navy-950/50 px-2 py-0.5 rounded border border-slate-700/50 w-fit'}">
                   ${item.operation_date ? fmtDate(item.operation_date) : `<span class="text-orange-400 mr-1">#</span>${escHtml(item.cargo_number || item.condition || '—').replace('#','')}`}
                 </div>
                 ${item.operation_date ? `
-                  <div class="text-[13px] text-white font-black tracking-tighter bg-navy-950/50 px-2 py-0.5 rounded border border-slate-700/50 w-fit">
+                  <div class="text-[13px] text-navy font-black tracking-tighter bg-navy-950/50 px-2 py-0.5 rounded border border-slate-700/50 w-fit">
                     <span class="text-orange-400 mr-1">#</span>${escHtml(item.cargo_number || item.condition || '—').replace('#','')}
                   </div>
                 ` : ''}
@@ -1210,7 +1313,7 @@ function renderOffloadingCards(notes) {
             </div>
             <div>
               <div class="text-[8px] text-slate-500 uppercase font-black mb-0.5">Vessel Name</div>
-              <div class="text-xs text-white font-semibold truncate">${escHtml(item.vessel_name || '—')}</div>
+              <div class="text-xs text-navy font-semibold truncate">${escHtml(item.vessel_name || '—')}</div>
             </div>
           </div>
           
@@ -1218,11 +1321,11 @@ function renderOffloadingCards(notes) {
           <div class="lg:col-span-5 grid grid-cols-3 gap-2">
             <div class="text-center border-r border-slate-800/30">
               <div class="text-[8px] text-slate-500 uppercase font-bold mb-0.5">Tanker Vol.</div>
-              <div class="text-[11px] text-slate-300 font-mono">${fmtNumber(item.tanker_volume)} m³</div>
+              <div class="text-[11px] text-navy opacity-80 font-mono">${fmtNumber(item.tanker_volume)} m³</div>
             </div>
             <div class="text-center border-r border-slate-800/30">
               <div class="text-[8px] text-slate-500 uppercase font-bold mb-0.5">FPSO Vol.</div>
-              <div class="text-[11px] text-slate-300 font-mono">${fmtNumber(item.fpso_volume)} m³</div>
+              <div class="text-[11px] text-navy opacity-80 font-mono">${fmtNumber(item.fpso_volume)} m³</div>
             </div>
             <div class="text-center">
               <div class="text-[8px] text-orange-400 uppercase font-bold mb-0.5">Metering Vol.</div>
@@ -1276,7 +1379,7 @@ window.openWellHistory = function(tagCode) {
 
 function wellHistoryHtml(tagCode, query = '', tagId = null) {
   const records = DB.getNotes()
-    .filter(n => n.tag_code === tagCode && (n.note_type === 'well-test' || n.system === 'Production'))
+    .filter(n => n.tag_code === tagCode && (n.note_type === 'well-test' || n.system === 'Production') && !n.archived)
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
   const q = query.toLowerCase().trim();
@@ -1292,7 +1395,7 @@ function wellHistoryHtml(tagCode, query = '', tagId = null) {
       <div class="flex justify-between items-start mb-2">
         <div class="flex flex-col">
           <span class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Test Date / Created At</span>
-          <span class="text-white font-bold text-sm">
+          <span class="text-navy font-bold text-sm">
             ${r.test_date ? fmtDate(r.test_date) : fmt(r.created_at)}
           </span>
         </div>
@@ -1303,11 +1406,11 @@ function wellHistoryHtml(tagCode, query = '', tagId = null) {
       <div class="grid grid-cols-2 gap-3 mb-3">
         <div class="bg-navy-950/50 p-2 rounded border border-slate-800/50">
           <span class="text-[9px] text-slate-500 uppercase block mb-0.5">Condition</span>
-          <span class="text-xs text-slate-300 font-medium">${r.condition || '—'}</span>
+          <span class="text-xs text-navy opacity-80 font-medium">${r.condition || '—'}</span>
         </div>
         <div class="bg-navy-950/50 p-2 rounded border border-slate-800/50">
           <span class="text-[9px] text-slate-500 uppercase block mb-0.5">Attachments</span>
-          <span class="text-xs text-slate-300 font-medium">${r.media ? r.media.length : 0} Files</span>
+          <span class="text-xs text-navy opacity-80 font-medium">${r.media ? r.media.length : 0} Files</span>
         </div>
       </div>
       <div class="text-xs text-slate-400 italic bg-navy-950/30 p-2 rounded border border-slate-800/30 line-clamp-2">
@@ -1324,7 +1427,7 @@ function wellHistoryHtml(tagCode, query = '', tagId = null) {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input type="text" id="well-hist-search" placeholder="Search in history..." value="${escHtml(query)}"
-                 class="w-full bg-navy-950 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-orange-500 transition-all font-medium"
+                 class="w-full bg-navy-950 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm text-navy focus:outline-none focus:border-orange-500 transition-all font-medium"
                  oninput="updateWellHistoryModal('${tagCode}', this.value, '${tagId}')" />
         </div>
         <button class="btn btn-primary h-9 text-[10px]" onclick="openModal('New Well Test', noteFormHtml({tag_code:'${tagCode}', tag_id:'${tagId}', note_type:'well-test'}), () => bindNoteForm(null))">
@@ -1352,7 +1455,7 @@ window.updateWellHistoryModal = function(tagCode, query, tagId) {
 
 function renderWellTestCards(notes) {
   const allWells = DB.getTags().filter(t => t.type === 'Well');
-  const wellNotes = notes.filter(n => n.note_type === 'well-test' || (n.system === 'Production'));
+  const wellNotes = notes.filter(n => !n.archived && (n.note_type === 'well-test' || (n.system === 'Production')));
 
   if (allWells.length === 0 && wellNotes.length === 0) return '<div class="empty-state"><p>No wells registered. Add them in the Tag Registry.</p></div>';
 
@@ -1389,7 +1492,7 @@ function renderWellTestCards(notes) {
             ${tagChip(item.tag_code)}
           </div>
           <div>
-            <div class="text-white font-bold text-sm flex items-center gap-2">
+            <div class="text-navy font-bold text-sm flex items-center gap-2">
                Test History
                <span class="text-[8px] px-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 opacity-0 group-hover/card:opacity-100 transition-opacity">Click for Full History</span>
             </div>
@@ -1402,9 +1505,9 @@ function renderWellTestCards(notes) {
             <div class="text-[10px] text-orange-400 font-mono">${fmt(item.created_at)}</div>
           </div>` : `
           <div class="flex items-center gap-1 bg-navy-950/80 p-1 rounded-lg border border-slate-800" onclick="event.stopPropagation()">
-            <button class="px-3 py-1 text-[10px] font-black rounded transition-all ${item.tag_status === 'closed' ? 'text-slate-500 hover:text-slate-300' : 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'}"
+            <button class="px-3 py-1 text-[10px] font-black rounded transition-all ${item.tag_status === 'closed' ? 'text-slate-500 hover:text-navy opacity-80' : 'bg-emerald-500 text-navy shadow-lg shadow-emerald-500/20'}"
                     onclick="toggleWellStatus('${item.tag_id}', 'ok')">OPEN</button>
-            <button class="px-3 py-1 text-[10px] font-black rounded transition-all ${item.tag_status === 'closed' ? 'bg-slate-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}"
+            <button class="px-3 py-1 text-[10px] font-black rounded transition-all ${item.tag_status === 'closed' ? 'bg-slate-600 text-navy shadow-lg' : 'text-slate-500 hover:text-navy opacity-80'}"
                     onclick="toggleWellStatus('${item.tag_id}', 'closed')">CLOSED</button>
           </div>
           `}
@@ -1412,7 +1515,7 @@ function renderWellTestCards(notes) {
 
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 bg-navy-950/50 p-3 rounded-lg border border-slate-800/50 mb-4 cursor-pointer hover:bg-navy-900/80 hover:border-slate-700 transition-all relative group/row" 
            onclick="event.stopPropagation(); ${item.noData ? `openModal('New Well Test', noteFormHtml({tag_code:'${item.tag_code}', note_type:'well-test'}), () => bindNoteForm(null))` : `editNote('${item.id}')`}">
-        <div class="absolute -top-2 right-2 opacity-0 group-hover/row:opacity-100 transition-opacity bg-orange-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded shadow-lg z-20">
+        <div class="absolute -top-2 right-2 opacity-0 group-hover/row:opacity-100 transition-opacity bg-orange-500 text-navy text-[8px] font-black px-1.5 py-0.5 rounded shadow-lg z-20">
           ${item.noData ? 'START NEW TEST' : 'EDIT LATEST RECORD'}
         </div>
         <div>
@@ -1421,7 +1524,7 @@ function renderWellTestCards(notes) {
         </div>
         <div>
           <span class="text-[9px] text-slate-500 uppercase block mb-1">Realization Date</span>
-          <span class="text-xs text-slate-300">${item.test_date ? fmtDate(item.test_date) : '—'}</span>
+          <span class="text-xs text-navy opacity-80">${item.test_date ? fmtDate(item.test_date) : '—'}</span>
         </div>
         <div class="col-span-2">
           <span class="text-[9px] text-slate-500 uppercase block mb-1">Deadline (90 Days)</span>
@@ -1448,9 +1551,9 @@ function renderWellTestCards(notes) {
         <div class="flex gap-2">
           ${!item.noData ? `
              <div class="flex items-center gap-1 bg-navy-950/80 p-1 rounded-lg border border-slate-800 mr-2" onclick="event.stopPropagation()">
-              <button class="px-3 py-1 text-[9px] font-black rounded transition-all ${item.tag_status !== 'closed' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-slate-500 hover:text-slate-300 pointer-events-auto'}"
+              <button class="px-3 py-1 text-[9px] font-black rounded transition-all ${item.tag_status !== 'closed' ? 'bg-emerald-500 text-navy shadow-lg shadow-emerald-500/20' : 'text-slate-500 hover:text-navy opacity-80 pointer-events-auto'}"
                       onclick="toggleWellStatus('${item.tag_id}', 'ok')">OPEN</button>
-              <button class="px-3 py-1 text-[9px] font-black rounded transition-all ${item.tag_status === 'closed' ? 'bg-slate-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}"
+              <button class="px-3 py-1 text-[9px] font-black rounded transition-all ${item.tag_status === 'closed' ? 'bg-slate-600 text-navy shadow-lg' : 'text-slate-500 hover:text-navy opacity-80'}"
                       onclick="toggleWellStatus('${item.tag_id}', 'closed')">CLOSED</button>
             </div>
           ` : ''}
@@ -1465,6 +1568,17 @@ function renderWellTestCards(notes) {
     </div>`;
   }).join('');
 }
+
+// Global Alert Archive
+window.toggleArchiveAlert = function(id) {
+  const alert = DB.getAlerts().find(x => x.id === id);
+  if (!alert) return;
+  alert.archived = !alert.archived;
+  DB.saveAlert(alert);
+  toast(alert.archived ? 'Alert archived' : 'Alert restored', 'success');
+  renderAlerts(document.getElementById('page-container'));
+};
+
 
 // ========== ALERTS & REMINDERS ==========
 let alertFilter = 'all';
@@ -1542,9 +1656,11 @@ function renderAlertsInner(filter) {
   alertFilter = filter;
   let items = DB.getAlerts();
   let list = items;
-  if (filter === 'critical') list = list.filter(a => a.priority === 'critical');
-  if (filter === 'overdue') list = list.filter(a => a.status === 'overdue' || isOverdue(a.due_date));
-  if (filter === 'open') list = list.filter(a => a.status !== 'closed');
+  if (filter === 'critical') list = list.filter(a => a.priority === 'critical' && !a.archived);
+  if (filter === 'overdue') list = list.filter(a => (a.status === 'overdue' || isOverdue(a.due_date)) && !a.archived);
+  if (filter === 'open') list = list.filter(a => a.status !== 'closed' && !a.archived);
+  if (filter === 'archived') list = list.filter(a => a.archived === true);
+  if (filter === 'all') list = list.filter(a => !a.archived);
 
   document.getElementById('alert-list').innerHTML = list.length === 0 ?
     '<div class="empty-state"><p>No alerts found.</p></div>' :
@@ -1552,7 +1668,7 @@ function renderAlertsInner(filter) {
     <div class="card card-interactive p-5 mb-3 ${(item.status === 'overdue' || isOverdue(item.due_date)) && item.status !== 'closed' ? 'border-red-500/30' : ''}">
       <div class="flex items-start justify-between gap-3 mb-2">
         <div class="flex-1">
-          <div class="text-white font-semibold">${escHtml(item.title)}</div>
+          <div class="text-navy font-semibold">${escHtml(item.title)}</div>
           <div class="text-xs text-slate-500 mt-0.5">${escHtml(item.reminder_type)} · ${item.recurrence !== 'none' ? 'Recurring: ' + item.recurrence : ''}</div>
         </div>
         <div class="flex gap-1.5 flex-shrink-0">${priorityBadge(item.priority)} ${statusBadge(item.status)}</div>
@@ -1562,6 +1678,7 @@ function renderAlertsInner(filter) {
         <div class="flex items-center gap-3 text-xs">${tagChip(item.tag_code)}<span class="${isOverdue(item.due_date) && item.status !== 'closed' ? 'overdue' : 'text-slate-500'}">Due: ${fmtDate(item.due_date)}</span></div>
         <div class="flex gap-2">
           <button class="btn btn-sm btn-secondary" onclick="editAlert('${item.id}')">Edit</button>
+          <button class="btn ${item.archived ? 'btn-secondary' : 'btn-primary'} btn-sm" onclick="toggleArchiveAlert('${item.id}')">${item.archived ? 'Unarchive' : 'Archive'}</button>
           <button class="btn btn-sm btn-danger" onclick="confirmDelete('${escHtml(item.title)}', () => { DB.deleteAlert('${item.id}'); renderAlerts(document.getElementById('page-container')); })">Delete</button>
         </div>
       </div>
@@ -1582,6 +1699,7 @@ function renderAlerts(container) {
       <button class="filter-chip al-filter" data-filter="open">Open</button>
       <button class="filter-chip al-filter" data-filter="critical">Critical</button>
       <button class="filter-chip al-filter" data-filter="overdue">Overdue</button>
+      <button class="filter-chip al-filter" data-filter="archived">Archived</button>
     </div>
     <div id="alert-list"></div>`;
 
@@ -1617,7 +1735,7 @@ function renderSearch(container, params) {
             <span class="badge" style="background:${moduleColors[r.module]}20;color:${moduleColors[r.module]};border:1px solid ${moduleColors[r.module]}40">
               ${moduleLabels[r.module] || r.module}
             </span>
-            <span class="text-white font-medium">${escHtml(r.label)}</span>
+            <span class="text-navy font-medium">${escHtml(r.label)}</span>
           </div>
           ${r.item.tag_code ? `<div class="mt-2 flex gap-2">${tagChip(r.item.tag_code)}</div>` : ''}
         </div>`).join('')}
@@ -1633,7 +1751,7 @@ function calibrationFormHtml(tag, existing = null) {
   return `<form id="calibration-form" class="space-y-4">
       <div class="bg-navy-950/40 p-4 rounded-xl border border-slate-800/60 mb-4">
         <label class="text-[10px] text-slate-500 uppercase font-bold block mb-2">Instrument Info</label>
-        <div class="text-sm text-white font-bold">${escHtml(tag.tag_code)} — ${escHtml(tag.system || tag.name)}</div>
+        <div class="text-sm text-navy font-bold">${escHtml(tag.tag_code)} — ${escHtml(tag.system || tag.name)}</div>
         <div class="grid-2 mt-2">
            <div class="text-[10px] text-slate-400">S/N: ${escHtml(tag.serial_number || 'N/A')}</div>
            <div class="text-[10px] text-orange-400 font-bold text-right">Cycle: ${tag.calibration_interval ? tag.calibration_interval + ' Months' : 'None'}</div>
@@ -1720,7 +1838,7 @@ function openCalibrationHistory(tagId) {
       <div class="flex justify-between items-center bg-navy-900/40 p-4 rounded-xl border border-slate-800/60 transition-all hover:border-slate-700">
         <div>
            <div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Current Instrument Status</div>
-           <div class="text-sm text-white font-bold flex items-center gap-2">
+           <div class="text-sm text-navy font-bold flex items-center gap-2">
               <svg class="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               Last Cal: ${escHtml(tag.last_calibration || 'N/A')}
            </div>
@@ -1742,11 +1860,11 @@ function openCalibrationHistory(tagId) {
            <div class="bg-navy-950/60 border border-slate-800 p-4 rounded-xl hover:border-slate-700 transition group/item">
               <div class="flex justify-between items-start mb-2">
                  <div>
-                    <div class="text-white font-bold text-sm">Calibrated on: ${fmtDate(c.calibration_date)}</div>
+                    <div class="text-navy font-bold text-sm">Calibrated on: ${fmtDate(c.calibration_date)}</div>
                     <div class="text-[10px] text-slate-400 uppercase font-black mt-0.5 tracking-tighter shadow-sm">Deadline: ${fmtDate(c.deadline)}</div>
                  </div>
                  <div class="flex gap-1 opacity-40 group-hover/item:opacity-100 transition-opacity">
-                    <button class="p-1.5 text-slate-400 hover:text-white hover:bg-navy-800 rounded-lg transition" 
+                    <button class="p-1.5 text-slate-400 hover:text-navy hover:bg-navy-800 rounded-lg transition" 
                             title="Edit Record"
                             onclick="openModal('Edit Calibration', calibrationFormHtml(DB.getTag('${tag.id}'), DB.getCalibrations().find(x=>x.id==='${c.id}')), () => bindCalibrationForm(DB.getTag('${tag.id}'), '${c.id}'))">
                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
@@ -1776,3 +1894,20 @@ function openCalibrationHistory(tagId) {
 window.openCalibrationHistory = openCalibrationHistory;
 window.calibrationFormHtml = calibrationFormHtml;
 window.bindCalibrationForm = bindCalibrationForm;
+
+window.toggleArchiveNote = (id) => {
+  const n = DB.getNotes().find(x => x.id === id);
+  if (!n) return;
+  n.archived = !n.archived;
+  DB.saveNote(n);
+  toast(n.archived ? 'Record archived' : 'Record restored', 'success');
+  
+  const modalTitle = document.getElementById('modal-title');
+  if (modalTitle && modalTitle.textContent.includes('Record')) {
+    // Re-render the form if it was open
+    // For simplicity, just refresh list
+  }
+
+  const pg = document.getElementById('page-container');
+  if (pg) renderNotes(pg);
+};

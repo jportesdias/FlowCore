@@ -73,18 +73,18 @@ window.renderDashboard = function(container) {
           <div class="space-y-2 flex-grow">
             <div>
               <div class="text-[11px] font-black uppercase tracking-widest ${isOverdue || nextWell.noData ? 'text-orange-500/80' : 'text-emerald-500/80'} mb-1">Next Well Test Schedule</div>
-              <h2 class="text-3xl font-black text-white">${nextWell.tag_code}</h2>
+              <h2 class="text-3xl font-black text-navy">${nextWell.tag_code}</h2>
               <div class="text-sm text-slate-400 font-medium truncate">Production Well Resource</div>
             </div>
 
             <div class="grid grid-cols-2 gap-4 py-3 border-t border-white/5">
               <div>
                 <div class="text-[9px] text-slate-500 uppercase font-black tracking-widest">System</div>
-                <div class="text-xs text-white font-bold">Production</div>
+                <div class="text-xs text-navy font-bold">Production</div>
               </div>
               <div>
                 <div class="text-[9px] text-slate-500 uppercase font-black tracking-widest">Location</div>
-                <div class="text-xs text-white font-bold">Subsea Cluster</div>
+                <div class="text-xs text-navy font-bold">Subsea Cluster</div>
               </div>
               <div>
                 <div class="text-[11px] font-bold ${isOverdue ? 'text-red-400' : (nextWell.noData ? 'text-orange-400' : 'text-emerald-400')} uppercase">
@@ -100,7 +100,7 @@ window.renderDashboard = function(container) {
           <div class="mt-auto pt-4 border-t border-white/5 flex items-center justify-between text-[10px]">
             <div>
               <span class="text-slate-500 uppercase font-black">Last Test:</span>
-              <span class="text-white font-bold ml-1">${nextWell.last_test ? fmtDate(nextWell.last_test) : '---'}</span>
+              <span class="text-navy font-bold ml-1">${nextWell.last_test ? fmtDate(nextWell.last_test) : '---'}</span>
             </div>
             <div class="px-2 py-1 bg-white/5 rounded">
               <span class="text-slate-400 font-bold">Deadline: ${nextWell.deadline && !isNaN(nextWell.deadline.getTime()) ? fmtDate(nextWell.deadline.toISOString().split('T')[0]) : '---'}</span>
@@ -128,7 +128,7 @@ window.renderDashboard = function(container) {
         <div class="card p-5 h-full border-l-4 ${isCritical ? 'border-l-red-500 bg-red-500/5' : 'border-l-orange-500 bg-orange-500/5'} cursor-pointer hover:bg-white/5 transition-all" onclick="openContingencyModal()">
           <div class="flex flex-col h-full">
              <div class="flex items-center justify-between mb-3">
-               <div class="w-12 h-12 ${isCritical ? 'bg-red-500 critical-pulse' : 'bg-orange-500 animate-pulse'} text-white flex items-center justify-center rounded-xl">
+               <div class="w-12 h-12 ${isCritical ? 'bg-red-500 critical-pulse' : 'bg-orange-500 animate-pulse'} text-navy flex items-center justify-center rounded-xl">
                   <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                </div>
                <div class="text-right">
@@ -143,26 +143,26 @@ window.renderDashboard = function(container) {
                    <span class="w-2 h-2 rounded-full ${isCritical ? 'bg-red-500 animate-ping' : 'bg-orange-500 animate-pulse'}"></span>
                    <h3 class="${isCritical ? 'text-red-400' : 'text-orange-400'} font-black uppercase text-[10px] tracking-[0.2em]">Priority Replacement</h3>
                  </div>
-                 <div class="text-white text-3xl font-black tracking-tight">${nextMeter.tag_code}</div>
+                 <div class="text-navy text-3xl font-black tracking-tight">${nextMeter.tag_code}</div>
                  <div class="text-sm text-slate-400 font-medium truncate">${escHtml(nextMeter.name || 'Flow Instrument')}</div>
                </div>
 
                <div class="grid grid-cols-2 gap-4 py-3 border-t border-white/5">
                  <div>
                    <div class="text-[9px] text-slate-500 uppercase font-black tracking-widest">System</div>
-                   <div class="text-xs text-white font-bold">${escHtml(nextMeter.system || '---')}</div>
+                   <div class="text-xs text-navy font-bold">${escHtml(nextMeter.system || '---')}</div>
                  </div>
                  <div>
                    <div class="text-[9px] text-slate-500 uppercase font-black tracking-widest">Location</div>
-                   <div class="text-xs text-white font-bold">${escHtml(nextMeter.location || '---')}</div>
+                   <div class="text-xs text-navy font-bold">${escHtml(nextMeter.location || '---')}</div>
                  </div>
                  <div>
                    <div class="text-[9px] text-slate-500 uppercase font-black tracking-widest">Fluid / Media</div>
-                   <div class="text-xs text-white font-bold">${escHtml(nextMeter.fluid || 'Oil / Multiphase')}</div>
+                   <div class="text-xs text-navy font-bold">${escHtml(nextMeter.fluid || 'Oil / Multiphase')}</div>
                  </div>
                  <div>
                    <div class="text-[9px] text-slate-500 uppercase font-black tracking-widest">Serial Number</div>
-                   <div class="text-xs text-white font-bold">${escHtml(nextMeter.serial_number || '---')}</div>
+                   <div class="text-xs text-navy font-bold">${escHtml(nextMeter.serial_number || '---')}</div>
                  </div>
                </div>
              </div>
@@ -170,7 +170,7 @@ window.renderDashboard = function(container) {
              <div class="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
                <div class="text-[10px]">
                  <span class="text-slate-500 uppercase font-black">Deadline:</span>
-                 <span class="text-white font-bold ml-1">${fmtDate(nextMeter.deadline)}</span>
+                 <span class="text-navy font-bold ml-1">${fmtDate(nextMeter.deadline)}</span>
                </div>
                <div class="px-3 py-1 bg-white/5 rounded-lg">
                  <span class="${isCritical ? 'text-red-400' : 'text-orange-300'} font-bold text-[10px] uppercase tracking-widest">${days} days remaining</span>
@@ -211,7 +211,7 @@ window.renderDashboard = function(container) {
           <div class="card p-5 h-full border-l-4 border-l-red-500 bg-red-500/5 cursor-pointer hover:bg-white/5 transition-all" onclick="navigate('tag-detail', {id:'${m.id}'})">
             <div class="flex flex-col h-full">
                <div class="flex items-center justify-between mb-3">
-                 <div class="w-12 h-12 bg-red-500 text-white flex items-center justify-center rounded-xl shadow-lg shadow-red-500/20">
+                 <div class="w-12 h-12 bg-red-500 text-navy flex items-center justify-center rounded-xl shadow-lg shadow-red-500/20">
                     ${replacesIcon}
                  </div>
                  <div class="text-right">
@@ -225,25 +225,25 @@ window.renderDashboard = function(container) {
                      <span class="w-2 h-2 rounded-full bg-red-500"></span>
                      <h3 class="text-red-500 font-black uppercase text-[10px] tracking-[0.2em]">Priority Replacement</h3>
                    </div>
-                   <div class="text-white text-3xl font-black tracking-tight">${m.tag_code}</div>
+                   <div class="text-navy text-3xl font-black tracking-tight">${m.tag_code}</div>
                    <div class="text-sm text-slate-400 font-medium truncate">${escHtml(m.name || 'Overdue Instrument')}</div>
                  </div>
                  <div class="grid grid-cols-2 gap-4 py-3 border-t border-white/5">
                    <div>
                      <div class="text-[9px] text-slate-500 uppercase font-black tracking-widest">System</div>
-                     <div class="text-xs text-white font-bold">${escHtml(m.system || '---')}</div>
+                     <div class="text-xs text-navy font-bold">${escHtml(m.system || '---')}</div>
                    </div>
                    <div>
                      <div class="text-[9px] text-slate-500 uppercase font-black tracking-widest">Location</div>
-                     <div class="text-xs text-white font-bold">${escHtml(m.location || '---')}</div>
+                     <div class="text-xs text-navy font-bold">${escHtml(m.location || '---')}</div>
                    </div>
                    <div>
                      <div class="text-[9px] text-slate-500 uppercase font-black tracking-widest">Model</div>
-                     <div class="text-xs text-white font-bold">${escHtml(m.model || 'Standard')}</div>
+                     <div class="text-xs text-navy font-bold">${escHtml(m.model || 'Standard')}</div>
                    </div>
                    <div>
                      <div class="text-[9px] text-slate-500 uppercase font-black tracking-widest">Serial Number</div>
-                     <div class="text-xs text-white font-bold">${escHtml(m.serial_number || '---')}</div>
+                     <div class="text-xs text-navy font-bold">${escHtml(m.serial_number || '---')}</div>
                    </div>
                  </div>
                </div>
@@ -263,16 +263,16 @@ window.renderDashboard = function(container) {
         <div class="card p-3 mb-2 last:mb-0 border-l-4 border-l-red-500 bg-red-500/5 cursor-pointer hover:bg-red-500/10 transition-all" onclick="navigate('tag-detail', {id:'${m.id}'})">
           <div class="flex items-center justify-between gap-3">
              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-red-500 text-white flex items-center justify-center rounded-lg flex-shrink-0">
+                <div class="w-8 h-8 bg-red-500 text-navy flex items-center justify-center rounded-lg flex-shrink-0">
                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                 </div>
                 <div>
-                  <div class="text-white text-base font-black tracking-tight">${m.tag_code}</div>
+                  <div class="text-navy text-base font-black tracking-tight">${m.tag_code}</div>
                   <div class="text-[9px] text-slate-500 font-bold uppercase tabular-nums">S/N: ${m.serial_number || '---'}</div>
                 </div>
              </div>
              <div class="text-right">
-                <div class="px-2 py-1 bg-red-500 text-white text-[9px] font-black rounded shadow-md">${fmtDate(m.deadline)}</div>
+                <div class="px-2 py-1 bg-red-500 text-navy text-[9px] font-black rounded shadow-md">${fmtDate(m.deadline)}</div>
              </div>
           </div>
         </div>`;
@@ -283,12 +283,12 @@ window.renderDashboard = function(container) {
       <div class="card p-5 h-full flex flex-col border-l-4 border-l-blue-500 bg-blue-500/5 cursor-pointer hover:bg-white/5 transition-all group" onclick="openOutlookModal()">
         <div class="flex items-center justify-between mb-3 pb-3 border-b border-white/5">
            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-blue-500 text-white flex items-center justify-center rounded-xl shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform">
+              <div class="w-10 h-10 bg-blue-500 text-navy flex items-center justify-center rounded-xl shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform">
                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
               </div>
               <div>
                 <h3 class="text-blue-500 font-black uppercase text-[10px] tracking-widest">Compliance Outlook</h3>
-                <div class="text-white text-lg font-black tracking-tight">Calibration Plan</div>
+                <div class="text-navy text-lg font-black tracking-tight">Calibration Plan</div>
               </div>
            </div>
            <div class="text-right">
@@ -302,7 +302,7 @@ window.renderDashboard = function(container) {
             return `
             <div class="flex items-center justify-between p-2 rounded-lg bg-white/2 hover:bg-white/10 transition-colors border border-transparent hover:border-white/5">
                <div class="flex flex-col">
-                 <span class="text-white font-black text-xs">${m.tag_code}</span>
+                 <span class="text-navy font-black text-xs">${m.tag_code}</span>
                  <span class="text-[9px] text-slate-500 uppercase font-bold truncate max-w-[120px]">${escHtml(m.name || m.type)}</span>
                </div>
                <div class="flex flex-col items-end">
@@ -327,8 +327,8 @@ window.renderDashboard = function(container) {
   container.innerHTML = `
     ${campaignBannerHtml}
     <div class="page-header mb-8">
-      <h1 class="text-3xl font-black text-white">Dashboard Monitoring</h1>
-      <p class="text-slate-400 text-sm">Industrial Compliance & Operational Integrity — Site: ${window.DB.getActivePlatform()?.name || 'Main'}</p>
+      <h1 class="text-3xl font-black text-navy">Dashboard Monitoring</h1>
+      <p class="text-slate-500 text-sm">Industrial Compliance & Operational Integrity — Site: ${window.DB.getActivePlatform()?.name || 'Main'}</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 items-stretch">
@@ -343,21 +343,21 @@ window.renderDashboard = function(container) {
         ${statCard('Total Assets', stats.totalTags, '#3b82f6', `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>`, 'tags')}
         ${statCard('Pending Issues', stats.overdue, '#f59e0b', `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>`, 'alerts')}
         ${statCard('Priority Activities', stats.priorityActivities, '#ef4444', `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>`, 'activities')}
-        ${statCard('Events Log', events.length, '#8b5cf6', `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />`, 'events')}
+        ${statCard('Events Log', events.filter(e => !e.archived).length, '#8b5cf6', `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />`, 'events')}
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="card p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="font-bold text-white uppercase text-xs tracking-widest">Critical Path Alerts</h3>
-            <button class="text-[10px] font-bold text-slate-500 hover:text-white transition-colors" onclick="navigate('alerts')">View All</button>
+            <h3 class="font-bold text-navy uppercase text-xs tracking-widest">Critical Path Alerts</h3>
+            <button class="text-[10px] font-bold text-slate-500 hover:text-navy transition-colors" onclick="navigate('alerts')">View All</button>
           </div>
           <div class="space-y-4">
             ${criticalAlerts.length === 0 ? '<p class="text-slate-500 text-xs italic">All systems nominal.</p>' :
             criticalAlerts.slice(0, 3).map(a => `
               <div class="p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer" onclick="navigate('tag-detail', {id:'${tags.find(tx => tx.tag_code === a.tag_code)?.id}'})">
                 <div class="flex items-start justify-between mb-2">
-                  <span class="text-xs font-bold text-white">${escHtml(a.title)}</span>
+                  <span class="text-xs font-bold text-navy">${escHtml(a.title)}</span>
                   ${statusBadge(a.status)}
                 </div>
                 <div class="flex items-center justify-between text-[10px] text-slate-500">
@@ -370,7 +370,7 @@ window.renderDashboard = function(container) {
 
         <div class="card p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="font-bold text-white uppercase text-xs tracking-widest">Orifice Plate HUD (On Duty)</h3>
+            <h3 class="font-bold text-navy uppercase text-xs tracking-widest">Orifice Plate HUD (On Duty)</h3>
             <button class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20" onclick="navigate('orifice')">Control Module</button>
           </div>
           <div class="space-y-3">
@@ -384,7 +384,7 @@ window.renderDashboard = function(container) {
                       📀
                     </div>
                     <div>
-                      <div class="text-lg font-black text-white leading-tight">${p.tag_code}</div>
+                      <div class="text-lg font-black text-navy leading-tight">${p.tag_code}</div>
                       <div class="text-[10px] text-slate-500 uppercase font-black tracking-widest mt-0.5">S/N: ${p.serial_number || 'UNKNOWN'}</div>
                     </div>
                   </div>
@@ -396,13 +396,13 @@ window.renderDashboard = function(container) {
                     </div>
                     <div class="text-center md:text-left">
                        <div class="text-[9px] text-slate-500 uppercase font-black tracking-tighter mb-0.5">Beta Ratio (β)</div>
-                       <div class="text-base font-black text-white">${p.beta || '---'}</div>
+                       <div class="text-base font-black text-navy">${p.beta || '---'}</div>
                     </div>
                     <div class="hidden sm:block text-right">
                        <div class="text-[9px] text-slate-500 uppercase font-black tracking-tighter mb-0.5">State</div>
                        <div class="flex items-center justify-end gap-1.5">
                          <div class="w-2 h-2 rounded-full ${p.status === 'ok' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.5)]'}"></div>
-                         <span class="text-[10px] font-black text-white uppercase">${p.status === 'ok' ? 'Healthy' : 'Check'}</span>
+                         <span class="text-[10px] font-black text-navy uppercase">${p.status === 'ok' ? 'Healthy' : 'Check'}</span>
                        </div>
                     </div>
                   </div>
@@ -414,7 +414,7 @@ window.renderDashboard = function(container) {
 
       <div class="card overflow-hidden">
         <div class="px-6 py-4 border-b border-white/5 bg-white/2 flex justify-between items-center">
-          <h3 class="font-bold text-white uppercase text-xs tracking-widest">Global Activity Log</h3>
+          <h3 class="font-bold text-navy uppercase text-xs tracking-widest">Global Activity Log</h3>
           <button class="btn btn-sm glass text-[10px] font-bold" onclick="navigate('events')">Open Archive</button>
         </div>
         <div class="overflow-x-auto">
@@ -431,7 +431,7 @@ window.renderDashboard = function(container) {
               ${recentEvents.map(e => `
                 <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="navigate('events', {id:'${e.id}'})">
                   <td class="px-6 py-4">${tagChip(e.tag_code)}</td>
-                  <td class="px-6 py-4 text-white font-bold max-w-xs truncate">${escHtml(e.title)}</td>
+                  <td class="px-6 py-4 text-navy font-bold max-w-xs truncate">${escHtml(e.title)}</td>
                   <td class="px-6 py-4 text-slate-500 uppercase font-bold text-[10px]">${escHtml(e.category)}</td>
                   <td class="px-6 py-4 text-right text-slate-500 font-medium">${timeAgo(e.updated_at)}</td>
                 </tr>`).join('')}
@@ -459,7 +459,7 @@ function statCard(label, value, color, iconPath, page, extraClass = '') {
       <div>
         <div class="text-[10px] text-slate-500 font-black uppercase tracking-[0.15em] mb-1 line-clamp-1">${label}</div>
         <div class="flex items-baseline gap-2">
-          <div class="text-3xl font-black text-white tracking-tight">${value}</div>
+          <div class="text-3xl font-black text-navy tracking-tight">${value}</div>
         </div>
       </div>
 
@@ -479,7 +479,7 @@ window.openContingencyModal = function() {
   const body = `
     <div class="space-y-4">
       <div class="bg-orange-500/10 border border-orange-500/20 p-4 rounded-xl flex items-center gap-3">
-        <div class="w-10 h-10 bg-orange-500 text-white flex items-center justify-center rounded-lg flex-shrink-0">
+        <div class="w-10 h-10 bg-orange-500 text-navy flex items-center justify-center rounded-lg flex-shrink-0">
           <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
         </div>
         <div>
@@ -504,7 +504,7 @@ window.openContingencyModal = function() {
               const days = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
               return `
               <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="closeModal(); navigate('tag-detail', {id:'${m.id}'})">
-                <td class="px-4 py-2 font-bold text-white">${m.tag_code}</td>
+                <td class="px-4 py-2 font-bold text-navy">${m.tag_code}</td>
                 <td class="px-4 py-2 text-slate-400 font-mono">${m.serial_number || '---'}</td>
                 <td class="px-4 py-2 text-slate-300">${fmtDate(m.deadline)}</td>
                 <td class="px-4 py-2 text-right font-black ${days <= 30 ? 'text-orange-400' : 'text-emerald-400'}">
@@ -561,7 +561,7 @@ window.openOutlookModal = function() {
               const days = Math.ceil((new Date(m.deadline) - today) / (1000 * 60 * 60 * 24));
               return `
               <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="closeModal(); navigate('tag-detail', {id:'${m.id}'})">
-                <td class="px-4 py-1.5 font-bold text-white">${m.tag_code} <span class="text-[11px] text-slate-500 ml-1">S/N: ${m.serial_number || '---'}</span></td>
+                <td class="px-4 py-1.5 font-bold text-navy">${m.tag_code} <span class="text-[11px] text-slate-500 ml-1">S/N: ${m.serial_number || '---'}</span></td>
                 <td class="px-4 py-1.5 text-slate-400">${fmtDate(m.deadline)}</td>
                 <td class="px-4 py-1.5 text-right font-black text-sm" style="color:${color}">${days} DAYS</td>
               </tr>`;
@@ -575,11 +575,11 @@ window.openOutlookModal = function() {
   const body = `
     <div class="space-y-2">
       <div class="bg-blue-500/10 border border-blue-500/20 p-5 rounded-2xl flex items-center gap-4 mb-6">
-        <div class="w-12 h-12 bg-blue-500 text-white flex items-center justify-center rounded-xl shadow-lg shadow-blue-500/30">
+        <div class="w-12 h-12 bg-blue-500 text-navy flex items-center justify-center rounded-xl shadow-lg shadow-blue-500/30">
           <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         </div>
         <div>
-          <h4 class="text-white font-black text-lg tracking-tight">Proactive Compliance Planning</h4>
+          <h4 class="text-navy font-black text-lg tracking-tight">Proactive Compliance Planning</h4>
           <p class="text-slate-400 text-sm">Strategically managing upcoming calibration deadlines across the facility.</p>
         </div>
       </div>
@@ -628,16 +628,16 @@ function renderCampaignBanner(tags, activePlat) {
     <div class="mb-6 overflow-hidden rounded-xl border border-blue-500/20 bg-gradient-to-r from-blue-600/10 via-navy-900 to-navy-900 shadow-xl shadow-blue-500/5">
       <div class="flex flex-col md:flex-row items-center justify-between p-4 gap-4">
         <div class="flex items-center gap-4">
-          <div class="w-10 h-10 bg-blue-500 text-white flex items-center justify-center rounded-xl shadow-lg shadow-blue-500/30 ${isClose ? 'animate-pulse' : ''}">
+          <div class="w-10 h-10 bg-blue-500 text-navy flex items-center justify-center rounded-xl shadow-lg shadow-blue-500/30 ${isClose ? 'animate-pulse' : ''}">
             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
           </div>
           <div>
-            <h3 class="text-white font-black text-base tracking-tight flex items-center gap-2">
+            <h3 class="text-navy font-black text-base tracking-tight flex items-center gap-2">
               Calibration Campaign Planning
               <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 text-[9px] font-black uppercase rounded border border-blue-500/30">Vendor Logistics</span>
             </h3>
             <p class="text-slate-400 text-xs mt-0.5">
-              Earliest deadline: <span class="text-white font-bold">${fmtDate(earliest.deadline)}</span> (${earliest.tag_code})
+              Earliest deadline: <span class="text-navy font-bold">${fmtDate(earliest.deadline)}</span> (${earliest.tag_code})
             </p>
           </div>
         </div>

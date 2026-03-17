@@ -6,7 +6,7 @@ let currentTagFilter = 'all';
 let currentTagSearch = '';
 
 function tagFormHtml(t) {
-  const types = ['Flow Meter', 'Transmitter', 'Well', 'Pilot Burner', 'Sampler', 'Skid', 'Valve', 'Controller', 'Analyser', 'Other'];
+  const types = ['Flow Computer', 'Flow Meter', 'Transmitter', 'Well', 'Pilot Burner', 'Sampler', 'Skid', 'Valve', 'Analyser', 'Other'];
   const statuses = ['ok', 'open-issue', 'inspection', 'decommissioned'];
   const isWell = (t && t.type === 'Well');
   
@@ -165,7 +165,7 @@ function renderTags(container) {
     document.getElementById('tag-grid').innerHTML = list.length === 0 ?
       `<div class="empty-state" style="grid-column:1/-1"><p>No TAGs found.</p></div>` :
       list.map(t => {
-        const evtCount = DB.getEvents().filter(e => e.tag_id === t.id).length;
+        const evtCount = DB.getEvents().filter(e => e.tag_id === t.id && !e.archived).length;
         const inspCount = DB.getInspections().filter(i => i.tag_id === t.id).length;
         const isIdle = t.op_mode === 'Idle';
         
@@ -176,7 +176,7 @@ function renderTags(container) {
               <div class="flex items-center gap-2">
                 ${installationStatusBadge(t.installation_status)}
                 ${opModeBadge(t.op_mode)}
-                <button class="p-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-slate-400 hover:text-white transition-all shadow-sm" 
+                <button class="p-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-slate-400 hover:text-navy transition-all shadow-sm" 
                         title="Change Operational Mode" 
                         onclick="event.stopPropagation(); window.toggleTagMode('${t.id}')">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -186,7 +186,7 @@ function renderTags(container) {
               </div>
             </div>
             <div class="text-[10px] text-slate-500 uppercase tracking-widest font-black mb-1">${escHtml(t.system || t.name)}</div>
-            <div class="text-white font-bold flex items-center gap-2">
+            <div class="text-navy font-bold flex items-center gap-2">
                ${escHtml(t.tag_code)}
                <span class="text-[10px] text-slate-400 font-medium">/ ${escHtml(t.serial_number || 'No S/N')}</span>
                ${classBadge(t.classification)}
@@ -209,7 +209,7 @@ function renderTags(container) {
                   </div>
                   <div>
                     <div class="text-[10px] text-slate-500 uppercase font-black">Last Vendor</div>
-                    <div class="text-xs text-slate-300 font-bold">${escHtml(t.last_vendor || '---')}</div>
+                    <div class="text-xs text-navy opacity-80 font-bold">${escHtml(t.last_vendor || '---')}</div>
                   </div>
                </div>
                <div class="flex items-center justify-between bg-slate-800/20 p-3 rounded-xl border border-slate-700/50">
@@ -336,7 +336,7 @@ function renderTagDetail(container, params) {
             ${item.type === 'event' ? priorityBadge(d.priority) + statusBadge(d.status) : ''}
             ${item.type === 'system' ? `<span class="badge ${d.status === 'Duty' ? 'badge-low' : 'status-open'}">${d.status}</span>` : ''}
           </div>
-          <div class="text-sm font-semibold text-white mb-1">${escHtml(title)}</div>
+          <div class="text-sm font-semibold text-navy mb-1">${escHtml(title)}</div>
           ${detail ? `<div class="text-xs text-slate-400 line-clamp-3">${escHtml(detail)}</div>` : ''}
         </div>
       </div>`;
@@ -351,7 +351,7 @@ function renderTagDetail(container, params) {
             <span class="tag-chip text-lg px-3 py-1">${tag.tag_code}</span>
             <div class="flex items-center gap-2">
               ${opModeBadge(tag.op_mode)}
-              <button class="p-1 px-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-slate-400 hover:text-white transition-all shadow-sm flex items-center gap-2" 
+              <button class="p-1 px-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-slate-400 hover:text-navy transition-all shadow-sm flex items-center gap-2" 
                       title="Change Operational Mode" 
                       onclick="window.toggleTagMode('${tag.id}', true)">
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -375,10 +375,10 @@ function renderTagDetail(container, params) {
         <div class="card p-5">
           <div class="section-label">Equipment Details</div>
           <div class="space-y-2 text-sm">
-            <div class="flex justify-between"><span class="text-slate-500">Type</span><span class="text-white">${escHtml(tag.type)}</span></div>
-            <div class="flex justify-between"><span class="text-slate-500">System</span><span class="text-white">${escHtml(tag.system)}</span></div>
-            <div class="flex justify-between"><span class="text-slate-500" style="margin-right: 1.5rem">Location</span><span class="text-white">${escHtml(tag.location)}</span></div>
-            <div class="flex justify-between"><span class="text-slate-500">Serial No.</span><span class="text-white font-mono">${escHtml(tag.serial_number || '—')}</span></div>
+            <div class="flex justify-between"><span class="text-slate-500">Type</span><span class="text-navy">${escHtml(tag.type)}</span></div>
+            <div class="flex justify-between"><span class="text-slate-500">System</span><span class="text-navy">${escHtml(tag.system)}</span></div>
+            <div class="flex justify-between"><span class="text-slate-500" style="margin-right: 1.5rem">Location</span><span class="text-navy">${escHtml(tag.location)}</span></div>
+            <div class="flex justify-between"><span class="text-slate-500">Serial No.</span><span class="text-navy font-mono">${escHtml(tag.serial_number || '—')}</span></div>
             <div class="flex justify-between items-center"><span class="text-slate-500">Mode</span>
               <div class="flex items-center gap-2">
                 ${opModeBadge(tag.op_mode)}
@@ -394,7 +394,7 @@ function renderTagDetail(container, params) {
           <div class="space-y-3">
              <div class="flex justify-between items-center">
                 <span class="text-xs text-slate-400 italic">Last Cal:</span>
-                <span class="text-xs text-white font-bold">${escHtml(tag.last_calibration || 'N/A')}</span>
+                <span class="text-xs text-navy font-bold">${escHtml(tag.last_calibration || 'N/A')}</span>
              </div>
              <div class="flex justify-between items-center">
                 <span class="text-xs text-slate-400 italic">Deadline:</span>
@@ -416,7 +416,7 @@ function renderTagDetail(container, params) {
           <div class="section-label">Summary</div>
           <div class="space-y-2">
             ${[
-      ['Events', DB.getEvents().filter(e => e.tag_id === tag.id).length, '#f97316'],
+      ['Events', DB.getEvents().filter(e => e.tag_id === tag.id && !e.archived).length, '#f97316'],
       ['Inspections', DB.getInspections().filter(i => i.tag_id === tag.id).length, '#6366f1'],
       ['Alerts', DB.getAlerts().filter(a => a.tag_id === tag.id).length, '#ef4444'],
       ['Materials', DB.getMaterials().filter(m => m.tag_id === tag.id).length, '#10b981'],
@@ -527,7 +527,7 @@ window.openImportModal = function() {
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           XML Import Options
         </h4>
-        <p class="text-xs text-slate-300 mb-2">You can now import data in two ways:</p>
+        <p class="text-xs text-navy opacity-80 mb-2">You can now import data in two ways:</p>
         <ul class="text-[10px] text-slate-400 list-disc ml-4 space-y-1 mb-4">
           <li><strong>Universal Raw Dump</strong>: Select the <code class="text-blue-300">RawDataDump.xml</code> generated by the extraction script.</li>
           <li><strong>Legacy XML</strong>: A simple XML with <code class="text-blue-300">&lt;tag&gt;</code> blocks for specific updates.</li>

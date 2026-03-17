@@ -55,8 +55,8 @@ function opModeBadge(mode) {
 }
 function installationStatusBadge(status) {
     const s = (status || '').toLowerCase();
-    if (s === 'removed') return `<span class="badge bg-orange-600 text-white font-black uppercase text-[10px]">Removed</span>`;
-    if (s === 'awaiting-installation') return `<span class="badge bg-blue-500 text-white font-black uppercase text-[10px] animate-pulse">Waiting Install</span>`;
+    if (s === 'removed') return `<span class="badge bg-orange-600 text-navy font-black uppercase text-[10px]">Removed</span>`;
+    if (s === 'awaiting-installation') return `<span class="badge bg-blue-500 text-navy font-black uppercase text-[10px] animate-pulse">Waiting Install</span>`;
     return `<span class="badge bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-black uppercase text-[10px]">Installed</span>`;
 }
 window.tagChip = function(code) {
@@ -80,7 +80,7 @@ function setupMediaDropzone(containerId, onMediaChange, initialMedia = []) {
             <svg class="w-8 h-8 mx-auto text-slate-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <p class="text-sm text-slate-400">${isOnlyTxt ? 'Drag <span class="text-blue-500 font-bold">.TXT</span> files here' : 'Drag photos/PDFs here'} or <span class="text-orange-500 font-bold">click to upload</span></p>
+            <p class="text-sm text-slate-400">${isOnlyTxt ? 'Drag <span class="text-evergreen-500 font-bold">.TXT</span> files here' : 'Drag photos/PDFs here'} or <span class="text-orange-500 font-bold">click to upload</span></p>
             <input type="file" id="${containerId}-input" multiple accept="${isOnlyTxt ? '.txt,text/plain' : 'image/*,application/pdf'}" class="hidden" />
         </div>
         <div class="media-preview-container" id="${containerId}-previews"></div>
@@ -154,9 +154,8 @@ function setupMediaDropzone(containerId, onMediaChange, initialMedia = []) {
                         <svg class="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z" /><path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" /></svg>
                         <span class="text-[8px] text-slate-400 mt-1 uppercase">PDF DOC</span>
                     </div>
-                ` : isTxt ? `
-                    <div class="pdf-placeholder flex flex-col items-center justify-center h-full bg-slate-800 rounded">
-                        <svg class="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    <div class="pdf-placeholder flex flex-col items-center justify-center h-full bg-surface rounded">
+                        <svg class="w-8 h-8 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                         <span class="text-[8px] text-slate-400 mt-1 uppercase">TXT FILE</span>
                     </div>
                 ` : `<img src="${m}" onclick="openLightbox('${m}')" />`}
@@ -203,8 +202,8 @@ function renderGallery(mediaArray) {
         
         if (isTxt) {
             return `
-                <a href="${m}" download="log-${idx + 1}.txt" class="gallery-thumb pdf-thumb flex flex-col items-center justify-center bg-navy-900 border border-slate-700/50 rounded-lg hover:border-blue-500 transition-colors group">
-                    <svg class="w-8 h-8 text-blue-500 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                <a href="${m}" download="log-${idx + 1}.txt" class="gallery-thumb pdf-thumb flex flex-col items-center justify-center bg-surface border border-border-color rounded-lg hover:border-orange-500 transition-colors group">
+                    <svg class="w-8 h-8 text-orange-400 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                     <span class="text-[8px] font-bold text-slate-400 mt-1 uppercase">Download TXT</span>
                 </a>`;
         }
@@ -295,7 +294,7 @@ function handleSaveResult(result) {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold text-white mb-2">Limite de 3 registros atingido</h3>
+                <h3 class="text-xl font-bold text-navy mb-2">Limite de 3 registros atingido</h3>
                 <p class="text-slate-400 mb-6 leading-relaxed">
                     Você explorou as funcionalidades básicas! Para desbloquear todos os recursos profissionais, 
                     armazenamento ilimitado e segurança total dos seus dados, entre em contato conosco.
@@ -323,7 +322,7 @@ function populatePlatformsForm() {
         <label class="flex items-center gap-3 p-2 hover:bg-navy-700 rounded-lg cursor-pointer transition">
             <input type="checkbox" name="platforms" value="${p.id}" class="w-4 h-4 rounded border-slate-600 bg-navy-900 text-orange-500 focus:ring-orange-500/20">
             <div class="text-sm">
-                <div class="text-white font-medium">${p.name}</div>
+                <div class="text-navy font-medium">${p.name}</div>
                 <div class="text-xs text-slate-500">${p.type} · ${p.basin}</div>
             </div>
         </label>
@@ -701,7 +700,7 @@ function initIdleTimer() {
 // ---- Confirm delete helper ----
 function confirmDelete(label, onConfirm) {
     openModal('Confirm Delete', `
-    <p class="text-slate-300 mb-6">Are you sure you want to delete <strong class="text-white">${escHtml(label)}</strong>? This cannot be undone.</p>
+    <p class="text-navy opacity-80 mb-6">Are you sure you want to delete <strong class="text-navy">${escHtml(label)}</strong>? This cannot be undone.</p>
     <div class="flex gap-3 justify-end">
       <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
       <button class="btn btn-danger" id="confirm-del-btn">Delete</button>
@@ -709,3 +708,47 @@ function confirmDelete(label, onConfirm) {
   `);
     document.getElementById('confirm-del-btn').addEventListener('click', () => { onConfirm(); closeModal(); });
 }
+// ---- Theme Manager ----
+function initTheme() {
+    const html = document.documentElement;
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+    const toggleBtn = document.getElementById('theme-toggle');
+
+    if (!toggleBtn) return;
+
+    // Load saved theme or default to dark
+    const savedTheme = localStorage.getItem('ph_theme') || 'dark';
+    html.className = savedTheme;
+
+    const updateIcons = (theme) => {
+        if (theme === 'dark') {
+            darkIcon?.classList.remove('hidden');
+            lightIcon?.classList.add('hidden');
+        } else {
+            darkIcon?.classList.add('hidden');
+            lightIcon?.classList.remove('hidden');
+        }
+    };
+
+    updateIcons(savedTheme);
+
+    toggleBtn.addEventListener('click', () => {
+        const currentTheme = html.classList.contains('light') ? 'light' : 'dark';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        html.className = newTheme;
+        localStorage.setItem('ph_theme', newTheme);
+        updateIcons(newTheme);
+        
+        toast(`Tema alterado para: ${newTheme === 'light' ? 'White Off' : 'Dark Mode'}`, 'info');
+    });
+}
+
+// Update DOMContentLoaded to include initTheme
+const originalDOMContentLoaded = document.addEventListener;
+document.addEventListener('DOMContentLoaded', () => {
+    // Existing logic is already handled in the previous DOMContentLoaded block in app.js
+    // but we need to ensure initTheme is called after everything is ready.
+    setTimeout(initTheme, 100); 
+});
