@@ -82,7 +82,7 @@ const SEED_PLATFORMS = [
 
 // ---- Seed Users ----
 const SEED_USERS = [
-  { id: 'user-admin', name: 'Administrator', username: 'admin', password: 'admin', role: 'Admin', module: 'all', platforms: ['plat-atlanta', 'plat-flowcore'], created_at: new Date().toISOString() },
+  { id: 'user-admin', name: 'Administrator', username: 'admin', password: 'xxptoTT33//jcfd', role: 'Admin', module: 'all', platforms: ['plat-atlanta', 'plat-flowcore'], created_at: new Date().toISOString() },
   { id: 'user-supervisor', name: 'Production Supervisor', username: 'supervisor', password: 'supervisor123', role: 'Supervisor', module: 'supervisor', platforms: ['plat-atlanta', 'plat-flowcore'], created_at: new Date().toISOString() },
 ];
 
@@ -619,7 +619,7 @@ function initRealtimeListeners() {
 }
 
 function initSeed() {
-  const latestV = '2.11'; // v2.11: Forced Cloud Wipe of Demo Data
+  const latestV = '2.12'; // v2.12: Security Update (Admin Password)
   const currentV = localStorage.getItem(KEYS.seeded);
   
   if (currentV === latestV) return;
@@ -635,13 +635,26 @@ function initSeed() {
 
   // Ensure Default accounts exist
   const users = loadStore(KEYS.users);
+  let usersChanged = false;
+  
   SEED_USERS.forEach(seedUser => {
-    const exists = users.find(u => u.username === seedUser.username);
-    if (!exists) {
+    const existingIdx = users.findIndex(u => u.username === seedUser.username);
+    if (existingIdx === -1) {
       users.push(seedUser);
+      usersChanged = true;
+    } else {
+      // SECURITY PATCH: Force update admin password if it's the old default or if seed changed
+      if (seedUser.username === 'admin' && users[existingIdx].password !== seedUser.password) {
+        console.log('🔒 Security Patch: Updating Admin password to new standard.');
+        users[existingIdx].password = seedUser.password;
+        usersChanged = true;
+      }
     }
   });
-  saveStore(KEYS.users, users);
+  
+  if (usersChanged) {
+    saveStore(KEYS.users, users);
+  }
 
   // --- SURGICAL RESET (FlowCore ONLY) ---
   // We keep records from plat-atlanta or global (*), but reset plat-flowcore to the new Seed.
@@ -1088,7 +1101,7 @@ window.DB = {
     return { success: true };
   },
   deleteSystem: (id) => {
-    // syncDeleteToCloud(KEYS.systems, id); // Disabled for manual sync
+    syncDeleteToCloud(KEYS.systems, id);
     return saveStore(KEYS.systems, loadStore(KEYS.systems).filter(x => x.id !== id));
   },
   getSystem: (id) => loadStore(KEYS.systems).find(x => x.id === id) || GUEST_SESSIONS.systems.find(x => x.id === id),
@@ -1575,7 +1588,10 @@ window.DB = {
     saveStore(KEYS.crew, s);
     return { success: true };
   },
-  deleteCrew: (id) => saveStore(KEYS.crew, loadStore(KEYS.crew).filter(x => x.id !== id)),
+  deleteCrew: (id) => {
+    syncDeleteToCloud(KEYS.crew, id);
+    return saveStore(KEYS.crew, loadStore(KEYS.crew).filter(x => x.id !== id));
+  },
 
   // Personnel
   getPersonnel: () => loadStore(KEYS.personnel),
@@ -1587,7 +1603,10 @@ window.DB = {
     saveStore(KEYS.personnel, s);
     return { success: true };
   },
-  deletePersonnel: (id) => saveStore(KEYS.personnel, loadStore(KEYS.personnel).filter(x => x.id !== id)),
+  deletePersonnel: (id) => {
+    syncDeleteToCloud(KEYS.personnel, id);
+    return saveStore(KEYS.personnel, loadStore(KEYS.personnel).filter(x => x.id !== id));
+  },
 
   // Vacations
   getVacations: () => loadStore(KEYS.vacations),
@@ -1599,7 +1618,10 @@ window.DB = {
     saveStore(KEYS.vacations, s);
     return { success: true };
   },
-  deleteVacation: (id) => saveStore(KEYS.vacations, loadStore(KEYS.vacations).filter(x => x.id !== id)),
+  deleteVacation: (id) => {
+    syncDeleteToCloud(KEYS.vacations, id);
+    return saveStore(KEYS.vacations, loadStore(KEYS.vacations).filter(x => x.id !== id));
+  },
 
   // Sub-systems
   getSubsystems: () => loadStore(KEYS.subsystems),
@@ -1611,7 +1633,10 @@ window.DB = {
     saveStore(KEYS.subsystems, s);
     return { success: true };
   },
-  deleteSubsystem: (id) => saveStore(KEYS.subsystems, loadStore(KEYS.subsystems).filter(x => x.id !== id)),
+  deleteSubsystem: (id) => {
+    syncDeleteToCloud(KEYS.subsystems, id);
+    return saveStore(KEYS.subsystems, loadStore(KEYS.subsystems).filter(x => x.id !== id));
+  },
 
   // Export/Import
   exportDatabase,

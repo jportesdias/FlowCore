@@ -492,8 +492,11 @@ function showApp(user) {
 
     // Admin module switcher
     const modSwitcher = document.getElementById('module-switcher');
+    const modWrapper = document.getElementById('module-switcher-wrapper');
     if (modSwitcher) {
-        modSwitcher.classList.toggle('hidden', !isAdmin);
+        if (modWrapper) modWrapper.classList.toggle('hidden', !isAdmin);
+        else modSwitcher.classList.toggle('hidden', !isAdmin);
+        
         modSwitcher.value = activeModule;
         modSwitcher.onchange = () => {
             document.body.setAttribute('data-module', modSwitcher.value);
@@ -616,7 +619,22 @@ window.DB.showSyncAuthorizationModal = async function() {
             
             const success = await DB.authorizeSync();
             if (success) {
-                document.getElementById('sync-notification')?.classList.add('hidden');
+                // VICTORY UI FEEDBACK
+                const badge = document.getElementById('sync-notification');
+                if (badge) {
+                    badge.classList.remove('bg-orange-500', 'animate-pulse');
+                    badge.classList.add('bg-emerald-500');
+                    badge.innerHTML = '<svg class="w-2 h-2 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg> Updated';
+                    
+                    setTimeout(() => {
+                        badge.classList.add('hidden');
+                        // Restore original state for next notification
+                        badge.classList.remove('bg-emerald-500');
+                        badge.classList.add('bg-orange-500', 'animate-pulse');
+                        badge.innerText = 'Update Available';
+                    }, 3000);
+                }
+                
                 closeModal();
                 toast('Base local atualizada com sucesso!', 'success');
             } else {
