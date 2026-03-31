@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <title>Family Office</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        // Inline Manifest via Blob
+        const manifestStr = JSON.stringify({
+            "name": "Family Office",
+            "short_name": "FO Cash",
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": "#080808",
+            "theme_color": "#d4a827",
+            "icons": [{
+                "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzA4MDgwOCIvPjx0ZXh0IHg9Ijk2IiB5PSIxMDUiIGZvbnQtZmFtaWx5PSdDb3Jtb3JhbnQgR2FyYW1vbmQnLCBzZXJpZiIgZm9udC1zaXplPSI4MCIgZmlsbD0iI2Q0YTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Rk88L3RleHQ+PC9zdmc+",
+                "sizes": "192x192",
+                "type": "image/svg+xml"
+            }]
+        });
+        const manifestBlob = new Blob([manifestStr], { type: 'application/json' });
+        const manifestUrl = URL.createObjectURL(manifestBlob);
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifestUrl;
+        document.head.appendChild(link);
+    </script>
+
+    <style>
+        :root {
+            --black-deep: #080808;
+            --black-soft: #161616;
+            --gold-200: #e8c96a;
+            --gold-300: #d4a827;
+            --gold-400: #b8891a;
+            --glass-bg: rgba(10, 9, 6, 0.55);
+            --glass-border: rgba(212, 168, 39, 0.18);
+            --text-primary: #f0e6c8;
+            --text-muted: rgba(240, 230, 200, 0.32);
+            --success: #22c55e;
+            --danger: #ef4444;
+            --safe-top: env(safe-area-inset-top, 24px);
+            --safe-bottom: env(safe-area-inset-bottom, 24px);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--black-deep);
+            color: var(--text-primary);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Screens */
+        .pwa-screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+        .pwa-screen.pwa-active { display: flex; }
+
+        /* Typography */
+        .pwa-h1 { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--gold-200); font-weight: 400; }
+        .pwa-h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold-300); font-weight: 300; }
+        .pwa-titlebar { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 10px; }
+        .pwa-subtitle { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+
+        /* Glass Cards */
+        .pwa-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 0.5px solid var(--glass-border);
+            border-radius: 16px;
+        }
+
+        /* Screen 1: Dashboard */
+        .pwa-metrics { padding: 12px 24px; display: flex; flex-direction: column; gap: 14px; }
+        .pwa-metric { padding: 20px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .pwa-metric::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%;
+            background: linear-gradient(180deg, var(--gold-300), transparent); opacity: 0.6;
+        }
+        .pwa-metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(240,230,200,0.6); margin-bottom: 6px; }
+        .pwa-metric-value { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: var(--gold-200); }
+        .pwa-metric-value.income { color: var(--success); }
+        .pwa-metric-value.expense { color: var(--danger); }
+        
+        .pwa-pending-badge {
+            margin: 20px 24px; padding: 14px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(212,168,39,0.1); border: 0.5px solid var(--gold-400); border-radius: 12px;
+            cursor: pointer; min-height: 44px; /* Apple Touch Target */
+        }
+        .pwa-pending-badge span { font-size: 13px; font-weight: 500; color: var(--gold-200); }
+        .pwa-badge-count { background: var(--gold-300); color: var(--black-deep); padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+
+        .pwa-fab {
+            position: fixed; bottom: calc(var(--safe-bottom) + 24px); right: 24px;
+            width: 56px; height: 56px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-400), var(--gold-200));
+            color: var(--black-deep); display: flex; align-items: center; justify-content: center;
+            font-size: 32px; font-family: 'Montserrat', sans-serif; font-weight: 300;
+            box-shadow: 0 4px 14px rgba(212,168,39,0.3); border: none; outline: none; z-index: 100;
+        }
+
+        /* Screen 2: Novo Lançamento */
+        .pwa-form { flex: 1; display: flex; flex-direction: column; padding: 24px; }
+        .pwa-field { margin-bottom: 18px; display: flex; flex-direction: column; gap: 6px; }
+        .pwa-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(240,230,200,0.6); }
+        .pwa-input {
+            width: 100%; min-height: 44px; background: rgba(255,255,255,0.03); border: 0.5px solid var(--glass-border);
+            border-radius: 8px; color: var(--text-primary); padding: 12px 16px; font-size: 16px; font-family: 'Montserrat', sans-serif;
+            outline: none; -webkit-appearance: none;
+        }
+        .pwa-input:focus { border-color: var(--gold-300); }
+        
+        .pwa-toggle { display: flex; gap: 8px; margin-bottom: 18px; }
+        .pwa-toggle-btn {
+            flex: 1; min-height: 44px; background: rgba(255,255,255,0.03); border: 0.5px solid var(--glass-border);
+            color: var(--text-muted); border-radius: 8px; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .pwa-toggle-btn.active.receita { background: rgba(34,197,94,0.1); border-color: var(--success); color: var(--success); }
+        .pwa-toggle-btn.active.despesa { background: rgba(239,68,68,0.1); border-color: var(--danger); color: var(--danger); }
+        
+        .pwa-btn-submit {
+            margin-top: auto; min-height: 50px; width: 100%; border-radius: 12px;
+            background: var(--gold-300); color: var(--black-deep); margin-bottom: 12px;
+            font-size: 15px; font-weight: 600; text-transform: uppercase; border: none; letter-spacing: 0.05em;
+        }
+
+        /* Screen 3: History */
+        .pwa-list { padding: 0 24px 24px; display: flex; flex-direction: column; gap: 12px; }
+        .pwa-row { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-height: 44px; }
+        .pwa-row-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .pwa-row-desc { font-size: 14px; font-weight: 500; max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 8px; }
+        .pwa-row-amount { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; }
+        .pwa-row-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .pwa-row-date { font-size: 11px; color: var(--text-muted); }
+        
+        .pwa-pill { font-size: 9px; padding: 4px 8px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.05em; border: 0.5px solid var(--glass-border); background: rgba(255,255,255,0.04);}
+        .pwa-status-pending { color: var(--gold-200); border-color: var(--gold-400); background: rgba(212,168,39,0.1); }
+        .pwa-status-approved { color: var(--success); border-color: var(--success); }
+        .pwa-status-rejected { color: var(--danger); border-color: var(--danger); }
+
+        .pwa-nav-back { border: none; background: transparent; color: var(--gold-200); font-size: 32px; min-width: 44px; min-height: 44px; display: flex; align-items:center; line-height: 0;}
+        
+        /* Banner */
+        .pwa-banner {
+            position: fixed; top: var(--safe-top); left: 16px; right: 16px; min-height: 44px; display: flex; align-items: center; justify-content: center;
+            background: var(--gold-400); color: var(--black-deep); padding: 12px;
+            border-radius: 8px; font-size: 13px; font-weight: 600; text-align: center;
+            transform: translateY(-100px); transition: transform 0.3s cubic-bezier(.4,0,.2,1); z-index: 2000;
+        }
+        .pwa-banner.show { transform: translateY(0); }
+
+        .pwa-pull-area { text-align: center; color: var(--text-muted); font-size: 10px; margin-bottom: 12px; letter-spacing: 0.1em; text-transform: uppercase; min-height: 20px;}
+    </style>
+</head>
+<body>
+    <div id="pwa-banner" class="pwa-banner"></div>
+
+    <!-- Screen 1: Dashboard -->
+    <div id="pwa-screen-1" class="pwa-screen pwa-active">
+        <div class="pwa-titlebar">
+            <div class="pwa-h1">Family Office</div>
+            <div class="pwa-subtitle" id="pwa-date-header"></div>
+        </div>
+        
+        <div class="pwa-pending-badge" id="pwa-btn-history">
+            <span>Visualizar Histórico</span>
+            <div class="pwa-badge-count" id="pwa-pending-count">0</div>
+        </div>
+
+        <div class="pwa-metrics">
+            <div class="pwa-metric pwa-glass">
+                <div class="pwa-metric-label">Total Liquidado (Mês)</div>
+                <div class="pwa-metric-value" id="pwa-m-total">R$ 0,00</div>
+            </div>
+            <div class="pwa-metric pwa-glass">
+                <div class="pwa-metric-label">Receitas Aprovadas</div>
+                <div class="pwa-metric-value income" id="pwa-m-inc">R$ 0,00</div>
+            </div>
+            <div class="pwa-metric pwa-glass">
+                <div class="pwa-metric-label">Despesas Aprovadas</div>
+                <div class="pwa-metric-value expense" id="pwa-m-exp">R$ 0,00</div>
+            </div>
+        </div>
+
+        <button class="pwa-fab" id="pwa-fab-add">+</button>
+    </div>
+
+    <!-- Screen 2: Novo Lançamento -->
+    <div id="pwa-screen-2" class="pwa-screen">
+        <div class="pwa-titlebar" style="margin-bottom: 14px;">
+            <button class="pwa-nav-back" id="pwa-btn-back-1">&lsaquo;</button>
+            <div class="pwa-h2">Novo Lançamento</div>
+            <div style="width:44px"></div>
+        </div>
+
+        <form class="pwa-form pwa-glass" id="pwa-add-form" style="margin: 0 24px; border-radius: 16px;">
+            <div class="pwa-toggle">
+                <button type="button" class="pwa-toggle-btn active despesa" id="pwa-tgg-exp">Despesa</button>
+                <button type="button" class="pwa-toggle-btn receita" id="pwa-tgg-inc">Receita</button>
+            </div>
+            <input type="hidden" id="pwa-f-type" value="expense">
+
+            <div class="pwa-field">
+                <label class="pwa-label">Valor (R$)</label>
+                <input type="number" id="pwa-f-amount" class="pwa-input" inputmode="decimal" step="0.01" required>
+            </div>
+
+            <div class="pwa-field">
+                <label class="pwa-label">Descrição</label>
+                <input type="text" id="pwa-f-desc" class="pwa-input" required>
+            </div>
+
+            <div class="pwa-field">
+                <label class="pwa-label">Categoria</label>
+                <input type="text" id="pwa-f-cat" class="pwa-input" placeholder="Ex: Alimentação">
+            </div>
+            
+            <div class="pwa-field">
+                <label class="pwa-label">Conta de Origem/Aporte</label>
+                <input type="text" id="pwa-f-acc" class="pwa-input" placeholder="Ex: Itaú Personnalité">
+            </div>
+
+            <div class="pwa-field">
+                <label class="pwa-label">Data</label>
+                <input type="date" id="pwa-f-date" class="pwa-input" required>
+            </div>
+
+            <div class="pwa-field" style="margin-bottom: 24px;">
+                <label class="pwa-label">Notas (Opcional)</label>
+                <input type="text" id="pwa-f-notes" class="pwa-input">
+            </div>
+
+            <button type="submit" class="pwa-btn-submit">Salvar Lançamento</button>
+        </form>
+    </div>
+
+    <!-- Screen 3: Histórico -->
+    <div id="pwa-screen-3" class="pwa-screen">
+        <div class="pwa-titlebar" style="margin-bottom: 14px;">
+            <button class="pwa-nav-back" id="pwa-btn-back-2">&lsaquo;</button>
+            <div class="pwa-h2">Histórico (30d)</div>
+            <div style="width:44px"></div>
+        </div>
+        
+        <div class="pwa-pull-area" id="pwa-pull-hint">Puxe para atualizar</div>
+
+        <div class="pwa-list" id="pwa-history-list">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIG & SUPABASE ---
+        const SUPABASE_URL = 'https://lruqphwlcimzcqpafjrn.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxydXFwaHdsY2ltemNxcGFmanJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTI2ODcsImV4cCI6MjA5MDQ4ODY4N30.uPEAdV2rKcZ7SuXC6A_KH3Ili6fq72ytsReRZEXijWQ';
+        const HEADERS = {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        };
+
+        // --- INLINE SERVICE WORKER (Blob) ---
+        const swScript = `
+            const CACHE_NAME = 'fo-pwa-v1';
+            self.addEventListener('install', e => {
+                e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll([location.pathname])));
+                self.skipWaiting();
+            });
+            self.addEventListener('activate', e => self.clients.claim());
+            self.addEventListener('fetch', e => {
+                if (e.request.method !== 'GET') return;
+                if (e.request.url.includes('supabase.co')) {
+                    e.respondWith(
+                        fetch(e.request).catch(() => caches.match(e.request).then(res => res || new Response(JSON.stringify({error:'offline'}), {headers:{'Content-Type':'application/json'}})))
+                    );
+                } else {
+                    e.respondWith(
+                        caches.match(e.request).then(cached => {
+                            const fetching = fetch(e.request).then(res => {
+                                const clone = res.clone();
+                                caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
+                                return res;
+                            }).catch(() => {});
+                            return cached || fetching;
+                        })
+                    );
+                }
+            });
+        `;
+        const swBlob = new Blob([swScript], {type: 'application/javascript'});
+        const swUrl = URL.createObjectURL(swBlob);
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(swUrl).catch(err => console.error('SW Error:', err));
+        }
+
+        // --- STATE & UTILS ---
+        const state = { entries: [] };
+        
+        const formatMoney = val => Number(val || 0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+        
+        const showBanner = (msg, isError = false) => {
+            const b = document.getElementById('pwa-banner');
+            b.innerText = msg;
+            b.style.background = isError ? 'var(--danger)' : 'var(--gold-400)';
+            b.style.color = isError ? '#fff' : 'var(--black-deep)';
+            b.classList.add('show');
+            setTimeout(() => b.classList.remove('show'), 3500);
+        };
+
+        const navTo = (screenId) => {
+            document.querySelectorAll('.pwa-screen').forEach(s => s.classList.remove('pwa-active'));
+            document.getElementById(screenId).classList.add('pwa-active');
+            if(screenId === 'pwa-screen-1') loadDashboard();
+        };
+
+        const vibrate = () => { if (navigator.vibrate) navigator.vibrate(80); };
+
+        // --- API HELPERS ---
+        async function fetchEntries() {
+            try {
+                const res = await fetch(\`\${SUPABASE_URL}/rest/v1/cash_flow_entries?select=*&order=date.desc&limit=30\`, { headers: HEADERS });
+                if (!res.ok) throw new Error('Fetch failed');
+                state.entries = await res.json();
+                renderDashboard();
+                renderHistory();
+            } catch (err) {
+                renderDashboard(); // Fallback to offline/cached state
+            }
+        }
+
+        async function createEntry(entry) {
+            if (!navigator.onLine) {
+                queueOffline(entry);
+                return;
+            }
+            try {
+                const res = await fetch(\`\${SUPABASE_URL}/rest/v1/cash_flow_entries\`, {
+                    method: 'POST', headers: HEADERS, body: JSON.stringify(entry)
+                });
+                if (!res.ok) throw new Error('Post failed');
+                const data = await res.json();
+                state.entries.unshift(data[0]);
+                showBanner('Lançamento salvo com sucesso!');
+                navTo('pwa-screen-1');
+            } catch (err) {
+                queueOffline(entry);
+            }
+        }
+
+        // --- OFFLINE QUEUE ---
+        function queueOffline(entry) {
+            const q = JSON.parse(localStorage.getItem('fo_queue') || '[]');
+            q.push(entry);
+            localStorage.setItem('fo_queue', JSON.stringify(q));
+            showBanner('Salvo localmente — será sincronizado na internet.', true);
+            navTo('pwa-screen-1');
+            renderDashboard();
+        }
+
+        async function flushQueue() {
+            if (!navigator.onLine) return;
+            const q = JSON.parse(localStorage.getItem('fo_queue') || '[]');
+            if (q.length === 0) return;
+            
+            showBanner(\`Sincronizando \${q.length} envios...\`);
+            const pending = [...q];
+            localStorage.setItem('fo_queue', '[]');
+
+            let successCount = 0;
+            for (const item of pending) {
+                try {
+                    const res = await fetch(\`\${SUPABASE_URL}/rest/v1/cash_flow_entries\`, {
+                        method: 'POST', headers: HEADERS, body: JSON.stringify(item)
+                    });
+                    if (res.ok) successCount++;
+                } catch(e) {
+                    const currentQ = JSON.parse(localStorage.getItem('fo_queue') || '[]');
+                    currentQ.push(item);
+                    localStorage.setItem('fo_queue', JSON.stringify(currentQ));
+                }
+            }
+            if (successCount > 0) {
+                showBanner('Sincronização offline concluída.');
+                fetchEntries();
+            }
+        }
+        window.addEventListener('online', flushQueue);
+
+        // --- RENDERING ---
+        function loadDashboard() {
+            document.getElementById('pwa-date-header').innerText = new Date().toLocaleDateString('pt-BR', {month:'long', year:'numeric'});
+            fetchEntries();
+        }
+
+        function renderDashboard() {
+            const now = new Date();
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+            
+            let inc = 0, exp = 0;
+            let pendingCount = 0;
+            
+            state.entries.forEach(t => {
+                if (t.status === 'pending') pendingCount++;
+                if (t.status === 'approved' && t.date >= startOfMonth) {
+                    if (t.type === 'income') inc += Number(t.amount);
+                    if (t.type === 'expense') exp += Number(t.amount);
+                }
+            });
+
+            // Consider offline queue as pending
+            const q = JSON.parse(localStorage.getItem('fo_queue') || '[]');
+            pendingCount += q.length;
+
+            document.getElementById('pwa-m-inc').innerText = formatMoney(inc);
+            document.getElementById('pwa-m-exp').innerText = formatMoney(exp);
+            document.getElementById('pwa-m-total').innerText = formatMoney(inc - exp);
+            document.getElementById('pwa-pending-count').innerText = pendingCount;
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('pwa-history-list');
+            if (state.entries.length === 0) {
+                list.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:12px; padding:20px;">Nenhum histórico recente.</div>';
+                return;
+            }
+
+            list.innerHTML = state.entries.map(t => {
+                const isInc = t.type === 'income';
+                const dateStr = new Date(t.date).toLocaleDateString('pt-BR', {day:'2-digit', month:'short'});
+                
+                let badgeClass = 'pwa-pill pwa-status-pending';
+                let statusText = 'Pendente';
+                if (t.status === 'approved') { badgeClass = 'pwa-pill pwa-status-approved'; statusText = 'Aprovado'; }
+                if (t.status === 'rejected') { badgeClass = 'pwa-pill pwa-status-rejected'; statusText = 'Rejeitado'; }
+
+                return \`
+                <div class="pwa-row pwa-glass">
+                    <div class="pwa-row-top">
+                        <div class="pwa-row-desc">\${t.description}</div>
+                        <div class="pwa-row-amount" style="color: var(--\${isInc ? 'success' : 'danger'})">
+                            \${isInc ? '+' : '-'} \${formatMoney(t.amount)}
+                        </div>
+                    </div>
+                    <div class="pwa-row-bottom">
+                        <div class="pwa-row-date">\${dateStr} &bull; \${t.category || 'Geral'}</div>
+                        <div class="\${badgeClass}">\${statusText}</div>
+                    </div>
+                </div>\`;
+            }).join('');
+        }
+
+        // --- PULL TO REFRESH LOGIC ---
+        let startY = 0;
+        const screen3 = document.getElementById('pwa-screen-3');
+        const hint = document.getElementById('pwa-pull-hint');
+        screen3.addEventListener('touchstart', e => { if(screen3.scrollTop <= 0) startY = e.touches[0].clientY; }, {passive: true});
+        screen3.addEventListener('touchmove', e => {
+            if(startY === 0) return;
+            const y = e.touches[0].clientY;
+            if(y - startY > 60 && screen3.scrollTop <= 0) {
+                hint.innerText = "Solte para recarregar";
+            }
+        }, {passive: true});
+        screen3.addEventListener('touchend', e => {
+            if(startY !== 0 && hint.innerText === "Solte para recarregar") {
+                vibrate();
+                hint.innerText = "Atualizando...";
+                fetchEntries().then(() => { hint.innerText = "Puxe para atualizar"; });
+            }
+            startY = 0;
+        });
+
+        // --- EVENT BINDINGS ---
+        document.getElementById('pwa-fab-add').addEventListener('click', () => {
+            vibrate();
+            document.getElementById('pwa-add-form').reset();
+            document.getElementById('pwa-f-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('pwa-tgg-exp').click();
+            navTo('pwa-screen-2');
+        });
+
+        document.getElementById('pwa-btn-history').addEventListener('click', () => { vibrate(); navTo('pwa-screen-3'); });
+        document.getElementById('pwa-btn-back-1').addEventListener('click', () => navTo('pwa-screen-1'));
+        document.getElementById('pwa-btn-back-2').addEventListener('click', () => navTo('pwa-screen-1'));
+
+        const tggExp = document.getElementById('pwa-tgg-exp');
+        const tggInc = document.getElementById('pwa-tgg-inc');
+        const fType = document.getElementById('pwa-f-type');
+        tggExp.addEventListener('click', () => { tggExp.classList.add('active'); tggInc.classList.remove('active'); fType.value='expense'; });
+        tggInc.addEventListener('click', () => { tggInc.classList.add('active'); tggExp.classList.remove('active'); fType.value='income'; });
+
+        document.getElementById('pwa-add-form').addEventListener('submit', e => {
+            e.preventDefault();
+            vibrate();
+            let amount = document.getElementById('pwa-f-amount').value;
+            // Handle comma or decimal
+            if(typeof amount === 'string') amount = amount.replace(',', '.');
+            
+            const entry = {
+                description: document.getElementById('pwa-f-desc').value.trim(),
+                amount: parseFloat(amount),
+                type: document.getElementById('pwa-f-type').value,
+                category: document.getElementById('pwa-f-cat').value.trim() || 'Não categorizado',
+                account: document.getElementById('pwa-f-acc').value.trim() || 'Geral',
+                date: document.getElementById('pwa-f-date').value,
+                notes: document.getElementById('pwa-f-notes').value.trim(),
+                status: 'pending',
+                origin: 'mobile'
+            };
+            createEntry(entry);
+        });
+
+        // --- INIT ---
+        window.addEventListener('load', () => {
+            flushQueue();
+            loadDashboard();
+        });
+    </script>
+</body>
+</html>
