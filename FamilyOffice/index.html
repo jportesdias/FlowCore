@@ -540,56 +540,34 @@ let realtimeSocket = null;
 let cardRealtimeSocket = null;
 let rtRetryCount = 0;
 /* ─── NAVIGATION ─────────────────────────────────────────────── */
+/* ─── NAVIGATION ─────────────────────────────────────────────── */
+let currentScreen = 'screen-dashboard';
+
 function goTo(id) {
   const cur = document.querySelector('.screen.active');
   if (cur) { cur.classList.remove('active'); cur.classList.add('slide-back'); setTimeout(() => cur.classList.remove('slide-back'), 300); }
   const next = document.getElementById(id);
   next.classList.add('active');
   screenHistory.push(id);
+  currentScreen = id;
   
-  if (id === 'screen-history') { loadHistory(); setupRealtimeSync(); }
-  if (id === 'screen-dashboard') { loadDashboard(); closeRealtimeSync(); }
+  if (id === 'screen-history') { loadHistory(); }
+  if (id === 'screen-dashboard') { loadDashboard(); }
   if (id === 'screen-card-new') { 
     loadCards(); 
-    setupCardRealtime();
     document.getElementById('f-date').value = today(); 
   }
 }
+
 function goBack() {
   if (editingId) { editingId = null; resetForm(); document.getElementById('btn-submit').textContent = 'Enviar para aprovação'; document.getElementById('form-title').textContent = 'Novo Lançamento'; }
   screenHistory.pop();
   const prev = screenHistory[screenHistory.length - 1] || 'screen-dashboard';
+  currentScreen = prev;
   const cur = document.querySelector('.screen.active');
   if (cur) cur.classList.remove('active');
   document.getElementById(prev).classList.add('active');
   if (prev === 'screen-dashboard') loadDashboard();
-  if (prev !== 'screen-history') closeRealtimeSync();
-}
-/* ─── TYPE TOGGLE ────────────────────────────────────────────── */
-function setType(t) {
-  currentType = t;
-  document.getElementById('btn-expense').classList.toggle('active', t === 'expense');
-  document.getElementById('btn-expense').classList.toggle('expense', t === 'expense');
-  document.getElementById('btn-income').classList.toggle('active', t === 'income');
-  document.getElementById('btn-income').classList.toggle('income', t === 'income');
-}
-/* ─── SUPABASE FETCH ─────────────────────────────────────────── */
-async function sbFetch(url, opts = {}) {
-  try {
-    const r = await fetch(url, { headers: HEADERS, ...opts });
-    if (!r.ok) { const e = await r.text(); throw new Error(e); }
-    const ct = r.headers.get('content-type') || '';
-    return ct.includes('json') ? r.json() : [];
-  } catch(e) {
-    console.error('Supabase error:', e);
-    throw e;
-  }
-}
-/* ─── DASHBOARD ──────────────────────────────────────────────── */
-async function initRealtime() {
-  loadDashboard();
-  loadHistory();
-  loadCards();
 }
 
 /* ─── REALTIME SYNC ────────────────────────────────────────── */
@@ -601,53 +579,58 @@ function initRealtime() {
   console.log('REALTIME: Initializing Inbox Sync listener...');
   const channel = supabase.channel('pwa-inbox-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'card_transactions' }, (payload) => {
-      console.log('REALTIME: Card transaction update detected.', payload.eventType);
+      console.log('REALTIME: Card updated');
       loadDashboard();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, (payload) => {
-      console.log('REALTIME: Cash flow update detected.', payload.eventType);
+      console.log('REALTIME: Transaction updated');
       loadDashboard();
     })
     .subscribe((status) => {
       if (status === 'SUBSCRIBED') {
-        console.log('REALTIME: Successfully connected to Supabase.');
+        console.log('REALTIME: Connected');
         isRealtimeInitialized = true;
       }
     });
 }
 
+/* ─── DASHBOARD ──────────────────────────────────────────────── */
+async function loadDashboard() {
+  // Update other modules if needed
+  if (currentScreen === 'screen-history') loadHistory();
+  loadCards();
+  
   const now = new Date();
   const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0');
   const from = `${y}-${m}-01`, to = `${y}-${m}-31`;
+  
   try {
-    const data = await sbFetch(`${TABLE}?date=gte.${from}&date=lte.${to}&order=date.desc`);
+    // 1. Metrics (Current Month)
+    const metricsData = await sbFetch(`${TABLE}?date=gte.${from}&date=lte.${to}&status=in.(approved,posted)`);
+    const income  = metricsData.filter(e => e.type === 'income').reduce((s,e) => s + +e.amount, 0);
+    const expense = metricsData.filter(e => e.type === 'expense').reduce((s,e) => s + +e.amount, 0);
     
-    // Summary Metrics
-    const approved = data.filter(e => e.status === 'approved' || e.status === 'posted');
-    const income  = approved.filter(e => e.type === 'income').reduce((s,e) => s + +e.amount, 0);
-    const expense = approved.filter(e => e.type === 'expense').reduce((s,e) => s + +e.amount, 0);
-    const total   = income - expense;
-    
-    document.getElementById('m-total').textContent   = fmt(Math.abs(total));
+    document.getElementById('m-total').textContent   = fmt(Math.abs(income - expense));
     document.getElementById('m-income').textContent  = fmt(income);
     document.getElementById('m-expense').textContent = fmt(expense);
     
-    // Inbox Dynamic: Show ONLY PENDING items in the "Recentes" list on Home
-    const pendingList = data.filter(e => e.status === 'pending');
-    document.getElementById('pending-count').textContent = pendingList.length;
+    // 2. Inbox (ALL Pending)
+    const cashPending = await sbFetch(`${TABLE}?status=eq.pending&order=date.desc`);
+    const cardPending = await sbFetch(`${CARD_TX_TABLE}?status=eq.pending&order=purchase_date.desc`);
+    
+    const allPending = [...cashPending, ...cardPending.map(c => ({...c, isCard: true}))]
+      .sort((a, b) => new Date((b.purchase_date || b.date)) - new Date((a.purchase_date || a.date)));
+
+    document.getElementById('pending-count').textContent = allPending.length;
     
     const rl = document.getElementById('recent-list');
-    if (!pendingList.length) { 
-      rl.innerHTML = `
-        <div class="pwa-empty" style="padding: 40px 20px;">
-          <div style="font-size: 24px; margin-bottom: 8px;">✨</div>
-          Tudo em dia!<br>Nenhum lançamento aguardando.
-        </div>`; 
+    if (!allPending.length) { 
+      rl.innerHTML = `<div class="pwa-empty">✨ Tudo em dia!</div>`; 
       return; 
     }
-    rl.innerHTML = pendingList.map(e => entryRow(e)).join('');
+    rl.innerHTML = allPending.map(e => entryRow(e, e.isCard)).join('');
   } catch(err) {
-    document.getElementById('recent-list').innerHTML = '<div class="pwa-empty">Erro ao carregar dados</div>';
+    console.error("Dashboard error", err);
   }
 }
 /* ─── HISTORY ────────────────────────────────────────────────── */
@@ -1126,15 +1109,9 @@ function closeRealtimeSync() {
   if (realtimeSocket) { realtimeSocket.close(); realtimeSocket = null; }
 }
 /* ─── RESET & SYNC ───────────────────────────────────────────── */
-function resetForm() {
-  document.getElementById('f-amount').value   = '';
-  document.getElementById('f-desc').value     = '';
-  document.getElementById('f-category').value = '';
-  document.getElementById('f-account').value  = '';
-  document.getElementById('f-notes').value    = '';
-  document.getElementById('f-date').value     = today();
-  setType('expense');
-}
+function resetForm()    { document.getElementById('f-amount').value=''; document.getElementById('f-desc').value=''; document.getElementById('f-date').value=today(); setType('expense'); }
+function resetCardForm(){ document.getElementById('f-card-amount').value=''; document.getElementById('f-card-desc').value=''; document.getElementById('f-date').value=today(); }
+
 async function flushQueue() {
   // Cash flow queue
   const q = JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]');
