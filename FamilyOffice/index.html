@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="FO Cash"/>
 <meta name="theme-color" content="#d4a827"/>
 <title>Family Office</title>
+<link rel="apple-touch-icon" href="logo.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -15,32 +16,32 @@
   --gold-200: #e8c96a;
   --gold-300: #d4a827;
   --gold-400: #b8891a;
-  --black: #080808;
+  --black-deep: #0f0e0b;
   --black-soft: #161616;
-  --glass: rgba(10,9,6,0.6);
-  --glass-border: rgba(212,168,39,0.2);
-  --glass-border-hover: rgba(212,168,39,0.45);
-  --text: #f0e6c8;
-  --text-muted: rgba(240,230,200,0.5);
-  --text-dim: rgba(240,230,200,0.3);
+  --glass-bg: rgba(255, 252, 245, 0.08);
+  --glass-border: rgba(212, 168, 39, 0.25);
+  --glass-border-hover: rgba(212, 168, 39, 0.55);
+  --text-primary: #faf3e0;
+  --text-secondary: rgba(250, 243, 224, 0.65);
+  --text-dim: rgba(250, 243, 224, 0.35);
   --ok: #4ade80;
   --danger: #f87171;
-  --radius: 16px;
-  --radius-sm: 10px;
+  --radius: 20px;
+  --radius-sm: 14px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --font-d: 'Cormorant Garamond', Georgia, serif;
   --font-b: 'Montserrat', sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; background: var(--black); font-family: var(--font-b); color: var(--text); }
+html, body { height: 100%; overflow: hidden; background: var(--black-deep); font-family: var(--font-b); color: var(--text-primary); font-size: 14px; }
 
 /* ── BACKGROUND ── */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
-  background: radial-gradient(ellipse at 20% 20%, rgba(184,137,26,0.12) 0%, transparent 60%),
-              radial-gradient(ellipse at 80% 80%, rgba(212,168,39,0.07) 0%, transparent 50%);
+  background: radial-gradient(ellipse at 20% 20%, rgba(184,137,26,0.15) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, rgba(212,168,39,0.1) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -57,166 +58,213 @@ body::before {
   padding: calc(var(--safe-top) + 18px) 20px 16px;
   display: flex; align-items: center; justify-content: space-between;
   border-bottom: 0.5px solid var(--glass-border);
-  background: rgba(8,8,8,0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(15,14,11,0.75);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
   flex-shrink: 0;
 }
+.pwa-logo-box { display: flex; align-items: center; gap: 12px; }
+.pwa-logo-img { height: 32px; width: auto; object-fit: contain; }
 .pwa-header-title { font-family: var(--font-d); font-size: 24px; font-weight: 400; color: var(--gold-200); letter-spacing: 0.04em; }
-.pwa-header-sub { font-size: 10px; color: var(--text-muted); letter-spacing: 0.1em; margin-top: 2px; }
-.pwa-back { background: none; border: 0.5px solid var(--glass-border); border-radius: 50%; width: 36px; height: 36px; color: var(--gold-200); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.pwa-header-sub { font-size: 10px; color: var(--text-secondary); letter-spacing: 0.1em; margin-top: 2px; }
+.pwa-back { background: none; border: 0.5px solid var(--glass-border); border-radius: 50%; width: 36px; height: 36px; color: var(--gold-200); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.pwa-back:active { background: rgba(212,168,39,0.1); }
 
 /* ── SCROLL AREA ── */
-.pwa-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 16px calc(var(--safe-bottom) + 90px); }
+.pwa-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 16px calc(var(--safe-bottom) + 100px); }
 
 /* ── GLASS CARD ── */
 .glass {
-  background: var(--glass);
-  backdrop-filter: blur(18px) saturate(1.3);
-  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
   border: 0.5px solid var(--glass-border);
   border-radius: var(--radius);
+  box-shadow: inset 0 0.5px 0 rgba(255,248,220,0.08);
+  transition: border-color 0.3s ease;
 }
+.glass:hover { border-color: var(--glass-border-hover); }
 
 /* ── METRIC CARDS ── */
-.pwa-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-.pwa-metric { padding: 16px; position: relative; overflow: hidden; }
+.pwa-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.pwa-metric { padding: 18px; position: relative; overflow: hidden; }
 .pwa-metric.full { grid-column: 1/-1; }
 .pwa-metric::before { content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 100%; background: linear-gradient(180deg, var(--gold-200), transparent); opacity: 0.6; }
-.pwa-metric-label { font-size: 9px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
-.pwa-metric-value { font-family: var(--font-d); font-size: 22px; font-weight: 400; color: var(--gold-100); line-height: 1; }
+.pwa-metric-label { font-size: 10px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; }
+.pwa-metric-value { font-family: var(--font-d); font-size: 28px; font-weight: 400; color: var(--gold-100); line-height: 1; }
 .pwa-metric-sub { font-size: 9px; color: var(--text-dim); margin-top: 4px; }
 
-/* ── PENDING BADGE ── */
+/* ── PENDING BUTTON ── */
 .pwa-pending-btn {
-  width: 100%; padding: 14px 18px; margin-bottom: 16px;
+  width: 100%; padding: 16px 20px; margin-bottom: 20px;
   display: flex; align-items: center; justify-content: space-between;
   cursor: pointer; border: none; text-align: left;
-  background: rgba(184,137,26,0.1);
-  border: 0.5px solid rgba(184,137,26,0.35);
+  background: rgba(184,137,26,0.12);
+  border: 0.5px solid rgba(184,137,26,0.4);
   border-radius: var(--radius-sm);
+  transition: transform 0.15s ease;
 }
-.pwa-pending-label { font-size: 12px; color: var(--gold-200); letter-spacing: 0.06em; }
-.pwa-pending-count { font-family: var(--font-d); font-size: 22px; color: var(--gold-300); font-weight: 500; }
+.pwa-pending-btn:active { transform: scale(0.98); }
+.pwa-pending-label { font-size: 12px; color: var(--gold-200); letter-spacing: 0.08em; }
+.pwa-pending-count { font-family: var(--font-d); font-size: 26px; color: var(--gold-300); font-weight: 500; }
 
-/* ── FAB ── */
-.pwa-fab {
+/* ── FAB & ACTIONS ── */
+.pwa-actions-group {
   position: fixed;
   right: 20px;
   bottom: calc(var(--safe-bottom) + 24px);
+  display: flex; align-items: center; gap: 12px;
+  z-index: 100;
+}
+.pwa-btn-cc {
+  height: 52px; padding: 0 20px;
+  border-radius: 26px;
+  background: transparent;
+  border: 1px solid var(--gold-300);
+  color: var(--gold-200);
+  font-family: var(--font-b);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
+  display: flex; align-items: center; gap: 8px;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s;
+}
+.pwa-btn-cc:active { background: rgba(212,168,39,0.1); transform: scale(0.95); }
+
+.pwa-fab {
   width: 58px; height: 58px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--gold-300), var(--gold-400));
   border: none;
-  font-size: 28px; color: var(--black);
+  font-size: 28px; color: #000;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 24px rgba(212,168,39,0.35);
-  z-index: 100;
-  transition: transform 0.15s ease;
+  box-shadow: 0 8px 32px rgba(212,168,39,0.4);
+  transition: all 0.2s;
 }
-.pwa-fab:active { transform: scale(0.93); }
+.pwa-fab:active { transform: scale(0.92); filter: brightness(1.15); }
 
 /* ── FORM ── */
-.pwa-form { display: flex; flex-direction: column; gap: 14px; }
-.pwa-field { display: flex; flex-direction: column; gap: 6px; }
-.pwa-label { font-size: 9px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); }
+.pwa-form { display: flex; flex-direction: column; gap: 16px; }
+.pwa-field { display: flex; flex-direction: column; gap: 8px; }
+.pwa-label { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-secondary); }
 .pwa-input {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.06);
   border: 0.5px solid var(--glass-border);
   border-radius: var(--radius-sm);
-  color: var(--text);
+  color: var(--text-primary);
   font-family: var(--font-b);
   font-size: 15px;
-  padding: 13px 14px;
+  padding: 14px 16px;
   width: 100%;
   outline: none;
   -webkit-appearance: none;
   transition: border-color 0.2s;
 }
-.pwa-input:focus { border-color: var(--gold-300); }
-.pwa-input option { background: #1a1a0e; color: var(--text); }
+.pwa-input:focus { border-color: var(--gold-300); background: rgba(255,255,255,0.08); }
+.pwa-input option { background: #1a1a0e; color: #fff; }
 
 /* ── TYPE TOGGLE ── */
 .pwa-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: var(--radius-sm); overflow: hidden; border: 0.5px solid var(--glass-border); }
-.pwa-toggle-btn { padding: 13px; border: none; background: transparent; color: var(--text-muted); font-family: var(--font-b); font-size: 13px; font-weight: 500; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; }
+.pwa-toggle-btn { padding: 14px; border: none; background: transparent; color: var(--text-dim); font-family: var(--font-b); font-size: 13px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; }
 .pwa-toggle-btn.active.income { background: rgba(74,222,128,0.15); color: var(--ok); }
 .pwa-toggle-btn.active.expense { background: rgba(248,113,113,0.15); color: var(--danger); }
 
 /* ── SUBMIT BTN ── */
 .pwa-submit {
-  width: 100%; padding: 15px;
+  width: 100%; padding: 16px;
   background: linear-gradient(135deg, var(--gold-300), var(--gold-400));
   border: none; border-radius: var(--radius-sm);
-  color: var(--black); font-family: var(--font-b);
-  font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-  cursor: pointer; margin-top: 6px;
-  transition: opacity 0.2s;
+  color: #000; font-family: var(--font-b);
+  font-size: 14px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; margin-top: 8px;
+  transition: all 0.2s;
 }
-.pwa-submit:active { opacity: 0.85; }
+.pwa-submit:active { transform: translateY(1px); filter: brightness(1.2); }
 .pwa-submit:disabled { opacity: 0.4; }
 
 /* ── HISTORY LIST ── */
 .pwa-entry {
-  padding: 14px 16px; margin-bottom: 8px;
-  display: flex; align-items: center; gap: 12px;
+  padding: 16px 18px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 14px;
+  position: relative;
 }
 .pwa-entry-left { flex: 1; min-width: 0; }
-.pwa-entry-date { font-size: 10px; color: var(--text-muted); letter-spacing: 0.06em; margin-bottom: 3px; }
-.pwa-entry-desc { font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pwa-entry-cat { display: inline-block; font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; margin-top: 4px; background: rgba(212,168,39,0.12); color: var(--gold-200); border: 0.5px solid rgba(212,168,39,0.25); }
-.pwa-entry-right { text-align: right; flex-shrink: 0; }
-.pwa-entry-amount { font-family: var(--font-d); font-size: 18px; font-weight: 500; }
+.pwa-entry-date { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; margin-bottom: 4px; }
+.pwa-entry-desc { font-size: 14px; color: var(--text-primary); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pwa-entry-cat { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 99px; margin-top: 6px; background: rgba(212,168,39,0.12); color: var(--gold-200); border: 0.5px solid rgba(212,168,39,0.3); }
+.pwa-entry-right { text-align: right; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; }
+.pwa-entry-amount { font-family: var(--font-d); font-size: 20px; font-weight: 500; }
 .pwa-entry-amount.income { color: var(--ok); }
 .pwa-entry-amount.expense { color: var(--danger); }
-.pwa-entry-status { font-size: 9px; margin-top: 3px; letter-spacing: 0.08em; }
+.pwa-entry-status { font-size: 10px; margin-top: 4px; letter-spacing: 0.08em; transition: opacity 0.4s ease; }
+.status-badge { padding: 2px 0; }
 .status-pending  { color: var(--gold-200); }
-.status-approved { color: var(--ok); }
+.status-approved, .status-posted { color: var(--ok); }
 .status-rejected { color: var(--danger); }
+
+/* ── EDIT BUTTON ── */
+.pwa-edit-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 0.5px solid var(--glass-border);
+  background: transparent;
+  color: var(--gold-200);
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin-left: 12px; transition: all 0.2s;
+}
+.pwa-edit-btn:active { background: rgba(212,168,39,0.2); border-color: var(--gold-300); }
+
+/* ── CARD MODULE SPECIFIC ── */
+.pwa-card-preview { font-size: 12px; color: var(--gold-200); font-weight: 600; margin-top: 6px; text-align: right; }
 
 /* ── TOAST ── */
 .pwa-toast {
-  position: fixed; bottom: calc(var(--safe-bottom) + 100px); left: 50%; transform: translateX(-50%) translateY(20px);
-  background: rgba(20,18,10,0.95); border: 0.5px solid var(--glass-border);
-  border-radius: var(--radius-sm); padding: 12px 20px;
-  font-size: 12px; color: var(--text); letter-spacing: 0.04em;
-  opacity: 0; transition: all 0.3s ease; pointer-events: none;
+  position: fixed; bottom: calc(var(--safe-bottom) + 110px); left: 50%; transform: translateX(-50%) translateY(20px);
+  background: rgba(15,14,11,0.96); border: 0.5px solid var(--gold-300);
+  border-radius: var(--radius-sm); padding: 14px 24px;
+  font-size: 13px; color: var(--text-primary); letter-spacing: 0.04em;
+  opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none;
   white-space: nowrap; z-index: 200;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
 .pwa-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ── OFFLINE BAR ── */
 .pwa-offline {
-  background: rgba(184,137,26,0.15); border-bottom: 0.5px solid rgba(184,137,26,0.3);
-  padding: 8px 16px; font-size: 11px; color: var(--gold-200);
-  text-align: center; letter-spacing: 0.06em;
+  background: rgba(184,137,26,0.2); border-bottom: 0.5px solid rgba(184,137,26,0.3);
+  padding: 10px 16px; font-size: 12px; color: var(--gold-200);
+  text-align: center; letter-spacing: 0.08em;
   display: none;
 }
 .pwa-offline.show { display: block; }
 
 /* ── EMPTY STATE ── */
-.pwa-empty { text-align: center; padding: 48px 24px; color: var(--text-dim); font-size: 13px; letter-spacing: 0.06em; }
+.pwa-empty { text-align: center; padding: 64px 24px; color: var(--text-dim); font-size: 14px; letter-spacing: 0.06em; line-height: 1.6; }
 
 /* ── SECTION LABEL ── */
-.pwa-section-label { font-size: 9px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; margin-top: 4px; }
+.pwa-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; margin-top: 6px; }
 
 /* ── LOADING ── */
-.pwa-loading { text-align: center; padding: 32px; color: var(--text-muted); font-size: 12px; letter-spacing: 0.1em; }
+.pwa-loading { text-align: center; padding: 40px; color: var(--text-dim); font-size: 13px; letter-spacing: 0.12em; }
 </style>
 </head>
 <body>
 
-<div id="offline-bar" class="pwa-offline">Sem conexão — lançamentos serão sincronizados ao reconectar</div>
+<div id="offline-bar" class="pwa-offline">Sem conexão — sincronizando ao reconectar</div>
 
 <div id="app">
 
   <!-- ═══ SCREEN 1: DASHBOARD ═══ -->
   <div class="screen active" id="screen-dashboard">
     <div class="pwa-header">
-      <div>
-        <div class="pwa-header-title">Family Office</div>
-        <div class="pwa-header-sub" id="header-date"></div>
+      <div class="pwa-logo-box">
+        <img src="logo.png" class="pwa-logo-img" alt="Logo"/>
+        <div>
+          <div class="pwa-header-title">Family Office</div>
+          <div class="pwa-header-sub" id="header-date"></div>
+        </div>
       </div>
     </div>
     <div class="pwa-scroll">
@@ -248,22 +296,26 @@ body::before {
       <div class="pwa-section-label">Últimos lançamentos</div>
       <div id="recent-list"><div class="pwa-loading">Carregando...</div></div>
     </div>
-    <button class="pwa-fab" onclick="goTo('screen-new')">+</button>
+    <div class="pwa-actions-group">
+      <button class="pwa-btn-cc" onclick="goTo('screen-card-new')">
+        <i style="font-style:normal">💳</i> Cartão
+      </button>
+      <button class="pwa-fab" onclick="goTo('screen-new')">+</button>
+    </div>
   </div>
 
   <!-- ═══ SCREEN 2: NOVO LANÇAMENTO ═══ -->
   <div class="screen" id="screen-new">
     <div class="pwa-header">
       <div>
-        <div class="pwa-header-title">Novo Lançamento</div>
+        <div class="pwa-header-title" id="form-title">Novo Lançamento</div>
         <div class="pwa-header-sub">Fluxo de caixa</div>
       </div>
       <button class="pwa-back" onclick="goBack()">‹</button>
     </div>
     <div class="pwa-scroll">
-      <div class="glass" style="padding:20px">
-        <div class="pwa-form" id="entry-form">
-
+      <div class="glass" style="padding:24px">
+        <div class="pwa-form">
           <div class="pwa-field">
             <label class="pwa-label">Tipo</label>
             <div class="pwa-toggle">
@@ -271,22 +323,18 @@ body::before {
               <button class="pwa-toggle-btn income" id="btn-income" onclick="setType('income')">Receita</button>
             </div>
           </div>
-
           <div class="pwa-field">
             <label class="pwa-label">Valor (R$)</label>
             <input class="pwa-input" type="number" id="f-amount" inputmode="decimal" placeholder="0,00" step="0.01" min="0"/>
           </div>
-
           <div class="pwa-field">
             <label class="pwa-label">Descrição</label>
             <input class="pwa-input" type="text" id="f-desc" placeholder="Ex: Supermercado, Salário..."/>
           </div>
-
           <div class="pwa-field">
             <label class="pwa-label">Data</label>
             <input class="pwa-input" type="date" id="f-date"/>
           </div>
-
           <div class="pwa-field">
             <label class="pwa-label">Categoria</label>
             <select class="pwa-input" id="f-category">
@@ -303,17 +351,14 @@ body::before {
               <option>Outros</option>
             </select>
           </div>
-
           <div class="pwa-field">
             <label class="pwa-label">Conta</label>
             <input class="pwa-input" type="text" id="f-account" placeholder="Ex: Itaú, Bradesco..."/>
           </div>
-
           <div class="pwa-field">
             <label class="pwa-label">Observações (opcional)</label>
             <textarea class="pwa-input" id="f-notes" rows="3" placeholder="Detalhes adicionais..." style="resize:none"></textarea>
           </div>
-
           <button class="pwa-submit" id="btn-submit" onclick="submitEntry()">Enviar para aprovação</button>
         </div>
       </div>
@@ -325,12 +370,59 @@ body::before {
     <div class="pwa-header">
       <div>
         <div class="pwa-header-title">Histórico</div>
-        <div class="pwa-header-sub">Últimos 30 lançamentos</div>
+        <div class="pwa-header-sub">Sincronizado em tempo real</div>
       </div>
       <button class="pwa-back" onclick="goBack()">‹</button>
     </div>
     <div class="pwa-scroll" id="history-scroll">
       <div id="history-list"><div class="pwa-loading">Carregando...</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ SCREEN 4: LANÇAMENTO DE CARTÃO ═══ -->
+  <div class="screen" id="screen-card-new">
+    <div class="pwa-header">
+      <div>
+        <div class="pwa-header-title">Lançamento de Cartão</div>
+        <div class="pwa-header-sub">Módulo independente</div>
+      </div>
+      <button class="pwa-back" onclick="goBack()">‹</button>
+    </div>
+    <div class="pwa-scroll">
+      <div class="glass" style="padding:24px">
+        <div class="pwa-form">
+          <div class="pwa-field">
+            <label class="pwa-label">Cartão</label>
+            <select class="pwa-input" id="c-card-id">
+              <option value="">Carregando cartões...</option>
+            </select>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Data</label>
+            <input class="pwa-input" type="date" id="c-date"/>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Descrição</label>
+            <input class="pwa-input" type="text" id="c-desc" placeholder="Ex: Restaurante Japa, Amazon..."/>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Valor total (R$)</label>
+            <input class="pwa-input" type="number" id="c-amount" inputmode="decimal" placeholder="0,00" step="0.01" oninput="updateInstallmentPreview()"/>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Parcelas</label>
+            <select class="pwa-input" id="c-installments" onchange="updateInstallmentPreview()">
+              ${Array.from({length:24}, (_,i) => `<option value="${i+1}">${i+1}x</option>`).join('')}
+            </select>
+            <div id="c-preview" class="pwa-card-preview"></div>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Observações (opcional)</label>
+            <textarea class="pwa-input" id="c-notes" rows="2" placeholder="Notas sobre este gasto..." style="resize:none"></textarea>
+          </div>
+          <button class="pwa-submit" id="btn-card-submit" onclick="submitCardEntry()">Lançar no Cartão</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -340,15 +432,21 @@ body::before {
 
 <script>
 /* ─── CONFIG ─────────────────────────────────────────────────── */
-const SB_URL  = 'https://lruqphwlcimzcqpafjrn.supabase.co';
-const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxydXFwaHdsY2ltemNxcGFmanJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTI2ODcsImV4cCI6MjA5MDQ4ODY4N30.uPEAdV2rKcZ7SuXC6A_KH3Ili6fq72ytsReRZEXijWQ';
+const SB_URL = 'https://lruqphwlcimzcqpafjrn.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxydXFwaHdsY2ltemNxcGFmanJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTI2ODcsImV4cCI6MjA5MDQ4ODY4N30.uPEAdV2rKcZ7SuXC6A_KH3Ili6fq72ytsReRZEXijWQ';
 const HEADERS = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
 const TABLE   = SB_URL + '/rest/v1/cash_flow_entries';
+const CARDS_TABLE = SB_URL + '/rest/v1/cards';
+const CARD_TX_TABLE = SB_URL + '/rest/v1/card_transactions';
 const QUEUE_KEY = 'fo_queue';
+const CARD_QUEUE_KEY = 'fo_card_queue';
 
 /* ─── STATE ──────────────────────────────────────────────────── */
 let currentType = 'expense';
 let screenHistory = ['screen-dashboard'];
+let editingId = null;
+let realtimeSocket = null;
+let rtRetryCount = 0;
 
 /* ─── NAVIGATION ─────────────────────────────────────────────── */
 function goTo(id) {
@@ -357,17 +455,21 @@ function goTo(id) {
   const next = document.getElementById(id);
   next.classList.add('active');
   screenHistory.push(id);
-  if (id === 'screen-history') loadHistory();
-  if (id === 'screen-dashboard') loadDashboard();
+  
+  if (id === 'screen-history') { loadHistory(); setupRealtimeSync(); }
+  if (id === 'screen-dashboard') { loadDashboard(); closeRealtimeSync(); }
+  if (id === 'screen-card-new') { loadCards(); document.getElementById('c-date').value = today(); }
 }
 
 function goBack() {
+  if (editingId) { editingId = null; resetForm(); document.getElementById('btn-submit').textContent = 'Enviar para aprovação'; document.getElementById('form-title').textContent = 'Novo Lançamento'; }
   screenHistory.pop();
   const prev = screenHistory[screenHistory.length - 1] || 'screen-dashboard';
   const cur = document.querySelector('.screen.active');
   if (cur) cur.classList.remove('active');
   document.getElementById(prev).classList.add('active');
   if (prev === 'screen-dashboard') loadDashboard();
+  if (prev !== 'screen-history') closeRealtimeSync();
 }
 
 /* ─── TYPE TOGGLE ────────────────────────────────────────────── */
@@ -440,8 +542,11 @@ function entryRow(e) {
   const dateStr = d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
   const amtClass = e.type === 'income' ? 'income' : 'expense';
   const amtSign  = e.type === 'income' ? '+' : '-';
-  const statusLabel = { pending:'Pendente', approved:'Aprovado', rejected:'Rejeitado' }[e.status] || e.status;
-  return `<div class="pwa-entry glass">
+  const statusLabel = { pending:'Aguardando aprovação', approved:'Lançado', rejected:'Rejeitado pelo adm', posted:'Lançado' }[e.status] || e.status;
+  
+  const editBtn = e.status === 'pending' ? `<button class="pwa-edit-btn" onclick='editEntry(${JSON.stringify(e)})'>✎</button>` : '';
+
+  return `<div class="pwa-entry glass" data-id="${e.id}">
     <div class="pwa-entry-left">
       <div class="pwa-entry-date">${dateStr}</div>
       <div class="pwa-entry-desc">${e.description}</div>
@@ -451,7 +556,24 @@ function entryRow(e) {
       <div class="pwa-entry-amount ${amtClass}">${amtSign}${fmt(e.amount)}</div>
       <div class="pwa-entry-status status-${e.status}">${statusLabel}</div>
     </div>
+    ${editBtn}
   </div>`;
+}
+
+/* ─── EDIT LOGIC ─────────────────────────────────────────────── */
+function editEntry(e) {
+  editingId = e.id;
+  document.getElementById('f-amount').value = e.amount;
+  document.getElementById('f-desc').value = e.description;
+  document.getElementById('f-date').value = e.date;
+  document.getElementById('f-category').value = e.category || '';
+  document.getElementById('f-account').value = e.account || '';
+  document.getElementById('f-notes').value = e.notes || '';
+  setType(e.type);
+  
+  document.getElementById('btn-submit').textContent = 'Salvar alterações';
+  document.getElementById('form-title').textContent = 'Editar Lançamento';
+  goTo('screen-new');
 }
 
 /* ─── SUBMIT ─────────────────────────────────────────────────── */
@@ -482,10 +604,15 @@ async function submitEntry() {
 
   if (!navigator.onLine) {
     const q = JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]');
-    q.push(entry);
+    if (editingId) {
+      q.push({ ...entry, id: editingId, _method: 'PATCH' });
+    } else {
+      q.push(entry);
+    }
     localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
-    toast('Salvo localmente — será sincronizado ao reconectar');
+    toast('Salvo localmente — sincronizando em breve');
     resetForm();
+    editingId = null;
     btn.disabled = false;
     btn.textContent = 'Enviar para aprovação';
     goBack();
@@ -493,20 +620,146 @@ async function submitEntry() {
   }
 
   try {
-    await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(entry) });
+    if (editingId) {
+      await sbFetch(`${TABLE}?id=eq.${editingId}`, { method: 'PATCH', body: JSON.stringify(entry) });
+      toast('Lançamento atualizado');
+      editingId = null;
+    } else {
+      await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(entry) });
+      toast('Lançamento enviado para aprovação');
+    }
     if (navigator.vibrate) navigator.vibrate(80);
-    toast('Lançamento enviado para aprovação');
     resetForm();
+    btn.textContent = 'Enviar para aprovação';
+    document.getElementById('form-title').textContent = 'Novo Lançamento';
     goBack();
   } catch(err) {
-    toast('Erro ao enviar — tente novamente');
+    toast('Erro ao processar — tente novamente');
   }
 
   btn.disabled = false;
-  btn.textContent = 'Enviar para aprovação';
 }
 
-/* ─── RESET FORM ─────────────────────────────────────────────── */
+/* ─── CREDIT CARD MODULE ─────────────────────────────────────── */
+async function loadCards() {
+  const sel = document.getElementById('c-card-id');
+  sel.innerHTML = '<option value="">Carregando cartões...</option>';
+  try {
+    const cards = await sbFetch(`${CARDS_TABLE}?select=id,name,holder,bank`);
+    if (!cards.length) { sel.innerHTML = '<option value="">Nenhum cartão cadastrado</option>'; return; }
+    sel.innerHTML = '<option value="">Selecione o cartão...</option>' + 
+      cards.map(c => `<option value="${c.id}">${c.name} — ${c.holder}</option>`).join('');
+  } catch(e) {
+    sel.innerHTML = '<option value="">Erro ao carregar cartões</option>';
+  }
+}
+
+function updateInstallmentPreview() {
+  const val = parseFloat(document.getElementById('c-amount').value) || 0;
+  const ins = parseInt(document.getElementById('c-installments').value) || 1;
+  const prev = document.getElementById('c-preview');
+  if (ins > 1 && val > 0) {
+    prev.textContent = `${fmt(val / ins)} por parcela`;
+  } else {
+    prev.textContent = '';
+  }
+}
+
+async function submitCardEntry() {
+  const card_id = document.getElementById('c-card-id').value;
+  const date = document.getElementById('c-date').value;
+  const description = document.getElementById('c-desc').value.trim();
+  const amount = parseFloat(document.getElementById('c-amount').value);
+  const installments = parseInt(document.getElementById('c-installments').value);
+
+  if (!card_id) { toast('Selecione um cartão'); return; }
+  if (!date) { toast('Informe a data'); return; }
+  if (!description) { toast('Informe a descrição'); return; }
+  if (!amount || amount <= 0) { toast('Informe o valor'); return; }
+
+  const entry = { card_id, date, description, amount, installments, installment_current: 1, status: 'pending', origin: 'mobile' };
+  
+  const btn = document.getElementById('btn-card-submit');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+
+  if (!navigator.onLine) {
+    const q = JSON.parse(localStorage.getItem(CARD_QUEUE_KEY) || '[]');
+    q.push(entry);
+    localStorage.setItem(CARD_QUEUE_KEY, JSON.stringify(q));
+    toast('Gasto salvo offline');
+    resetCardForm(); goBack();
+    btn.disabled = false; btn.textContent = 'Lançar no Cartão';
+    return;
+  }
+
+  try {
+    await sbFetch(CARD_TX_TABLE, { method: 'POST', body: JSON.stringify(entry) });
+    if (navigator.vibrate) navigator.vibrate(80);
+    toast('Gasto lançado no cartão');
+    resetCardForm(); goBack();
+  } catch(e) {
+    toast('Erro ao lançar — tente novamente');
+  }
+  btn.disabled = false; btn.textContent = 'Lançar no Cartão';
+}
+
+function resetCardForm() {
+  document.getElementById('c-card-id').value = '';
+  document.getElementById('c-desc').value = '';
+  document.getElementById('c-amount').value = '';
+  document.getElementById('c-installments').value = '1';
+  document.getElementById('c-notes').value = '';
+  document.getElementById('c-preview').textContent = '';
+}
+
+/* ─── REALTIME SYNC ──────────────────────────────────────────── */
+function setupRealtimeSync() {
+  if (realtimeSocket) return;
+  const wsUrl = `wss://${new URL(SB_URL).hostname}/realtime/v1/websocket?apikey=${SB_KEY}&vsn=1.0.0`;
+  realtimeSocket = new WebSocket(wsUrl);
+
+  realtimeSocket.onopen = () => {
+    rtRetryCount = 0;
+    realtimeSocket.send(JSON.stringify({ topic:'realtime:public:cash_flow_entries', event:'phx_join', payload:{}, ref:'1' }));
+  };
+
+  realtimeSocket.onmessage = (msg) => {
+    const data = JSON.parse(msg.data);
+    if (data.event === 'UPDATE' || (data.payload && data.payload.type === 'UPDATE')) {
+      const record = data.payload?.record || data.payload?.data?.record;
+      if (record) {
+        const row = document.querySelector(`.pwa-entry[data-id="${record.id}"]`);
+        if (row) {
+          const badge = row.querySelector('.pwa-entry-status');
+          const mapping = { pending:'Aguardando aprovação', approved:'Lançado', rejected:'Rejeitado pelo adm', posted:'Lançado' };
+          badge.style.opacity = '0';
+          setTimeout(() => {
+            badge.textContent = mapping[record.status] || record.status;
+            badge.className = `pwa-entry-status status-${record.status}`;
+            badge.style.opacity = '1';
+            // Remove edit button if no longer pending
+            if (record.status !== 'pending') {
+              row.querySelector('.pwa-edit-btn')?.remove();
+            }
+          }, 400);
+        }
+      }
+    }
+  };
+
+  realtimeSocket.onclose = () => {
+    realtimeSocket = null;
+    const delay = Math.min(30000, Math.pow(2, rtRetryCount) * 1000);
+    rtRetryCount++;
+    setTimeout(setupRealtimeSync, delay);
+  };
+}
+
+function closeRealtimeSync() {
+  if (realtimeSocket) { realtimeSocket.close(); realtimeSocket = null; }
+}
+
+/* ─── RESET & SYNC ───────────────────────────────────────────── */
 function resetForm() {
   document.getElementById('f-amount').value   = '';
   document.getElementById('f-desc').value     = '';
@@ -517,17 +770,32 @@ function resetForm() {
   setType('expense');
 }
 
-/* ─── OFFLINE SYNC ───────────────────────────────────────────── */
 async function flushQueue() {
+  // Sync Cash Flow
   const q = JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]');
-  if (!q.length) return;
-  const failed = [];
-  for (const entry of q) {
-    try { await sbFetch(TABLE, { method:'POST', body: JSON.stringify(entry) }); }
-    catch(e) { failed.push(entry); }
+  if (q.length) {
+    const failed = [];
+    for (const item of q) {
+      try {
+        const method = item._method || 'POST';
+        const url = method === 'PATCH' ? `${TABLE}?id=eq.${item.id}` : TABLE;
+        const body = { ...item }; delete body._method;
+        await sbFetch(url, { method, body: JSON.stringify(body) });
+      } catch(e) { failed.push(item); }
+    }
+    localStorage.setItem(QUEUE_KEY, JSON.stringify(failed));
+    if (failed.length < q.length) toast('Sincronizado');
   }
-  localStorage.setItem(QUEUE_KEY, JSON.stringify(failed));
-  if (failed.length < q.length) toast(`${q.length - failed.length} lançamento(s) sincronizado(s)`);
+  // Sync Cards
+  const cq = JSON.parse(localStorage.getItem(CARD_QUEUE_KEY) || '[]');
+  if (cq.length) {
+    const failed = [];
+    for (const item of cq) {
+      try { await sbFetch(CARD_TX_TABLE, { method:'POST', body: JSON.stringify(item) }); }
+      catch(e) { failed.push(item); }
+    }
+    localStorage.setItem(CARD_QUEUE_KEY, JSON.stringify(failed));
+  }
 }
 
 /* ─── HELPERS ────────────────────────────────────────────────── */
@@ -544,45 +812,22 @@ function toast(msg) {
 }
 
 /* ─── INIT ───────────────────────────────────────────────────── */
-document.getElementById('header-date').textContent =
-  new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' });
-
+document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' });
 document.getElementById('f-date').value = today();
-
-window.addEventListener('online',  () => { document.getElementById('offline-bar').classList.remove('show'); flushQueue(); });
+window.addEventListener('online', () => { document.getElementById('offline-bar').classList.remove('show'); flushQueue(); });
 window.addEventListener('offline', () => { document.getElementById('offline-bar').classList.add('show'); });
 if (!navigator.onLine) document.getElementById('offline-bar').classList.add('show');
-
 loadDashboard();
 
-/* ─── PWA MANIFEST ───────────────────────────────────────────── */
-const manifest = {
-  name: 'Family Office', short_name: 'FO Cash',
-  display: 'standalone', background_color: '#080808', theme_color: '#d4a827',
-  start_url: './',
-  icons: [{ src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%23080808'/%3E%3Ctext x='96' y='130' font-family='Georgia,serif' font-size='90' fill='%23e8c96a' text-anchor='middle'%3EFO%3C/text%3E%3C/svg%3E", sizes:'192x192', type:'image/svg+xml' }]
-};
+/* ─── PWA MANIFEST & SW ──────────────────────────────────────── */
+const manifest = { name:'Family Office', short_name:'FO Cash', display:'standalone', background_color:'#0f0e0b', theme_color:'#d4a827', start_url:'./', icons:[{src:"logo.png", sizes:"192x192", type:"image/png"}] };
 const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
-const link = document.createElement('link');
-link.rel = 'manifest'; link.href = URL.createObjectURL(blob);
-document.head.appendChild(link);
+const l = document.createElement('link'); l.rel='manifest'; l.href=URL.createObjectURL(blob); document.head.appendChild(l);
 
-/* ─── SERVICE WORKER ─────────────────────────────────────────── */
 if ('serviceWorker' in navigator) {
-  const sw = `
-    const CACHE = 'fo-v1';
-    self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html']))); self.skipWaiting(); });
-    self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k))))); });
-    self.addEventListener('fetch', e => {
-      if (e.request.url.includes('supabase.co')) {
-        e.respondWith(fetch(e.request).catch(() => new Response(JSON.stringify({error:'offline'}), {headers:{'Content-Type':'application/json'}})));
-        return;
-      }
-      e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
-    });
-  `;
-  const swBlob = new Blob([sw], {type:'application/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+  const sw = `const CACHE='fo-v2'; self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./'])));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));});self.addEventListener('fetch',e=>{if(e.request.url.includes('supabase.co')){e.respondWith(fetch(e.request).catch(()=>new Response(JSON.stringify({error:'off'}),{headers:{'Content-Type':'application/json'}})));return;}e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});`;
+  const swB = new Blob([sw], {type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(swB)).catch(()=>{});
 }
 </script>
 </body>
