@@ -194,10 +194,13 @@ body::before {
 .pwa-entry-amount.expense { color: var(--danger); }
 .pwa-entry-status { font-size: 10px; margin-top: 4px; letter-spacing: 0.08em; transition: opacity 0.4s ease; }
 .status-badge { padding: 2px 0; }
-.status-pending  { color: var(--gold-200); }
-.status-approved, .status-posted { color: var(--ok); }
-.status-rejected { color: var(--danger); }
-/* ── EDIT BUTTON ── */
+.status-pending  { color: #d97706; font-weight: 600; }
+.status-approved, .status-posted { color: #16a34a; font-weight: 600; }
+.status-rejected { color: #dc2626; font-weight: 600; }
+/* ── TABS ── */
+.pwa-tabs { display: flex; gap: 8px; margin: 0 16px 16px; position: sticky; top: 0; z-index: 10; background: var(--off-white); padding: 8px 0; }
+.pwa-tab-btn { flex: 1; height: 38px; border: 0.5px solid var(--glass-border); background: var(--glass-bg); border-radius: var(--radius-sm); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+.pwa-tab-btn.active { background: var(--gold-100); color: #fff; border-color: var(--gold-100); box-shadow: 0 4px 12px rgba(184, 137, 26, 0.2); }
 .pwa-edit-btn {
   width: 32px; height: 32px;
   border-radius: 50%;
@@ -407,6 +410,10 @@ body::before {
       <button class="pwa-back" onclick="goBack()">‹</button>
     </div>
     <div class="pwa-scroll" id="history-scroll">
+      <div class="pwa-tabs">
+        <button class="pwa-tab-btn active" id="tab-cash" onclick="switchHistoryTab('cash')">Fluxo</button>
+        <button class="pwa-tab-btn" id="tab-cards" onclick="switchHistoryTab('cards')">Cartões</button>
+      </div>
       <div id="history-list"><div class="pwa-loading">Carregando...</div></div>
     </div>
   </div>
@@ -592,31 +599,63 @@ async function loadDashboard() {
   }
 }
 /* ─── HISTORY ────────────────────────────────────────────────── */
+let currentHistoryTab = 'cash';
+
+function switchHistoryTab(tab) {
+  currentHistoryTab = tab;
+  document.querySelectorAll('.pwa-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  loadHistory();
+}
+
 async function loadHistory() {
   const hl = document.getElementById('history-list');
   hl.innerHTML = '<div class="pwa-loading">Carregando...</div>';
   try {
-    const data = await sbFetch(`${TABLE}?order=date.desc&limit=30`);
-    if (!data.length) { hl.innerHTML = '<div class="pwa-empty">Nenhum lançamento encontrado</div>'; return; }
-    hl.innerHTML = data.map(e => entryRow(e)).join('');
+    const isCards = currentHistoryTab === 'cards';
+    const endpoint = isCards ? CARD_TX_TABLE : TABLE;
+    // We sort cards by purchase_date as requested, and main by date
+    const orderCol = isCards ? 'purchase_date' : 'date';
+    const data = await sbFetch(`${endpoint}?order=${orderCol}.desc&limit=40`);
+    
+    if (!data.length) { 
+      hl.innerHTML = `<div class="pwa-empty">Nenhum lançamento em ${isCards ? 'Cartões' : 'Fluxo'}</div>`; 
+      return; 
+    }
+    hl.innerHTML = data.map(e => entryRow(e, isCards)).join('');
   } catch(err) {
     hl.innerHTML = '<div class="pwa-empty">Erro ao carregar histórico</div>';
   }
 }
 /* ─── ENTRY ROW ──────────────────────────────────────────────── */
-function entryRow(e) {
-  const d = new Date(e.date + 'T12:00:00');
+function entryRow(e, isCard = false) {
+  // For cards, priority is purchase_date. For cash flow, it is 'date'.
+  const displayDate = isCard ? (e.purchase_date || e.date) : e.date;
+  const d = new Date(displayDate + 'T12:00:00');
   const dateStr = d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
   const amtClass = e.type === 'income' ? 'income' : 'expense';
   const amtSign  = e.type === 'income' ? '+' : '-';
-  const statusLabel = { pending:'Aguardando aprovação', approved:'Lançado', rejected:'Rejeitado pelo adm', posted:'Lançado' }[e.status] || e.status;
   
-  const editBtn = e.status === 'pending' ? `<button class="pwa-edit-btn" onclick='editEntry(${JSON.stringify(e)})'>✎</button>` : '';
+  const statusLabel = { 
+    pending: 'Aguardando aprovação', 
+    approved: 'Lançado', 
+    rejected: 'Rejeitado', 
+    posted: 'Lançado' 
+  }[e.status] || e.status;
+  
+  // Installment label for cards
+  const installmentText = (isCard && e.installments > 1) 
+    ? ` <span style="font-size:9px; opacity:0.6">(${e.installment_current}/${e.installments})</span>` 
+    : '';
+
+  const editBtn = (!isCard && e.status === 'pending') ? `<button class="pwa-edit-btn" onclick='editEntry(${JSON.stringify(e)})'>✎</button>` : '';
+  
   return `<div class="pwa-entry glass" data-id="${e.id}">
     <div class="pwa-entry-left">
-      <div class="pwa-entry-date">${dateStr}</div>
+      <div class="pwa-entry-date">${dateStr}${installmentText}</div>
       <div class="pwa-entry-desc">${e.description}</div>
       ${e.category ? `<span class="pwa-entry-cat">${e.category}</span>` : ''}
+      ${isCard ? `<span class="pwa-entry-cat" style="background:rgba(0,0,0,0.05); color:var(--text-dim); margin-left:4px">CARTÃO</span>` : ''}
     </div>
     <div class="pwa-entry-right">
       <div class="pwa-entry-amount ${amtClass}">${amtSign}${fmt(e.amount)}</div>
@@ -874,7 +913,7 @@ async function submitCardEntry() {
       card_id: cardId, purchase_date: purchaseDate, date: dueDateStr, due_date: dueDateStr,
       description: n > 1 ? `${description} (${i+1}/${n})` : description,
       amount: each, installments: n, installment_current: i + 1, installment_group_id: groupId,
-      status: 'posted', origin: 'mobile' 
+      status: 'pending', origin: 'mobile' 
       // Removed 'notes' as it doesn't exist in the DB schema
     }
   })
