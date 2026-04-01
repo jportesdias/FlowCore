@@ -195,11 +195,19 @@ body::before {
 .pwa-entry-amount { font-family: 'Times New Roman', serif; font-size: 20px; font-weight: 500; }
 .pwa-entry-amount.income { color: var(--ok); }
 .pwa-entry-amount.expense { color: var(--danger); }
-.pwa-entry-status { font-size: 10px; margin-top: 4px; letter-spacing: 0.08em; transition: opacity 0.4s ease; }
-.status-badge { padding: 2px 0; }
-.status-pending  { color: #d97706; font-weight: 600; }
-.status-approved, .status-posted { color: #16a34a; font-weight: 600; }
-.status-rejected { color: #dc2626; font-weight: 600; }
+.pwa-entry-status { 
+  font-size: 9px; 
+  margin-top: 6px; 
+  letter-spacing: 0.05em; 
+  padding: 4px 10px; 
+  border-radius: 99px; 
+  text-transform: uppercase; 
+  display: inline-block; 
+  font-weight: 700;
+}
+.status-pending  { background: rgba(217, 119, 6, 0.1); color: #d97706; border: 0.5px solid rgba(217, 119, 6, 0.2); }
+.status-approved, .status-posted { background: rgba(22, 163, 74, 0.1); color: #16a34a; border: 0.5px solid rgba(22, 163, 74, 0.2); }
+.status-rejected { background: rgba(220, 38, 38, 0.1); color: #dc2626; border: 0.5px solid rgba(220, 38, 38, 0.2); }
 /* ── TABS ── */
 .pwa-tabs { display: flex; gap: 8px; margin: 0 16px 16px; position: sticky; top: 0; z-index: 10; background: var(--off-white); padding: 8px 0; }
 .pwa-tab-btn { flex: 1; height: 38px; border: 0.5px solid var(--glass-border); background: var(--glass-bg); border-radius: var(--radius-sm); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
@@ -578,25 +586,66 @@ async function sbFetch(url, opts = {}) {
   }
 }
 /* ─── DASHBOARD ──────────────────────────────────────────────── */
-async function loadDashboard() {
+async function initRealtime() {
+  loadDashboard();
+  loadHistory();
+  loadCards();
+}
+
+/* ─── REALTIME SYNC ────────────────────────────────────────── */
+let isRealtimeInitialized = false;
+
+function initRealtime() {
+  if (isRealtimeInitialized || !window.supabase) return;
+  
+  console.log('REALTIME: Initializing Inbox Sync listener...');
+  const channel = supabase.channel('pwa-inbox-sync')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'card_transactions' }, (payload) => {
+      console.log('REALTIME: Card transaction update detected.', payload.eventType);
+      loadDashboard();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, (payload) => {
+      console.log('REALTIME: Cash flow update detected.', payload.eventType);
+      loadDashboard();
+    })
+    .subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        console.log('REALTIME: Successfully connected to Supabase.');
+        isRealtimeInitialized = true;
+      }
+    });
+}
+
   const now = new Date();
   const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0');
   const from = `${y}-${m}-01`, to = `${y}-${m}-31`;
   try {
     const data = await sbFetch(`${TABLE}?date=gte.${from}&date=lte.${to}&order=date.desc`);
-    const approved = data.filter(e => e.status === 'approved');
-    const pending  = data.filter(e => e.status === 'pending');
+    
+    // Summary Metrics
+    const approved = data.filter(e => e.status === 'approved' || e.status === 'posted');
     const income  = approved.filter(e => e.type === 'income').reduce((s,e) => s + +e.amount, 0);
     const expense = approved.filter(e => e.type === 'expense').reduce((s,e) => s + +e.amount, 0);
     const total   = income - expense;
+    
     document.getElementById('m-total').textContent   = fmt(Math.abs(total));
     document.getElementById('m-income').textContent  = fmt(income);
     document.getElementById('m-expense').textContent = fmt(expense);
-    document.getElementById('pending-count').textContent = pending.length;
-    const recent = data.slice(0, 5);
+    
+    // Inbox Dynamic: Show ONLY PENDING items in the "Recentes" list on Home
+    const pendingList = data.filter(e => e.status === 'pending');
+    document.getElementById('pending-count').textContent = pendingList.length;
+    
     const rl = document.getElementById('recent-list');
-    if (!recent.length) { rl.innerHTML = '<div class="pwa-empty">Nenhum lançamento este mês</div>'; return; }
-    rl.innerHTML = recent.map(e => entryRow(e)).join('');
+    if (!pendingList.length) { 
+      rl.innerHTML = `
+        <div class="pwa-empty" style="padding: 40px 20px;">
+          <div style="font-size: 24px; margin-bottom: 8px;">✨</div>
+          Tudo em dia!<br>Nenhum lançamento aguardando.
+        </div>`; 
+      return; 
+    }
+    rl.innerHTML = pendingList.map(e => entryRow(e)).join('');
   } catch(err) {
     document.getElementById('recent-list').innerHTML = '<div class="pwa-empty">Erro ao carregar dados</div>';
   }
