@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="FO Cash"/>
+<meta name="theme-color" content="#d4a827"/>
+<title>Family Office</title>
+<link rel="apple-touch-icon" href="logo.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --off-white: #f2f0e8; /* Richer, slightly darker off-white */
+  --off-white-soft: #e9e6dc;
+  --gold-100: #b8891a; /* Darker Gold for Light Theme */
+  --gold-200: #a37c15;
+  --gold-300: #8c6a12;
+  --gold-400: #73570e;
+  --black-deep: #18181b; /* Text Primary */
+  --black-soft: #3f3f46; /* Text Secondary */
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(184, 137, 26, 0.15);
+  --glass-border-hover: rgba(184, 137, 26, 0.35);
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  --text-dim: #71717a;
+  --ok: #16a34a;
+  --danger: #dc2626;
+  --radius: 20px;
+  --radius-sm: 14px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --font-d: 'Cormorant Garamond', Georgia, serif;
+  --font-b: 'Montserrat', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: var(--off-white); font-family: var(--font-b); color: var(--text-primary); font-size: 14px; -webkit-font-smoothing: antialiased; }
+/* ── BACKGROUND ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background: radial-gradient(ellipse at 20% 20%, rgba(184,137,26,0.05) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, rgba(212,168,39,0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+/* ── APP SHELL ── */
+#app { position: fixed; inset: 0; z-index: 1; display: flex; flex-direction: column; overflow: hidden; }
+/* ── SCREENS ── */
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; overflow: hidden; opacity: 0; pointer-events: none; transform: translateX(30px); transition: opacity 0.28s ease, transform 0.28s ease; }
+.screen.active { opacity: 1; pointer-events: all; transform: translateX(0); }
+.screen.slide-back { transform: translateX(-30px); }
+/* ── HEADER ── */
+.pwa-header {
+  padding: calc(var(--safe-top) + 18px) 20px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 0.5px solid var(--glass-border);
+  background: rgba(253, 253, 252, 0.85); /* Light translucent header */
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  flex-shrink: 0;
+}
+.pwa-logo-box { 
+  display: flex; align-items: center; gap: 14px; 
+}
+.pwa-logo-img { 
+  height: 46px; 
+  width: auto; 
+  object-fit: contain;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.15)) 
+          drop-shadow(0 4px 15px rgba(0, 0, 0, 0.1)); /* Dual-layer soft depth */
+  transition: transform 0.3s ease;
+}
+.pwa-header-title { font-family: var(--font-d); font-size: 24px; font-weight: 400; color: var(--gold-200); letter-spacing: 0.04em; }
+.pwa-header-sub { font-size: 10px; color: var(--text-secondary); letter-spacing: 0.1em; margin-top: 2px; }
+.pwa-back { background: none; border: 0.5px solid var(--glass-border); border-radius: 50%; width: 36px; height: 36px; color: var(--gold-200); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.pwa-back:active { background: rgba(212,168,39,0.1); }
+/* ── SCROLL AREA ── */
+.pwa-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 16px calc(var(--safe-bottom) + 100px); }
+/* ── GLASS CARD ── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  border: 0.5px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(184, 137, 26, 0.06), 0 1px 2px rgba(0,0,0,0.02);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.glass:hover { border-color: var(--glass-border-hover); box-shadow: 0 6px 20px rgba(184, 137, 26, 0.12); }
+/* ── METRIC CARDS ── */
+.pwa-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.pwa-metric { padding: 18px; position: relative; overflow: hidden; }
+.pwa-metric.full { grid-column: 1/-1; }
+.pwa-metric::before { content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 100%; background: linear-gradient(180deg, var(--gold-200), transparent); opacity: 0.6; }
+.pwa-metric-label { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+.pwa-metric-value { font-family: 'Times New Roman', serif; font-size: 32px; font-weight: 500; color: var(--text-primary); line-height: 1; }
+.pwa-metric-sub { font-size: 9px; color: var(--text-dim); margin-top: 4px; font-weight: 500; }
+/* ── PENDING BUTTON ── */
+.pwa-pending-btn {
+  width: 100%; padding: 16px 20px; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; border: none; text-align: left;
+  background: rgba(184,137,26,0.06);
+  border: 0.5px solid rgba(184,137,26,0.2);
+  border-radius: var(--radius-sm);
+  transition: transform 0.15s ease, background 0.2s;
+}
+.pwa-pending-btn:active { transform: scale(0.98); }
+.pwa-pending-label { font-size: 12px; color: var(--gold-200); letter-spacing: 0.08em; }
+.pwa-pending-count { font-family: 'Times New Roman', serif; font-size: 26px; color: var(--gold-300); font-weight: 500; }
+/* ── FAB & ACTIONS ── */
+.pwa-actions-group {
+  position: fixed;
+  right: 20px;
+  bottom: calc(var(--safe-bottom) + 24px);
+  display: flex; align-items: center; gap: 12px;
+  z-index: 100;
+}
+.pwa-btn-cc {
+  height: 52px; padding: 0 20px;
+  border-radius: 26px;
+  background: transparent;
+  border: 1px solid var(--gold-300);
+  color: var(--gold-200);
+  font-family: var(--font-b);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
+  display: flex; align-items: center; gap: 8px;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s;
+}
+.pwa-btn-cc:active { background: rgba(212,168,39,0.1); transform: scale(0.95); }
+.pwa-fab {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-300), var(--gold-400));
+  border: none;
+  font-size: 28px; color: #fff; /* White icon on gold for light theme */
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(184, 137, 26, 0.35);
+  transition: all 0.2s;
+}
+.pwa-fab:active { transform: scale(0.92); filter: brightness(1.15); }
+/* ── FORM ── */
+.pwa-form { display: flex; flex-direction: column; gap: 16px; }
+.pwa-field { display: flex; flex-direction: column; gap: 8px; }
+.pwa-label { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-secondary); }
+.pwa-input {
+  background: #fff;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-b);
+  font-size: 15px;
+  padding: 14px 16px;
+  width: 100%;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.pwa-input:focus { border-color: var(--gold-300); box-shadow: 0 0 0 3px rgba(184, 137, 26, 0.08); }
+.pwa-input option { background: #fff; color: #1a1a1a; }
+/* ── TYPE TOGGLE ── */
+.pwa-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: var(--radius-sm); overflow: hidden; border: 0.5px solid var(--glass-border); }
+.pwa-toggle-btn { padding: 14px; border: none; background: transparent; color: var(--text-dim); font-family: var(--font-b); font-size: 13px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; }
+.pwa-toggle-btn.active.income { background: rgba(74,222,128,0.15); color: var(--ok); }
+.pwa-toggle-btn.active.expense { background: rgba(248,113,113,0.15); color: var(--danger); }
+/* ── SUBMIT BTN ── */
+.pwa-submit {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--gold-300), var(--gold-400));
+  border: none; border-radius: var(--radius-sm);
+  color: #fff; font-family: var(--font-b);
+  font-size: 14px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; margin-top: 8px;
+  box-shadow: 0 4px 12px rgba(184, 137, 26, 0.25);
+  transition: all 0.2s;
+}
+.pwa-submit:active { transform: translateY(1px); filter: brightness(1.2); }
+.pwa-submit:disabled { opacity: 0.4; }
+/* ── HISTORY LIST ── */
+.pwa-entry {
+  padding: 16px 18px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 14px;
+  position: relative;
+}
+.pwa-entry-left { flex: 1; min-width: 0; }
+.pwa-entry-date { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; margin-bottom: 4px; }
+.pwa-entry-desc { font-size: 14px; color: var(--text-primary); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pwa-entry-cat { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 99px; margin-top: 6px; background: rgba(184, 137, 26, 0.08); color: var(--gold-100); border: 0.5px solid rgba(184, 137, 26, 0.2); }
+.pwa-entry-right { text-align: right; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; }
+.pwa-entry-amount { font-family: 'Times New Roman', serif; font-size: 20px; font-weight: 500; }
+.pwa-entry-amount.income { color: var(--ok); }
+.pwa-entry-amount.expense { color: var(--danger); }
+.pwa-entry-status { 
+  font-size: 9px; 
+  margin-top: 6px; 
+  letter-spacing: 0.05em; 
+  padding: 4px 10px; 
+  border-radius: 99px; 
+  text-transform: uppercase; 
+  display: inline-block; 
+  font-weight: 700;
+}
+.status-pending  { background: rgba(217, 119, 6, 0.1); color: #d97706; border: 0.5px solid rgba(217, 119, 6, 0.2); }
+.status-approved, .status-posted { background: rgba(22, 163, 74, 0.1); color: #16a34a; border: 0.5px solid rgba(22, 163, 74, 0.2); }
+.status-rejected { background: rgba(220, 38, 38, 0.1); color: #dc2626; border: 0.5px solid rgba(220, 38, 38, 0.2); }
+/* ── TABS ── */
+.pwa-tabs { display: flex; gap: 8px; margin: 0 16px 16px; position: sticky; top: 0; z-index: 10; background: var(--off-white); padding: 8px 0; }
+.pwa-tab-btn { flex: 1; height: 38px; border: 0.5px solid var(--glass-border); background: var(--glass-bg); border-radius: var(--radius-sm); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+.pwa-tab-btn.active { background: var(--gold-100); color: #fff; border-color: var(--gold-100); box-shadow: 0 4px 12px rgba(184, 137, 26, 0.2); }
+.pwa-edit-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 0.5px solid var(--glass-border);
+  background: transparent;
+  color: var(--gold-200);
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin-left: 12px; transition: all 0.2s;
+}
+.pwa-edit-btn:active { background: rgba(212,168,39,0.2); border-color: var(--gold-300); }
+/* ── CARD MODULE SPECIFIC ── */
+.pwa-card-preview { font-size: 12px; color: var(--gold-200); font-weight: 600; margin-top: 6px; text-align: right; }
+/* ── TOAST ── */
+.pwa-toast {
+  position: fixed; bottom: calc(var(--safe-bottom) + 110px); left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #fff; border: 1px solid var(--gold-300);
+  border-radius: var(--radius-sm); padding: 14px 24px;
+  font-size: 13px; color: var(--text-primary); letter-spacing: 0.04em;
+  opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none;
+  white-space: nowrap; z-index: 200;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+}
+.pwa-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* ── OFFLINE BAR ── */
+.pwa-offline {
+  background: rgba(184,137,26,0.2); border-bottom: 0.5px solid rgba(184,137,26,0.3);
+  padding: 10px 16px; font-size: 12px; color: var(--gold-200);
+  text-align: center; letter-spacing: 0.08em;
+  display: none;
+}
+.pwa-offline.show { display: block; }
+/* ── EMPTY STATE ── */
+.pwa-empty { text-align: center; padding: 64px 24px; color: var(--text-dim); font-size: 14px; letter-spacing: 0.06em; line-height: 1.6; }
+/* ── SECTION LABEL ── */
+.pwa-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; margin-top: 6px; }
+/* ── LOADING ── */
+.pwa-loading { text-align: center; padding: 40px; color: var(--text-dim); font-size: 13px; letter-spacing: 0.12em; }
+/* ── CARD DASHBOARD INTEGRATION ── */
+.pwa-card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.pwa-card-visual-grid { 
+  display: flex; gap: 14px; overflow-x: auto; padding: 4px 4px 20px; 
+  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; 
+  margin: 0 -4px;
+}
+.pwa-card-visual-grid::-webkit-scrollbar { display: none; }
+.fo-card { 
+  flex: 0 0 280px; scroll-snap-align: center; padding: 22px; 
+  background: #fff; border: 1px solid var(--glass-border); 
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+.fo-card.active { border-color: var(--gold-300); box-shadow: 0 8px 24px rgba(184, 137, 26, 0.1); }
+.fo-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.fo-card-chip { width: 34px; height: 24px; border-radius: 4px; background: linear-gradient(135deg, var(--gold-400), var(--gold-200)); opacity: 0.8; }
+.fo-card-name { font-family: var(--font-d); font-size: 18px; color: var(--text-primary); text-align: right; line-height: 1.1; font-weight: 500; }
+.fo-card-holder { font-size: 9px; color: var(--text-dim); text-transform: uppercase; text-align: right; margin-top: 2px; font-weight: 600; }
+.fo-utilization { margin-bottom: 16px; }
+.util-info { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 6px; color: var(--text-secondary); font-weight: 500; }
+.util-bar-bg { height: 4px; background: rgba(0,0,0,0.04); border-radius: 2px; overflow: hidden; }
+.util-bar-fill { height: 100%; width: 0%; border-radius: 2px; transition: width 1s ease-out; }
+.fo-bar-ok { background: var(--ok); }
+.fo-bar-warn { background: var(--warn, #fbbf24); }
+.fo-bar-danger { background: var(--danger); }
+.fo-card-badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 8px; font-weight: 700; text-transform: uppercase; }
+.fo-badge-ok { background: rgba(74,222,128,0.1); color: var(--ok); border: 0.5px solid rgba(74,222,128,0.3); }
+.fo-badge-warn { background: rgba(251,191,36,0.1); color: var(--warn, #fbbf24); border: 0.5px solid rgba(251,191,36,0.3); }
+.fo-badge-danger { background: rgba(248,113,113,0.1); color: var(--danger); border: 0.5px solid rgba(248,113,113,0.3); }
+.fo-card-footer { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding-top: 14px; border-top: 0.5px solid var(--glass-border); }
+.fo-footer-label { font-size: 8px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 2px; }
+.fo-footer-value { font-size: 11px; font-weight: 600; color: var(--gold-200); font-family: 'Times New Roman', serif; }
+/* Modal Projections */
+.pwa-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; display: none; align-items: flex-end; backdrop-filter: blur(4px); }
+.pwa-modal-overlay.show { display: flex; }
+.pwa-modal-panel { width: 100%; background: var(--off-white); border-radius: 24px 24px 0 0; padding: 32px 20px; max-height: 90vh; overflow-y: auto; border-top: 1px solid var(--glass-border); box-shadow: 0 -10px 40px rgba(0,0,0,0.1); }
+.pwa-modal-close { position: absolute; top: 16px; right: 20px; background: none; border: none; font-size: 24px; color: var(--text-dim); }
+.pwa-timeline-row { padding: 16px 0; border-bottom: 0.5px solid var(--glass-border); }
+.pwa-timeline-row.active { border-left: 2px solid var(--gold-300); padding-left: 12px; background: rgba(184, 137, 26, 0.04); }
+.fo-timeline-header { display: grid; grid-template-columns: 80px 1fr 80px; align-items: center; gap: 12px; cursor: pointer; }
+.month-label { font-size: 13px; font-weight: 600; color: var(--gold-100); }
+.cumulative-bar-wrap { height: 3px; background: rgba(0,0,0,0.04); border-radius: 2px; }
+.cumulative-bar { height: 100%; border-radius: 2px; transition: width 1s; }
+.month-total { font-size: 12px; font-weight: 600; text-align: right; font-family: 'Times New Roman', serif; }
+.tx-list { padding-top: 12px; display: none; }
+.tx-list.expanded { display: block; }
+.tx-item { display: grid; grid-template-columns: 1fr 80px; gap: 10px; font-size: 11px; margin-bottom: 8px; color: var(--text-secondary); }
+@keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(212, 168, 39, 0.4); } 100% { box-shadow: 0 0 0 15px transparent; } }
+.pulse-gold { animation: pulse-gold 0.6s ease-out; }
+</style>
+</head>
+<body>
+<div id="offline-bar" class="pwa-offline">Sem conexão — sincronizando ao reconectar</div>
+<div id="app">
+  <!-- ═══ SCREEN 1: DASHBOARD ═══ -->
+  <div class="screen active" id="screen-dashboard">
+    <div class="pwa-header">
+      <div class="pwa-logo-box">
+        <img src="logo.png" class="pwa-logo-img" alt="Logo"/>
+        <div>
+          <div class="pwa-header-title">Family Office</div>
+          <div class="pwa-header-sub" id="header-date"></div>
+        </div>
+      </div>
+    </div>
+    <div class="pwa-scroll">
+      <div class="pwa-section-label">Resumo do mês</div>
+      <div class="pwa-metrics">
+        <div class="pwa-metric glass full">
+          <div class="pwa-metric-label">Total lançado</div>
+          <div class="pwa-metric-value" id="m-total">R$ 0</div>
+          <div class="pwa-metric-sub">entradas aprovadas</div>
+        </div>
+        <div class="pwa-metric glass">
+          <div class="pwa-metric-label">Receitas</div>
+          <div class="pwa-metric-value" id="m-income" style="color:#4ade80">R$ 0</div>
+        </div>
+        <div class="pwa-metric glass">
+          <div class="pwa-metric-label">Despesas</div>
+          <div class="pwa-metric-value" id="m-expense" style="color:#f87171">R$ 0</div>
+        </div>
+      </div>
+      <button class="pwa-pending-btn glass" id="btn-pending" onclick="goTo('screen-history')">
+        <div>
+          <div class="pwa-pending-label">Aguardando aprovação</div>
+          <div style="font-size:10px; color:var(--text-dim); margin-top:2px;">Toque para ver o histórico</div>
+        </div>
+        <div class="pwa-pending-count" id="pending-count">0</div>
+      </button>
+      <div class="pwa-section-label">Últimos lançamentos</div>
+      <div id="recent-list"><div class="pwa-loading">Carregando...</div></div>
+    </div>
+    <div class="pwa-actions-group">
+      <button class="pwa-btn-cc" onclick="goTo('screen-card-new')">
+        <i style="font-style:normal">💳</i> Cartão
+      </button>
+      <button class="pwa-fab" onclick="goTo('screen-new')">+</button>
+    </div>
+  </div>
+  <!-- ═══ SCREEN 2: NOVO LANÇAMENTO ═══ -->
+  <div class="screen" id="screen-new">
+    <div class="pwa-header">
+      <div>
+        <div class="pwa-header-title" id="form-title">Novo Lançamento</div>
+        <div class="pwa-header-sub">Fluxo de caixa</div>
+      </div>
+      <button class="pwa-back" onclick="goBack()">‹</button>
+    </div>
+    <div class="pwa-scroll">
+      <div class="glass" style="padding:24px">
+        <div class="pwa-form">
+          <div class="pwa-field">
+            <label class="pwa-label">Tipo</label>
+            <div class="pwa-toggle">
+              <button class="pwa-toggle-btn active expense" id="btn-expense" onclick="setType('expense')">Despesa</button>
+              <button class="pwa-toggle-btn income" id="btn-income" onclick="setType('income')">Receita</button>
+            </div>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Valor (R$)</label>
+            <input class="pwa-input" type="number" id="f-amount" inputmode="decimal" placeholder="0,00" step="0.01" min="0"/>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Descrição</label>
+            <input class="pwa-input" type="text" id="f-desc" placeholder="Ex: Supermercado, Salário..."/>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Data</label>
+            <input class="pwa-input" type="date" id="f-date"/>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Categoria</label>
+            <select class="pwa-input" id="f-category">
+              <option value="">Selecione...</option>
+              <option>Alimentação</option>
+              <option>Moradia</option>
+              <option>Transporte</option>
+              <option>Saúde</option>
+              <option>Educação</option>
+              <option>Lazer</option>
+              <option>Viagem</option>
+              <option>Investimento</option>
+              <option>Receita</option>
+              <option>Outros</option>
+            </select>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Conta</label>
+            <input class="pwa-input" type="text" id="f-account" placeholder="Ex: Itaú, Bradesco..."/>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Observações (opcional)</label>
+            <textarea class="pwa-input" id="f-notes" rows="3" placeholder="Detalhes adicionais..." style="resize:none"></textarea>
+          </div>
+          <button class="pwa-submit" id="btn-submit" onclick="submitEntry()">Enviar para aprovação</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ═══ SCREEN 3: HISTÓRICO ═══ -->
+  <div class="screen" id="screen-history">
+    <div class="pwa-header">
+      <div>
+        <div class="pwa-header-title">Histórico</div>
+        <div class="pwa-header-sub">Sincronizado em tempo real</div>
+      </div>
+      <button class="pwa-back" onclick="goBack()">‹</button>
+    </div>
+    <div class="pwa-scroll" id="history-scroll">
+      <div class="pwa-tabs">
+        <button class="pwa-tab-btn active" id="tab-cash" onclick="switchHistoryTab('cash')">Fluxo</button>
+        <button class="pwa-tab-btn" id="tab-cards" onclick="switchHistoryTab('cards')">Cartões</button>
+      </div>
+      <div id="history-list"><div class="pwa-loading">Carregando...</div></div>
+    </div>
+  </div>
+  <!-- ═══ SCREEN 4: LANÇAMENTO DE CARTÃO ═══ -->
+  <div class="screen" id="screen-card-new">
+    <div class="pwa-header">
+      <div>
+        <div class="pwa-header-title">Lançamento de Cartão</div>
+        <div class="pwa-header-sub">Módulo independente</div>
+      </div>
+      <button class="pwa-back" onclick="goBack()">‹</button>
+    </div>
+    <div class="pwa-scroll">
+      <div id="pwa-card-metrics" class="pwa-card-metrics">
+        <!-- Rendered via JS -->
+      </div>
+      
+      <div class="pwa-section-label">Seus Cartões (Toque p/ Projeção)</div>
+      <div id="pwa-card-grid" class="pwa-card-visual-grid">
+        <!-- Rendered via JS -->
+      </div>
+
+      <div class="pwa-section-label">Novo Gasto</div>
+      <div class="glass" style="padding:24px; margin-bottom: 20px;">
+        <div class="pwa-form">
+          <div class="pwa-field">
+            <label class="pwa-label">Cartão</label>
+            <select class="pwa-input" id="f-card">
+              <option value="">Carregando cartões...</option>
+            </select>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Data</label>
+            <input class="pwa-input" type="date" id="f-date"/>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Descrição</label>
+            <input class="pwa-input" type="text" id="f-card-desc" placeholder="Ex: Restaurante Japa, Amazon..."/>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Valor total (R$)</label>
+            <input class="pwa-input" type="number" id="f-card-amount" inputmode="decimal" placeholder="0,00" step="0.01" oninput="updateInstallmentPreview()"/>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Parcelas</label>
+            <select class="pwa-input" id="f-installments" onchange="updateInstallmentPreview()">
+              <option value="1">1x</option>
+              <option value="2">2x</option>
+              <option value="3">3x</option>
+              <option value="4">4x</option>
+              <option value="5">5x</option>
+              <option value="6">6x</option>
+              <option value="7">7x</option>
+              <option value="8">8x</option>
+              <option value="9">9x</option>
+              <option value="10">10x</option>
+              <option value="11">11x</option>
+              <option value="12">12x</option>
+              <option value="18">18x</option>
+              <option value="24">24x</option>
+            </select>
+            <div id="installment-preview" class="pwa-card-preview"></div>
+          </div>
+          <div class="pwa-field">
+            <label class="pwa-label">Observações (opcional)</label>
+            <textarea class="pwa-input" id="f-card-notes" rows="2" placeholder="Notas sobre este gasto..." style="resize:none"></textarea>
+          </div>
+          <button class="pwa-submit" id="btn-card-submit" onclick="submitCardEntry()">Lançar no Cartão</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Projeção -->
+<div id="pwa-card-modal" class="pwa-modal-overlay">
+  <div class="pwa-modal-panel glass">
+    <button class="pwa-modal-close" onclick="closeCardModal()">&times;</button>
+    <div id="pwa-m-header"></div>
+    <div class="pwa-card-metrics" style="margin-top: 24px;">
+      <div class="pwa-metric glass">
+        <div class="pwa-metric-label">Limite</div>
+        <div class="pwa-metric-value" id="pwa-m-limit" style="font-size: 22px;">R$ 0</div>
+      </div>
+      <div class="pwa-metric glass">
+        <div class="pwa-metric-label">Comprometido</div>
+        <div class="pwa-metric-value" id="pwa-m-future" style="font-size: 22px;">R$ 0</div>
+      </div>
+    </div>
+    <div id="pwa-m-timeline">
+      <!-- Dynamic -->
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="pwa-toast"></div>
+<script>
+/* ─── CONFIG ─────────────────────────────────────────────────── */
+const SB_URL = 'https://lruqphwlcimzcqpafjrn.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxydXFwaHdsY2ltemNxcGFmanJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTI2ODcsImV4cCI6MjA5MDQ4ODY4N30.uPEAdV2rKcZ7SuXC6A_KH3Ili6fq72ytsReRZEXijWQ';
+const HEADERS = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+const TABLE   = SB_URL + '/rest/v1/cash_flow_entries';
+const CARDS_TABLE = SB_URL + '/rest/v1/cards';
+const CARD_TX_TABLE = SB_URL + '/rest/v1/card_transactions';
+const QUEUE_KEY = 'fo_queue';
+const CARD_QUEUE_KEY = 'fo_card_queue';
+const foCardState = { cards: [], transactions: [], lastUpdate: null };
+/* ─── STATE ──────────────────────────────────────────────────── */
+let currentType = 'expense';
+let screenHistory = ['screen-dashboard'];
+let editingId = null;
+let realtimeSocket = null;
+let cardRealtimeSocket = null;
+let rtRetryCount = 0;
+/* ─── NAVIGATION ─────────────────────────────────────────────── */
+function goTo(id) {
+  const cur = document.querySelector('.screen.active');
+  if (cur) { cur.classList.remove('active'); cur.classList.add('slide-back'); setTimeout(() => cur.classList.remove('slide-back'), 300); }
+  const next = document.getElementById(id);
+  next.classList.add('active');
+  screenHistory.push(id);
+  
+  if (id === 'screen-history') { loadHistory(); setupRealtimeSync(); }
+  if (id === 'screen-dashboard') { loadDashboard(); closeRealtimeSync(); }
+  if (id === 'screen-card-new') { 
+    loadCards(); 
+    setupCardRealtime();
+    document.getElementById('f-date').value = today(); 
+  }
+}
+function goBack() {
+  if (editingId) { editingId = null; resetForm(); document.getElementById('btn-submit').textContent = 'Enviar para aprovação'; document.getElementById('form-title').textContent = 'Novo Lançamento'; }
+  screenHistory.pop();
+  const prev = screenHistory[screenHistory.length - 1] || 'screen-dashboard';
+  const cur = document.querySelector('.screen.active');
+  if (cur) cur.classList.remove('active');
+  document.getElementById(prev).classList.add('active');
+  if (prev === 'screen-dashboard') loadDashboard();
+  if (prev !== 'screen-history') closeRealtimeSync();
+}
+/* ─── TYPE TOGGLE ────────────────────────────────────────────── */
+function setType(t) {
+  currentType = t;
+  document.getElementById('btn-expense').classList.toggle('active', t === 'expense');
+  document.getElementById('btn-expense').classList.toggle('expense', t === 'expense');
+  document.getElementById('btn-income').classList.toggle('active', t === 'income');
+  document.getElementById('btn-income').classList.toggle('income', t === 'income');
+}
+/* ─── SUPABASE FETCH ─────────────────────────────────────────── */
+async function sbFetch(url, opts = {}) {
+  try {
+    const r = await fetch(url, { headers: HEADERS, ...opts });
+    if (!r.ok) { const e = await r.text(); throw new Error(e); }
+    const ct = r.headers.get('content-type') || '';
+    return ct.includes('json') ? r.json() : [];
+  } catch(e) {
+    console.error('Supabase error:', e);
+    throw e;
+  }
+}
+/* ─── DASHBOARD ──────────────────────────────────────────────── */
+async function loadDashboard() {
+  loadHistory();
+  loadCards();
+  
+  // Activate Supabase Realtime for automatic Inbox movement
+  // Note: Desktop actions (approve/reject) will trigger these refreshes
+  if (window.supabase) {
+    const channel = supabase.channel('pwa-inbox-sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'card_transactions' }, () => {
+        console.log('REALTIME: Card transaction updated, refreshing Dashboard/History...');
+        loadDashboard();
+        if (currentScreen === 'screen-history') loadHistory();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => {
+        console.log('REALTIME: Cash flow transaction updated, refreshing Dashboard/History...');
+        loadDashboard();
+        if (currentScreen === 'screen-history') loadHistory();
+      })
+      .subscribe();
+  }
+
+  const now = new Date();
+  const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0');
+  const from = `${y}-${m}-01`, to = `${y}-${m}-31`;
+  try {
+    const data = await sbFetch(`${TABLE}?date=gte.${from}&date=lte.${to}&order=date.desc`);
+    
+    // Summary Metrics
+    const approved = data.filter(e => e.status === 'approved' || e.status === 'posted');
+    const income  = approved.filter(e => e.type === 'income').reduce((s,e) => s + +e.amount, 0);
+    const expense = approved.filter(e => e.type === 'expense').reduce((s,e) => s + +e.amount, 0);
+    const total   = income - expense;
+    
+    document.getElementById('m-total').textContent   = fmt(Math.abs(total));
+    document.getElementById('m-income').textContent  = fmt(income);
+    document.getElementById('m-expense').textContent = fmt(expense);
+    
+    // Inbox Dynamic: Show ONLY PENDING items in the "Recentes" list on Home
+    const pendingList = data.filter(e => e.status === 'pending');
+    document.getElementById('pending-count').textContent = pendingList.length;
+    
+    const rl = document.getElementById('recent-list');
+    if (!pendingList.length) { 
+      rl.innerHTML = `
+        <div class="pwa-empty" style="padding: 40px 20px;">
+          <div style="font-size: 24px; margin-bottom: 8px;">✨</div>
+          Tudo em dia!<br>Nenhum lançamento aguardando.
+        </div>`; 
+      return; 
+    }
+    rl.innerHTML = pendingList.map(e => entryRow(e)).join('');
+  } catch(err) {
+    document.getElementById('recent-list').innerHTML = '<div class="pwa-empty">Erro ao carregar dados</div>';
+  }
+}
+/* ─── HISTORY ────────────────────────────────────────────────── */
+let currentHistoryTab = 'cash';
+
+function switchHistoryTab(tab) {
+  currentHistoryTab = tab;
+  document.querySelectorAll('.pwa-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  loadHistory();
+}
+
+async function loadHistory() {
+  const hl = document.getElementById('history-list');
+  hl.innerHTML = '<div class="pwa-loading">Carregando...</div>';
+  try {
+    const isCards = currentHistoryTab === 'cards';
+    const endpoint = isCards ? CARD_TX_TABLE : TABLE;
+    // We sort cards by purchase_date as requested, and main by date
+    const orderCol = isCards ? 'purchase_date' : 'date';
+    const data = await sbFetch(`${endpoint}?order=${orderCol}.desc&limit=40`);
+    
+    if (!data.length) { 
+      hl.innerHTML = `<div class="pwa-empty">Nenhum lançamento em ${isCards ? 'Cartões' : 'Fluxo'}</div>`; 
+      return; 
+    }
+    hl.innerHTML = data.map(e => entryRow(e, isCards)).join('');
+  } catch(err) {
+    hl.innerHTML = '<div class="pwa-empty">Erro ao carregar histórico</div>';
+  }
+}
+/* ─── ENTRY ROW ──────────────────────────────────────────────── */
+function entryRow(e, isCard = false) {
+  // For cards, priority is purchase_date. For cash flow, it is 'date'.
+  const displayDate = isCard ? (e.purchase_date || e.date) : e.date;
+  const d = new Date(displayDate + 'T12:00:00');
+  const dateStr = d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
+  const amtClass = e.type === 'income' ? 'income' : 'expense';
+  const amtSign  = e.type === 'income' ? '+' : '-';
+  
+  const statusLabel = { 
+    pending: 'Aguardando aprovação', 
+    approved: 'Lançado', 
+    rejected: 'Rejeitado', 
+    posted: 'Lançado' 
+  }[e.status] || e.status;
+  
+  // Installment label for cards
+  const installmentText = (isCard && e.installments > 1) 
+    ? ` <span style="font-size:9px; opacity:0.6">(${e.installment_current}/${e.installments})</span>` 
+    : '';
+
+  const editBtn = (!isCard && e.status === 'pending') ? `<button class="pwa-edit-btn" onclick='editEntry(${JSON.stringify(e)})'>✎</button>` : '';
+  
+  return `<div class="pwa-entry glass" data-id="${e.id}">
+    <div class="pwa-entry-left">
+      <div class="pwa-entry-date">${dateStr}${installmentText}</div>
+      <div class="pwa-entry-desc">${e.description}</div>
+      ${e.category ? `<span class="pwa-entry-cat">${e.category}</span>` : ''}
+      ${isCard ? `<span class="pwa-entry-cat" style="background:rgba(0,0,0,0.05); color:var(--text-dim); margin-left:4px">CARTÃO</span>` : ''}
+    </div>
+    <div class="pwa-entry-right">
+      <div class="pwa-entry-amount ${amtClass}">${amtSign}${fmt(e.amount)}</div>
+      <div class="pwa-entry-status status-${e.status}">${statusLabel}</div>
+    </div>
+    ${editBtn}
+  </div>`;
+}
+/* ─── EDIT LOGIC ─────────────────────────────────────────────── */
+function editEntry(e) {
+  editingId = e.id;
+  document.getElementById('f-amount').value = e.amount;
+  document.getElementById('f-desc').value = e.description;
+  document.getElementById('f-date').value = e.date;
+  document.getElementById('f-category').value = e.category || '';
+  document.getElementById('f-account').value = e.account || '';
+  document.getElementById('f-notes').value = e.notes || '';
+  setType(e.type);
+  
+  document.getElementById('btn-submit').textContent = 'Salvar alterações';
+  document.getElementById('form-title').textContent = 'Editar Lançamento';
+  goTo('screen-new');
+}
+/* ─── SUBMIT ─────────────────────────────────────────────────── */
+async function submitEntry() {
+  const amount = parseFloat(document.getElementById('f-amount').value);
+  const desc   = document.getElementById('f-desc').value.trim();
+  const date   = document.getElementById('f-date').value;
+  if (!amount || amount <= 0) { toast('Informe um valor válido'); return; }
+  if (!desc)   { toast('Informe uma descrição'); return; }
+  if (!date)   { toast('Informe a data'); return; }
+  const entry = {
+    amount,
+    description: desc,
+    date,
+    type:     currentType,
+    category: document.getElementById('f-category').value || null,
+    account:  document.getElementById('f-account').value.trim() || null,
+    notes:    document.getElementById('f-notes').value.trim() || null,
+    status:   'pending',
+    origin:   'mobile'
+  };
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  if (!navigator.onLine) {
+    const q = JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]');
+    if (editingId) {
+      q.push({ ...entry, id: editingId, _method: 'PATCH' });
+    } else {
+      q.push(entry);
+    }
+    localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
+    toast('Salvo localmente — sincronizando em breve');
+    resetForm();
+    editingId = null;
+    btn.disabled = false;
+    btn.textContent = 'Enviar para aprovação';
+    goBack();
+    return;
+  }
+  try {
+    if (editingId) {
+      await sbFetch(`${TABLE}?id=eq.${editingId}`, { method: 'PATCH', body: JSON.stringify(entry) });
+      toast('Lançamento atualizado');
+      editingId = null;
+    } else {
+      await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(entry) });
+      toast('Lançamento enviado para aprovação');
+    }
+    if (navigator.vibrate) navigator.vibrate(80);
+    resetForm();
+    btn.textContent = 'Enviar para aprovação';
+    document.getElementById('form-title').textContent = 'Novo Lançamento';
+    goBack();
+  } catch(err) {
+    toast('Erro ao processar — tente novamente');
+  }
+  btn.disabled = false;
+}
+/* ─── CREDIT CARD MODULE ─────────────────────────────────────── */
+async function loadCards() {
+  const select = document.getElementById('f-card');
+  const metricsEl = document.getElementById('pwa-card-metrics');
+  const gridEl = document.getElementById('pwa-card-grid');
+  
+  if (select) select.innerHTML = '<option value="">Carregando...</option>';
+  if (metricsEl) metricsEl.innerHTML = '<div class="pwa-loading">...</div>';
+  if (gridEl) gridEl.innerHTML = '<div class="pwa-loading">...</div>';
+
+  try {
+    const [cRes, tRes] = await Promise.all([
+      fetch(`${CARDS_TABLE}?select=*&order=name.asc`, { headers: HEADERS }),
+      fetch(`${CARD_TX_TABLE}?select=*&status=neq.rejected`, { headers: HEADERS })
+    ]);
+    
+    foCardState.cards = await cRes.json();
+    foCardState.transactions = await tRes.json();
+    
+    processCardProjections();
+    renderPWACardDashboard();
+    
+    // Populate select
+    if (select) {
+      if (!foCardState.cards.length) {
+        select.innerHTML = '<option value="">Nenhum cartão cadastrado</option>';
+      } else {
+        select.innerHTML = '<option value="">Selecione o cartão...</option>' + 
+          foCardState.cards.map(c => `<option value="${c.id}" data-due="${c.due_day || 1}">${c.name} — ${c.holder || c.bank}</option>`).join('');
+      }
+    }
+  } catch(e) {
+    console.error('loadCards error:', e);
+    toast('Erro ao carregar cartões');
+  }
+}
+
+function processCardProjections() {
+  const today = new Date();
+  const lastDayThisMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+  foCardState.cards.forEach(card => {
+    const txs = foCardState.transactions.filter(t => t.card_id === card.id && (t.status === 'pending' || t.status === 'posted' || t.status === 'approved'));
+    
+    card.used_amount = txs
+      .filter(t => new Date(t.due_date) <= lastDayThisMonth)
+      .reduce((s, t) => s + Number(t.amount || 0), 0);
+
+    card.future_committed = txs
+      .filter(t => new Date(t.due_date) > lastDayThisMonth)
+      .reduce((s, t) => s + Number(t.amount || 0), 0);
+
+    let nextDue = new Date(today.getFullYear(), today.getMonth(), card.due_day || 1);
+    if (nextDue < today) nextDue.setMonth(nextDue.getMonth() + 1);
+    
+    card.invoice_amount = txs
+      .filter(t => {
+        const dt = new Date(t.due_date);
+        dt.setHours(12,0,0,0);
+        return dt >= today && dt <= nextDue;
+      })
+      .reduce((s, t) => s + Number(t.amount || 0), 0);
+
+    card.next_due_date = nextDue;
+    card.effective_used = card.used_amount + card.future_committed;
+    card.utilization_pct = card.effective_used / (card.total_limit || 1);
+  });
+}
+
+function renderPWACardDashboard() {
+  const grid = document.getElementById('pwa-card-grid');
+  const metrics = document.getElementById('pwa-card-metrics');
+  
+  const totalLimit = foCardState.cards.reduce((s,c) => s + Number(c.total_limit || 0), 0);
+  const totalUsed = foCardState.cards.reduce((s,c) => s + Number(c.effective_used || 0), 0);
+  const totalInvoice = foCardState.cards.reduce((s,c) => s + Number(c.invoice_amount || 0), 0);
+  const totalPoints = foCardState.cards.reduce((s,c) => s + Number(c.points || 0), 0);
+
+  if (metrics) {
+    metrics.innerHTML = `
+      <div class="pwa-metric glass">
+        <div class="pwa-metric-label">Limite Total</div>
+        <div class="pwa-metric-value" style="font-size:22px">${fmt(totalLimit)}</div>
+      </div>
+      <div class="pwa-metric glass">
+        <div class="pwa-metric-label">Próximas Faturas</div>
+        <div class="pwa-metric-value" style="font-size:22px">${fmt(totalInvoice)}</div>
+      </div>
+      <div class="pwa-metric glass full">
+        <div class="pwa-metric-label">Comprometido Total</div>
+        <div class="pwa-metric-value">${fmt(totalUsed)}</div>
+        <div class="pwa-metric-sub">${((totalUsed/totalLimit)*100).toFixed(1)}% de utilização global</div>
+      </div>
+    `;
+  }
+
+  if (grid) {
+    grid.innerHTML = foCardState.cards.length ? foCardState.cards.map(c => {
+      const pct = Math.min(100, Math.round(c.utilization_pct * 100));
+      const colorClass = c.utilization_pct <= 0.4 ? 'fo-bar-ok' : (c.utilization_pct <= 0.7 ? 'fo-bar-warn' : 'fo-bar-danger');
+      const badgeClass = c.utilization_pct <= 0.4 ? 'fo-badge-ok' : (c.utilization_pct <= 0.7 ? 'fo-badge-warn' : 'fo-badge-danger');
+      const badgeLabel = c.utilization_pct <= 0.4 ? 'Regular' : (c.utilization_pct <= 0.7 ? 'Atenção' : 'Crítico');
+      
+      return `
+      <div class="fo-card" data-card-id="${c.id}" onclick="openCardModal('${c.id}')">
+        <div class="fo-card-top">
+          <div class="fo-card-chip"></div>
+          <div class="fo-card-name">${c.name}</div>
+        </div>
+        <div class="fo-utilization">
+          <div class="util-info">
+             <span class="fo-card-badge ${badgeClass}">${badgeLabel}</span>
+             <span style="color:var(--text-dim)">${pct}%</span>
+          </div>
+          <div class="util-bar-bg"><div class="util-bar-fill ${colorClass}" style="width:${pct}%"></div></div>
+        </div>
+        <div class="fo-card-footer">
+          <div class="fo-footer-item"><div class="fo-footer-label">Fatura</div><div class="fo-footer-value">${fmt(c.invoice_amount)}</div></div>
+          <div class="fo-footer-item"><div class="fo-footer-label">Venc.</div><div class="fo-footer-value">${c.next_due_date.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}</div></div>
+          <div class="fo-footer-item"><div class="fo-footer-label">Pontos</div><div class="fo-footer-value">${(c.points||0).toLocaleString()}</div></div>
+        </div>
+      </div>`;
+    }).join('') : '<div class="pwa-empty">Nenhum cartão cadastrado</div>';
+  }
+}
+
+function updateInstallmentPreview() {
+  const amount = parseFloat(document.getElementById('f-card-amount').value) || 0;
+  const n = parseInt(document.getElementById('f-installments').value) || 1;
+  const preview = document.getElementById('installment-preview');
+  if (amount > 0 && n > 1) {
+    const each = amount / n;
+    preview.textContent = `${fmt(each)} por parcela`;
+  } else {
+    preview.textContent = '';
+  }
+}
+
+async function submitCardEntry() {
+  const cardSelect = document.getElementById('f-card')
+  const cardId     = cardSelect.value
+  const dueDay     = parseInt(cardSelect.selectedOptions[0]?.dataset.due || '1')
+  const amount      = parseFloat(document.getElementById('f-card-amount').value)
+  const n           = parseInt(document.getElementById('f-installments').value) || 1
+  const description = document.getElementById('f-card-desc').value.trim()
+  const purchaseDate = document.getElementById('f-date').value
+  const notes        = document.getElementById('f-card-notes').value.trim() || null
+  
+  if (!cardId) { toast('Selecione um cartão'); return }
+  if (!amount || amount <= 0) { toast('Informe um valor válido'); return }
+  if (!description) { toast('Informe a descrição'); return }
+  if (!purchaseDate) { toast('Informe a data'); return }
+  
+  // Fallback for crypto.randomUUID
+  const groupId = (window.crypto && window.crypto.randomUUID) 
+      ? window.crypto.randomUUID() 
+      : 'grp_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+      
+  const each    = parseFloat((amount / n).toFixed(2))
+  const btn     = document.getElementById('btn-card-submit')
+  btn.disabled  = true
+  btn.textContent = 'Enviando...'
+  
+  const records = Array.from({length: n}, (_, i) => {
+    const base = new Date(purchaseDate + 'T12:00:00')
+    base.setMonth(base.getMonth() + i)
+    let due = new Date(base.getFullYear(), base.getMonth(), dueDay)
+    if (due < base) due.setMonth(due.getMonth() + 1)
+    
+    // Local date string YYYY-MM-DD
+    const y = due.getFullYear(), mo = String(due.getMonth() + 1).padStart(2,'0'), d = String(due.getDate()).padStart(2,'0');
+    const dueDateStr = `${y}-${mo}-${d}`;
+
+    return {
+      card_id: cardId, purchase_date: purchaseDate, date: dueDateStr, due_date: dueDateStr,
+      description: n > 1 ? `${description} (${i+1}/${n})` : description,
+      amount: each, installments: n, installment_current: i + 1, installment_group_id: groupId,
+      status: 'pending', origin: 'mobile' 
+      // Removed 'notes' as it doesn't exist in the DB schema
+    }
+  })
+
+  let allSuccess = true
+  for (const record of records) {
+    if (!navigator.onLine) { queueCardRecord(record); allSuccess = false; continue; }
+    try { await sbFetch(CARD_TX_TABLE, { method: 'POST', body: JSON.stringify(record) }); }
+    catch(e) { queueCardRecord(record); allSuccess = false; }
+  }
+  
+  if (allSuccess) {
+    if (navigator.vibrate) navigator.vibrate(80);
+    toast(n > 1 ? `${n} parcelas lançadas` : 'Gasto lançado');
+  } else {
+    toast('Algumas parcelas salvas offline para sincronizar');
+  }
+  resetCardForm();
+  goBack();
+  btn.disabled = false;
+  btn.textContent = 'Lançar no cartão';
+}
+
+function queueCardRecord(record) {
+  const q = JSON.parse(localStorage.getItem('fo_card_queue') || '[]');
+  q.push(record);
+  localStorage.setItem('fo_card_queue', JSON.stringify(q));
+}
+
+function resetCardForm() {
+  document.getElementById('f-card').value = '';
+  document.getElementById('f-card-desc').value = '';
+  document.getElementById('f-card-amount').value = '';
+  document.getElementById('f-installments').value = '1';
+  document.getElementById('f-card-notes').value = '';
+  document.getElementById('installment-preview').textContent = '';
+}
+
+/* ─── CARD REALTIME ─── */
+function setupCardRealtime() {
+  if (cardRealtimeSocket) return;
+  const wsUrl = `wss://${new URL(SB_URL).hostname}/realtime/v1/websocket?apikey=${SB_KEY}&vsn=1.0.0`;
+  cardRealtimeSocket = new WebSocket(wsUrl);
+  cardRealtimeSocket.onopen = () => {
+    cardRealtimeSocket.send(JSON.stringify({ topic:'realtime:public:card_transactions', event:'phx_join', payload:{}, ref:'2' }));
+  };
+  cardRealtimeSocket.onmessage = async (msg) => {
+    const data = JSON.parse(msg.data);
+    if (data.event === 'INSERT' || data.event === 'UPDATE') {
+      const cardId = data.payload?.record?.card_id || data.payload?.new?.card_id;
+      // Refresh both transactions and UI
+      const tRes = await fetch(`${CARD_TX_TABLE}?select=*&status=neq.rejected`, { headers: HEADERS });
+      foCardState.transactions = await tRes.json();
+      processCardProjections();
+      renderPWACardDashboard();
+      if (cardId) {
+        const el = document.querySelector(`[data-card-id="${cardId}"]`);
+        if (el) { el.classList.add('pulse-gold'); setTimeout(() => el.classList.remove('pulse-gold'), 800); }
+      }
+    }
+  };
+  cardRealtimeSocket.onclose = () => { cardRealtimeSocket = null; };
+}
+
+/* ─── CARD PROJECTION MODAL ─── */
+function openCardModal(cardId) {
+  const card = foCardState.cards.find(c => c.id === cardId);
+  if (!card) return;
+
+  document.getElementById('pwa-m-header').innerHTML = `
+    <h2 style="font-family:var(--font-d); font-size:24px; color:var(--gold-200); margin-bottom:4px;">${card.name}</h2>
+    <p style="font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.1em;">${card.holder || card.bank} • Vence dia ${card.due_day}</p>
+  `;
+  document.getElementById('pwa-m-limit').textContent = fmt(card.total_limit);
+  document.getElementById('pwa-m-future').textContent = fmt(card.future_committed);
+
+  const timeline = document.getElementById('pwa-m-timeline');
+  timeline.innerHTML = '<div class="pwa-section-label" style="margin-top:24px">Projeção por Mês</div>';
+  
+  const today = new Date();
+  const txs = foCardState.transactions.filter(t => t.card_id === cardId && (t.status !== 'rejected'));
+
+  for (let i = 0; i < 12; i++) {
+    const m = new Date(today.getFullYear(), today.getMonth() + i, 1);
+    const my = m.toISOString().slice(0, 7);
+    const monthLabel = m.toLocaleDateString('pt-BR', { month: 'long', year: '2-digit' });
+    const monthTxs = txs.filter(t => t.due_date.startsWith(my));
+    const monthTotal = monthTxs.reduce((s, t) => s + Number(t.amount || 0), 0);
+    
+    const cumulativeUsed = txs
+      .filter(t => {
+        const tDate = new Date(t.due_date);
+        const endDate = new Date(m.getFullYear(), m.getMonth() + 1, 0);
+        return tDate <= endDate;
+      })
+      .reduce((s, t) => s + Number(t.amount || 0), 0);
+
+    const pct = Math.min(100, (cumulativeUsed / (card.total_limit||1)) * 100);
+    const barColor = pct <= 40 ? 'var(--ok)' : (pct <= 70 ? 'var(--warn, #fbbf24)' : 'var(--danger)');
+
+    const row = document.createElement('div');
+    row.className = `pwa-timeline-row ${i === 0 ? 'active' : ''}`;
+    row.innerHTML = `
+      <div class="fo-timeline-header" onclick="this.nextElementSibling.classList.toggle('expanded')">
+        <div class="month-label">${monthLabel}</div>
+        <div class="cumulative-bar-wrap"><div class="cumulative-bar" style="width:${pct}%; background:${barColor}"></div></div>
+        <div class="month-total">${fmt(monthTotal)}</div>
+      </div>
+      <div class="tx-list">
+        ${monthTxs.map(t => `<div class="tx-item"><span>${t.description}</span><span style="font-weight:600; color:#fff">${fmt(t.amount)}</span></div>`).join('') || '<div style="font-size:10px; color:var(--text-dim)">Nenhum lançamento</div>'}
+      </div>
+    `;
+    timeline.appendChild(row);
+  }
+  document.getElementById('pwa-card-modal').classList.add('show');
+}
+function closeCardModal() { document.getElementById('pwa-card-modal').classList.remove('show'); }
+/* ─── REALTIME SYNC ──────────────────────────────────────────── */
+function setupRealtimeSync() {
+  if (realtimeSocket) return;
+  const wsUrl = `wss://${new URL(SB_URL).hostname}/realtime/v1/websocket?apikey=${SB_KEY}&vsn=1.0.0`;
+  realtimeSocket = new WebSocket(wsUrl);
+  realtimeSocket.onopen = () => {
+    rtRetryCount = 0;
+    realtimeSocket.send(JSON.stringify({ topic:'realtime:public:cash_flow_entries', event:'phx_join', payload:{}, ref:'1' }));
+  };
+  realtimeSocket.onmessage = (msg) => {
+    const data = JSON.parse(msg.data);
+    if (data.event === 'UPDATE' || (data.payload && data.payload.type === 'UPDATE')) {
+      const record = data.payload?.record || data.payload?.data?.record;
+      if (record) {
+        const row = document.querySelector(`.pwa-entry[data-id="${record.id}"]`);
+        if (row) {
+          const badge = row.querySelector('.pwa-entry-status');
+          const mapping = { pending:'Aguardando aprovação', approved:'Lançado', rejected:'Rejeitado pelo adm', posted:'Lançado' };
+          badge.style.opacity = '0';
+          setTimeout(() => {
+            badge.textContent = mapping[record.status] || record.status;
+            badge.className = `pwa-entry-status status-${record.status}`;
+            badge.style.opacity = '1';
+            // Remove edit button if no longer pending
+            if (record.status !== 'pending') {
+              row.querySelector('.pwa-edit-btn')?.remove();
+            }
+          }, 400);
+        }
+      }
+    }
+  };
+  realtimeSocket.onclose = () => {
+    realtimeSocket = null;
+    const delay = Math.min(30000, Math.pow(2, rtRetryCount) * 1000);
+    rtRetryCount++;
+    setTimeout(setupRealtimeSync, delay);
+  };
+}
+function closeRealtimeSync() {
+  if (realtimeSocket) { realtimeSocket.close(); realtimeSocket = null; }
+}
+/* ─── RESET & SYNC ───────────────────────────────────────────── */
+function resetForm() {
+  document.getElementById('f-amount').value   = '';
+  document.getElementById('f-desc').value     = '';
+  document.getElementById('f-category').value = '';
+  document.getElementById('f-account').value  = '';
+  document.getElementById('f-notes').value    = '';
+  document.getElementById('f-date').value     = today();
+  setType('expense');
+}
+async function flushQueue() {
+  // Cash flow queue
+  const q = JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]');
+  if (q.length) {
+    const failed = [];
+    for (const item of q) {
+      try {
+        const method = item._method || 'POST';
+        const url = method === 'PATCH' ? `${TABLE}?id=eq.${item.id}` : TABLE;
+        const body = { ...item }; delete body._method;
+        await sbFetch(url, { method, body: JSON.stringify(body) });
+      } catch(e) { failed.push(item); }
+    }
+    localStorage.setItem(QUEUE_KEY, JSON.stringify(failed));
+  }
+  // Card queue
+  const cq = JSON.parse(localStorage.getItem('fo_card_queue') || '[]');
+  if (cq.length) {
+    const cFailed = [];
+    for (const item of cq) {
+      try { await sbFetch(CARD_TX_TABLE, { method:'POST', body: JSON.stringify(item) }); }
+      catch(e) { cFailed.push(item); }
+    }
+    localStorage.setItem('fo_card_queue', JSON.stringify(cFailed));
+  }
+  if (navigator.onLine) toast('Sincronizando dados...');
+}
+/* ─── HELPERS ────────────────────────────────────────────────── */
+function fmt(v) { return Number(v).toLocaleString('pt-BR', { style:'currency', currency:'BRL' }); }
+function today() { return new Date().toISOString().split('T')[0]; }
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+/* ─── INIT ───────────────────────────────────────────────────── */
+document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' });
+document.getElementById('f-date').value = today();
+window.addEventListener('online', () => { document.getElementById('offline-bar').classList.remove('show'); flushQueue(); });
+window.addEventListener('offline', () => { document.getElementById('offline-bar').classList.add('show'); });
+if (!navigator.onLine) document.getElementById('offline-bar').classList.add('show');
+loadDashboard();
+window.addEventListener('load', () => loadCards());
+/* ─── PWA MANIFEST & SW ──────────────────────────────────────── */
+const manifest = { name:'Family Office', short_name:'FO Cash', display:'standalone', background_color:'#0f0e0b', theme_color:'#d4a827', start_url:'./', icons:[{src:"logo.png", sizes:"192x192", type:"image/png"}] };
+const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+const l = document.createElement('link'); l.rel='manifest'; l.href=URL.createObjectURL(blob); document.head.appendChild(l);
+if ('serviceWorker' in navigator) {
+  const sw = `const CACHE='fo-v2'; self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./'])));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));});self.addEventListener('fetch',e=>{if(e.request.url.includes('supabase.co')){e.respondWith(fetch(e.request).catch(()=>new Response(JSON.stringify({error:'off'}),{headers:{'Content-Type':'application/json'}})));return;}e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});`;
+  const swB = new Blob([sw], {type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(swB)).catch(()=>{});
+}
+</script>
+</body>
+</html>
