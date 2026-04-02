@@ -135,8 +135,10 @@ body::before {
 .pwa-modal-panel { width: 100%; background: var(--off-white); border-radius: 24px 24px 0 0; padding: 32px 20px; max-height: 90vh; overflow-y: auto; position: relative; }
 .pwa-modal-close { position: absolute; top: 16px; right: 20px; background: none; border: none; font-size: 24px; color: var(--text-dim); }
 .pwa-timeline-row { padding: 16px 0; border-bottom: 0.5px solid var(--glass-border); }
-@keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(212, 168, 39, 0.4); } 100% { box-shadow: 0 0 0 15px transparent; } }
-.pulse-gold { animation: pulse-gold 0.6s ease-out; }
+@keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(212, 168, 39, 0.6); transform: scale(1); } 50% { box-shadow: 0 0 0 10px rgba(212, 168, 39, 0.2); transform: scale(1.02); } 100% { box-shadow: 0 0 0 20px transparent; transform: scale(1); } }
+.pulse-gold { animation: pulse-gold 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+.new-entry-highlight { border: 1px solid var(--gold-200) !important; background: rgba(184, 137, 26, 0.08) !important; animation: highlight-fade 3s forwards; }
+@keyframes highlight-fade { 0% { opacity: 0.5; transform: translateY(10px); } 10% { opacity: 1; transform: translateY(0); } 100% { background: var(--glass-bg); } }
 </style>
 </head>
 <body>
@@ -160,7 +162,7 @@ body::before {
         <div class="pwa-metric glass"><div class="pwa-metric-label">Receitas</div><div class="pwa-metric-value" id="m-income" style="color:#4ade80">R$ 0</div></div>
         <div class="pwa-metric glass"><div class="pwa-metric-label">Despesas</div><div class="pwa-metric-value" id="m-expense" style="color:#f87171">R$ 0</div></div>
       </div>
-      <button class="pwa-pending-btn glass" onclick="loadDashboard(); pulse(this)">
+      <button class="pwa-pending-btn glass" id="btn-sync-inbox" onclick="loadDashboard(true); pulse(this)">
         <div>
           <div class="pwa-pending-label">Inbox Pendente</div>
           <div style="font-size:10px; color:var(--text-dim)">Toque para sincronizar agora</div>
@@ -191,7 +193,7 @@ body::before {
               <button class="pwa-toggle-btn income" id="btn-income" onclick="setType('income')">Receita</button>
             </div>
           </div>
-          <div class="pwa-field"><label class="pwa-label">Valor (R$)</label><input class="pwa-input" type="number" id="f-amount" inputmode="decimal" step="0.01"/></div>
+          <div class="pwa-field"><label class="pwa-label">Valor (R$)</label><input class="pwa-input" type="tel" id="f-amount" placeholder="0,00" oninput="maskMoney(this)"/></div>
           <div class="pwa-field"><label class="pwa-label">Descrição</label><input class="pwa-input" type="text" id="f-desc" placeholder="O que é?"/></div>
           <div class="pwa-field"><label class="pwa-label">Data</label><input class="pwa-input" type="date" id="f-date"/></div>
           <div class="pwa-field">
@@ -201,7 +203,7 @@ body::before {
             </select>
           </div>
           <div class="pwa-field"><label class="pwa-label">Notas (Opcional)</label><textarea class="pwa-input" id="f-notes" rows="2"></textarea></div>
-          <button class="pwa-submit" id="btn-submit" onclick="submitEntry()">Enviar</button>
+          <button class="pwa-submit" id="btn-submit" onclick="submitEntry()">Enviar para Aprovação</button>
         </div>
       </div>
     </div>
@@ -236,7 +238,7 @@ body::before {
           <div class="pwa-field"><label class="pwa-label">Cartão</label><select class="pwa-input" id="f-card"></select></div>
           <div class="pwa-field"><label class="pwa-label">Data</label><input class="pwa-input" type="date" id="f-card-date"/></div>
           <div class="pwa-field"><label class="pwa-label">Descrição</label><input class="pwa-input" type="text" id="f-card-desc"/></div>
-          <div class="pwa-field"><label class="pwa-label">Valor Total</label><input class="pwa-input" type="number" id="f-card-amount" oninput="updateInstallmentPreview()"/></div>
+          <div class="pwa-field"><label class="pwa-label">Valor Total</label><input class="pwa-input" type="tel" id="f-card-amount" placeholder="0,00" oninput="maskMoney(this); updateInstallmentPreview()"/></div>
           <div class="pwa-field">
             <label class="pwa-label">Parcelas</label>
             <select class="pwa-input" id="f-installments" onchange="updateInstallmentPreview()">
@@ -244,7 +246,7 @@ body::before {
             </select>
             <div id="installment-preview" class="pwa-card-preview"></div>
           </div>
-          <button class="pwa-submit" id="btn-card-submit" onclick="submitCardEntry()">Lançar</button>
+          <button class="pwa-submit" id="btn-card-submit" onclick="submitCardEntry()">Enviar para Aprovação</button>
         </div>
       </div>
     </div>
@@ -297,7 +299,7 @@ function goTo(id) {
 }
 
 function goBack() {
-  if (editingId) { editingId = null; resetForm(); document.getElementById('btn-submit').textContent = 'Enviar'; }
+  if (editingId) { editingId = null; resetForm(); document.getElementById('btn-submit').textContent = 'Enviar para Aprovação'; }
   if (screenHistory.length > 1) screenHistory.pop();
   const prev = screenHistory[screenHistory.length - 1];
   document.querySelector('.screen.active').classList.remove('active');
@@ -314,15 +316,21 @@ function setType(t) {
 
 /* ─── FETCH ──────────────────────────────────────────────────── */
 async function sbFetch(url, opts = {}) {
+  const force = opts.force || false;
+  let finalUrl = url;
+  if (force) {
+    const sep = url.includes('?') ? '&' : '?';
+    finalUrl += `${sep}v=${Date.now()}`;
+  }
   try {
-    const r = await fetch(url, { headers: HEADERS, ...opts });
+    const r = await fetch(finalUrl, { headers: HEADERS, ...opts });
     if (!r.ok) throw new Error(await r.text());
     return r.headers.get('content-type')?.includes('json') ? r.json() : [];
   } catch(e) { console.error('SB:', e); throw e; }
 }
 
 /* ─── LOADERS ────────────────────────────────────────────────── */
-async function loadDashboard() {
+async function loadDashboard(force = false) {
   const rl = document.getElementById('recent-list');
   const cnt = document.getElementById('pending-count');
   const now = new Date();
@@ -330,7 +338,7 @@ async function loadDashboard() {
   const from = `${y}-${m}-01`, to = `${y}-${m}-31`;
   
   try {
-    const mData = await sbFetch(`${TABLE}?date=gte.${from}&date=lte.${to}&status=in.(approved,posted)`);
+    const mData = await sbFetch(`${TABLE}?date=gte.${from}&date=lte.${to}&status=in.(approved,posted)`, { force });
     const inc = mData.filter(e => e.type === 'income').reduce((s,e) => s + +e.amount, 0);
     const exp = mData.filter(e => e.type === 'expense').reduce((s,e) => s + +e.amount, 0);
     
@@ -340,8 +348,8 @@ async function loadDashboard() {
 
     console.log('Buscando Inbox...');
     const [cashP, cardP] = await Promise.all([
-      sbFetch(`${TABLE}?status=eq.pending&order=date.desc`),
-      sbFetch(`${CARD_TX_TABLE}?status=eq.pending&order=purchase_date.desc`)
+      sbFetch(`${TABLE}?status=eq.pending&order=date.desc`, { force }),
+      sbFetch(`${CARD_TX_TABLE}?status=eq.pending&order=purchase_date.desc`, { force })
     ]);
     
     const allP = [...(cashP||[]), ...(cardP||[]).map(c => ({...c, isCard: true}))]
@@ -382,16 +390,14 @@ function switchHistoryTab(tab) {
 
 function entryRow(e, isCard = false) {
   const date = isCard ? (e.purchase_date || e.date) : e.date;
-  // Usar split para evitar problemas de fuso horário na conversão de data
   const dateParts = date.split('-');
   const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
   const dateStr = dateObj.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
   
   const amtClass = e.type === 'income' ? 'income' : 'expense';
   const sign = e.type === 'income' ? '+' : '-';
-  const statusMap = { pending:'Pendente', approved:'Lançado', rejected:'Rejeitado', posted:'Lançado' };
+  const statusMap = { pending:'Enviado p/ Aprovação', approved:'Lançado', rejected:'Rejeitado', posted:'Lançado' };
   
-  // Usamos data-id para evitar que aspas na descrição quebrem o HTML do botão
   const editBtn = (!isCard && e.status === 'pending') ? `<button class="pwa-edit-btn" data-id="${e.id}" onclick="handleEditClick(this)">✎</button>` : '';
 
   return `<div class="pwa-entry glass" id="entry-${e.id}">
@@ -409,7 +415,6 @@ function entryRow(e, isCard = false) {
   </div>`;
 }
 
-// Função auxiliar para gerenciar o clique de edição com segurança
 async function handleEditClick(btn) {
   const id = btn.getAttribute('data-id');
   try {
@@ -420,22 +425,36 @@ async function handleEditClick(btn) {
 
 /* ─── FORMS ──────────────────────────────────────────────────── */
 async function submitEntry() {
-  const amt = parseFloat(document.getElementById('f-amount').value);
+  const amt = parseMoney(document.getElementById('f-amount').value);
   const desc = document.getElementById('f-desc').value.trim();
   const date = document.getElementById('f-date').value;
-  if (!amt || !desc || !date) return toast('Preencha os campos');
+  if (!amt || isNaN(amt) || !desc || !date) return toast('Preencha os campos');
   
   const btn = document.getElementById('btn-submit');
   btn.disabled = true; btn.textContent = 'Enviando...';
   
-  const entry = { amount:amt, description:desc, date:date, type:currentType, category:document.getElementById('f-category').value||null, notes:document.getElementById('f-notes').value.trim()||null, status:'pending', origin:'mobile' };
+  const entry = { id: editingId || 'opt_' + Date.now(), amount:amt, description:desc, date:date, type:currentType, category:document.getElementById('f-category').value||null, notes:document.getElementById('f-notes').value.trim()||null, status:'pending', origin:'mobile' };
+  
+  const rl = document.getElementById('recent-list');
+  if (rl.querySelector('.pwa-empty')) rl.innerHTML = '';
+  const tempRow = document.createElement('div');
+  tempRow.innerHTML = entryRow(entry, false);
+  const rowEl = tempRow.firstElementChild;
+  rowEl.classList.add('new-entry-highlight');
+  rl.prepend(rowEl);
+  document.getElementById('pending-count').textContent = parseInt(document.getElementById('pending-count').textContent) + 1;
+
   try {
     const url = editingId ? `${TABLE}?id=eq.${editingId}` : TABLE;
     await sbFetch(url, { method: editingId ? 'PATCH' : 'POST', body: JSON.stringify(entry) });
-    toast(editingId ? 'Atualizado!' : 'Enviado!');
+    toast(editingId ? 'Atualizado!' : 'Enviado para Aprovação!');
     resetForm(); goBack();
-  } catch(e) { toast('Erro'); }
-  btn.disabled = false; btn.textContent = 'Enviar';
+    setTimeout(() => loadDashboard(true), 500);
+  } catch(e) { 
+    rowEl.remove();
+    toast('Erro ao enviar'); 
+  }
+  btn.disabled = false; btn.textContent = 'Enviar para Aprovação';
 }
 
 function editEntry(e) {
@@ -479,24 +498,34 @@ function renderCards() {
 }
 
 function updateInstallmentPreview() {
-  const amt = parseFloat(document.getElementById('f-card-amount').value) || 0;
+  const amt = parseMoney(document.getElementById('f-card-amount').value) || 0;
   const n = parseInt(document.getElementById('f-installments').value) || 1;
   document.getElementById('installment-preview').textContent = amt > 0 && n > 1 ? `${fmt(amt/n)} p/ parcela` : '';
 }
 
 async function submitCardEntry() {
   const sel = document.getElementById('f-card');
-  const amt = parseFloat(document.getElementById('f-card-amount').value);
+  const amt = parseMoney(document.getElementById('f-card-amount').value);
   const n = parseInt(document.getElementById('f-installments').value);
   const desc = document.getElementById('f-card-desc').value.trim();
   const date = document.getElementById('f-card-date').value;
-  if (!sel.value || !amt || !desc || !date) return toast('Preencha os campos');
+  if (!sel.value || !amt || isNaN(amt) || !desc || !date) return toast('Preencha os campos');
 
   const btn = document.getElementById('btn-card-submit');
   btn.disabled = true; btn.textContent = 'Enviando...';
   const each = +(amt/n).toFixed(2);
   const group = 'grp_' + Date.now();
   const dueDay = parseInt(sel.selectedOptions[0].dataset.due);
+
+  const rl = document.getElementById('recent-list');
+  if (rl.querySelector('.pwa-empty')) rl.innerHTML = '';
+  const firstEntry = { id:'opt_c_'+Date.now(), description: n > 1 ? `${desc} (1/${n})` : desc, amount: each, date: date, type: 'expense', category: 'Cartão', status: 'pending', installments: n, installment_current: 1 };
+  const tempRow = document.createElement('div');
+  tempRow.innerHTML = entryRow(firstEntry, true);
+  const rowEl = tempRow.firstElementChild;
+  rowEl.classList.add('new-entry-highlight');
+  rl.prepend(rowEl);
+  document.getElementById('pending-count').textContent = parseInt(document.getElementById('pending-count').textContent) + 1;
 
   try {
     for (let i=0; i<n; i++) {
@@ -534,6 +563,16 @@ function initRealtime() {
 function resetForm() { document.getElementById('f-amount').value=''; document.getElementById('f-desc').value=''; document.getElementById('f-date').value=today(); }
 function resetCardForm() { document.getElementById('f-card-amount').value=''; document.getElementById('f-card-desc').value=''; }
 function fmt(v) { return Number(v).toLocaleString('pt-BR', { style:'currency', currency:'BRL' }); }
+function maskMoney(i) {
+  let v = i.value.replace(/\D/g,'');
+  v = (v/100).toFixed(2).replace(".",",");
+  v = v.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  i.value = v;
+}
+function parseMoney(v) {
+  if(!v) return 0;
+  return parseFloat(v.replace(/\./g, '').replace(',', '.'));
+}
 function today() {
   const now = new Date();
   const offset = now.getTimezoneOffset() * 60000;
