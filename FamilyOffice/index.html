@@ -516,12 +516,11 @@ async function submitCardEntry() {
 
   const btn = document.getElementById('btn-card-submit');
   btn.disabled = true; btn.textContent = 'Enviando...';
-  const each = +(amt/n).toFixed(2);
-  const group = 'grp_' + Date.now();
-  const dueDay = parseInt(sel.selectedOptions[0].dataset.due);
-
+  
   const each = +(amt/n).toFixed(2);
   const diff = +(amt - (each * n)).toFixed(2);
+  const group = 'grp_' + Date.now();
+  const dueDay = parseInt(sel.selectedOptions[0].dataset.due);
 
   const rl = document.getElementById('recent-list');
   if (rl.querySelector('.pwa-empty')) rl.innerHTML = '';
@@ -537,16 +536,20 @@ async function submitCardEntry() {
     for (let i=0; i<n; i++) {
       const d = new Date(date + 'T12:00:00'); d.setMonth(d.getMonth() + i);
       let due = new Date(d.getFullYear(), d.getMonth(), dueDay);
-      const cutoff = new Date(d.getTime());
-      cutoff.setDate(cutoff.getDate() + 6);
-      while (due < cutoff) due.setMonth(due.getMonth() + 1);
+      if (due <= d) due.setMonth(due.getMonth() + 1);
+      if (d.getDate() > 25) due.setMonth(due.getMonth() + 1);
       
       const currentAmount = (i === n - 1) ? +(each + diff).toFixed(2) : each;
       
-      const tx = { card_id:sel.value, purchase_date:date, date:due.toISOString().split('T')[0], due_date:due.toISOString().split('T')[0], amount:currentAmount, installments:n, installment_current:i+1, description:n>1?`${desc} (${i+1}/${n})`:desc, status:'pending', origin:'mobile', installment_group_id:group };
+      // Use local date parts to avoid UTC shift
+      const localDueStr = `${due.getFullYear()}-${String(due.getMonth() + 1).padStart(2, '0')}-${String(due.getDate()).padStart(2, '0')}`;
+      
+      const tx = { card_id:sel.value, purchase_date:date, date:localDueStr, due_date:localDueStr, amount:currentAmount, installments:n, installment_current:i+1, description:n>1?`${desc} (${i+1}/${n})`:desc, status:'pending', origin:'mobile', installment_group_id:group };
       await sbFetch(CARD_TX_TABLE, { method:'POST', body:JSON.stringify(tx) });
     }
-    toast('Lançado!'); goBack();
+    toast('Lançado!'); 
+    loadCards(); // Trigger immediate refresh
+    goBack();
   } catch(e) { toast('Erro'); }
   btn.disabled = false; btn.textContent = 'Lançar';
 }
