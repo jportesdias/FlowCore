@@ -160,8 +160,11 @@ body::before {
         <div class="pwa-metric glass"><div class="pwa-metric-label">Receitas</div><div class="pwa-metric-value" id="m-income" style="color:#4ade80">R$ 0</div></div>
         <div class="pwa-metric glass"><div class="pwa-metric-label">Despesas</div><div class="pwa-metric-value" id="m-expense" style="color:#f87171">R$ 0</div></div>
       </div>
-      <button class="pwa-pending-btn glass" onclick="goTo('screen-history')">
-        <div><div class="pwa-pending-label">Inbox Pendente</div><div style="font-size:10px; color:var(--text-dim)">Toque para ver histórico</div></div>
+      <button class="pwa-pending-btn glass" onclick="loadDashboard(); pulse(this)">
+        <div>
+          <div class="pwa-pending-label">Inbox Pendente</div>
+          <div style="font-size:10px; color:var(--text-dim)">Toque para sincronizar agora</div>
+        </div>
         <div class="pwa-pending-count" id="pending-count">0</div>
       </button>
       <div class="pwa-section-label">Aguardando Aprovação (Inbox)</div>
@@ -320,6 +323,8 @@ async function sbFetch(url, opts = {}) {
 
 /* ─── LOADERS ────────────────────────────────────────────────── */
 async function loadDashboard() {
+  const rl = document.getElementById('recent-list');
+  const cnt = document.getElementById('pending-count');
   const now = new Date();
   const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0');
   const from = `${y}-${m}-01`, to = `${y}-${m}-31`;
@@ -333,15 +338,29 @@ async function loadDashboard() {
     document.getElementById('m-income').textContent = fmt(inc);
     document.getElementById('m-expense').textContent = fmt(exp);
 
+    console.log('Buscando Inbox...');
     const [cashP, cardP] = await Promise.all([
       sbFetch(`${TABLE}?status=eq.pending&order=date.desc`),
       sbFetch(`${CARD_TX_TABLE}?status=eq.pending&order=purchase_date.desc`)
     ]);
     
-    const allP = [...cashP, ...cardP.map(c => ({...c, isCard: true}))].sort((a,b) => new Date(b.purchase_date||b.date) - new Date(a.purchase_date||a.date));
-    document.getElementById('pending-count').textContent = allP.length;
-    document.getElementById('recent-list').innerHTML = allP.length ? allP.map(e => entryRow(e, e.isCard)).join('') : '<div class="pwa-empty">✨ Tudo em dia!</div>';
-  } catch(e) { console.error(e); }
+    const allP = [...(cashP||[]), ...(cardP||[]).map(c => ({...c, isCard: true}))]
+      .sort((a,b) => new Date(b.purchase_date||b.date) - new Date(a.purchase_date||a.date));
+    
+    console.log('Inbox data:', allP);
+    cnt.textContent = allP.length;
+    
+    if (allP.length === 0) {
+      rl.innerHTML = '<div class="pwa-empty">✨ Tudo em dia!</div>';
+    } else {
+      rl.innerHTML = allP.map(e => {
+        try { return entryRow(e, e.isCard); } catch(err) { console.error('Row err:', err, e); return ''; }
+      }).join('');
+    }
+  } catch(e) { 
+    console.error('Dash error:', e);
+    rl.innerHTML = '<div class="pwa-empty">Erro ao carregar dados.</div>';
+  }
 }
 
 async function loadHistory() {
@@ -363,13 +382,19 @@ function switchHistoryTab(tab) {
 
 function entryRow(e, isCard = false) {
   const date = isCard ? (e.purchase_date || e.date) : e.date;
-  const dateStr = new Date(date + 'T12:00:00').toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
+  // Usar split para evitar problemas de fuso horário na conversão de data
+  const dateParts = date.split('-');
+  const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+  const dateStr = dateObj.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
+  
   const amtClass = e.type === 'income' ? 'income' : 'expense';
   const sign = e.type === 'income' ? '+' : '-';
   const statusMap = { pending:'Pendente', approved:'Lançado', rejected:'Rejeitado', posted:'Lançado' };
-  const editBtn = (!isCard && e.status === 'pending') ? `<button class="pwa-edit-btn" onclick='editEntry(${JSON.stringify(e)})'>✎</button>` : '';
+  
+  // Usamos data-id para evitar que aspas na descrição quebrem o HTML do botão
+  const editBtn = (!isCard && e.status === 'pending') ? `<button class="pwa-edit-btn" data-id="${e.id}" onclick="handleEditClick(this)">✎</button>` : '';
 
-  return `<div class="pwa-entry glass">
+  return `<div class="pwa-entry glass" id="entry-${e.id}">
     <div class="pwa-entry-left">
       <div class="pwa-entry-date">${dateStr} ${isCard && e.installments > 1 ? `(${e.installment_current}/${e.installments})` : ''}</div>
       <div class="pwa-entry-desc">${e.description}</div>
@@ -382,6 +407,15 @@ function entryRow(e, isCard = false) {
     </div>
     ${editBtn}
   </div>`;
+}
+
+// Função auxiliar para gerenciar o clique de edição com segurança
+async function handleEditClick(btn) {
+  const id = btn.getAttribute('data-id');
+  try {
+    const data = await sbFetch(`${TABLE}?id=eq.${id}`);
+    if (data && data[0]) editEntry(data[0]);
+  } catch(e) { toast('Erro ao carregar edição'); }
 }
 
 /* ─── FORMS ──────────────────────────────────────────────────── */
@@ -500,8 +534,13 @@ function initRealtime() {
 function resetForm() { document.getElementById('f-amount').value=''; document.getElementById('f-desc').value=''; document.getElementById('f-date').value=today(); }
 function resetCardForm() { document.getElementById('f-card-amount').value=''; document.getElementById('f-card-desc').value=''; }
 function fmt(v) { return Number(v).toLocaleString('pt-BR', { style:'currency', currency:'BRL' }); }
-function today() { return new Date().toISOString().split('T')[0]; }
+function today() {
+  const now = new Date();
+  const offset = now.getTimezoneOffset() * 60000;
+  return new Date(now.getTime() - offset).toISOString().split('T')[0];
+}
 function toast(m) { const el=document.getElementById('toast'); el.textContent=m; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000); }
+function pulse(el) { el.classList.add('pulse-gold'); setTimeout(() => el.classList.remove('pulse-gold'), 600); }
 
 /* ─── INIT ────────────────────────────────────────────────────── */
 document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' });
