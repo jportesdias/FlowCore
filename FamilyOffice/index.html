@@ -472,7 +472,10 @@ function editEntry(e) {
 /* ─── CARDS ──────────────────────────────────────────────────── */
 async function loadCards() {
   try {
-    const [c, t] = await Promise.all([sbFetch(`${CARDS_TABLE}?order=name.asc`), sbFetch(`${CARD_TX_TABLE}?status=neq.rejected`)]);
+    const [c, t] = await Promise.all([
+      sbFetch(`${CARDS_TABLE}?order=name.asc`), 
+      sbFetch(`${CARD_TX_TABLE}?status=neq.rejected&limit=1000`)
+    ]);
     foCardState.cards = c; foCardState.transactions = t;
     renderCards();
     document.getElementById('f-card').innerHTML = '<option value="">Selecione...</option>' + c.map(x => `<option value="${x.id}" data-due="${x.due_day||1}">${x.name}</option>`).join('');
@@ -487,7 +490,7 @@ function renderCards() {
   metrics.innerHTML = `<div class="pwa-metric glass full"><div class="pwa-metric-label">Comprometido Total</div><div class="pwa-metric-value">${fmt(usedTotal)}</div></div>`;
 
   grid.innerHTML = foCardState.cards.map(c => {
-    const used = foCardState.transactions.filter(t => t.card_id === c.id).reduce((s,t) => s + +t.amount, 0);
+    const used = foCardState.transactions.filter(t => t.card_id == c.id).reduce((s,t) => s + +t.amount, 0);
     const pct = Math.min(100, Math.round((used/c.total_limit)*100));
     return `<div class="fo-card" onclick="openCardModal('${c.id}')">
       <div class="fo-card-top"><div class="fo-card-chip"></div><div class="fo-card-name">${c.name}</div></div>
@@ -517,9 +520,12 @@ async function submitCardEntry() {
   const group = 'grp_' + Date.now();
   const dueDay = parseInt(sel.selectedOptions[0].dataset.due);
 
+  const each = +(amt/n).toFixed(2);
+  const diff = +(amt - (each * n)).toFixed(2);
+
   const rl = document.getElementById('recent-list');
   if (rl.querySelector('.pwa-empty')) rl.innerHTML = '';
-  const firstEntry = { id:'opt_c_'+Date.now(), description: n > 1 ? `${desc} (1/${n})` : desc, amount: each, date: date, type: 'expense', category: 'Cartão', status: 'pending', installments: n, installment_current: 1 };
+  const firstEntry = { id:'opt_c_'+Date.now(), description: n > 1 ? `${desc} (1/${n})` : desc, amount: each, date: date, type: 'expense', status: 'pending', installments: n, installment_current: 1 };
   const tempRow = document.createElement('div');
   tempRow.innerHTML = entryRow(firstEntry, true);
   const rowEl = tempRow.firstElementChild;
@@ -531,8 +537,13 @@ async function submitCardEntry() {
     for (let i=0; i<n; i++) {
       const d = new Date(date + 'T12:00:00'); d.setMonth(d.getMonth() + i);
       let due = new Date(d.getFullYear(), d.getMonth(), dueDay);
-      if (due < d) due.setMonth(due.getMonth()+1);
-      const tx = { card_id:sel.value, purchase_date:date, date:due.toISOString().split('T')[0], due_date:due.toISOString().split('T')[0], amount:each, installments:n, installment_current:i+1, description:n>1?`${desc} (${i+1}/${n})`:desc, status:'pending', origin:'mobile', installment_group_id:group };
+      const cutoff = new Date(d.getTime());
+      cutoff.setDate(cutoff.getDate() + 6);
+      while (due < cutoff) due.setMonth(due.getMonth() + 1);
+      
+      const currentAmount = (i === n - 1) ? +(each + diff).toFixed(2) : each;
+      
+      const tx = { card_id:sel.value, purchase_date:date, date:due.toISOString().split('T')[0], due_date:due.toISOString().split('T')[0], amount:currentAmount, installments:n, installment_current:i+1, description:n>1?`${desc} (${i+1}/${n})`:desc, status:'pending', origin:'mobile', installment_group_id:group };
       await sbFetch(CARD_TX_TABLE, { method:'POST', body:JSON.stringify(tx) });
     }
     toast('Lançado!'); goBack();
