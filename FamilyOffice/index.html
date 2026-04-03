@@ -130,11 +130,33 @@ body::before {
 .fo-bar-ok { background: var(--ok); }
 .fo-bar-warn { background: #fbbf24; }
 .fo-bar-danger { background: var(--danger); }
+.fo-invoice-info { margin: 16px 0; border-top: 0.5px solid var(--glass-border); border-bottom: 0.5px solid var(--glass-border); padding: 14px 0; }
+.invoice-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.invoice-row span:first-child { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
+.invoice-row.sub { margin-top: 6px; }
+.invoice-row.sub span { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+.invoice-val { font-family: 'Times New Roman', serif; font-size: 24px; color: var(--text-primary); font-weight: 500; }
 .pwa-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; display: none; align-items: flex-end; backdrop-filter: blur(4px); }
 .pwa-modal-overlay.show { display: flex; }
 .pwa-modal-panel { width: 100%; background: var(--off-white); border-radius: 24px 24px 0 0; padding: 32px 20px; max-height: 90vh; overflow-y: auto; position: relative; }
 .pwa-modal-close { position: absolute; top: 16px; right: 20px; background: none; border: none; font-size: 24px; color: var(--text-dim); }
 .pwa-timeline-row { padding: 16px 0; border-bottom: 0.5px solid var(--glass-border); }
+.pwa-month-selector {
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  background: rgba(253, 253, 252, 0.9); backdrop-filter: blur(10px);
+  padding: 10px 0; border-bottom: 0.5px solid var(--glass-border);
+  position: sticky; top: 0; z-index: 50; width: 100%;
+}
+.pwa-month-btn {
+  background: none; border: 1px solid var(--glass-border);
+  width: 32px; height: 32px; border-radius: 50%;
+  color: var(--gold-200); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.pwa-month-label {
+  font-family: var(--font-d); font-size: 18px; color: var(--gold-200);
+  min-width: 150px; text-align: center; letter-spacing: 0.05em;
+}
 @keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(212, 168, 39, 0.6); transform: scale(1); } 50% { box-shadow: 0 0 0 10px rgba(212, 168, 39, 0.2); transform: scale(1.02); } 100% { box-shadow: 0 0 0 20px transparent; transform: scale(1); } }
 .pulse-gold { animation: pulse-gold 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
 .new-entry-highlight { border: 1px solid var(--gold-200) !important; background: rgba(184, 137, 26, 0.08) !important; animation: highlight-fade 3s forwards; }
@@ -152,7 +174,12 @@ body::before {
       </div>
     </div>
     <div class="pwa-scroll">
-      <div class="pwa-section-label">Resumo do mês</div>
+      <div class="pwa-month-selector">
+        <button class="pwa-month-btn" onclick="changeMonth(-1)">‹</button>
+        <span class="pwa-month-label" id="pwa-current-month"></span>
+        <button class="pwa-month-btn" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="pwa-section-label" style="margin-top:10px">Resumo do mês</div>
       <div class="pwa-metrics">
         <div class="pwa-metric glass full">
           <div class="pwa-metric-label">Total lançado</div>
@@ -229,7 +256,12 @@ body::before {
       <button class="pwa-back" onclick="goBack()">‹</button>
     </div>
     <div class="pwa-scroll">
-      <div id="pwa-card-metrics" class="pwa-card-metrics"></div>
+      <div class="pwa-month-selector">
+        <button class="pwa-month-btn" onclick="changeMonth(-1)">‹</button>
+        <span class="pwa-month-label" id="pwa-current-month-cards"></span>
+        <button class="pwa-month-btn" onclick="changeMonth(1)">›</button>
+      </div>
+      <div id="pwa-card-metrics" class="pwa-card-metrics" style="margin-top:10px"></div>
       <div class="pwa-section-label">Seus Cartões</div>
       <div id="pwa-card-grid" class="pwa-card-visual-grid"></div>
       <div class="pwa-section-label" style="margin-top:20px">Novo Gasto no Cartão</div>
@@ -284,6 +316,7 @@ let currentScreen = 'screen-dashboard';
 let screenHistory = ['screen-dashboard'];
 let editingId = null;
 let isRealtimeInitialized = false;
+let currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
 
 /* ─── NAVIGATION ─────────────────────────────────────────────── */
 function goTo(id) {
@@ -314,6 +347,25 @@ function setType(t) {
   document.getElementById('btn-income').classList.toggle('active', t === 'income');
 }
 
+function changeMonth(delta) {
+  let [y, m] = currentMonth.split('-').map(Number);
+  let d = new Date(y, (m - 1) + delta, 1);
+  currentMonth = d.toISOString().substring(0, 7);
+  updateMonthDisplay();
+  loadDashboard(true);
+  if (currentScreen === 'screen-card-new') loadCards();
+}
+
+function updateMonthDisplay() {
+  const lbl = document.getElementById('pwa-current-month');
+  const lblCards = document.getElementById('pwa-current-month-cards');
+  let [y, m] = currentMonth.split('-').map(Number);
+  let d = new Date(y, m - 1, 1);
+  const label = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase();
+  if (lbl) lbl.textContent = label;
+  if (lblCards) lblCards.textContent = label;
+}
+
 /* ─── FETCH ──────────────────────────────────────────────────── */
 async function sbFetch(url, opts = {}) {
   const force = opts.force || false;
@@ -333,29 +385,50 @@ async function sbFetch(url, opts = {}) {
 async function loadDashboard(force = false) {
   const rl = document.getElementById('recent-list');
   const cnt = document.getElementById('pending-count');
-  const now = new Date();
-  const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0');
+  
+  updateMonthDisplay();
+  const [y, m] = currentMonth.split('-');
   const from = `${y}-${m}-01`, to = `${y}-${m}-31`;
   
+  // 1. Carregar Métricas do Mês
   try {
     const mData = await sbFetch(`${TABLE}?date=gte.${from}&date=lte.${to}&status=in.(approved,posted)`, { force });
     const inc = mData.filter(e => e.type === 'income').reduce((s,e) => s + +e.amount, 0);
     const exp = mData.filter(e => e.type === 'expense').reduce((s,e) => s + +e.amount, 0);
     
-    document.getElementById('m-total').textContent = fmt(Math.abs(inc-exp));
-    document.getElementById('m-income').textContent = fmt(inc);
-    document.getElementById('m-expense').textContent = fmt(exp);
+    const saldoMensal = inc - exp;
+    const mTotalEl = document.getElementById('m-total');
+    if (mTotalEl) {
+      mTotalEl.textContent = fmt(saldoMensal);
+      mTotalEl.parentElement.querySelector('.pwa-metric-label').textContent = 'Saldo do Mês';
+      mTotalEl.style.color = saldoMensal >= 0 ? 'var(--ok)' : 'var(--danger)';
+    }
+    
+    if (document.getElementById('m-income')) document.getElementById('m-income').textContent = fmt(inc);
+    if (document.getElementById('m-expense')) document.getElementById('m-expense').textContent = fmt(exp);
+  } catch(e) {
+    console.error('Metrics error:', e);
+  }
 
+  // 2. Carregar Inbox (Pendentes)
+  try {
     console.log('Buscando Inbox...');
-    const [cashP, cardP] = await Promise.all([
-      sbFetch(`${TABLE}?status=eq.pending&order=date.desc`, { force }),
-      sbFetch(`${CARD_TX_TABLE}?status=eq.pending&order=purchase_date.desc`, { force })
+    let [cashP, cardP] = await Promise.all([
+      sbFetch(`${TABLE}?status=eq.pending`, { force }).catch(() => []),
+      sbFetch(`${CARD_TX_TABLE}?status=eq.pending`, { force }).catch(() => [])
     ]);
     
-    const allP = [...(cashP||[]), ...(cardP||[]).map(c => ({...c, isCard: true}))]
-      .sort((a,b) => new Date(b.purchase_date||b.date) - new Date(a.purchase_date||a.date));
+    cashP = cashP || [];
+    cardP = cardP || [];
+
+    const allP = [...cashP, ...cardP.map(c => ({...c, isCard: true}))]
+      .sort((a,b) => {
+        const dA = new Date(a.purchase_date || a.date || 0);
+        const dB = new Date(b.purchase_date || b.date || 0);
+        return dB - dA;
+      });
     
-    console.log('Inbox data:', allP);
+    console.log('Inbox data count:', allP.length);
     cnt.textContent = allP.length;
     
     if (allP.length === 0) {
@@ -366,8 +439,8 @@ async function loadDashboard(force = false) {
       }).join('');
     }
   } catch(e) { 
-    console.error('Dash error:', e);
-    rl.innerHTML = '<div class="pwa-empty">Erro ao carregar dados.</div>';
+    console.error('Inbox error:', e);
+    rl.innerHTML = '<div class="pwa-empty">Erro ao carregar inbox.</div>';
   }
 }
 
@@ -389,10 +462,16 @@ function switchHistoryTab(tab) {
 }
 
 function entryRow(e, isCard = false) {
-  const date = isCard ? (e.purchase_date || e.date) : e.date;
-  const dateParts = date.split('-');
-  const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-  const dateStr = dateObj.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
+  const dateStrRaw = isCard ? (e.purchase_date || e.date) : e.date;
+  let dateStr = 'S/ Data';
+  
+  if (dateStrRaw) {
+    const parts = dateStrRaw.split('-');
+    if (parts.length === 3) {
+      const dO = new Date(parts[0], parts[1] - 1, parts[2]);
+      dateStr = dO.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
+    }
+  }
   
   const amtClass = e.type === 'income' ? 'income' : 'expense';
   const sign = e.type === 'income' ? '+' : '-';
@@ -474,7 +553,7 @@ async function loadCards() {
   try {
     const [c, t] = await Promise.all([
       sbFetch(`${CARDS_TABLE}?order=name.asc`), 
-      sbFetch(`${CARD_TX_TABLE}?status=neq.rejected&limit=1000`)
+      sbFetch(`${CARD_TX_TABLE}?status=neq.rejected&order=date.desc&limit=5000`)
     ]);
     foCardState.cards = c; foCardState.transactions = t;
     renderCards();
@@ -486,18 +565,57 @@ function renderCards() {
   const grid = document.getElementById('pwa-card-grid');
   if (!grid) return;
   const metrics = document.getElementById('pwa-card-metrics');
-  const usedTotal = foCardState.transactions.reduce((s,t) => s + +t.amount, 0);
-  metrics.innerHTML = `<div class="pwa-metric glass full"><div class="pwa-metric-label">Comprometido Total</div><div class="pwa-metric-value">${fmt(usedTotal)}</div></div>`;
+  
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  
+  const [curY, curM] = currentMonth.split('-').map(Number);
+  const usedTotal = foCardState.transactions.reduce((s,t) => s + (parseFloat(t.amount)||0), 0);
+  
+  // Calculate aggregate invoice total for dashboard
+  let aggregateInvoice = 0;
 
   grid.innerHTML = foCardState.cards.map(c => {
-    const used = foCardState.transactions.filter(t => t.card_id == c.id).reduce((s,t) => s + +t.amount, 0);
-    const pct = Math.min(100, Math.round((used/c.total_limit)*100));
+    let nextDue = new Date(curY, curM - 1, c.due_day || 1);
+    
+    const targetISO = `${nextDue.getFullYear()}-${String(nextDue.getMonth() + 1).padStart(2, '0')}-${String(nextDue.getDate()).padStart(2, '0')}`;
+    
+    const used = foCardState.transactions.filter(t => t.card_id == c.id).reduce((s,t) => s + (parseFloat(t.amount)||0), 0);
+    const invoice = foCardState.transactions.filter(t => {
+      const val = t.due_date || t.date || t.purchase_date || '';
+      return val.startsWith(currentMonth) && t.card_id == c.id;
+    }).reduce((s,t) => s + (parseFloat(t.amount)||0), 0);
+    
+    aggregateInvoice += invoice;
+    const pct = Math.min(100, Math.round((used/(c.total_limit||1))*100));
+    
     return `<div class="fo-card" onclick="openCardModal('${c.id}')">
-      <div class="fo-card-top"><div class="fo-card-chip"></div><div class="fo-card-name">${c.name}</div></div>
-      <div class="fo-utilization"><div class="util-info"><span>Utilização</span><span>${pct}%</span></div><div class="util-bar-bg"><div class="util-bar-fill ${pct>80?'fo-bar-danger':'fo-bar-ok'}" style="width:${pct}%"></div></div></div>
-      <div class="fo-footer-value">${fmt(used)} / ${fmt(c.total_limit)}</div>
+      <div class="fo-card-top">
+        <div class="fo-card-chip"></div>
+        <div class="fo-card-name">${c.name}</div>
+      </div>
+      <div class="fo-invoice-info">
+        <div class="invoice-row">
+            <span>Próxima Fatura (${nextDue.toLocaleDateString('pt-BR', {month:'short'})})</span>
+            <span class="invoice-val">${fmt(invoice)}</span>
+        </div>
+        <div class="invoice-row sub">
+            <span>Vence em</span>
+            <span>${nextDue.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'})}</span>
+        </div>
+      </div>
+      <div class="fo-utilization">
+        <div class="util-info"><span>Limite Disponível</span><span>${fmt(Math.max(0, c.total_limit - used))}</span></div>
+        <div class="util-bar-bg"><div class="util-bar-fill ${pct>80?'fo-bar-danger':'fo-bar-ok'}" style="width:${pct}%"></div></div>
+      </div>
+      <div class="fo-footer-value" style="font-size:10px; color:var(--text-dim)">Total Usado: ${fmt(used)} / ${fmt(c.total_limit)}</div>
     </div>`;
   }).join('');
+
+  metrics.innerHTML = `
+    <div class="pwa-metric glass"><div class="pwa-metric-label">Limite Ocupado</div><div class="pwa-metric-value">${fmt(usedTotal)}</div></div>
+    <div class="pwa-metric glass"><div class="pwa-metric-label">Fatura: ${new Date(curY, curM-1, 1).toLocaleDateString('pt-BR', {month:'short'}).toUpperCase()}</div><div class="pwa-metric-value">${fmt(aggregateInvoice)}</div></div>
+  `;
 }
 
 function updateInstallmentPreview() {
