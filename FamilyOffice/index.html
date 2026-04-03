@@ -10,6 +10,7 @@
 <title>Family Office</title>
 <link rel="apple-touch-icon" href="logo.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --off-white: #f2f0e8;
@@ -299,7 +300,6 @@ body::before {
 
 <div id="toast" class="pwa-toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ─── CONFIG ─────────────────────────────────────────────────── */
 const SB_URL = 'https://lruqphwlcimzcqpafjrn.supabase.co';
@@ -727,8 +727,7 @@ function today() {
 function toast(m) { const el=document.getElementById('toast'); el.textContent=m; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000); }
 function pulse(el) { el.classList.add('pulse-gold'); setTimeout(() => el.classList.remove('pulse-gold'), 600); }
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+/* ─── INIT ────────────────────────────────────────────────────── */
 document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' });
 loadDashboard();
 initRealtime();
