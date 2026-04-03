@@ -512,12 +512,26 @@ async function submitEntry() {
   const btn = document.getElementById('btn-submit');
   btn.disabled = true; btn.textContent = 'Enviando...';
   
-  const entry = { id: editingId || 'opt_' + Date.now(), amount:amt, description:desc, date:date, type:currentType, category:document.getElementById('f-category').value||null, notes:document.getElementById('f-notes').value.trim()||null, status:'pending', origin:'mobile' };
+  // No manually generated 'id' in the payload for new records to avoid Supabase PK conflict.
+  const entry = { 
+    amount: amt, 
+    description: desc, 
+    date: date, 
+    type: currentType, 
+    category: document.getElementById('f-category').value || 'CUSTO_DE_VIDA', 
+    notes: document.getElementById('f-notes').value.trim() || null, 
+    status: 'pending', 
+    origin: 'mobile',
+    account: 'Mobile'
+  };
   
   const rl = document.getElementById('recent-list');
   if (rl.querySelector('.pwa-empty')) rl.innerHTML = '';
+  
+  // Local temporary ID for UI only
+  const tempEntry = { ...entry, id: editingId || 'temp_' + Date.now() };
   const tempRow = document.createElement('div');
-  tempRow.innerHTML = entryRow(entry, false);
+  tempRow.innerHTML = entryRow(tempEntry, false);
   const rowEl = tempRow.firstElementChild;
   rowEl.classList.add('new-entry-highlight');
   rl.prepend(rowEl);
@@ -713,7 +727,8 @@ function today() {
 function toast(m) { const el=document.getElementById('toast'); el.textContent=m; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000); }
 function pulse(el) { el.classList.add('pulse-gold'); setTimeout(() => el.classList.remove('pulse-gold'), 600); }
 
-/* ─── INIT ────────────────────────────────────────────────────── */
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
 document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' });
 loadDashboard();
 initRealtime();
