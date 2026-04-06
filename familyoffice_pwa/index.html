@@ -167,8 +167,32 @@ body::before {
 </style>
 </head>
 <body>
+
+<!-- ─── TELA DE LOGIN PWA ─────────────────────────────────────── -->
+<div id="pwa-login" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:url('family_office_background.png') center center / cover no-repeat;position:relative;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.60);backdrop-filter:blur(3px);"></div>
+  <div style="position:relative;z-index:1;background:rgba(20,17,12,0.92);border:1px solid rgba(184,137,26,0.3);border-radius:18px;padding:2.2rem 1.8rem;width:90%;max-width:340px;box-shadow:0 8px 40px rgba(0,0,0,0.7);backdrop-filter:blur(16px);">
+    <div style="text-align:center;margin-bottom:1.8rem;">
+      <img src="logo.png" alt="FO" style="height:48px;margin-bottom:0.8rem;">
+      <div style="color:#b8891a;font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;">Family Office</div>
+      <div style="color:#666;font-size:0.7rem;letter-spacing:0.12em;margin-top:2px;">GESTÃO PATRIMONIAL</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.9rem;">
+      <input id="pl-email" type="email" placeholder="Email" autocomplete="username"
+        style="padding:0.75rem 1rem;background:#1a1710;border:1px solid rgba(184,137,26,0.2);border-radius:8px;color:#f2f0e8;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
+      <input id="pl-password" type="password" placeholder="Senha" autocomplete="current-password"
+        style="padding:0.75rem 1rem;background:#1a1710;border:1px solid rgba(184,137,26,0.2);border-radius:8px;color:#f2f0e8;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
+      <div id="pl-error" style="color:#f87171;font-size:0.78rem;text-align:center;display:none;"></div>
+      <button id="pl-btn" onclick="pwaLogin()"
+        style="padding:0.85rem;background:linear-gradient(135deg,#b8891a,#d4a827);border:none;border-radius:8px;color:#000;font-weight:700;font-size:0.85rem;letter-spacing:0.1em;cursor:pointer;margin-top:0.3rem;">
+        ENTRAR
+      </button>
+    </div>
+  </div>
+</div>
+
 <div id="offline-bar" class="pwa-offline">Sem conexão — sincronizando ao reconectar</div>
-<div id="app">
+<div id="app" style="display:none;">
   <div class="screen active" id="screen-dashboard">
     <div class="pwa-header">
       <div class="pwa-logo-box">
@@ -313,6 +337,61 @@ body::before {
 const SB_URL = 'https://lruqphwlcimzcqpafjrn.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxydXFwaHdsY2ltemNxcGFmanJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTI2ODcsImV4cCI6MjA5MDQ4ODY4N30.uPEAdV2rKcZ7SuXC6A_KH3Ili6fq72ytsReRZEXijWQ';
 const HEADERS = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
+
+// Auth
+const sbAuth = supabase.createClient(SB_URL, SB_KEY);
+const ADMIN_EMAIL    = 'admin@familyoffice';
+const ADMIN_PASSWORD = 'FO@Admin2026#';
+let FO_USER_ID = null;
+let AUTH_TOKEN = null;
+
+function getHeaders() {
+  return AUTH_TOKEN
+    ? { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + AUTH_TOKEN, 'Content-Type': 'application/json' }
+    : HEADERS;
+}
+function withUser(payload) {
+  if (!FO_USER_ID || FO_USER_ID === 'admin-local') return payload;
+  if (Array.isArray(payload)) return payload.map(p => ({ ...p, user_id: FO_USER_ID }));
+  return { ...payload, user_id: FO_USER_ID };
+}
+
+async function pwaLogin() {
+  const email = document.getElementById('pl-email').value.trim();
+  const pass  = document.getElementById('pl-password').value;
+  const btn   = document.getElementById('pl-btn');
+  const err   = document.getElementById('pl-error');
+  err.style.display = 'none';
+  btn.textContent = 'Aguarde...'; btn.disabled = true;
+
+  // Admin local
+  if (email === ADMIN_EMAIL && pass === ADMIN_PASSWORD) {
+    FO_USER_ID = 'admin-local';
+    AUTH_TOKEN = null;
+    showPwaApp({ email: 'Administrador' });
+    return;
+  }
+
+  const { data, error } = await sbAuth.auth.signInWithPassword({ email, password: pass });
+  if (error) {
+    err.textContent = 'Email ou senha incorretos.';
+    err.style.display = 'block';
+    btn.textContent = 'ENTRAR'; btn.disabled = false;
+    return;
+  }
+  FO_USER_ID = data.user.id;
+  AUTH_TOKEN = data.session.access_token;
+  showPwaApp(data.user);
+}
+
+function showPwaApp(user) {
+  document.getElementById('pwa-login').style.display = 'none';
+  document.getElementById('app').style.display = '';
+  document.getElementById('pl-btn').textContent = 'ENTRAR';
+  document.getElementById('pl-btn').disabled = false;
+  loadDashboard(true);
+  initRealtime();
+}
 const TABLE               = SB_URL + '/rest/v1/cash_flow_entries';
 const CARDS_TABLE         = SB_URL + '/rest/v1/cards';
 const CARD_TX_TABLE       = SB_URL + '/rest/v1/card_transactions';
@@ -378,7 +457,7 @@ function updateMonthDisplay() {
 /* ─── FETCH ──────────────────────────────────────────────────── */
 async function sbFetch(url, opts = {}) {
   try {
-    const r = await fetch(url, { headers: HEADERS, cache: 'no-store', ...opts });
+    const r = await fetch(url, { headers: getHeaders(), cache: 'no-store', ...opts });
     if (!r.ok) throw new Error(await r.text());
     return r.headers.get('content-type')?.includes('json') ? r.json() : [];
   } catch(e) { console.error('SB:', e); throw e; }
@@ -566,7 +645,7 @@ async function submitEntry() {
 
   try {
     const url = editingId ? `${TABLE}?id=eq.${editingId}` : TABLE;
-    await sbFetch(url, { method: editingId ? 'PATCH' : 'POST', body: JSON.stringify(entry) });
+    await sbFetch(url, { method: editingId ? 'PATCH' : 'POST', body: JSON.stringify(editingId ? entry : withUser(entry)) });
     toast(editingId ? 'Atualizado!' : 'Enviado para Aprovação!');
     resetForm(); goBack();
     setTimeout(() => loadDashboard(true), 500);
@@ -717,7 +796,7 @@ async function submitCardEntry() {
         installment_group_id: group,
         category: 'Geral' // Add category following desktop convention
       };
-      await sbFetch(CARD_TX_TABLE, { method: 'POST', body: JSON.stringify(tx) });
+      await sbFetch(CARD_TX_TABLE, { method: 'POST', body: JSON.stringify(withUser(tx)) });
     }
     toast('Lançado!'); 
     loadCards(); // Trigger immediate refresh
@@ -773,8 +852,22 @@ function pulse(el) { el.classList.add('pulse-gold'); setTimeout(() => el.classLi
 
 /* ─── INIT ────────────────────────────────────────────────────── */
 document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' });
-loadDashboard(true);
-initRealtime();
+
+// Enter nos campos de login
+document.getElementById('pl-password')?.addEventListener('keydown', e => { if (e.key === 'Enter') pwaLogin(); });
+document.getElementById('pl-email')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('pl-password').focus(); });
+
+// Verifica sessão ativa
+sbAuth.auth.getSession().then(({ data }) => {
+  if (data.session) {
+    FO_USER_ID = data.session.user.id;
+    AUTH_TOKEN = data.session.access_token;
+    showPwaApp(data.session.user);
+    loadDashboard(true);
+    initRealtime();
+  }
+  // Sem sessão: mantém tela de login visível
+});
 </script>
 </body>
 </html>
