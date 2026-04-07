@@ -177,17 +177,67 @@ body::before {
       <div style="color:#b8891a;font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;">Family Office</div>
       <div style="color:#666;font-size:0.7rem;letter-spacing:0.12em;margin-top:2px;">GESTÃO PATRIMONIAL</div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:0.9rem;">
-      <input id="pl-email" type="email" placeholder="Email" autocomplete="username"
-        style="padding:0.75rem 1rem;background:#1a1710;border:1px solid rgba(184,137,26,0.2);border-radius:8px;color:#f2f0e8;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
-      <input id="pl-password" type="password" placeholder="Senha" autocomplete="current-password"
-        style="padding:0.75rem 1rem;background:#1a1710;border:1px solid rgba(184,137,26,0.2);border-radius:8px;color:#f2f0e8;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
-      <div id="pl-error" style="color:#f87171;font-size:0.78rem;text-align:center;display:none;"></div>
-      <button id="pl-btn" onclick="pwaLogin()"
-        style="padding:0.85rem;background:linear-gradient(135deg,#b8891a,#d4a827);border:none;border-radius:8px;color:#000;font-weight:700;font-size:0.85rem;letter-spacing:0.1em;cursor:pointer;margin-top:0.3rem;">
-        ENTRAR
-      </button>
+
+    <!-- PAINEL: LOGIN -->
+    <div id="pwa-panel-login">
+      <div style="display:flex;flex-direction:column;gap:0.9rem;">
+        <input id="pl-email" type="email" placeholder="Email" autocomplete="username"
+          style="padding:0.75rem 1rem;background:#1a1710;border:1px solid rgba(184,137,26,0.2);border-radius:8px;color:#f2f0e8;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
+        <input id="pl-password" type="password" placeholder="Senha" autocomplete="current-password"
+          style="padding:0.75rem 1rem;background:#1a1710;border:1px solid rgba(184,137,26,0.2);border-radius:8px;color:#f2f0e8;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
+        <div id="pl-error" style="color:#f87171;font-size:0.78rem;text-align:center;display:none;"></div>
+        <button id="pl-btn" onclick="pwaLogin()"
+          style="padding:0.85rem;background:linear-gradient(135deg,#b8891a,#d4a827);border:none;border-radius:8px;color:#000;font-weight:700;font-size:0.85rem;letter-spacing:0.1em;cursor:pointer;margin-top:0.3rem;">
+          ENTRAR
+        </button>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:1rem;">
+        <button onclick="pwaPainel('forgot')" style="background:none;border:none;color:#666;font-size:0.72rem;cursor:pointer;padding:0;text-decoration:underline;">Esqueci minha senha</button>
+        <button onclick="pwaPainel('register')" style="background:none;border:none;color:#b8891a;font-size:0.72rem;cursor:pointer;padding:0;text-decoration:underline;">Criar conta</button>
+      </div>
     </div>
+
+    <!-- PAINEL: CADASTRO -->
+    <div id="pwa-panel-register" style="display:none;">
+      <div style="display:flex;flex-direction:column;gap:0.9rem;">
+        <input id="pwa-reg-name" type="text" placeholder="Nome completo"
+          style="padding:0.75rem 1rem;background:#1a1710;border:1px solid rgba(184,137,26,0.2);border-radius:8px;color:#f2f0e8;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
+        <input id="pwa-reg-email" type="email" placeholder="Email"
+          style="padding:0.75rem 1rem;background:#1a1710;border:1px solid rgba(184,137,26,0.2);border-radius:8px;color:#f2f0e8;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
+        <input id="pwa-reg-password" type="password" placeholder="Senha (mín. 6 caracteres)"
+          style="padding:0.75rem 1rem;background:#1a1710;border:1px solid rgba(184,137,26,0.2);border-radius:8px;color:#f2f0e8;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
+        <input id="pwa-reg-password2" type="password" placeholder="Confirmar senha"
+          style="padding:0.75rem 1rem;background:#1a1710;border:1px solid rgba(184,137,26,0.2);border-radius:8px;color:#f2f0e8;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
+        <div id="pwa-reg-error" style="color:#f87171;font-size:0.78rem;text-align:center;display:none;"></div>
+        <div id="pwa-reg-success" style="color:#4ade80;font-size:0.78rem;text-align:center;display:none;"></div>
+        <button id="pwa-reg-btn" onclick="pwaRegister()"
+          style="padding:0.85rem;background:linear-gradient(135deg,#b8891a,#d4a827);border:none;border-radius:8px;color:#000;font-weight:700;font-size:0.85rem;letter-spacing:0.1em;cursor:pointer;margin-top:0.3rem;">
+          CRIAR CONTA
+        </button>
+      </div>
+      <div style="text-align:center;margin-top:1rem;">
+        <button onclick="pwaPainel('login')" style="background:none;border:none;color:#666;font-size:0.72rem;cursor:pointer;padding:0;text-decoration:underline;">Já tenho conta</button>
+      </div>
+    </div>
+
+    <!-- PAINEL: RECUPERAR SENHA -->
+    <div id="pwa-panel-forgot" style="display:none;">
+      <div style="display:flex;flex-direction:column;gap:0.9rem;">
+        <p style="color:#666;font-size:0.78rem;margin:0 0 0.4rem 0;text-align:center;">Enviaremos um link para redefinir sua senha.</p>
+        <input id="pwa-forgot-email" type="email" placeholder="Email"
+          style="padding:0.75rem 1rem;background:#1a1710;border:1px solid rgba(184,137,26,0.2);border-radius:8px;color:#f2f0e8;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
+        <div id="pwa-forgot-error" style="color:#f87171;font-size:0.78rem;text-align:center;display:none;"></div>
+        <div id="pwa-forgot-success" style="color:#4ade80;font-size:0.78rem;text-align:center;display:none;"></div>
+        <button id="pwa-forgot-btn" onclick="pwaForgotPassword()"
+          style="padding:0.85rem;background:linear-gradient(135deg,#b8891a,#d4a827);border:none;border-radius:8px;color:#000;font-weight:700;font-size:0.85rem;letter-spacing:0.1em;cursor:pointer;margin-top:0.3rem;">
+          ENVIAR LINK
+        </button>
+      </div>
+      <div style="text-align:center;margin-top:1rem;">
+        <button onclick="pwaPainel('login')" style="background:none;border:none;color:#666;font-size:0.72rem;cursor:pointer;padding:0;text-decoration:underline;">Voltar ao login</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -340,10 +390,58 @@ const HEADERS = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Conten
 
 // Auth
 const sbAuth = supabase.createClient(SB_URL, SB_KEY);
-const ADMIN_EMAIL    = 'admin@familyoffice';
-const ADMIN_PASSWORD = 'FO@Admin2026#';
 let FO_USER_ID = null;
 let AUTH_TOKEN = null;
+
+function pwaPainel(name) {
+  ['login','register','forgot'].forEach(p => {
+    document.getElementById('pwa-panel-' + p).style.display = p === name ? '' : 'none';
+  });
+}
+
+async function pwaRegister() {
+  const name  = document.getElementById('pwa-reg-name').value.trim();
+  const email = document.getElementById('pwa-reg-email').value.trim();
+  const pass  = document.getElementById('pwa-reg-password').value;
+  const pass2 = document.getElementById('pwa-reg-password2').value;
+  const btn   = document.getElementById('pwa-reg-btn');
+  const err   = document.getElementById('pwa-reg-error');
+  const suc   = document.getElementById('pwa-reg-success');
+  err.style.display = 'none'; suc.style.display = 'none';
+
+  if (!name)         { err.textContent = 'Informe seu nome.'; err.style.display = 'block'; return; }
+  if (!email)        { err.textContent = 'Informe seu email.'; err.style.display = 'block'; return; }
+  if (pass.length < 6) { err.textContent = 'Senha deve ter no mínimo 6 caracteres.'; err.style.display = 'block'; return; }
+  if (pass !== pass2){ err.textContent = 'As senhas não coincidem.'; err.style.display = 'block'; return; }
+
+  btn.textContent = 'Aguarde...'; btn.disabled = true;
+  const { error } = await sbAuth.auth.signUp({ email, password: pass, options: { data: { name } } });
+  btn.textContent = 'CRIAR CONTA'; btn.disabled = false;
+
+  if (error) { err.textContent = error.message; err.style.display = 'block'; return; }
+  suc.textContent = 'Conta criada! Verifique seu email para confirmar o cadastro.';
+  suc.style.display = 'block';
+}
+
+async function pwaForgotPassword() {
+  const email = document.getElementById('pwa-forgot-email').value.trim();
+  const btn   = document.getElementById('pwa-forgot-btn');
+  const err   = document.getElementById('pwa-forgot-error');
+  const suc   = document.getElementById('pwa-forgot-success');
+  err.style.display = 'none'; suc.style.display = 'none';
+
+  if (!email) { err.textContent = 'Informe seu email.'; err.style.display = 'block'; return; }
+
+  btn.textContent = 'Aguarde...'; btn.disabled = true;
+  const { error } = await sbAuth.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + window.location.pathname
+  });
+  btn.textContent = 'ENVIAR LINK'; btn.disabled = false;
+
+  if (error) { err.textContent = error.message; err.style.display = 'block'; return; }
+  suc.textContent = 'Link enviado! Verifique seu email.';
+  suc.style.display = 'block';
+}
 
 function getHeaders() {
   return AUTH_TOKEN
@@ -351,7 +449,7 @@ function getHeaders() {
     : HEADERS;
 }
 function withUser(payload) {
-  if (!FO_USER_ID || FO_USER_ID === 'admin-local') return payload;
+  if (!FO_USER_ID) return payload;
   if (Array.isArray(payload)) return payload.map(p => ({ ...p, user_id: FO_USER_ID }));
   return { ...payload, user_id: FO_USER_ID };
 }
@@ -363,14 +461,6 @@ async function pwaLogin() {
   const err   = document.getElementById('pl-error');
   err.style.display = 'none';
   btn.textContent = 'Aguarde...'; btn.disabled = true;
-
-  // Admin local
-  if (email === ADMIN_EMAIL && pass === ADMIN_PASSWORD) {
-    FO_USER_ID = 'admin-local';
-    AUTH_TOKEN = null;
-    showPwaApp({ email: 'Administrador' });
-    return;
-  }
 
   const { data, error } = await sbAuth.auth.signInWithPassword({ email, password: pass });
   if (error) {
