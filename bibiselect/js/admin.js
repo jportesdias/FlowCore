@@ -797,13 +797,15 @@ function confirmDelete() {
 function renderSettings() {
   // Preenche campos do GitHub se já configurado
   const cfg = getGithubConfig();
-  if (cfg.token) setValue('s-gh-token', cfg.token);
-  if (cfg.owner) setValue('s-gh-owner', cfg.owner);
-  if (cfg.repo)  setValue('s-gh-repo',  cfg.repo);
+  if (cfg.token)   setValue('s-gh-token',   cfg.token);
+  if (cfg.owner)   setValue('s-gh-owner',   cfg.owner);
+  if (cfg.repo)    setValue('s-gh-repo',    cfg.repo);
+  if (cfg.subpath) setValue('s-gh-subpath', cfg.subpath);
 
   const status = document.getElementById('github-status');
   if (status && cfg.owner && cfg.repo) {
-    status.innerHTML = `<span style="color:var(--text-secondary)">Configurado para <strong>${cfg.owner}/${cfg.repo}</strong> — clique em "Testar conexão" para validar.</span>`;
+    const path = cfg.subpath ? `${cfg.repo}/${cfg.subpath}` : cfg.repo;
+    status.innerHTML = `<span style="color:var(--text-secondary)">Configurado para <strong>${cfg.owner}/${path}</strong> — clique em "Testar conexão" para validar.</span>`;
   }
 }
 
@@ -864,7 +866,7 @@ async function publishToGithub() {
   }
 
   try {
-    const filePath = 'data/products.json';
+    const filePath = cfg.subpath ? `${cfg.subpath}/data/products.json` : 'data/products.json';
     const apiBase  = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${filePath}`;
     const headers  = {
       'Authorization': `Bearer ${cfg.token}`,
@@ -956,16 +958,17 @@ async function testGithubConnection() {
 
 // Salva configuração do GitHub
 function saveGithubSettings() {
-  const token = document.getElementById('s-gh-token')?.value.trim();
-  const owner = document.getElementById('s-gh-owner')?.value.trim();
-  const repo  = document.getElementById('s-gh-repo')?.value.trim();
+  const token   = document.getElementById('s-gh-token')?.value.trim();
+  const owner   = document.getElementById('s-gh-owner')?.value.trim();
+  const repo    = document.getElementById('s-gh-repo')?.value.trim();
+  const subpath = document.getElementById('s-gh-subpath')?.value.trim().replace(/^\/|\/$/g, '');
 
   if (!token || !owner || !repo) {
     showToast('Preencha todos os campos.', 'error');
     return;
   }
 
-  saveGithubConfig({ token, owner, repo });
+  saveGithubConfig({ token, owner, repo, subpath });
   showToast('Configuração salva!', 'success');
   document.getElementById('github-status').innerHTML =
     `<span style="color:var(--text-secondary)">Configurado — clique em "Testar conexão" para validar.</span>`;
