@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ementa – Medição de Vazão em FPSOs – FlowCore Solutions</title>
+  <meta name="description"
+    content="Ementa completa do treinamento de Medição de Vazão em FPSOs: desafios, aplicações e soluções operacionais. Instrutor: Júlio Dias." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-dark: #F8F9FA;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #F1F3F5;
+      --glass-border: rgba(31, 63, 104, 0.1);
+
+      --accent-main: #E55B13;
+      --accent-glow: rgba(229, 91, 19, 0.15);
+      --accent-light: #F48A50;
+      --accent-secondary: #1F3F68;
+
+      --text-pure: #111827;
+      --text-heading: #1F2937;
+      --text-body: #4B5563;
+      --text-muted: #6B7280;
+
+      --max-width: 1200px;
+      --nav-height: 80px;
+
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --radius-pill: 100px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, h5 {
+      font-family: 'Outfit', sans-serif;
+      color: var(--text-heading);
+      line-height: 1.2;
+    }
+
+    a { text-decoration: none; color: inherit; transition: all 0.3s ease; }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* --- NAVIGATION --- */
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: var(--nav-height);
+      display: flex;
+      align-items: center;
+      z-index: 1000;
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    header.scrolled {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(31, 63, 104, 0.08);
+      box-shadow: 0 10px 30px rgba(31, 63, 104, 0.05);
+    }
+
+    .nav-inner {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .nav-links a.link {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-body);
+    }
+
+    .nav-links a.link:hover { color: var(--accent-main); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      border-radius: var(--radius-pill);
+      padding: 14px 28px;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-main), var(--accent-light));
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(229, 91, 19, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(229, 91, 19, 0.4);
+    }
+
+    .btn-nav { padding: 10px 24px; font-size: 0.9rem; }
+
+    .btn-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #25D366;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      padding: 14px 28px;
+      border-radius: var(--radius-pill);
+      font-size: 1rem;
+      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btn-whatsapp:hover {
+      background: #1EBE5D;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(37, 211, 102, 0.4);
+    }
+
+    /* --- HERO --- */
+    .hero-ementa {
+      padding: 160px 0 80px;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      background: rgba(229, 91, 19, 0.08);
+      border: 1px solid rgba(229, 91, 19, 0.15);
+      color: var(--accent-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-main);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-main);
+    }
+
+    .hero-title {
+      font-size: clamp(2.2rem, 4vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      color: var(--accent-secondary);
+    }
+
+    .hero-subtitle-small {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1rem, 1.5vw, 1.3rem);
+      font-weight: 500;
+      color: var(--accent-main);
+      margin-bottom: 20px;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      max-width: 720px;
+      margin: 0 auto;
+      color: var(--text-body);
+    }
+
+    /* --- SOBRE + LOGÍSTICA --- */
+    .overview-section {
+      padding: 40px 0 80px;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .sobre-box {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: 48px;
+      box-shadow: 0 10px 30px rgba(31, 63, 104, 0.06);
+    }
+
+    .sobre-box h2 {
+      font-size: 1.8rem;
+      color: var(--accent-secondary);
+      margin-bottom: 20px;
+    }
+
+    .sobre-box p {
+      color: var(--text-body);
+      font-size: 1rem;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .audience-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      background: rgba(31, 63, 104, 0.05);
+      border: 1px solid rgba(31, 63, 104, 0.12);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      font-size: 0.95rem;
+      color: var(--text-heading);
+    }
+
+    .audience-pill strong {
+      color: var(--accent-secondary);
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* --- LOGISTICS CARD --- */
+    .logistics-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: 36px;
+      box-shadow: 0 15px 40px rgba(31, 63, 104, 0.08);
+      position: sticky;
+      top: calc(var(--nav-height) + 24px);
+    }
+
+    .urgency-tag {
+      display: inline-block;
+      background: rgba(220, 38, 38, 0.08);
+      border: 1px solid rgba(220, 38, 38, 0.2);
+      color: #dc2626;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      margin-bottom: 20px;
+    }
+
+    .price-display {
+      margin-bottom: 24px;
+    }
+
+    .price-display .price-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .price-display .price-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--accent-secondary);
+      line-height: 1;
+    }
+
+    .logistics-divider {
+      height: 1px;
+      background: var(--glass-border);
+      margin: 20px 0;
+    }
+
+    .logistics-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .logistics-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+      color: var(--text-heading);
+    }
+
+    .logistics-meta-item .meta-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(31, 63, 104, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .logistics-meta-item strong {
+      font-weight: 600;
+      color: var(--text-pure);
+    }
+
+    .dates-block {
+      background: var(--bg-dark);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--glass-border);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .dates-block .dates-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .date-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--glass-border);
+      font-size: 0.875rem;
+    }
+
+    .date-row:last-child { border-bottom: none; }
+
+    .date-row .date-num {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      color: var(--accent-secondary);
+      min-width: 90px;
+    }
+
+    .date-row .date-time {
+      color: var(--accent-main);
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .includes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .includes-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.875rem;
+      color: var(--text-body);
+    }
+
+    .includes-item::before {
+      content: '✓';
+      color: #22c55e;
+      font-weight: bold;
+      background: rgba(34, 197, 94, 0.1);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.7rem;
+    }
+
+    .logistics-card .btn {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .contact-line {
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* --- EMENTA SECTION --- */
+    .ementa-section {
+      padding: 80px 0 120px;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto 60px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      margin-bottom: 12px;
+      color: var(--accent-secondary);
+    }
+
+    .section-header p {
+      color: var(--text-body);
+      font-size: 1rem;
+    }
+
+    .modules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .module-group {
+      margin-bottom: 48px;
+    }
+
+    .module-group-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .module-group-label .group-line {
+      flex: 1;
+      height: 1px;
+      background: var(--glass-border);
+    }
+
+    .module-group-label span {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .module-item {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 24px;
+      align-items: start;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(31, 63, 104, 0.04);
+    }
+
+    .module-item:hover {
+      border-color: rgba(31, 63, 104, 0.2);
+      box-shadow: 0 8px 24px rgba(31, 63, 104, 0.08);
+      transform: translateX(4px);
+    }
+
+    .module-item.featured {
+      border-color: rgba(229, 91, 19, 0.25);
+      background: linear-gradient(135deg, #fff 0%, rgba(229, 91, 19, 0.02) 100%);
+    }
+
+    .module-item.featured:hover {
+      border-color: rgba(229, 91, 19, 0.4);
+    }
+
+    .module-number {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: rgba(31, 63, 104, 0.12);
+      line-height: 1;
+      padding-top: 4px;
+      text-align: right;
+    }
+
+    .module-item.featured .module-number {
+      color: rgba(229, 91, 19, 0.2);
+    }
+
+    .module-content h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      margin-bottom: 10px;
+    }
+
+    .module-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(31, 63, 104, 0.07);
+      color: var(--accent-secondary);
+      margin-bottom: 10px;
+    }
+
+    .module-item.featured .module-tag {
+      background: rgba(229, 91, 19, 0.1);
+      color: var(--accent-main);
+    }
+
+    .module-content p {
+      font-size: 0.9rem;
+      color: var(--text-body);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .module-topics {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .module-topics li {
+      list-style: none;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.875rem;
+      color: var(--text-body);
+    }
+
+    .module-topics li::before {
+      content: '—';
+      color: var(--accent-main);
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 0;
+    }
+
+    /* Sub-modules for Tipos de Medidores */
+    .medidor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .medidor-card {
+      background: var(--bg-dark);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+    }
+
+    .medidor-card h4 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--accent-secondary);
+      margin-bottom: 8px;
+    }
+
+    .medidor-card ul {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .medidor-card ul li {
+      list-style: none;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .medidor-card ul li::before {
+      content: '·';
+      color: var(--accent-main);
+      font-weight: bold;
+    }
+
+    /* --- INSTRUCTOR --- */
+    .instructor-section {
+      padding: 0 0 120px;
+    }
+
+    .instructor-box {
+      background: linear-gradient(135deg, var(--accent-secondary) 0%, #0d2244 100%);
+      border-radius: var(--radius-xl);
+      padding: 60px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 48px;
+      align-items: center;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .instructor-box::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(229, 91, 19, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .instructor-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 3px solid rgba(229, 91, 19, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--accent-light);
+      flex-shrink: 0;
+    }
+
+    .instructor-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-light);
+      margin-bottom: 8px;
+    }
+
+    .instructor-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    .instructor-bio {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .instructor-stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 32px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .instructor-stats .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent-light);
+      display: block;
+    }
+
+    .instructor-stats .stat-label {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* --- FOOTER --- */
+    footer {
+      border-top: 1px solid rgba(31, 63, 104, 0.1);
+      padding: 60px 0 40px;
+      background: #FFFFFF;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 24px;
+      border-top: 1px solid rgba(31, 63, 104, 0.05);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .overview-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .logistics-card {
+        position: static;
+      }
+
+      .module-item {
+        grid-template-columns: 40px 1fr;
+        gap: 16px;
+        padding: 20px;
+      }
+
+      .instructor-box {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 36px 24px;
+        gap: 24px;
+      }
+
+      .instructor-avatar {
+        margin: 0 auto;
+      }
+
+      .instructor-stats {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 24px;
+      }
+
+      header .nav-links {
+        display: none;
+      }
+
+      .footer-content,
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header id="header">
+    <div class="container nav-inner">
+      <a href="index.html">
+        <img src="Flow core solutions Color.png" alt="FlowCore Solutions"
+          style="height: 48px; width: auto; display: block;" />
+      </a>
+      <div class="nav-links">
+        <a href="index.html#metodo" class="link">O Método</a>
+        <a href="index.html#livros" class="link">Livros</a>
+        <a href="cursos.html" class="link" style="color: var(--accent-main); font-weight: 600;">Treinamentos</a>
+        <a href="https://wa.me/5521983710895" target="_blank" class="btn btn-primary btn-nav">Falar no WhatsApp</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero-ementa">
+      <div class="container">
+        <div class="badge">
+          <div class="badge-dot"></div>FPSO Training
+        </div>
+        <h1 class="hero-title">Medição de Vazão em FPSOs</h1>
+        <p class="hero-subtitle-small">Desafios, Aplicações e Soluções Operacionais</p>
+        <p class="hero-desc">
+          Treinamento técnico de alta intensidade para quem opera, mantém e especifica sistemas de medição
+          em unidades offshore. Foco em troubleshooting real e preparação para primeiro óleo.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== SOBRE + LOGÍSTICA ===== -->
+    <section class="overview-section">
+      <div class="container">
+        <div class="overview-grid">
+
+          <!-- Sobre o Treinamento -->
+          <div class="sobre-box">
+            <h2>Sobre o Treinamento</h2>
+            <p>
+              Este treinamento foi desenvolvido para explorar, de forma inovadora e prática, as tecnologias de
+              medição de líquidos em unidades FPSO. Com uma abordagem disruptiva e contraintuitiva, o curso vai
+              além do convencional, focando no que realmente funciona na resolução de problemas (troubleshooting).
+            </p>
+            <p>
+              Os participantes terão acesso a insights valiosos que permitirão diagnosticar falhas com mais
+              rapidez, reduzindo o tempo de inatividade dos medidores durante a operação. Além disso, o
+              treinamento abrange as melhores práticas para garantir uma partida de planta eficiente e um
+              primeiro óleo seguro e sem contratempos.
+            </p>
+            <p>
+              Se você busca aprimorar sua expertise em medição e otimizar processos críticos, este curso é
+              essencial para o aumento do seu conhecimento.
+            </p>
+            <div class="audience-pill">
+              <span style="font-size: 1.1rem;">🎯</span>
+              <span><strong>Público-Alvo:</strong> Técnicos de manutenção, engenheiros e operadores de planta.</span>
+            </div>
+          </div>
+
+          <!-- Logistics Card -->
+          <div class="logistics-card">
+            <div class="urgency-tag">⚡ Última turma com esse valor</div>
+
+            <div class="price-display">
+              <div class="price-label">Investimento</div>
+              <div class="price-value">R$ 450,00</div>
+            </div>
+
+            <div class="logistics-divider"></div>
+
+            <div class="logistics-meta">
+              <div class="logistics-meta-item">
+                <div class="meta-icon">⏱</div>
+                <div><strong>12h</strong> de carga horária</div>
+              </div>
+              <div class="logistics-meta-item">
+                <div class="meta-icon">🖥</div>
+                <div><strong>Online ao Vivo</strong> via Zoom</div>
+              </div>
+            </div>
+
+            <div class="dates-block">
+              <div class="dates-label">Aulas — Turma Maio/2026</div>
+              <div class="date-row">
+                <span class="date-num">05/05/2026</span>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Segunda</span>
+                <span class="date-time">19h – 22h</span>
+              </div>
+              <div class="date-row">
+                <span class="date-num">06/05/2026</span>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Terça</span>
+                <span class="date-time">19h – 22h</span>
+              </div>
+              <div class="date-row">
+                <span class="date-num">07/05/2026</span>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Quarta</span>
+                <span class="date-time">19h – 22h</span>
+              </div>
+              <div class="date-row">
+                <span class="date-num">08/05/2026</span>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Quinta</span>
+                <span class="date-time">19h – 22h</span>
+              </div>
+            </div>
+
+            <div class="logistics-divider"></div>
+
+            <div class="includes-list">
+              <div class="includes-item">Material didático e manuais aplicáveis</div>
+              <div class="includes-item">Certificado de conclusão</div>
+            </div>
+
+            <a class="btn btn-primary" href="https://forms.gle/YrpMnMdjdyErdXBD6" target="_blank">
+              Preencher Inscrição ↗
+            </a>
+            <a class="btn btn-whatsapp" href="https://wa.me/5521983710895" target="_blank">
+              Falar no WhatsApp
+            </a>
+            <div class="contact-line" style="margin-top: 16px;">(21) 9.8371-0895</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== EMENTA ===== -->
+    <section class="ementa-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Ementa Completa</h2>
+          <p>Conteúdo programático organizado por módulos temáticos, do fundamento ao troubleshooting avançado.</p>
+        </div>
+
+        <div class="modules-list">
+
+          <!-- GRUPO 1: FUNDAMENTOS -->
+          <div class="module-group">
+            <div class="module-group-label">
+              <div class="group-line"></div>
+              <span>Fundamentos</span>
+              <div class="group-line"></div>
+            </div>
+
+            <div class="module-item">
+              <div class="module-number">01</div>
+              <div class="module-content">
+                <span class="module-tag">Conceitos Gerais</span>
+                <h3>Introdução à Medição de Óleo</h3>
+                <p>Características gerais e configurações dos sistemas de medição de vazão de líquidos em plataformas offshore.</p>
+              </div>
+            </div>
+
+            <div class="module-item">
+              <div class="module-number">02</div>
+              <div class="module-content">
+                <span class="module-tag">Sistemas</span>
+                <h3>Arquitetura de Sistemas de Medição</h3>
+                <p>Visão geral da arquitetura e composição de sistemas de medição fiscal e de alocação em unidades FPSO.</p>
+              </div>
+            </div>
+
+            <div class="module-item">
+              <div class="module-number">03</div>
+              <div class="module-content">
+                <span class="module-tag">Teoria</span>
+                <h3>Teoria dos Medidores de Vazão</h3>
+                <p>Revisão dos princípios físicos que fundamentam cada tecnologia de medição — aplicado, direto e sem aprofundamento desnecessário.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- GRUPO 2: TIPOS DE MEDIDORES -->
+          <div class="module-group">
+            <div class="module-group-label">
+              <div class="group-line"></div>
+              <span>Tipos de Medidores</span>
+              <div class="group-line"></div>
+            </div>
+
+            <div class="module-item" style="grid-template-columns: 56px 1fr;">
+              <div class="module-number">04</div>
+              <div class="module-content">
+                <span class="module-tag">5 Tecnologias</span>
+                <h3>Tipos de Medidores de Vazão</h3>
+                <p>Para cada tecnologia: normas aplicadas, princípio de funcionamento, aplicações industriais, instalação e configuração.</p>
+                <div class="medidor-grid">
+                  <div class="medidor-card">
+                    <h4>Turbinas (Helical)</h4>
+                    <ul>
+                      <li>Normas aplicadas</li>
+                      <li>Princípio de funcionamento</li>
+                      <li>Aplicações</li>
+                      <li>Instalação e configuração</li>
+                    </ul>
+                  </div>
+                  <div class="medidor-card">
+                    <h4>Deslocamento Positivo (Birotor)</h4>
+                    <ul>
+                      <li>Normas aplicadas</li>
+                      <li>Princípio de funcionamento</li>
+                      <li>Aplicações</li>
+                      <li>Instalação e configuração</li>
+                    </ul>
+                  </div>
+                  <div class="medidor-card">
+                    <h4>Ultrassônicos (multicanais)</h4>
+                    <ul>
+                      <li>Normas aplicadas</li>
+                      <li>Princípio de funcionamento</li>
+                      <li>Aplicações</li>
+                      <li>Instalação e configuração</li>
+                    </ul>
+                  </div>
+                  <div class="medidor-card">
+                    <h4>Efeito Coriolis</h4>
+                    <ul>
+                      <li>Normas aplicadas</li>
+                      <li>Princípio de funcionamento</li>
+                      <li>Aplicações</li>
+                      <li>Instalação e configuração</li>
+                    </ul>
+                  </div>
+                  <div class="medidor-card">
+                    <h4>Magnéticos</h4>
+                    <ul>
+                      <li>Normas aplicadas</li>
+                      <li>Princípio de funcionamento</li>
+                      <li>Aplicações</li>
+                      <li>Instalação e configuração</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GRUPO 3: APLICAÇÃO E OPERAÇÃO -->
+          <div class="module-group">
+            <div class="module-group-label">
+              <div class="group-line"></div>
+              <span>Aplicação & Operação</span>
+              <div class="group-line"></div>
+            </div>
+
+            <div class="module-item">
+              <div class="module-number">05</div>
+              <div class="module-content">
+                <span class="module-tag">Tecnologia</span>
+                <h3>Princípios de Funcionamento</h3>
+                <ul class="module-topics">
+                  <li>Entendimento sobre o funcionamento de cada tipo de medidor</li>
+                  <li>Benefícios e limitações de cada tecnologia</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="module-item">
+              <div class="module-number">06</div>
+              <div class="module-content">
+                <span class="module-tag">Campo</span>
+                <h3>Aplicações</h3>
+                <ul class="module-topics">
+                  <li>Aplicação e funcionamento de cada tipo de medidor na indústria</li>
+                  <li>Aplicações específicas e estudos de caso</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="module-item">
+              <div class="module-number">07</div>
+              <div class="module-content">
+                <span class="module-tag">Instalação</span>
+                <h3>Instalação e Configuração</h3>
+                <ul class="module-topics">
+                  <li>Procedimentos de instalação e boas práticas</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="module-item">
+              <div class="module-number">08</div>
+              <div class="module-content">
+                <span class="module-tag">Parametrização</span>
+                <h3>Configuração Inicial</h3>
+                <ul class="module-topics">
+                  <li>Condições operacionais a serem consideradas</li>
+                  <li>Parâmetros críticos para desempenho ideal</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="module-item">
+              <div class="module-number">09</div>
+              <div class="module-content">
+                <span class="module-tag">Manutenção</span>
+                <h3>Operação e Manutenção</h3>
+                <ul class="module-topics">
+                  <li>Identificação de falhas na medição</li>
+                  <li>Verificações de campo com o medidor em funcionamento</li>
+                  <li>Prevenção de falhas e cuidados operacionais</li>
+                  <li>Calibração contra prover</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- GRUPO 4: TROUBLESHOOTING E PRÁTICA -->
+          <div class="module-group">
+            <div class="module-group-label">
+              <div class="group-line"></div>
+              <span>Troubleshooting & Prática</span>
+              <div class="group-line"></div>
+            </div>
+
+            <div class="module-item">
+              <div class="module-number">10</div>
+              <div class="module-content">
+                <span class="module-tag">Diagnóstico</span>
+                <h3>Solução de Problemas</h3>
+                <ul class="module-topics">
+                  <li><strong>Problemas Comuns:</strong> diagnóstico de falhas recorrentes e causas prováveis com impacto na medição</li>
+                  <li><strong>Procedimentos de Correção:</strong> metodologias para solução eficaz de problemas</li>
+                  <li>Estudos de caso e soluções aplicadas</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="module-item">
+              <div class="module-number">11</div>
+              <div class="module-content">
+                <span class="module-tag">Hands-on</span>
+                <h3>Simulações Práticas</h3>
+                <ul class="module-topics">
+                  <li><strong>Cenários & Ocorrências:</strong> simulações práticas de falhas e desafios operacionais</li>
+                  <li>Análise e correção em tempo real</li>
+                  <li><strong>Avaliação:</strong> testes práticos para medir a compreensão e aplicação dos conhecimentos adquiridos</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- GRUPO 5: MÓDULOS EXTRAS -->
+          <div class="module-group">
+            <div class="module-group-label">
+              <div class="group-line"></div>
+              <span>Módulos Especiais</span>
+              <div class="group-line"></div>
+            </div>
+
+            <div class="module-item featured">
+              <div class="module-number">+</div>
+              <div class="module-content">
+                <span class="module-tag">Módulo Extra</span>
+                <h3>Falhas Típicas em Medidores de Flare</h3>
+                <ul class="module-topics">
+                  <li>Medidores de Flare Single Channel</li>
+                  <li>Diagnóstico de falhas</li>
+                  <li>Impacto operacional e correção</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="module-item featured">
+              <div class="module-number">★</div>
+              <div class="module-content">
+                <span class="module-tag">Módulo Especial</span>
+                <h3>Preparativos para Partida da Planta (Primeiro Óleo)</h3>
+                <ul class="module-topics">
+                  <li>Procedimentos críticos</li>
+                  <li>Checklist operacional</li>
+                  <li>Considerações específicas para diferentes medidores</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== INSTRUCTOR ===== -->
+    <section class="instructor-section">
+      <div class="container">
+        <div class="instructor-box">
+          <div class="instructor-avatar">JD</div>
+          <div class="instructor-content">
+            <div class="instructor-label">Instrutor</div>
+            <div class="instructor-name">Júlio Dias</div>
+            <p class="instructor-bio">
+              Especialista em medição, com 21 anos de experiência na medição de vazão de hidrocarbonetos.
+              Ao longo de sua carreira, atuou na manutenção, especificação e operação de diversos tipos de
+              medidores. Participou de mais de sete projetos de FPSOs e comissionamento de plantas,
+              conduzindo a preparação e garantindo o cumprimento da legislação para a aprovação dos pontos
+              de medição junto à ANP.
+            </p>
+            <div class="instructor-stats">
+              <div>
+                <span class="stat-value">21</span>
+                <span class="stat-label">Anos de experiência</span>
+              </div>
+              <div>
+                <span class="stat-value">7+</span>
+                <span class="stat-label">Projetos FPSO</span>
+              </div>
+              <div>
+                <span class="stat-value">ANP</span>
+                <span class="stat-label">Aprovação fiscal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div>
+          <img src="Flow core solutions Color.png" alt="FlowCore Solutions" style="height: 40px; width: auto;" />
+        </div>
+        <div style="display: flex; gap: 24px;">
+          <a href="index.html#metodo" style="color: var(--text-muted); font-size: 0.9rem;">O Método</a>
+          <a href="index.html#livros" style="color: var(--text-muted); font-size: 0.9rem;">Livros</a>
+          <a href="cursos.html" style="color: var(--text-muted); font-size: 0.9rem;">Treinamentos</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> FlowCore Solutions. Todos os direitos reservados.</p>
+        <p>Desenvolvido por quem vive a planta, não só o slide.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('header');
+      header.classList.toggle('scrolled', window.scrollY > 50);
+    });
+  </script>
+</body>
+
+</html>
