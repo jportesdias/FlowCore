@@ -1,1257 +1,1385 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-BR" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlowCore Solutions – Engenharia, Medição e Excelência</title>
-  <meta name="description"
-    content="Domine a metrologia industrial e impulsione sua carreira com a FlowCore Solutions." />
-
-  <!-- Fonts: Outfit for sleek modern headings, Inter for high readability body -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet" />
-
-  <style>
-    :root {
-      /* Color Palette Based on Logo (Light Corporate Theme) */
-      --bg-dark: #F8F9FA;
-      /* Off-white, soft background */
-      --bg-card: #FFFFFF;
-      /* Pure white cards */
-      --bg-card-hover: #F1F3F5;
-      /* Slight gray hover */
-      --glass-border: rgba(31, 63, 104, 0.1);
-      /* Subtle dark border instead of white */
-
-      /* Primary Brand Colors from Logo */
-      --accent-main: #E55B13;
-      /* Strong saturated orange from logo */
-      --accent-glow: rgba(229, 91, 19, 0.15);
-      /* Softer glow for light mode */
-      --accent-light: #F48A50;
-      /* Lighter complementary orange */
-      --accent-secondary: #1F3F68;
-      /* Corporate deep blue from logo texts */
-
-      --text-pure: #111827;
-      /* Near black for pure text */
-      --text-heading: #1F2937;
-      /* Dark charcoal for headings */
-      --text-body: #4B5563;
-      /* Medium gray for readability */
-      --text-muted: #6B7280;
-      /* Neutral muted text */
-
-      --max-width: 1200px;
-      --nav-height: 80px;
-
-      /* Radii */
-      --radius-sm: 8px;
-      --radius-md: 16px;
-      --radius-lg: 24px;
-      --radius-xl: 32px;
-      --radius-pill: 100px;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text-body);
-      line-height: 1.6;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .ambient-glow {
-      position: absolute;
-      width: 60vw;
-      height: 60vh;
-      background: radial-gradient(circle, rgba(229, 91, 19, 0.04) 0%, transparent 60%);
-      border-radius: 50%;
-      top: -10%;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    .ambient-glow-2 {
-      position: absolute;
-      width: 50vw;
-      height: 50vh;
-      background: radial-gradient(circle, rgba(27, 100, 255, 0.05) 0%, transparent 70%);
-      bottom: -20%;
-      right: -10%;
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    h5 {
-      font-family: 'Outfit', sans-serif;
-      color: var(--text-heading);
-      line-height: 1.2;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.3s ease;
-    }
-
-    ul {
-      list-style: none;
-    }
-
-    .container {
-      max-width: var(--max-width);
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* --- NAVIGATION --- */
-    header {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      height: var(--nav-height);
-      display: flex;
-      align-items: center;
-      z-index: 1000;
-      background: transparent;
-      border-bottom: 1px solid transparent;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    header.scrolled {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(31, 63, 104, 0.08);
-      /* Subtle dark border */
-      box-shadow: 0 10px 30px rgba(31, 63, 104, 0.05);
-    }
-
-    .nav-inner {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* Navbar Logo Text Fallback (if image is moved) */
-    .logo-text {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 1.4rem;
-      letter-spacing: 0.03em;
-      color: var(--accent-secondary);
-      text-transform: uppercase;
-    }
-
-    /* Static Centered Hero Logo */
-    .hero-main-logo {
-      position: absolute;
-      top: -140px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 420px;
-      max-width: 90%;
-      height: auto;
-      z-index: 10;
-      filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.4));
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 32px;
-      align-items: center;
-    }
-
-    .nav-links a.link {
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: var(--text-body);
-    }
-
-    .nav-links a.link:hover {
-      color: var(--accent-main);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 600;
-      border-radius: var(--radius-pill);
-      padding: 14px 28px;
-      font-size: 1rem;
-      letter-spacing: 0.02em;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-      border: none;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent-main), var(--accent-light));
-      color: #000;
-      box-shadow: 0 8px 24px rgba(240, 179, 90, 0.3);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(240, 179, 90, 0.5);
-      background: linear-gradient(135deg, var(--accent-light), #fff);
-    }
-
-    .btn-outline {
-      background: #FFFFFF;
-      color: var(--accent-secondary);
-      border: 1px solid var(--accent-secondary);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .btn-outline:hover {
-      background: var(--accent-secondary);
-      color: #FFFFFF;
-      border-color: var(--accent-secondary);
-    }
-
-    .btn-nav {
-      padding: 10px 24px;
-      font-size: 0.9rem;
-    }
-
-    /* --- HERO SECTION --- */
-    .hero {
-      position: relative;
-      padding: 160px 0 80px;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 40px;
-      align-items: center;
-      width: 100%;
-    }
-
-    .hero-content {
-      text-align: left;
-      position: relative;
-      z-index: 10;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      border-radius: var(--radius-pill);
-      background: rgba(229, 91, 19, 0.08);
-      /* Light orange background */
-      border: 1px solid rgba(229, 91, 19, 0.15);
-      /* Light orange border */
-      color: var(--accent-main);
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 24px;
-      animation: fadeInDown 0.8s ease-out forwards;
-    }
-
-    .badge-dot {
-      width: 6px;
-      height: 6px;
-      background: var(--accent-main);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--accent-main);
-    }
-
-    .hero-title {
-      font-size: clamp(2.5rem, 4.5vw, 4rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
-      max-width: 900px;
-      animation: fadeInUp 0.8s ease-out 0.2s forwards;
-      opacity: 0;
-    }
-
-    .text-gradient {
-      background: linear-gradient(to right, var(--accent-secondary), var(--accent-main));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero-subtitle {
-      font-size: clamp(1.1rem, 1.5vw, 1.25rem);
-      max-width: 550px;
-      margin: 0 0 40px;
-      color: var(--text-body);
-      animation: fadeInUp 0.8s ease-out 0.4s forwards;
-      opacity: 0;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 16px;
-      justify-content: flex-start;
-      animation: fadeInUp 0.8s ease-out 0.6s forwards;
-      opacity: 0;
-    }
-
-    .hero-visuals {
-      position: relative;
-      width: 100%;
-      height: 500px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      animation: fadeIn 1s ease-out 0.6s forwards;
-    }
-
-    .hero-book-wrapper {
-      position: absolute;
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .hero-book-wrapper.main-book {
-      z-index: 2;
-      /* Moved to back */
-      transform: rotate(12deg) translateX(40px);
-      /* Shifted right entirely without shrinking */
-      filter: brightness(0.7);
-    }
-
-    .hero-book-wrapper.main-book:hover {
-      transform: rotate(8deg) translateX(40px) scale(1.05) translateY(-10px);
-      z-index: 5;
-      filter: brightness(1);
-    }
-
-    .hero-book-wrapper.second-book {
-      z-index: 3;
-      /* Moved to front */
-      transform: rotate(-6deg) translateX(-40px);
-      /* Shifted left without shrinking */
-    }
-
-    .hero-book-wrapper.second-book:hover {
-      transform: rotate(-2deg) translateX(-40px) scale(1.05) translateY(-10px);
-      z-index: 5;
-    }
-
-    .hero-book {
-      width: 260px;
-      border-radius: 12px;
-      box-shadow: 0 20px 40px rgba(31, 63, 104, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.05);
-    }
-
-    /* --- SOCIAL PROOF --- */
-    .social-proof {
-      margin-top: 60px;
-      padding-top: 30px;
-      border-top: 1px solid var(--glass-border);
-      animation: fadeIn 1s ease-out 0.8s forwards;
-      opacity: 0;
-      text-align: left;
-    }
-
-    .social-proof p {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-    }
-
-    .logos {
-      display: flex;
-      justify-content: flex-start;
-      gap: 40px;
-      flex-wrap: wrap;
-      opacity: 0.5;
-    }
-
-    .logos span {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-    }
-
-    /* --- PROBLEM / PAIN SECTION --- */
-    .section {
-      padding: 120px 0;
-      position: relative;
-    }
-
-    .section-header {
-      text-align: center;
-      max-width: 700px;
-      margin: 0 auto 80px;
-    }
-
-    .section-title {
-      font-size: clamp(2rem, 4vw, 3rem);
-      margin-bottom: 20px;
-    }
-
-    .bento-grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 24px;
-    }
-
-    .bento-card {
-      background: var(--bg-card);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius-xl);
-      padding: 40px;
-      transition: all 0.4s ease;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(31, 63, 104, 0.05);
-      /* Soft shadow for light cards */
-    }
-
-    .bento-card:hover {
-      background: var(--bg-card-hover);
-      border-color: rgba(31, 63, 104, 0.2);
-      transform: translateY(-4px);
-    }
-
-    .bento-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at top right, rgba(240, 179, 90, 0.1), transparent 40%);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      pointer-events: none;
-    }
-
-    .bento-card:hover::before {
-      opacity: 1;
-    }
-
-    /* Pain points layout */
-    .pain-card {
-      grid-column: span 4;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .pain-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: rgba(255, 60, 60, 0.1);
-      color: #FF5A5A;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-
-    .pain-title {
-      font-size: 1.25rem;
-      color: var(--text-pure);
-    }
-
-    /* --- PRODUCTS / BOOKS SECTION --- */
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 32px;
-    }
-
-    .product-card {
-      background: #FFFFFF;
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius-xl);
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.4s ease;
-      box-shadow: 0 12px 35px rgba(31, 63, 104, 0.06);
-    }
-
-    .product-card:hover {
-      border-color: rgba(31, 63, 104, 0.2);
-      box-shadow: 0 20px 40px rgba(31, 63, 104, 0.12);
-      transform: translateY(-8px);
-    }
-
-    .product-tag {
-      position: absolute;
-      top: 32px;
-      right: 32px;
-      background: rgba(240, 179, 90, 0.15);
-      color: var(--accent-main);
-      padding: 6px 14px;
-      border-radius: var(--radius-pill);
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      border: 1px solid rgba(240, 179, 90, 0.3);
-      z-index: 10;
-    }
-
-    .product-image-wrapper {
-      width: 100%;
-      height: 380px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 40px;
-      margin-bottom: 32px;
-      perspective: 1000px;
-    }
-
-    .product-image {
-      max-height: 100%;
-      max-width: 80%;
-      border-radius: 12px;
-      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6);
-      transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-      transform-style: preserve-3d;
-    }
-
-    .product-card:hover .product-image {
-      transform: rotateY(-10deg) rotateX(5deg) scale(1.05);
-    }
-
-    .product-info h3 {
-      font-size: 1.75rem;
-      margin-bottom: 12px;
-    }
-
-    .product-info p {
-      color: var(--text-body);
-      margin-bottom: 24px;
-      font-size: 0.95rem;
-    }
-
-    .features-list {
-      margin-bottom: 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .features-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      font-size: 0.9rem;
-      color: var(--text-heading);
-    }
-
-    .features-list li::before {
-      content: '✓';
-      color: var(--accent-main);
-      font-weight: bold;
-      background: rgba(240, 179, 90, 0.1);
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 0.7rem;
-      margin-top: 2px;
-    }
-
-    .price-action {
-      margin-top: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid var(--glass-border);
-      padding-top: 24px;
-    }
-
-    .price-action .format {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .btn-buy {
-      width: 100%;
-      margin-top: 16px;
-    }
-
-
-    /* --- AUTHOR SECTION --- */
-    .author-section {
-      background: linear-gradient(to bottom, transparent, rgba(31, 63, 104, 0.03), transparent);
-    }
-
-    .author-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 60px;
-      align-items: center;
-    }
-
-    .author-image {
-      width: 100%;
-      aspect-ratio: 1;
-      border-radius: var(--radius-xl);
-      background: url('Flow core solutions Color.png') center/contain no-repeat;
-      background-color: #FFFFFF;
-      /* Light bg for author image container */
-      border: 1px solid var(--glass-border);
-      position: relative;
-      box-shadow: 0 15px 35px rgba(31, 63, 104, 0.08);
-      /* Soft shadow */
-    }
-
-    .author-image::after {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      border-radius: var(--radius-xl);
-      background: linear-gradient(135deg, rgba(229, 91, 19, 0.15), transparent);
-      z-index: -1;
-      filter: blur(15px);
-    }
-
-    .author-content h2 {
-      font-size: 2.5rem;
-      margin-bottom: 24px;
-    }
-
-    .author-content p {
-      font-size: 1.1rem;
-      color: var(--text-body);
-      margin-bottom: 20px;
-    }
-
-    .author-stats {
-      display: flex;
-      gap: 40px;
-      margin-top: 40px;
-      padding-top: 40px;
-      border-top: 1px solid var(--glass-border);
-    }
-
-    .stat-item h4 {
-      font-size: 2rem;
-      color: var(--accent-main);
-      margin-bottom: 4px;
-    }
-
-    .stat-item span {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
-    }
-
-
-    /* --- FINAL CTA --- */
-    .cta-final {
-      padding: 120px 0;
-    }
-
-    .cta-box {
-      background: #F8F9FA;
-      /* Matches the outer page background */
-      border: 1px solid rgba(31, 63, 104, 0.08);
-      /* Very subtle inset border edge */
-      border-radius: var(--radius-xl);
-      padding: 80px 40px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      /* Inset shadows create the "pressed in" / debossed low-relief effect */
-      box-shadow: inset 4px 4px 15px rgba(31, 63, 104, 0.05), inset -4px -4px 15px rgba(255, 255, 255, 1);
-    }
-
-    /* Removed the yellow ambient glow (.cta-box::before) from dark mode */
-
-
-    .cta-box h2 {
-      font-size: clamp(2rem, 4vw, 3.5rem);
-      margin-bottom: 24px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .cta-box p {
-      font-size: 1.2rem;
-      max-width: 600px;
-      margin: 0 auto 40px;
-      position: relative;
-      z-index: 1;
-    }
-
-
-    /* --- FOOTER --- */
-    footer {
-      border-top: 1px solid rgba(31, 63, 104, 0.1);
-      /* Subtle dark border */
-      padding: 60px 0 40px;
-      background: #FFFFFF;
-      /* White footer for clean look */
-    }
-
-    .footer-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 40px;
-    }
-
-    .footer-bottom {
-      display: flex;
-      justify-content: space-between;
-      padding-top: 24px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    /* Animations */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
-    }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      .hero-grid {
-        grid-template-columns: 1fr;
-        text-align: center;
-        gap: 30px;
-      }
-
-      .hero-content {
-        text-align: center;
-        order: 2;
-        /* Move text below visuals on mobile */
-      }
-
-      .hero-visuals {
-        order: 1;
-        /* Move logo/books above text on mobile */
-        height: 520px;
-        margin-top: 20px;
-        position: relative;
-        display: flex;
-        justify-content: center;
-      }
-
-      /* Adjust the huge logo for mobile so it doesn't overlap everything */
-      .hero-main-logo {
-        position: absolute;
-        top: -40px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80%;
-        max-width: 260px;
-        margin-bottom: 0px;
-        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.2));
-      }
-
-      .hero-actions {
-        justify-content: center;
-      }
-
-      .hero-subtitle {
-        margin-inline: auto;
-      }
-
-      .social-proof {
-        text-align: center;
-      }
-
-      .logos {
-        justify-content: center;
-      }
-
-      /* Push books just below the logo (tightening the gap) */
-      .hero-book-wrapper.main-book {
-        top: 80px;
-        transform: rotate(15deg) translateX(45px) translateY(-5px);
-        /* Back cover (black) tilted right to act as an open fan base */
-      }
-
-      .hero-book-wrapper.second-book {
-        top: 60px;
-        transform: rotate(0deg) translateX(-10px);
-        /* Front cover (blue) upright/horizontal base */
-      }
-
-      .bento-grid {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .products-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .author-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .nav-links {
-        display: none;
-      }
-
-      .hero {
-        padding-top: 120px;
-        min-height: auto;
-      }
-
-      .product-image-wrapper {
-        height: 300px;
-      }
-
-      .author-image {
-        width: 80%;
-        margin: 0 auto;
-      }
-
-      .footer-content,
-      .footer-bottom {
-        flex-direction: column;
-        gap: 20px;
-        text-align: center;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Office | Gestão Patrimonial</title>
+    <link rel="stylesheet" href="public/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .btn-secondary {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--accent-color);
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+            transform: translateY(-2px);
+        }
+        .ai-feedback-toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent-color);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: var(--shadow-soft);
+            z-index: 1000;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-primary);
+        }
+        .indices-header {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(20, 20, 24, 0.5) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        .investment-item:hover {
+            transform: translateX(5px);
+            border-color: var(--gold-primary) !important;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);
+        }
+        .investment-item strong {
+            color: var(--gold-primary);
+        }
+        .standard-form .form-group label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94A3B8;
+        }
+        #investments-list-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        #investments-list-container::-webkit-scrollbar-thumb {
+            background: var(--gold-primary);
+            border-radius: 10px;
+        }
+        .ai-analysis-cell {
+            max-width: 250px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            line-height: 1.3;
+            display: flex;
+            align-items: flex-start;
+        }
+        .truncate-text {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* Assets Dashboard */
+        .assets-dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .asset-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            padding: 1.2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .asset-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border-color: var(--gold-primary);
+        }
+        .asset-card h4 {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 0 0.5rem 0;
+        }
+        .asset-card .value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .asset-card i {
+            position: absolute;
+            right: 1.2rem;
+            top: 1.2rem;
+            font-size: 1.5rem;
+            opacity: 0.1;
+            color: var(--gold-primary);
+        }
+
+        @media (max-width: 1024px) {
+            .assets-dashboard { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .assets-dashboard { grid-template-columns: 1fr; }
+        }
+            /* AI Consultant Styles */
+        .fo-ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+        .fo-ai-block { margin-bottom: 0; min-height: 100px; }
+        .fo-ai-score-ring { width: 120px; height: 120px; border-radius: 50%; border: 8px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; position: relative; }
+        .fo-ai-score-ring.low { border-color: rgba(248,113,113,0.3); color: #f87171; }
+        .fo-ai-score-ring.medium { border-color: rgba(184,137,26,0.3); color: var(--gold-200); }
+        .fo-ai-score-ring.high { border-color: rgba(34,197,94,0.3); color: #22c55e; }
+        .fo-ai-impact { font-size: 10px; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; font-weight: bold; }
+        .fo-ai-impact.alto { background: rgba(248,113,113,0.1); color: #f87171; }
+        .fo-ai-impact.medio { background: rgba(184,137,26,0.1); color: var(--gold-200); }
+        .fo-ai-impact.baixo { background: rgba(34,197,94,0.1); color: #22c55e; }
+        .fo-ai-projection-tabs { display: flex; gap: 10px; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
+        .fo-ai-tab { cursor: pointer; padding: 4px 12px; border-radius: 4px; font-size: 0.8rem; color: var(--text-muted); transition: all 0.2s; }
+        .fo-ai-tab.active { background: rgba(212,175,55,0.1); color: var(--gold-200); }
+        .fo-ai-chat-container { height: 400px; display: flex; flex-direction: column; }
+        .fo-ai-chat-messages { flex: 1; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1rem; scroll-behavior: smooth; }
+        .fo-ai-msg { padding: 12px 16px; border-radius: 12px; max-width: 85%; line-height: 1.5; font-size: 0.9rem; position: relative; }
+        .fo-ai-msg.user { align-self: flex-end; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.2); }
+        .fo-ai-msg.ai { align-self: flex-start; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
+        .fo-ai-chat-input-wrap { display: flex; gap: 10px; background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+        .fo-ai-chat-input { background: transparent; border: none; color: #fff; flex: 1; outline: none; padding: 4px 8px; font-size: 0.9rem; }
+        .fo-ai-skeleton { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent); background-size: 200% 100%; animation: fo-skeleton-loading 1.5s infinite; border-radius: 8px; }
+        @keyframes fo-skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    </style>
 </head>
-
 <body>
 
-  <!-- Background Ambience -->
-  <div class="ambient-glow"></div>
-  <div class="ambient-glow-2"></div>
+<!-- ─── TELA DE LOGIN ─────────────────────────────────────────── -->
+<div id="login-screen" style="display:flex; align-items:center; justify-content:center; min-height:100vh; background:url('family_office_background.png') center center / cover no-repeat; position:relative;">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.62);backdrop-filter:blur(3px);"></div>
+    <div style="position:relative;z-index:1;background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px; padding:2.5rem 2rem; width:100%; max-width:380px; box-shadow:var(--shadow-lg); backdrop-filter:blur(20px);">
 
-  <!-- HEADER -->
-  <header id="header">
-    <div class="container nav-inner">
-      <a href="#" class="logo-text">
-        FlowCore Solutions
-      </a>
+        <!-- Cabeçalho comum -->
+        <div style="text-align:center; margin-bottom:2rem;">
+            <img src="logo.png" alt="Family Office" style="height:56px; margin-bottom:1rem;">
+            <h2 style="font-family:var(--font-d); color:var(--gold-200); font-size:1.5rem; font-weight:400; margin:0;">Family Office</h2>
+            <p style="color:var(--text-secondary); font-size:0.78rem; margin-top:0.25rem; letter-spacing:0.1em;">GESTÃO PATRIMONIAL</p>
+        </div>
 
-      <nav class="nav-links">
-        <a href="#solucao" class="link">A Solução</a>
-        <a href="#livros" class="link">Livros Oficiais</a>
-        <a href="#autor" class="link">Sobre o Autor</a>
-        <a href="cursos.html" class="link">Treinamentos</a>
-      </nav>
+        <!-- PAINEL: LOGIN -->
+        <div id="panel-login">
+            <div style="display:flex; flex-direction:column; gap:1rem;">
+                <div>
+                    <label style="color:var(--text-secondary); font-size:0.75rem; letter-spacing:0.08em; display:block; margin-bottom:0.4rem;">EMAIL</label>
+                    <input id="login-email" type="email" placeholder="seu@email.com"
+                        style="width:100%; padding:0.75rem 1rem; background:var(--bg-accent); border:1px solid var(--glass-border); border-radius:8px; color:var(--text-primary); font-size:0.9rem; box-sizing:border-box; outline:none;">
+                </div>
+                <div>
+                    <label style="color:var(--text-secondary); font-size:0.75rem; letter-spacing:0.08em; display:block; margin-bottom:0.4rem;">SENHA</label>
+                    <input id="login-password" type="password" placeholder="••••••••"
+                        style="width:100%; padding:0.75rem 1rem; background:var(--bg-accent); border:1px solid var(--glass-border); border-radius:8px; color:var(--text-primary); font-size:0.9rem; box-sizing:border-box; outline:none;">
+                </div>
+                <div id="login-error" style="color:#f87171; font-size:0.8rem; display:none; text-align:center;"></div>
+                <button id="login-btn" onclick="doLogin()"
+                    style="width:100%; padding:0.85rem; background:linear-gradient(135deg,var(--gold-primary),var(--gold-200)); border:none; border-radius:8px; color:#000; font-weight:600; font-size:0.9rem; letter-spacing:0.08em; cursor:pointer; margin-top:0.5rem;">
+                    ENTRAR
+                </button>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:1.25rem;">
+                <button onclick="showPanel('forgot')" style="background:none; border:none; color:var(--text-secondary); font-size:0.75rem; cursor:pointer; padding:0; text-decoration:underline;">Esqueci minha senha</button>
+                <button onclick="showPanel('register')" style="background:none; border:none; color:var(--gold-200); font-size:0.75rem; cursor:pointer; padding:0; text-decoration:underline;">Criar conta</button>
+            </div>
+        </div>
 
-      <a href="#livros" class="btn btn-primary btn-nav">Acessar Materiais</a>
+        <!-- PAINEL: CADASTRO -->
+        <div id="panel-register" style="display:none;">
+            <div style="display:flex; flex-direction:column; gap:1rem;">
+                <div>
+                    <label style="color:var(--text-secondary); font-size:0.75rem; letter-spacing:0.08em; display:block; margin-bottom:0.4rem;">NOME</label>
+                    <input id="reg-name" type="text" placeholder="Seu nome completo"
+                        style="width:100%; padding:0.75rem 1rem; background:var(--bg-accent); border:1px solid var(--glass-border); border-radius:8px; color:var(--text-primary); font-size:0.9rem; box-sizing:border-box; outline:none;">
+                </div>
+                <div>
+                    <label style="color:var(--text-secondary); font-size:0.75rem; letter-spacing:0.08em; display:block; margin-bottom:0.4rem;">EMAIL</label>
+                    <input id="reg-email" type="email" placeholder="seu@email.com"
+                        style="width:100%; padding:0.75rem 1rem; background:var(--bg-accent); border:1px solid var(--glass-border); border-radius:8px; color:var(--text-primary); font-size:0.9rem; box-sizing:border-box; outline:none;">
+                </div>
+                <div>
+                    <label style="color:var(--text-secondary); font-size:0.75rem; letter-spacing:0.08em; display:block; margin-bottom:0.4rem;">SENHA</label>
+                    <input id="reg-password" type="password" placeholder="Mínimo 6 caracteres"
+                        style="width:100%; padding:0.75rem 1rem; background:var(--bg-accent); border:1px solid var(--glass-border); border-radius:8px; color:var(--text-primary); font-size:0.9rem; box-sizing:border-box; outline:none;">
+                </div>
+                <div>
+                    <label style="color:var(--text-secondary); font-size:0.75rem; letter-spacing:0.08em; display:block; margin-bottom:0.4rem;">CONFIRMAR SENHA</label>
+                    <input id="reg-password2" type="password" placeholder="Repita a senha"
+                        style="width:100%; padding:0.75rem 1rem; background:var(--bg-accent); border:1px solid var(--glass-border); border-radius:8px; color:var(--text-primary); font-size:0.9rem; box-sizing:border-box; outline:none;">
+                </div>
+                <div id="reg-error" style="color:#f87171; font-size:0.8rem; display:none; text-align:center;"></div>
+                <div id="reg-success" style="color:#4ade80; font-size:0.8rem; display:none; text-align:center;"></div>
+                <button id="reg-btn" onclick="doRegister()"
+                    style="width:100%; padding:0.85rem; background:linear-gradient(135deg,var(--gold-primary),var(--gold-200)); border:none; border-radius:8px; color:#000; font-weight:600; font-size:0.9rem; letter-spacing:0.08em; cursor:pointer; margin-top:0.5rem;">
+                    CRIAR CONTA
+                </button>
+            </div>
+            <div style="text-align:center; margin-top:1.25rem;">
+                <button onclick="showPanel('login')" style="background:none; border:none; color:var(--text-secondary); font-size:0.75rem; cursor:pointer; padding:0; text-decoration:underline;">Já tenho conta</button>
+            </div>
+        </div>
+
+        <!-- PAINEL: RECUPERAR SENHA -->
+        <div id="panel-forgot" style="display:none;">
+            <div style="display:flex; flex-direction:column; gap:1rem;">
+                <p style="color:var(--text-secondary); font-size:0.8rem; margin:0 0 0.5rem 0; text-align:center;">Informe seu email e enviaremos um link para redefinir sua senha.</p>
+                <div>
+                    <label style="color:var(--text-secondary); font-size:0.75rem; letter-spacing:0.08em; display:block; margin-bottom:0.4rem;">EMAIL</label>
+                    <input id="forgot-email" type="email" placeholder="seu@email.com"
+                        style="width:100%; padding:0.75rem 1rem; background:var(--bg-accent); border:1px solid var(--glass-border); border-radius:8px; color:var(--text-primary); font-size:0.9rem; box-sizing:border-box; outline:none;">
+                </div>
+                <div id="forgot-error" style="color:#f87171; font-size:0.8rem; display:none; text-align:center;"></div>
+                <div id="forgot-success" style="color:#4ade80; font-size:0.8rem; display:none; text-align:center;"></div>
+                <button id="forgot-btn" onclick="doForgotPassword()"
+                    style="width:100%; padding:0.85rem; background:linear-gradient(135deg,var(--gold-primary),var(--gold-200)); border:none; border-radius:8px; color:#000; font-weight:600; font-size:0.9rem; letter-spacing:0.08em; cursor:pointer; margin-top:0.5rem;">
+                    ENVIAR LINK
+                </button>
+            </div>
+            <div style="text-align:center; margin-top:1.25rem;">
+                <button onclick="showPanel('login')" style="background:none; border:none; color:var(--text-secondary); font-size:0.75rem; cursor:pointer; padding:0; text-decoration:underline;">Voltar ao login</button>
+            </div>
+        </div>
+
     </div>
-  </header>
+</div>
 
-  <!-- HERO -->
-  <main>
-    <section class="hero">
-      <div class="container">
-        <div class="hero-grid">
-          <div class="hero-content">
-            <div class="badge">
-              <div class="badge-dot"></div>
-              Engenharia • Medição • Excelência
+<style>
+#login-email:focus, #login-password:focus {
+    border-color: var(--gold-primary) !important;
+}
+</style>
+
+<!-- ─── TELA DE BOAS-VINDAS (primeiro acesso) ──────────────────── -->
+<div id="welcome-screen" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.85); backdrop-filter:blur(6px); align-items:center; justify-content:center;">
+    <div style="background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:20px; padding:3rem 2.5rem; max-width:480px; width:90%; text-align:center; box-shadow:var(--shadow-lg);">
+        <img src="logo.png" alt="Family Office" style="height:64px; margin-bottom:1.5rem;">
+        <h2 style="font-family:var(--font-d); color:var(--gold-200); font-size:1.8rem; font-weight:400; margin:0 0 0.5rem 0;">Bem-vindo ao Family Office</h2>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.6; margin:0 0 2rem 0;">Seu espaço privado para organizar e acompanhar a gestão patrimonial da família. Tudo começa com um primeiro lançamento.</p>
+        <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:2rem;">
+            <div style="display:flex; align-items:center; gap:1rem; background:var(--bg-accent); border-radius:10px; padding:0.85rem 1rem; text-align:left;">
+                <i class="fas fa-exchange-alt" style="color:var(--gold-primary); font-size:1.2rem; width:24px; text-align:center;"></i>
+                <div><div style="color:var(--text-primary); font-size:0.85rem; font-weight:500;">Fluxo de Caixa</div><div style="color:var(--text-secondary); font-size:0.75rem;">Registre entradas e saídas do mês</div></div>
+            </div>
+            <div style="display:flex; align-items:center; gap:1rem; background:var(--bg-accent); border-radius:10px; padding:0.85rem 1rem; text-align:left;">
+                <i class="fas fa-landmark" style="color:var(--gold-primary); font-size:1.2rem; width:24px; text-align:center;"></i>
+                <div><div style="color:var(--text-primary); font-size:0.85rem; font-weight:500;">Patrimônio</div><div style="color:var(--text-secondary); font-size:0.75rem;">Cadastre imóveis, veículos e outros ativos</div></div>
+            </div>
+            <div style="display:flex; align-items:center; gap:1rem; background:var(--bg-accent); border-radius:10px; padding:0.85rem 1rem; text-align:left;">
+                <i class="fas fa-bullseye" style="color:var(--gold-primary); font-size:1.2rem; width:24px; text-align:center;"></i>
+                <div><div style="color:var(--text-primary); font-size:0.85rem; font-weight:500;">Metas</div><div style="color:var(--text-secondary); font-size:0.75rem;">Defina objetivos e acompanhe o progresso</div></div>
+            </div>
+        </div>
+        <button onclick="document.getElementById('welcome-screen').style.display='none'; window.location.hash='cashflow';"
+            style="width:100%; padding:1rem; background:linear-gradient(135deg,var(--gold-primary),var(--gold-200)); border:none; border-radius:10px; color:#000; font-weight:700; font-size:0.95rem; letter-spacing:0.08em; cursor:pointer;">
+            COMEÇAR — CRIAR PRIMEIRO LANÇAMENTO
+        </button>
+        <button onclick="document.getElementById('welcome-screen').style.display='none';"
+            style="margin-top:0.75rem; background:none; border:none; color:var(--text-secondary); font-size:0.8rem; cursor:pointer; text-decoration:underline;">
+            Explorar o sistema primeiro
+        </button>
+    </div>
+</div>
+
+    <div class="app-container" id="app-container" style="display:none;">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="logo.png" alt="Royal Family Office" class="sidebar-logo">
+            </div>
+            <nav class="nav-menu">
+                <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#assets" class="nav-item" data-page="assets">
+                    <i class="fas fa-vault"></i>
+                    <span>Patrimônio</span>
+                </a>
+                <a href="javascript:void(0)" class="nav-item" data-page="cashflow">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Fluxo de Caixa</span>
+                    <span id="fo-notification-badge" class="fo-notification-badge hidden">0</span>
+                </a>
+                <a href="javascript:void(0)" class="nav-item" data-page="cards">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Cartões</span>
+                </a>
+                <a href="javascript:void(0)" class="nav-item" data-page="investments">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Investimentos</span>
+                </a>
+                <a href="javascript:void(0)" class="nav-item" data-page="goals">
+                    <i class="fas fa-bullseye"></i>
+                    <span>Metas</span>
+                </a>
+                <a href="javascript:void(0)" class="nav-item" data-page="planning">
+                    <i class="fas fa-calculator"></i>
+                    <span>Planejamento</span>
+                </a>
+                <a href="javascript:void(0)" class="nav-item" data-page="recorrencias">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Recorrências</span>
+                </a>
+				<a href="javascript:void(0)" class="nav-item" data-page="consultor">
+					<i class="fas fa-magic"></i>
+					<span>Consultor IA</span>
+				</a>
+                <a href="javascript:void(0)" class="nav-item" data-page="ai-settings">
+                    <i class="fas fa-robot"></i>
+                    <span>Configurações IA</span>
+                </a>
+                <a href="family-office-pwa.html" target="_blank" class="nav-item">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>App Mobile (PWA)</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="theme-toggle" class="nav-item">
+                    <i class="fas fa-moon"></i>
+                    <span id="theme-toggle-label">Modo Claro</span>
+                </a>
+                <div class="ai-global-status" id="ai-global-status">
+                    <div class="status-dot"></div>
+                    <span class="status-text">IA OFFLINE</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header>
+                <div class="page-title">
+                    <h1 id="view-title">Dashboard Principal</h1>
+                    <p id="view-subtitle" class="text-secondary">Bem-vindo à sua gestão patrimonial.</p>
+                </div>
+                <div class="user-profile">
+                    <button class="btn" id="import-btn" onclick="document.getElementById('import-file-input').click()" style="background: var(--bg-accent); margin-right: 0.5rem;" title="Importar backup JSON">
+                        <i class="fas fa-upload"></i> Importar
+                    </button>
+                    <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="handleImportFile(this)">
+                    <button class="btn" id="export-btn" style="background: var(--bg-accent); margin-right: 0.5rem;">
+                        <i class="fas fa-download"></i> Exportar
+                    </button>
+                    <button class="btn btn-primary" id="add-entry-btn">
+                        <i class="fas fa-plus"></i> Novo Registro
+                    </button>
+                    <div class="avatar">
+                        <i class="fas fa-user-circle fa-2x"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Content -->
+            <div id="page-content">
+                <!-- Dashboard Content (Default) -->
+                <div id="dashboard-view">
+                    <div class="dashboard-period-container">
+                        <div class="period-header">
+                            <h2 class="journal-title">Resumo de Performance</h2>
+                            <div class="period-selector">
+                                <button class="period-btn active" onclick="window.app.setDashboardPeriod(3)">3 MESES</button>
+                                <button class="period-btn" onclick="window.app.setDashboardPeriod(6)">6 MESES</button>
+                                <button class="period-btn" onclick="window.app.setDashboardPeriod(12)">12 MESES</button>
+                            </div>
+                        </div>
+                        
+                        <div id="dashboard-summary-content" class="dashboard-summary-grid">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- New BI Charts Section -->
+                    <div class="charts-dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+                        <div class="stat-card" style="grid-column: span 2;">
+                            <h3 style="margin-bottom: 1rem;"><i class="fas fa-chart-line" style="color: var(--accent-color); margin-right: 8px;"></i> Evolução Mensal por Categoria</h3>
+                            <div style="height: 300px;">
+                                <canvas id="spendingEvolutionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <h3 style="margin-bottom: 1rem;"><i class="fas fa-chart-bar" style="color: var(--accent-color); margin-right: 8px;"></i> Composição Mensal</h3>
+                            <div style="height: 300px;">
+                                <canvas id="monthlyCompositionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <h3 style="margin-bottom: 1rem;"><i class="fas fa-list-ol" style="color: var(--accent-color); margin-right: 8px;"></i> Top 10 Áreas de Gastos</h3>
+                            <div style="height: 300px;">
+                                <canvas id="topSubcategoriesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outras views... -->
+                <div id="cards-view" class="hidden">
+                    <section class="fo-section">
+                        <!-- Cabeçalho -->
+                        <div class="fo-header">
+                            <div>
+                                <div class="fo-header-title">Cartões de Crédito</div>
+                                <div class="fo-header-sub">Consolidação &amp; Controle</div>
+                            </div>
+                            <div id="cards-month-selector" style="display:flex;align-items:center;gap:12px;"><button class="fo-action-btn" onclick="app.changeCardsMonth(-1)"><i class="fas fa-chevron-left"></i></button><span id="current-cards-month" style="font-family:'Times New Roman',serif;font-size:16px;color:var(--gold-200);min-width:160px;text-align:center;"></span><button class="fo-action-btn" onclick="app.changeCardsMonth(1)"><i class="fas fa-chevron-right"></i></button></div>
+                        </div>
+
+                        <!-- Métricas -->
+                        <div class="fo-metrics">
+                            <div class="fo-metric glass">
+                                <div class="fo-metric-label">Limite total</div>
+                                <div class="fo-metric-value">R$ 85k</div>
+                                <div class="fo-metric-sub">3 Cart&#245;es ativos</div>
+                            </div>
+                            <div class="fo-metric glass">
+                                <div class="fo-metric-label">Utilizado</div>
+                                <div class="fo-metric-value">R$ 34,2k</div>
+                                <div class="fo-metric-sub">40% do limite consolidado</div>
+                            </div>
+                            <div class="fo-metric glass">
+                                <div class="fo-metric-label">Faturas abertas</div>
+                                <div class="fo-metric-value">R$ 22,8k</div>
+                                <div class="fo-metric-sub">Próximo vencimento: 02/abr</div>
+                            </div>
+                            <div class="fo-metric glass">
+                                <div class="fo-metric-label">Cashback / Pontos</div>
+                                <div class="fo-metric-value">142k</div>
+                                <div class="fo-metric-sub">â‰ˆ R$ 1.420 em resgates</div>
+                            </div>
+                        </div>
+
+                        <!-- Cards -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                            <div class="fo-label" style="margin-bottom: 0;">Cart&#245;es</div>
+                            <button class="fo-filter active" id="btn-add-card">Adicionar Cartão</button>
+                        </div>
+                        <div class="fo-cards" id="fo-cards-container">
+                        </div>
+
+                        <!-- Alertas -->
+                        <div class="fo-label">Alertas</div>
+                        <div class="fo-alerts" id="fo-alerts-container">
+                            <!-- Populated dynamically -->
+                        </div>
+
+                        <!-- Transações -->
+                        <div class="fo-tx-header">
+                            <div class="fo-label" style="margin-bottom:0">Últimas Transações</div>
+                            <div class="fo-filters" id="fo-filters">
+                                <button class="fo-filter active" data-cat="todos">Todos</button>
+                                <button class="fo-filter" data-cat="Viagem">Viagem</button>
+                                <button class="fo-filter" data-cat="Restaurante">Restaurante</button>
+                                <button class="fo-filter" data-cat="Compras">Compras</button>
+                                <button class="fo-filter" data-cat="Saúde">Saúde</button>
+                                <button class="fo-filter active" id="btn-add-card-tx" style="margin-left: 14px;">Nova Transação</button>
+                            </div>
+                        </div>
+
+                        <div class="fo-table-wrap glass">
+                            <table class="fo-tx-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:13%">Data</th>
+                                        <th style="width:34%">Estabelecimento</th>
+                                        <th style="width:24%">Cartão</th>
+                                        <th style="width:14%">Categoria</th>
+                                        <th style="width:15%; text-align:right">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fo-tx-body"></tbody>
+                            </table>
+                        </div>
+                        </div>
+
+                        <!-- Cards Modals -->
+                        <div id="fo-card-modal-overlay" class="fo-modal-overlay hidden">
+                            <div class="fo-modal-panel glass">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px;">
+                                    <h3 id="fo-card-modal-title" style="font-family: var(--font-display); font-size: 22px; color: var(--gold-100); font-weight: 500;">Adicionar Cartão</h3>
+                                    <button class="fo-modal-close" id="fo-card-modal-close" style="background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;">&times;</button>
+                                </div>
+                                <form id="fo-card-form">
+                                    <input type="hidden" id="fo-card-id">
+                                    <div class="fo-modal-field">
+                                        <label class="fo-metric-label">Nome do Cartão (Ex: Itaú Black)</label>
+                                        <input type="text" id="fo-card-name" class="fo-modal-input" required>
+                                    </div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                                        <div class="fo-modal-field">
+                                            <label class="fo-metric-label">Banco</label>
+                                            <input type="text" id="fo-card-bank" class="fo-modal-input" required>
+                                        </div>
+                                        <div class="fo-modal-field">
+                                            <label class="fo-metric-label">Titular</label>
+                                            <input type="text" id="fo-card-holder" class="fo-modal-input" required>
+                                        </div>
+                                    </div>
+                                    <div class="fo-modal-field">
+                                        <label class="fo-metric-label">Limite Total (R$)</label>
+                                        <input type="number" step="0.01" id="fo-card-limit" class="fo-modal-input" required>
+                                    </div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                                        <div class="fo-modal-field">
+                                            <label class="fo-metric-label">Dia de Fechamento</label>
+                                            <input type="number" min="1" max="31" id="fo-card-closing" class="fo-modal-input" placeholder="Ex: 29" required>
+                                        </div>
+                                        <div class="fo-modal-field">
+                                            <label class="fo-metric-label">Dia de Vencimento</label>
+                                            <input type="number" min="1" max="31" id="fo-card-due" class="fo-modal-input" placeholder="Ex: 6" required>
+                                        </div>
+                                    </div>
+                                    <div class="fo-modal-field" style="margin-bottom: 24px;">
+                                        <label class="fo-metric-label">Pontos / Cashback Disponíveis</label>
+                                        <input type="number" step="1" id="fo-card-points" class="fo-modal-input" required>
+                                    </div>
+                                    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                                        <button type="button" class="fo-filter" id="fo-card-modal-cancel">Cancelar</button>
+                                        <button type="submit" class="fo-filter active">Salvar Cartão</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div id="fo-tx-modal-overlay" class="fo-modal-overlay hidden">
+                            <div class="fo-modal-panel glass">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px;">
+                                    <h3 id="fo-tx-modal-title" style="font-family: var(--font-display); font-size: 22px; color: var(--gold-100); font-weight: 500;">Nova Transação</h3>
+                                    <button class="fo-modal-close" id="fo-tx-modal-close" style="background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;">&times;</button>
+                                </div>
+                                <form id="fo-tx-form">
+                                    <input type="hidden" id="fo-tx-id">
+                                    <div class="fo-modal-field">
+                                        <label class="fo-metric-label">Vincular a qual Cartão?</label>
+                                        <select id="fo-tx-card" class="fo-modal-input" required></select>
+                                    </div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                                        <div class="fo-modal-field">
+                                            <label class="fo-metric-label">Data da Compra</label>
+                                            <input type="date" id="fo-tx-date" class="fo-modal-input" required>
+                                        </div>
+                                        <div class="fo-modal-field">
+                                            <label class="fo-metric-label">Categoria</label>
+                                            <select id="fo-tx-cat" class="fo-modal-input" required>
+                                                <option value="Viagem">Viagem</option>
+                                                <option value="Restaurante">Restaurante</option>
+                                                <option value="Compras">Compras</option>
+                                                <option value="Saúde">Saúde</option>
+                                                <option value="Outros">Outros</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="fo-modal-field">
+                                        <label class="fo-metric-label">Estabelecimento / Descrição</label>
+                                        <input type="text" id="fo-tx-place" class="fo-modal-input" required>
+                                    </div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                                        <div class="fo-modal-field">
+                                            <label class="fo-metric-label">Valor (R$)</label>
+                                            <input type="number" step="0.01" id="fo-tx-amount" class="fo-modal-input" required>
+                                        </div>
+                                        <div class="fo-modal-field">
+                                            <label class="fo-metric-label">Parcelas</label>
+                                            <select id="fo-tx-installments" class="fo-modal-input">
+                                                <option value="1">1x (à vista)</option>
+                                                <option value="2">2x</option>
+                                                <option value="3">3x</option>
+                                                <option value="4">4x</option>
+                                                <option value="5">5x</option>
+                                                <option value="6">6x</option>
+                                                <option value="7">7x</option>
+                                                <option value="8">8x</option>
+                                                <option value="9">9x</option>
+                                                <option value="10">10x</option>
+                                                <option value="11">11x</option>
+                                                <option value="12">12x</option>
+                                                <option value="18">18x</option>
+                                                <option value="24">24x</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div id="fo-tx-preview" style="font-size: 12px; color: var(--gold-200); margin-bottom: 18px; text-align: right; min-height: 16px;"></div>
+                                    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                                        <button type="button" class="fo-filter" id="fo-tx-modal-cancel">Cancelar</button>
+                                        <button type="submit" class="fo-filter active">Salvar Transação</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </section>
+                </div>
+
+                <div id="assets-view" class="hidden">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h2 style="margin: 0;"><i class="fas fa-vault" style="color: var(--gold-primary); margin-right: 10px;"></i> Gestão de Patrimônio</h2>
+                        <button class="btn btn-primary" onclick="app.showModal('asset')">
+                            <i class="fas fa-plus"></i> Novo Ativo
+                        </button>
+                    </div>
+
+                    <!-- Assets Dashboard -->
+                    <div class="assets-dashboard">
+                        <div class="asset-card">
+                            <i class="fas fa-hand-holding-usd"></i>
+                            <h4>Total Investido</h4>
+                            <div id="dash-total-invested" class="value">R$ 0,00</div>
+                        </div>
+                        <div class="asset-card">
+                            <i class="fas fa-chart-line"></i>
+                            <h4>Valor Estimado</h4>
+                            <div id="dash-total-estimated" class="value">R$ 0,00</div>
+                        </div>
+                        <div class="asset-card">
+                            <i class="fas fa-balance-scale"></i>
+                            <h4>Diferença Patrimonial</h4>
+                            <div id="dash-total-diff" class="value">R$ 0,00</div>
+                        </div>
+                        <div class="asset-card">
+                            <i class="fas fa-percentage"></i>
+                            <h4>Variação Global</h4>
+                            <div id="dash-total-percent" class="value">0.00%</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="assets-table">
+                            <thead>
+                                <tr>
+                                    <th>Ativo</th>
+                                    <th>Aquisição</th>
+                                    <th>Custo Aquisição</th>
+                                    <th>Valor Estimado</th>
+                                    <th>Performance</th>
+                                    <th>Análise IA</th>
+                                    <th style="text-align: right;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assets-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="cashflow-view" class="hidden"></div>
+                
+                <div id="investments-view" class="hidden">
+                    <div class="investments-dashboard">
+                        <!-- Indices Header -->
+                        <div class="indices-header stat-card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 1.5rem;">
+                            <div style="display: flex; gap: 2rem; align-items: center;">
+                                <h3 style="margin: 0; min-width: 150px;"><i class="fas fa-landmark" style="color: var(--gold-primary);"></i> Índices de Mercado</h3>
+                                <div id="indices-display" style="display: flex; gap: 1.5rem; font-size: 0.9rem;">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.8rem;">
+                                <span id="indices-last-update" class="text-secondary" style="font-size: 0.75rem;"></span>
+                                <div style="display: flex; gap: 0.4rem;">
+                                    <button class="btn btn-sm btn-secondary" onclick="window.app.refreshMarketIndices()" title="Atualizar via IA">
+                                        <i class="fas fa-robot"></i> IA
+                                    </button>
+                                    <button class="btn btn-sm btn-secondary" onclick="window.app.openIndicesManualModal()" title="Editar Manualmente">
+                                        <i class="fas fa-edit"></i> Manual
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="investments-grid" style="display: grid; grid-template-columns: 350px 1fr; gap: 1.5rem;">
+                            <!-- Left: New & List -->
+                            <div class="investments-sidebar">
+                                <div class="stat-card" style="margin-bottom: 1.5rem;">
+                                    <h3 style="margin-bottom: 1rem;">Novo Investimento</h3>
+                                    <form id="new-investment-form" class="standard-form">
+                                        <div class="form-group">
+                                            <label>Instituição</label>
+                                            <input type="text" name="institution" class="form-control" placeholder="XP, BTG, Itaú..." required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Nome (opcional)</label>
+                                            <input type="text" name="investmentName" class="form-control" placeholder="CDB Liquidez Diária">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Valor Alocado</label>
+                                            <input type="text" name="allocatedValue" class="form-control currency-mask" placeholder="0,00" required>
+                                        </div>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                            <div class="form-group">
+                                                <label>Benchmark</label>
+                                                <select name="benchmarkIndex" class="form-control" id="bench-selector">
+                                                    <option value="cdi">CDI</option>
+                                                    <option value="selic">SELIC</option>
+                                                    <option value="ipca_plus">IPCA+</option>
+                                                    <option value="lci">LCI</option>
+                                                    <option value="lca">LCA</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>% do Índice</label>
+                                                <input type="number" name="benchmarkPercentage" class="form-control" value="100" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Data de Início</label>
+                                            <input type="date" name="startDate" class="form-control" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary" style="width: 100%;">Registrar</button>
+                                    </form>
+                                </div>
+
+                                <div class="stat-card" style="max-height: 400px; overflow-y: auto;">
+                                    <h3 style="margin-bottom: 1rem;">Meus Ativos</h3>
+                                    <div id="investments-list-container">
+                                        <!-- Populated via JS -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Analysis & Projection -->
+                            <div class="investments-main">
+                                <div class="stat-card" style="margin-bottom: 1.5rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                        <div>
+                                            <h3 style="margin: 0;">Simulador de Projeção</h3>
+                                            <p class="text-secondary" style="font-size: 0.8rem; margin-top: 4px;">Cálculo baseado em Dias Úteis (252 d.u./ano)</p>
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; align-items: center; background: rgba(255,255,255,0.05); padding: 0.5rem 1rem; border-radius: 8px;">
+                                            <div class="form-group" style="margin: 0;">
+                                                <label style="font-size: 0.7rem; display: block;">Meses</label>
+                                                <input type="number" id="proj-months" value="12" style="width: 60px; background: transparent; border: none; color: #fff; font-weight: bold; border-bottom: 1px solid var(--gold-primary);">
+                                            </div>
+                                            <div id="yield-summary" style="text-align: right;">
+                                                <span class="text-secondary" style="font-size: 0.7rem; display: block;">Rendimento Di&#225;rio</span>
+                                                <span id="daily-yield-val" style="color: var(--accent-color); font-weight: bold;">R$ 0,00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="height: 350px;">
+                                        <canvas id="investmentProjectionChart"></canvas>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <h3 style="margin-bottom: 1rem;">Hist&#243;rico de Resgates</h3>
+                                    <div id="investment-withdraw-history" style="font-size: 0.9rem;">
+                                        <!-- Populated via JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="goals-view" class="hidden">
+                    <div id="goals-list" class="dashboard-grid">
+                        <!-- Goal cards rendered via JS -->
+                    </div>
+                </div>
+
+                <div id="planning-view" class="hidden">
+                    <div class="stat-card" style="max-width: 600px; margin: 0 auto;">
+                        <h3>Simulador de Futuro</h3>
+                        <div class="form-group">
+                            <label>Aporte Mensal (R$)</label>
+                            <input type="text" id="plan-monthly" class="form-control" value="1.000,00">
+                        </div>
+                        <div class="form-group">
+                            <label>Taxa Anual Esperada (%)</label>
+                            <input type="number" id="plan-rate" class="form-control" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label>Anos</label>
+                            <input type="number" id="plan-years" class="form-control" value="10">
+                        </div>
+                        <button class="btn btn-primary" id="run-simulation" style="width: 100%;">Simular</button>
+                        
+                        <div id="simulation-result" style="margin-top: 2rem;" class="hidden">
+                            <p>Patrimônio Estimado: <strong id="sim-total">R$ 0,00</strong></p>
+                            <p>Renda Passiva Estimada: <strong id="sim-passive">R$ 0,00</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Settings View -->
+				<div id="ai-settings-view" class="hidden"></div>
+
+				<!-- NEW: Consultor IA Section -->
+				<div id="consultor-view" class="hidden">
+					<section id="fo-section-consultor" class="fo-section" style="padding-bottom: 40px;">
+						<div class="fo-header" style="justify-content: space-between; align-items: flex-start;">
+							<div>
+								<div class="fo-header-title">Consultor IA Financeiro</div>
+								<div class="fo-header-sub">An&#225;lise Profunda &amp; Estrat&#233;gia Patrimonial</div>
+							</div>
+							<div style="text-align: right;">
+								<button class="fo-filter active" id="fo-ai-generate-btn">
+									<i class="fas fa-magic" style="margin-right: 6px;"></i> <span>Gerar An&#225;lise</span>
+								</button>
+								<div id="fo-ai-last-updated" style="font-size: 10px; color: var(--text-muted); margin-top: 6px;"></div>
+							</div>
+						</div>
+
+						<div id="fo-ai-initial-state" class="glass" style="padding: 3rem; text-align: center; border-radius: 12px; margin-top: 1rem;">
+							<div style="font-size: 48px; color: var(--gold-200); margin-bottom: 20px; opacity: 0.5;">
+								<i class="fas fa-robot"></i>
+							</div>
+							<h3 style="font-family: var(--font-display); color: var(--gold-100);">Pronto para uma An&#225;lise Executiva?</h3>
+							<p class="text-secondary" style="max-width: 500px; margin: 10px auto 30px;">O Consultor IA revisar&#225; seus faturamentos, cart&#245;es, fluxos e recorr&#234;ncias para gerar um diagn&#243;stico completo e proje&#231;&#245;es estrat&#233;gicas para o seu patrim&#244;nio.</p>
+							<button class="btn btn-primary" id="fo-ai-start-btn">Iniciar An&#225;lise Agora</button>
+						</div>
+
+						<div id="fo-ai-results" class="hidden" style="margin-top: 1rem;">
+							<div class="fo-ai-grid">
+								<div class="fo-metric glass" style="flex-direction: row; align-items: center; gap: 1.5rem; justify-content: flex-start;">
+									<div id="fo-ai-score-container" class="fo-ai-score-ring">--</div>
+									<div style="flex: 1;">
+										<div class="fo-metric-label" style="margin-bottom: 4px;">Health Score Patrimonial</div>
+										<div id="fo-ai-score-comment" style="font-size: 0.85rem; line-height: 1.4; color: var(--text-secondary);"></div>
+									</div>
+								</div>
+								<div class="fo-metric glass" style="justify-content: flex-start; align-items: flex-start; gap: 10px;">
+									<div class="fo-metric-label">Diagn&#243;stico do Consultor</div>
+									<div id="fo-ai-diagnosis" style="font-size: 0.95rem; font-family: var(--font-display); line-height: 1.5; color: var(--gold-100);"></div>
+								</div>
+							</div>
+							<div id="fo-ai-alerts" style="margin-top: 1.5rem;"></div>
+							<div class="fo-ai-grid">
+								<div class="fo-ai-block">
+									<div class="fo-label">Gargalos Identificados</div>
+									<div id="fo-ai-bottlenecks" class="glass" style="padding: 1.5rem; border-radius: 12px; display: flex; flex-direction: column; gap: 1.2rem;"></div>
+								</div>
+								<div class="fo-ai-block">
+									<div class="fo-label">Proje&#231;&#245;es de Futuro</div>
+									<div class="glass" style="padding: 1.5rem; border-radius: 12px;">
+										<div class="fo-ai-projection-tabs" id="fo-ai-proj-tabs">
+											<div class="fo-ai-tab active" data-horizon="3m">3 Meses</div>
+											<div class="fo-ai-tab" data-horizon="6m">6 Meses</div>
+											<div class="fo-ai-tab" data-horizon="12m">12 Meses</div>
+											<div class="fo-ai-tab" data-horizon="24m">24 Meses</div>
+										</div>
+										<div id="fo-ai-proj-content">
+											<div id="fo-ai-proj-scenario" style="font-size: 0.9rem; line-height: 1.4; margin-bottom: 15px; min-height: 44px; color: var(--text-secondary);"></div>
+											<div style="display: flex; justify-content: space-between; align-items: baseline;">
+												<span class="text-secondary" style="font-size: 0.8rem;">Saldo Final Projetado:</span>
+												<span id="fo-ai-proj-value" style="font-size: 1.5rem; font-weight: bold; font-family: var(--font-display);"></span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="fo-ai-grid">
+								<div class="fo-ai-block">
+									<div class="fo-label">Sugest&#245;es do Consultor</div>
+									<div id="fo-ai-suggestions" class="glass" style="padding: 1.5rem; border-radius: 12px; display: flex; flex-direction: column; gap: 1.2rem;"></div>
+								</div>
+								<div class="fo-ai-block">
+									<div class="fo-label">Oportunidades de Valoriza&#231;&#227;o</div>
+									<div id="fo-ai-opportunities" class="glass" style="padding: 1.5rem; border-radius: 12px; display: flex; flex-direction: column; gap: 1.2rem;"></div>
+								</div>
+							</div>
+							<div class="fo-ai-block" style="margin-top: 1.5rem;">
+								<div class="fo-label">Chat com o Consultor IA</div>
+								<div class="glass" style="padding: 1.5rem; border-radius: 12px;">
+									<div class="fo-ai-chat-container">
+										<div id="fo-ai-chat-messages" class="fo-ai-chat-messages">
+											<div class="fo-ai-msg ai">Ol&#225;! Sou seu Consultor Executivo. Com base nos dados analisados, em que posso auxili&#225;-lo estrategicamente agora?</div>
+										</div>
+										<div class="fo-ai-chat-input-wrap">
+											<input type="text" id="fo-ai-chat-input" class="fo-ai-chat-input" placeholder="Digite sua d&#250;vida estrat&#233;gica...">
+											<button class="fo-action-btn check" id="fo-ai-chat-send" style="padding: 8px 16px; width: auto; height: auto;">
+												<i class="fas fa-paper-plane"></i>
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</section>
+				</div>
+                <div id="recorrencias-view" class="hidden">
+                    <section class="fo-section">
+                        <div class="fo-header">
+                            <div>
+                                <div class="fo-header-title">Recorr&#234;ncias e Fluxo Fixo</div>
+                                <div class="fo-header-sub">Gest&#227;o de despesas recorrentes</div>
+                            </div>
+                            <div id="recorrencias-month-selector" style="display:flex;align-items:center;gap:12px;">
+                                <button class="fo-action-btn" onclick="app.changeRecMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                                <span id="current-rec-month" style="font-family:''Times New Roman'',serif;font-size:16px;color:var(--gold-200);min-width:160px;text-align:center;"></span>
+                                <button class="fo-action-btn" onclick="app.changeRecMonth(1)"><i class="fas fa-chevron-right"></i></button>
+                                <span id="rec-projection-badge" class="hidden" style="background:rgba(245,158,11,0.15);color:#f59e0b;padding:2px 10px;border-radius:8px;font-size:11px;">PROJE&#199;&#195;O</span>
+                            </div>
+                        </div>
+
+                        <!-- Metrics Grid -->
+                        <div class="fo-metrics" style="margin-bottom: 28px;">
+                            <div class="fo-metric glass">
+                                <div class="fo-metric-label">TOTAL RECORRÊNCIAS</div>
+                                <div class="fo-metric-value" id="rec-total-amount">R$ 0,00</div>
+                                <div class="fo-metric-sub" id="rec-total-count">0 assinaturas ativas</div>
+                            </div>
+                            <div class="fo-metric glass">
+                                <div class="fo-metric-value" id="fo-btn-net-income" style="cursor:pointer; position:relative; z-index:10;">R$ 0,00</div>
+                                <div class="fo-metric-sub">Clique para definir</div>
+                            </div>
+                            <div class="fo-metric glass">
+                                <div class="fo-metric-label">SALDO DISPON&#205;VEL</div>
+                                <div class="fo-metric-value" id="rec-available-balance">R$ 0,00</div>
+                                <div class="fo-metric-sub">ap&#243;s recorr&#234;ncias</div>
+                            </div>
+                            <div class="fo-metric glass">
+                                <div class="fo-metric-label">COMPROMETIMENTO</div>
+                                <div class="fo-metric-value" id="rec-commitment-pct">0%</div>
+                                <div class="fo-metric-sub" id="rec-commitment-label">da receita l&#237;quida</div>
+                            </div>
+                        </div>
+
+                        <!-- Distribution Chart (Full Width) -->
+                        <div style="margin-bottom: 32px;">
+                            <div class="fo-label" style="margin-bottom:16px;">Distribuição por Categoria</div>
+                            <div id="rec-category-chart" class="glass" style="padding:24px; border-radius:18px; min-height:200px; border: 1px solid rgba(212,175,55,0.1);"></div>
+                        </div>
+
+                        <!-- Recurring Items (Below) -->
+                        <div>
+                            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div class="fo-label" style="margin-bottom:0;">Lan&#231;amentos Recorrentes</div>
+                                <button class="btn btn-primary" id="fo-btn-insert-rec" style="position:relative; z-index:10; padding: 8px 20px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px;">
+                                    <i class="fas fa-plus" style="margin-right:8px;"></i>INSERIR LAN&#199;AMENTO
+                                </button>
+                            </div>
+                            <div id="rec-items-list" style="display:flex; flex-direction:column; gap:12px;"></div>
+
+                            <!-- Inactive Section -->
+                            <div id="rec-inactive-section" class="hidden" style="margin-top:40px; padding-top:24px; border-top: 1px solid rgba(255,255,255,0.05);">
+                                <div class="fo-label" style="margin-bottom:16px; opacity:0.5;">Desativados para este m&#234;s</div>
+                                <div id="rec-inactive-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div id="ai-settings-view" class="hidden">
+                    <div class="stat-card" style="max-width: 600px; margin: 2rem auto; padding: 2.5rem; border: 1px solid rgba(212, 175, 55, 0.2);">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div style="width: 50px; height: 50px; background: var(--gold-primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--bg-primary);">
+                                <i class="fas fa-brain fa-2x"></i>
+                            </div>
+                            <div>
+                                <h2 class="journal-title" style="margin: 0; font-family: 'Playfair Display', serif;">Cérebro Artificial</h2>
+                                <p class="text-secondary" style="margin: 0; font-size: 0.9rem;">Powered by Google Gemini AI</p>
+                            </div>
+                        </div>
+                        
+                        <p class="text-secondary" style="margin-bottom: 2rem; line-height: 1.6;">
+                            Configure seu provedor de Inteligência Artificial para habilitar categorização automática, OCR de recibos e Análise de Patrimônio.
+                        </p>
+                        
+                        <form id="ai-settings-form">
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label style="display: block; margin-bottom: 0.8rem; font-weight: 600; letter-spacing: 0.5px;">PROVEDOR ATIVO</label>
+                                <select id="ai-provider-selector" class="form-control" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); color: #fff;">
+                                    <option value="gemini">Google Gemini</option>
+                                    <option value="openai">OpenAI (ChatGPT)</option>
+                                </select>
+                            </div>
+
+                            <!-- Gemini Config -->
+                            <div id="config-gemini" class="provider-config">
+                                <div class="form-group" style="margin-bottom: 1rem;">
+                                    <label style="display: block; margin-bottom: 0.8rem; font-weight: 600; letter-spacing: 0.5px;">GEMINI API KEY</label>
+                                    <input type="password" id="gemini-api-key" class="form-control" placeholder="Cole sua chave Gemini..." style="border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff;">
+                                </div>
+                                <div class="form-group">
+                                    <label style="display: block; margin-bottom: 0.8rem; font-weight: 600; letter-spacing: 0.5px;">MODELO GEMINI</label>
+                                    <input type="text" id="gemini-model" class="form-control" placeholder="gemini-1.5-pro-latest" style="border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff;">
+                                </div>
+                            </div>
+
+                            <!-- OpenAI Config -->
+                            <div id="config-openai" class="provider-config hidden">
+                                <div class="form-group" style="margin-bottom: 1rem;">
+                                    <label style="display: block; margin-bottom: 0.8rem; font-weight: 600; letter-spacing: 0.5px;">OPENAI API KEY</label>
+                                    <input type="password" id="openai-api-key" class="form-control" placeholder="sk-..." style="border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff;">
+                                </div>
+                                <div class="form-group">
+                                    <label style="display: block; margin-bottom: 0.8rem; font-weight: 600; letter-spacing: 0.5px;">MODELO</label>
+                                    <input type="text" id="openai-model" class="form-control" placeholder="gpt-4o" style="border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff;">
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                                <button type="submit" class="btn btn-primary" style="flex: 1;">Vincular & Salvar</button>
+                                <button type="button" id="test-ai-connection" class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-primary); flex: 1; justify-content: center;">
+                                    <i class="fas fa-vial"></i> Testar Provedor
+                                </button>
+                            </div>
+                        </form>
+
+                        <div id="ai-status-box" class="hidden" style="margin-top: 2rem; padding: 1.2rem; border-radius: 12px; background: rgba(34, 197, 94, 0.05); border: 1px solid rgba(34, 197, 94, 0.2);">
+                            <div style="display: flex; align-items: center; gap: 0.8rem; color: #4ade80;">
+                                <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
+                                <div style="display: flex; flex-direction: column;">
+                                    <span id="ai-status-title" style="font-weight: 700; font-size: 0.9rem;">CONEXÃO ATIVA</span>
+                                    <span id="ai-status-msg" style="font-size: 0.8rem; opacity: 0.8;">O provedor está configurado e pronto para uso.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+        <div id="entry-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title">Novo Registro</h2>
+            <form id="entry-form">
+                <div class="form-group">
+                    <label>Tipo de Registro</label>
+                    <select class="form-control" id="entry-type" required>
+                        <option value="asset">Ativo (Investimento/Patrimônio)</option>
+                        <option value="income">Receita (Fluxo de Caixa)</option>
+                        <option value="expense">Despesa (Fluxo de Caixa)</option>
+                        <option value="goal">Nova Meta</option>
+                    </select>
+                </div>
+
+                <div id="dynamic-fields">
+                    <!-- Fields will change based on type -->
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Salvar</button>
+                    <button type="button" class="btn" id="close-modal" style="flex: 1;">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="cashflow-paste-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-family: 'Playfair Display', serif;">Importar Recibo</h2>
+                <button class="btn-close" onclick="window.app.closePasteModal()"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.85rem; color: var(--gold-primary);">DATA DA TRANSAÇÃO</label>
+                <input type="date" id="import-transaction-date" class="form-control" style="background: rgba(255,255,255,0.05); border-color: rgba(212, 175, 55, 0.3); color: #fff;">
             </div>
 
-            <h1 class="hero-title">
-              Eleve o seu padrão.<br />
-              <span class="text-gradient">Domine o que você entrega.</span>
-            </h1>
-
-            <p class="hero-subtitle">
-              A metodologia direta e sem enrolação para técnicos, operadores e engenheiros que querem dominar a
-              metrologia industrial e assumir o controle de suas carreiras.
+            <p class="text-secondary" style="margin-bottom: 1.5rem; font-size: 0.9rem;">
+                Selecione um arquivo ou pressione <kbd>Ctrl</kbd>+<kbd>V</kbd> para colar a imagem.
             </p>
 
-            <div class="hero-actions">
-              <a href="#livros" class="btn btn-primary">
-                Conhecer os Livros
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </a>
-              <a href="#solucao" class="btn btn-outline">
-                Entender o Método
-              </a>
+            <div id="paste-preview-container" class="paste-preview-container">
+                <div class="paste-placeholder">
+                    <i class="fas fa-file-import fa-3x" style="opacity: 0.2; margin-bottom: 1rem;"></i>
+                    <p>Aguardando imagem...</p>
+                </div>
             </div>
 
-            <div class="social-proof">
-              <p>Profissionais que atuam nas maiores empresas:</p>
-              <div class="logos">
-                <span>MODEC</span>
-                <span>SBM</span>
-                <span>EQUINOR</span>
-                <span>YINSON</span>
-                <span>BW ENERGY</span>
-              </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button id="read-pasted-btn" class="btn btn-primary" style="flex: 2;" disabled onclick="window.app.processPastedImage()">
+                    <i class="fas fa-brain"></i> Ler com IA
+                </button>
+                <button type="button" class="btn" style="flex: 1;" onclick="window.app.closePasteModal()">Cancelar</button>
             </div>
-          </div>
-
-          <div class="hero-visuals">
-            <img src="Flow core solutions Color.png" alt="FlowCore Solutions" class="hero-main-logo" />
-            <div class="hero-book-wrapper second-book">
-              <img src="capa_pro_exc.png" alt="Profissional de Excelência" class="hero-book" />
-            </div>
-            <div class="hero-book-wrapper main-book">
-              <img src="capa_nfcm.png" alt="Nunca Foi Certo Medir" class="hero-book" />
-            </div>
-          </div>
         </div>
-      </div>
-    </section>
-
-    <!-- PAIN POINTS / BENTO GRID -->
-    <section id="solucao" class="section">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">O fim do achismo na indústria</h2>
-          <p>Por muito tempo, sistemas de medição foram tratados como caixas pretas e carreiras foram deixadas no modo
-            automático. A FlowCore foi criada para mudar isso.</p>
-        </div>
-
-        <div class="bento-grid">
-          <div class="bento-card pain-card">
-            <div class="pain-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-            <h3 class="pain-title">Sistemas "Caixa Preta"</h3>
-            <p>Decisões de milhões sendo tomadas baseadas em medidores que ninguém audita. Consequência? Prejuízo
-              invisível.</p>
-          </div>
-
-          <div class="bento-card pain-card">
-            <div class="pain-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 class="pain-title">Carreiras Estagnadas</h3>
-            <p>Profissionais excelentes no operacional, mas que não sabem traduzir seu valor tático para a alta gestão e
-              acabam esquecidos.</p>
-          </div>
-
-          <div class="bento-card pain-card">
-            <div
-              style="width: 48px; height: 48px; border-radius: 12px; background: rgba(240, 179, 90, 0.1); color: var(--accent-main); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 8px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <h3 class="pain-title">A Solução FlowCore</h3>
-            <p>Conhecimento mastigado, vindo do campo, para você dominar a técnica e a postura corporativa em alto
-              nível.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PRODUCTS / BOOKS -->
-    <section id="livros" class="section">
-      <div class="container">
-        <div class="section-header">
-          <div class="badge">Materiais & Soluções</div>
-          <h2 class="section-title">O Ponto de Partida</h2>
-          <p>Mude o seu jogo na indústria com as leituras e ferramentas que já transformaram a mentalidade de centenas de
-            profissionais onshore e offshore.</p>
-        </div>
-
-        <div class="products-grid">
-
-          <!-- Product 1 -->
-          <div class="product-card">
-            <div class="product-tag">Técnico & Operacional</div>
-
-            <div class="product-image-wrapper">
-              <img src="capa_nfcm.png" alt="Nunca Foi Certo Medir" class="product-image" />
-            </div>
-
-            <div class="product-info">
-              <h3>Nunca Foi Certo Medir</h3>
-              <p>Este material explora a metrologia como uma ciência essencial que vai além de simples números,
-                destacando que a incerteza de medição é um elemento inevitável em qualquer processo técnico.</p>
-
-              <ul class="features-list">
-                <li>Desmistificando a incerteza de medição na indústria</li>
-                <li>Metrologia é a ciência que todos usam todos os dias, mesmo sem perceber.</li>
-                <li>Não há evolução sem precisão. Isso é Metrologia.</li>
-              </ul>
-            </div>
-
-            <div class="price-action">
-              <div class="format">eBook / PDF (Acesso Imediato)</div>
-            </div>
-            <a href="https://pay.kiwify.com.br/FbceEsd" target="_blank" class="btn btn-primary btn-buy">
-              Comprar via Kiwify
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </a>
-          </div>
-
-          <!-- Product 2 -->
-          <div class="product-card">
-            <div class="product-tag">Carreira & Soft Skills</div>
-
-            <div class="product-image-wrapper">
-              <img src="capa_pro_exc.png" alt="Profissional de Excelência na Indústria" class="product-image" />
-            </div>
-
-            <div class="product-info">
-              <h3>Profissional de Excelência</h3>
-              <p>O caminho prático para você se destacar. Construa sua reputação, entregue resultados consistentes e
-                desenvolva as habilidades necessárias para alcançar o próximo nível.</p>
-
-              <ul class="features-list">
-                <li>Como construir Autoridade Técnica Real</li>
-                <li>Gestão de competências e responsabilidade técnica</li>
-                <li>Networking e posicionamento sem parecer forçado</li>
-              </ul>
-            </div>
-
-            <div class="price-action">
-              <div class="format">eBook / PDF (Acesso Imediato)</div>
-            </div>
-            <a href="https://pay.kiwify.com.br/9TPrEiP" target="_blank" class="btn btn-outline btn-buy">
-              Comprar via Kiwify
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </a>
-          </div>
-
-          <!-- Product 3: Evergreen -->
-          <div class="product-card">
-            <div class="product-tag">Gestão & Tecnologia</div>
-
-            <div class="product-image-wrapper">
-              <img src="evergreen.png" alt="Evergreen Dashboard" class="product-image" style="box-shadow: none; max-width: 90%;" />
-            </div>
-
-            <div class="product-info">
-              <h3>Dashboard Evergreen</h3>
-              <p>O ecossistema digital completo para gestão de medição industrial. Elimine o papel e tenha controle total sobre a conformidade técnica em tempo real.</p>
-
-              <ul class="features-list">
-                <li>Handover Digital (Onshore/Offshore)</li>
-                <li>Monitoramento de Prazos e Calibrações</li>
-                <li>Gestão Inteligente de TAGs e Eventos</li>
-              </ul>
-            </div>
-
-            <div class="price-action">
-              <div class="format">Solução Corporativa SaaS</div>
-            </div>
-            <a href="https://flowcoresolutions.com.br/evergreen/" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-buy" style="background: linear-gradient(135deg, #10b981, #34d399); color: white; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);">
-              Acessar Evergreen
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </a>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- AUTHOR -->
-    <section id="autor" class="section author-section">
-      <div class="container">
-        <div class="author-grid">
-          <div class="author-image"></div>
-
-          <div class="author-content">
-            <div class="badge">O CRIADOR DO MÉTODO</div>
-            <h2>De Técnico Executante a<br />Referência Profissional</h2>
-
-            <p>O fundador da FlowCore Solutions viveu a base da indústria. Começou resolvendo problemas no chão de
-              fábrica
-              e em FPSOs, enfrentando diretamente a falta de processos de medição claros e a estagnação de carreira que
-              atinge tantos profissionais.</p>
-
-            <p>Decidiu não apenas reclamar, mas compilar o conhecimento denso normativo e boas práticas
-              em uma linguagem que o campo entende. Hoje, foca em treinar e orientar a nova geração de profssionais
-              técnicos ajudando
-              a elevar seus níveis a padrões de confiabilidade operacional.</p>
-
-            <div class="author-stats">
-              <div class="stat-item">
-                <h4>20+</h4>
-                <span>Anos de Campo</span>
-              </div>
-              <div class="stat-item">
-                <h4>2</h4>
-                <span>Livros Publicados</span>
-              </div>
-              <div class="stat-item">
-                <h4>100%</h4>
-                <span>Visão Prática</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FINAL CTA -->
-    <section class="section cta-final">
-      <div class="container">
-        <div class="cta-box">
-          <h2>Ser Valor Antes De Ser Valorizado</h2>
-          <p>É perda de tempo, qualquer tentativa antes disso.</p>
-
-          <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-            <a href="#livros" class="btn btn-primary" style="padding: 16px 32px; font-size: 1.1rem;">
-              Quero os Livros
-            </a>
-            <a href="cursos.html" class="btn btn-outline" style="padding: 16px 32px; font-size: 1.1rem;">
-              Ver Treinamentos ↗
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="container">
-      <div class="footer-content">
-        <div class="logo-text">
-          FlowCore Solutions
-        </div>
-
-        <div style="display: flex; gap: 24px;">
-          <a href="#solucao" style="color: var(--text-muted); font-size: 0.9rem;">O Método</a>
-          <a href="#livros" style="color: var(--text-muted); font-size: 0.9rem;">Livros</a>
-          <a href="cursos.html" style="color: var(--text-muted); font-size: 0.9rem;">Treinamentos</a>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <p>&copy; <span id="year"></span> FlowCore Solutions. Todos os direitos reservados.</p>
-        <p>Desenvolvido por quem vive a planta, não só o slide.</p>
-      </div>
     </div>
-  </footer>
 
-  <script>
-    // Set Year
-    document.getElementById('year').textContent = new Date().getFullYear();
+    <div id="indices-manual-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-family: 'Playfair Display', serif;">Editar Índices</h2>
+                <button class="btn-close" onclick="window.app.closeIndicesManualModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="indices-manual-form">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>CDI (%)</label>
+                        <input type="number" step="0.01" name="cdi" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>SELIC (%)</label>
+                        <input type="number" step="0.01" name="selic" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>IPCA (%)</label>
+                        <input type="number" step="0.01" name="ipca" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>LCI (%)</label>
+                        <input type="number" step="0.01" name="lci" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>LCA (%)</label>
+                        <input type="number" step="0.01" name="lca" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>CDB (%)</label>
+                        <input type="number" step="0.01" name="cdb" class="form-control" required>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                               <button type="button" class="btn" onclick="window.app.closeIndicesManualModal()" style="flex: 1;">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    // Sticky Nav Shadow and Glass effect on scroll
-    window.addEventListener('scroll', () => {
-      const header = document.getElementById('header');
-      if (window.scrollY > 50) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-    });
+    <!-- Modals -->
+    <!-- Rec Item Modal -->
+    <div id="fo-rec-modal-overlay" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width:500px; padding: 2.5rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                <h2 id="fo-rec-modal-title" style="font-family:'Playfair Display',serif; color:var(--gold-200); margin:0;">Editar Recorr&#234;ncia</h2>
+                <button onclick="window.app.closeRecModal()" style="background:none; border:none; color:var(--text-muted); font-size:24px; cursor:pointer;">&times;</button>
+            </div>
+            <form id="fo-rec-form">
+                <input type="hidden" id="fo-rec-id">
+                <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                    <div class="form-group">
+                        <label style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:block;">Descri&#231;&#227;o</label>
+                        <input type="text" id="fo-rec-name" class="fo-modal-input" placeholder="Ex: Assinatura Netflix" required style="width:100%;">
+                    </div>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                        <div class="form-group">
+                            <label style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:block;">Valor (R$)</label>
+                            <input type="text" id="fo-rec-amount" class="fo-modal-input currency-mask" placeholder="0,00" required>
+                        </div>
+                        <div class="form-group">
+                            <label style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:block;">Categoria</label>
+                            <select id="fo-rec-category" class="fo-modal-input">
+                                <option value="moradia">Moradia</option>
+                                <option value="saude_seguro">Sa&#250;de &amp; Seguros</option>
+                                <option value="mensalidade">Mensalidades</option>
+                                <option value="streaming">Streaming</option>
+                                <option value="software">Software &amp; SaaS</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                    </div>
 
-    // Simple reveal animation observer for sections
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: "0px 0px -50px 0px"
-    };
+                    <div style="display:grid; grid-template-columns: 100px 1fr; gap:1rem;">
+                        <div class="form-group">
+                            <label style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:block;">Vencimento</label>
+                            <input type="number" id="fo-rec-due-day" class="fo-modal-input" placeholder="DD" min="1" max="31">
+                        </div>
+                        <div class="form-group">
+                            <label style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:block;">Observa&#231;&#245;es</label>
+                            <input type="text" id="fo-rec-notes" class="fo-modal-input" placeholder="Opcional">
+                        </div>
+                    </div>
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.style.animation = `fadeInUp 0.8s ease-out forwards`;
-          entry.target.style.opacity = '1';
-          observer.unobserve(entry.target);
+                    <div style="margin-top:1rem; display:flex; gap:1rem;">
+                        <button type="submit" class="btn btn-primary" style="flex:1; padding:12px;">SALVAR ALTERA&#199;&#213;ES</button>
+                        <button type="button" class="btn" onclick="window.app.closeRecModal()" style="padding:12px;">CANCELAR</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="fo-income-modal-overlay" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width:400px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+                <h2 style="font-family:'Playfair Display',serif; color:var(--gold-200); margin:0;">Receita L&#237;quida</h2>
+                <button onclick="window.app.closeNetIncomeModal()" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">&times;</button>
+            </div>
+            <form id="fo-income-form">
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div id="fo-income-month-label" style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;"></div>
+                    <label style="color:var(--text-muted);font-size:12px;">Valor da receita l&#237;quida mensal</label>
+                    <input type="text" id="fo-income-amount" class="fo-modal-input currency-mask" placeholder="R$ 0,00" required>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/modules/store.js"></script>
+    <script src="js/modules/ai-layer.js"></script>
+    <script src="js/modules/brain.js"></script>
+    <script src="js/modules/charts.js"></script>
+    <script src="app.js"></script>
+
+    <!-- Auth -->
+    <script>
+    const SB_AUTH_URL = 'https://lruqphwlcimzcqpafjrn.supabase.co';
+    const SB_AUTH_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxydXFwaHdsY2ltemNxcGFmanJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTI2ODcsImV4cCI6MjA5MDQ4ODY4N30.uPEAdV2rKcZ7SuXC6A_KH3Ili6fq72ytsReRZEXijWQ';
+    const sbAuth = supabase.createClient(SB_AUTH_URL, SB_AUTH_KEY);
+    window.sbAuth = sbAuth; // expõe globalmente para app.js e store.js
+
+    // Guarda o user_id globalmente para uso nos fetches
+    window.FO_USER_ID = null;
+
+    function showPanel(name) {
+        ['login','register','forgot'].forEach(p => {
+            document.getElementById('panel-' + p).style.display = p === name ? '' : 'none';
+        });
+    }
+
+    async function doRegister() {
+        const name  = document.getElementById('reg-name').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const pass  = document.getElementById('reg-password').value;
+        const pass2 = document.getElementById('reg-password2').value;
+        const btn   = document.getElementById('reg-btn');
+        const err   = document.getElementById('reg-error');
+        const suc   = document.getElementById('reg-success');
+        err.style.display = 'none'; suc.style.display = 'none';
+
+        if (!name) { err.textContent = 'Informe seu nome.'; err.style.display = 'block'; return; }
+        if (!email) { err.textContent = 'Informe seu email.'; err.style.display = 'block'; return; }
+        if (pass.length < 6) { err.textContent = 'Senha deve ter no mínimo 6 caracteres.'; err.style.display = 'block'; return; }
+        if (pass !== pass2) { err.textContent = 'As senhas não coincidem.'; err.style.display = 'block'; return; }
+
+        btn.textContent = 'Aguarde...'; btn.disabled = true;
+        const { error } = await sbAuth.auth.signUp({ email, password: pass, options: { data: { name } } });
+        btn.textContent = 'CRIAR CONTA'; btn.disabled = false;
+
+        if (error) { err.textContent = error.message; err.style.display = 'block'; return; }
+        suc.textContent = 'Conta criada! Verifique seu email para confirmar o cadastro.';
+        suc.style.display = 'block';
+    }
+
+    async function doForgotPassword() {
+        const email = document.getElementById('forgot-email').value.trim();
+        const btn   = document.getElementById('forgot-btn');
+        const err   = document.getElementById('forgot-error');
+        const suc   = document.getElementById('forgot-success');
+        err.style.display = 'none'; suc.style.display = 'none';
+
+        if (!email) { err.textContent = 'Informe seu email.'; err.style.display = 'block'; return; }
+
+        btn.textContent = 'Aguarde...'; btn.disabled = true;
+        const { error } = await sbAuth.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin + window.location.pathname
+        });
+        btn.textContent = 'ENVIAR LINK'; btn.disabled = false;
+
+        if (error) { err.textContent = error.message; err.style.display = 'block'; return; }
+        suc.textContent = 'Link enviado! Verifique seu email.';
+        suc.style.display = 'block';
+    }
+
+    async function doLogin() {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const btn = document.getElementById('login-btn');
+        const err = document.getElementById('login-error');
+        err.style.display = 'none';
+        btn.textContent = 'Aguarde...';
+        btn.disabled = true;
+
+        // Acesso via Supabase Auth
+        const { data, error } = await sbAuth.auth.signInWithPassword({ email, password });
+
+        if (error) {
+            err.textContent = 'Email ou senha incorretos.';
+            err.style.display = 'block';
+            btn.textContent = 'ENTRAR';
+            btn.disabled = false;
+            return;
         }
-      });
-    }, observerOptions);
 
-    // Initial opacity 0 for staggered sections
-    document.querySelectorAll('.section-header, .bento-card, .product-card, .author-grid, .cta-box').forEach(el => {
-      el.style.opacity = '0';
-      observer.observe(el);
+        window.FO_USER_ID = data.user.id;
+        window.AUTH_TOKEN = data.session.access_token;
+        showApp(data.user);
+    }
+
+    // Enter no campo de senha dispara login
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('login-password')?.addEventListener('keydown', e => {
+            if (e.key === 'Enter') doLogin();
+        });
+        document.getElementById('login-email')?.addEventListener('keydown', e => {
+            if (e.key === 'Enter') document.getElementById('login-password').focus();
+        });
     });
-  </script>
-</body>
 
+    async function showApp(user) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app-container').style.display = '';
+
+        // Mostra email do usuário no avatar
+        const avatar = document.querySelector('.avatar');
+        if (avatar) {
+            avatar.title = user.email;
+            avatar.style.cursor = 'pointer';
+            avatar.onclick = () => {
+                if (confirm(`Sair da conta ${user.email}?`)) doLogout();
+            };
+        }
+
+        // Inicializa o app carregando dados do Supabase
+        await window.initApp();
+
+        // Mostra boas-vindas se usuário não tem dados
+        const d = window.store?.getData();
+        const isEmpty = !d || ((!d.cashflow || d.cashflow.length === 0) && (!d.assets || d.assets.length === 0) && (!d.goals || d.goals.length === 0));
+        if (isEmpty) {
+            document.getElementById('welcome-screen').style.display = 'flex';
+        }
+    }
+
+    async function doLogout() {
+        await sbAuth.auth.signOut();
+        window.FO_USER_ID = null;
+        document.getElementById('app-container').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('login-email').value = '';
+        document.getElementById('login-password').value = '';
+    }
+
+    // Importar backup JSON histórico
+    async function handleImportFile(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const btn = document.getElementById('import-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importando...';
+        try {
+            const text = await file.text();
+            const json = JSON.parse(text);
+            const results = await window.store.importFromJSON(json);
+            const msg = `Importação concluída!\n✅ ${results.cashflow} lançamentos\n✅ ${results.assets} ativos\n✅ ${results.goals} metas` +
+                (results.errors.length ? `\n⚠️ ${results.errors.length} erros` : '');
+            alert(msg);
+            window.app?.renderActivePage();
+        } catch(e) {
+            alert('Erro ao importar: ' + e.message);
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-upload"></i> Importar';
+        input.value = '';
+    }
+
+    // Verifica sessão ativa ao carregar (evita re-login desnecessário)
+    sbAuth.auth.getSession().then(({ data }) => {
+        if (data.session) {
+            window.FO_USER_ID = data.session.user.id;
+            window.AUTH_TOKEN = data.session.access_token;
+            showApp(data.session.user);
+        }
+    });
+    </script>
+    </body>
 </html>
+
+
