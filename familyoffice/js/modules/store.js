@@ -130,7 +130,7 @@ class FamilyOfficeStore {
         console.log('[store] Carregando dados do Supabase...');
         try {
             const [cashflow, assets, goals, investments] = await Promise.all([
-                this._get('cash_flow_entries', 'order=date.desc').catch(() => []),
+                this._get('cash_flow_entries', 'status=neq.pending&order=date.desc').catch(() => []),
                 this._get('assets', 'order=created_at.desc').catch(() => []),
                 this._get('goals', 'order=created_at.desc').catch(() => []),
                 this._get('investments', 'order=created_at.desc').catch(() => [])
