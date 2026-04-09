@@ -124,10 +124,11 @@ function hasUnpublishedChanges() {
 function updatePublishBadge() {
   const badge = document.getElementById('publish-badge');
   if (!badge) return;
+  badge.style.display = 'inline-flex';
   if (hasUnpublishedChanges()) {
-    badge.style.display = 'inline-flex';
+    badge.classList.add('has-changes');
   } else {
-    badge.style.display = 'none';
+    badge.classList.remove('has-changes');
   }
 }
 
