@@ -329,58 +329,41 @@ class FamilyOfficeApp {
         if (idx === -1) return;
 
         const entry = this.pendingEntries[idx];
-        
-        // Map to local store format
-        const localEntry = {
-            id: 'mob_' + Date.now() + '_' + Math.floor(Math.random()*1000),
-            date: entry.date,
-            description: entry.description,
-            amount: parseFloat(entry.amount),
-            type: entry.type === 'income' ? 'income' : 'expense',
-            category: entry.category,
-            account: entry.account || 'Mobile',
-            origin: 'mobile'
-        };
 
         // UI Update (Immediate feedback)
         this.pendingEntries.splice(idx, 1);
         this.updatePendingBadge();
 
         try {
-            // 1. Sync status to Supabase (Crucial for PWA Inbox clearing)
-            await fetch(`${SB_TABLE}?id=eq.${id}`, {
-                method: 'PATCH',
-                headers: SB_HEADERS,
-                body: JSON.stringify({ status: 'approved' })
-            });
-
-            // 2. Local AI categorization
-            let aiResult = null;
+            // 1. AI categorization antes de salvar
+            const patch = { status: 'posted' };
             try {
-                aiResult = await window.brain.processEntry(entry.description, entry.type);
-                if (aiResult && aiResult.aiStatus === 'success') {
-                    localEntry.category = aiResult.category;
-                    localEntry.subcategory = aiResult.subcategory;
+                const aiResult = await window.brain.processEntry(entry.description, entry.type);
+                if (aiResult?.aiStatus === 'success') {
+                    patch.category    = aiResult.category;
+                    patch.subcategory = aiResult.subcategory;
                 }
             } catch(e) {
-                console.warn('AI categorization failed, using original:', e);
+                console.warn('AI categorization failed:', e);
             }
 
-            // 3. Save locally
-            const data = store.getData();
-            data.cashflow.push(localEntry);
-            data.cashflow.sort((a,b) => new Date(b.date) - new Date(a.date));
-            store.save(data);
-            
-            // 4. Mark as handled locally to prevent double-processing
-            this.handledIds.push(id);
-            localStorage.setItem('fo_handled_ids', JSON.stringify(this.handledIds));
-            
-            this.renderActivePage(); 
+            // 2. Atualiza a entrada original no Supabase (sem criar duplicata)
+            const authHeaders = window.AUTH_TOKEN
+                ? { ...SB_HEADERS, 'Authorization': `Bearer ${window.AUTH_TOKEN}` }
+                : SB_HEADERS;
+            await fetch(`${SB_TABLE}?id=eq.${id}`, {
+                method: 'PATCH',
+                headers: { ...authHeaders, 'Prefer': 'return=representation' },
+                body: JSON.stringify(patch)
+            });
+
+            // 3. Recarrega cache do Supabase para refletir a aprovação
+            await window.store.loadFromSupabase();
+
+            this.renderActivePage();
         } catch (err) {
             console.error('Approval sync error:', err);
             alert('Erro ao sincronizar aprovação com o servidor.');
-            // Rollback UI if needed, but usually better to let user retry
         }
     }
 
@@ -395,9 +378,12 @@ class FamilyOfficeApp {
 
         try {
             // Update status on Supabase so it leaves the PWA inbox
+            const authHeaders = window.AUTH_TOKEN
+                ? { ...SB_HEADERS, 'Authorization': `Bearer ${window.AUTH_TOKEN}` }
+                : SB_HEADERS;
             await fetch(`${SB_TABLE}?id=eq.${id}`, {
                 method: 'PATCH',
-                headers: SB_HEADERS,
+                headers: authHeaders,
                 body: JSON.stringify({ status: 'rejected' })
             });
 
@@ -1376,6 +1362,43 @@ class FamilyOfficeApp {
         const data = store.getData();
         const cashflow = data.cashflow || [];
         const monthsCount = this.dashboardPeriod;
+
+        // Onboarding: cards guia quando não há dados
+        const hasNoData = cashflow.length === 0 && (!data.assets || data.assets.length === 0) && (!data.goals || data.goals.length === 0);
+        if (hasNoData) {
+            container.innerHTML = `
+                <div style="grid-column:1/-1; padding:1rem 0;">
+                    <p style="color:var(--text-secondary); font-size:0.85rem; margin:0 0 1.25rem 0; text-align:center;">Seu painel está vazio. Veja o que você pode registrar:</p>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem;">
+                        <div onclick="window.location.hash='cashflow'" style="cursor:pointer; background:var(--bg-accent); border:1px solid var(--glass-border); border-radius:14px; padding:1.5rem; transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold-primary)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+                            <i class="fas fa-exchange-alt" style="color:var(--gold-primary); font-size:1.5rem; margin-bottom:0.75rem; display:block;"></i>
+                            <div style="color:var(--text-primary); font-weight:600; margin-bottom:0.4rem;">Fluxo de Caixa</div>
+                            <div style="color:var(--text-secondary); font-size:0.8rem; line-height:1.5;">Registre suas receitas e despesas mensais para acompanhar o saldo e entender para onde vai o seu dinheiro.</div>
+                            <div style="margin-top:1rem; color:var(--gold-primary); font-size:0.78rem; font-weight:600;">+ Adicionar lançamento →</div>
+                        </div>
+                        <div onclick="window.location.hash='assets'" style="cursor:pointer; background:var(--bg-accent); border:1px solid var(--glass-border); border-radius:14px; padding:1.5rem; transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold-primary)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+                            <i class="fas fa-landmark" style="color:var(--gold-primary); font-size:1.5rem; margin-bottom:0.75rem; display:block;"></i>
+                            <div style="color:var(--text-primary); font-weight:600; margin-bottom:0.4rem;">Patrimônio</div>
+                            <div style="color:var(--text-secondary); font-size:0.8rem; line-height:1.5;">Cadastre imóveis, veículos, investimentos e outros bens para ter uma visão completa do seu patrimônio.</div>
+                            <div style="margin-top:1rem; color:var(--gold-primary); font-size:0.78rem; font-weight:600;">+ Cadastrar ativo →</div>
+                        </div>
+                        <div onclick="window.location.hash='goals'" style="cursor:pointer; background:var(--bg-accent); border:1px solid var(--glass-border); border-radius:14px; padding:1.5rem; transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold-primary)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+                            <i class="fas fa-bullseye" style="color:var(--gold-primary); font-size:1.5rem; margin-bottom:0.75rem; display:block;"></i>
+                            <div style="color:var(--text-primary); font-weight:600; margin-bottom:0.4rem;">Metas</div>
+                            <div style="color:var(--text-secondary); font-size:0.8rem; line-height:1.5;">Defina objetivos financeiros como reserva de emergência, viagem ou aquisição de bem e monitore o progresso.</div>
+                            <div style="margin-top:1rem; color:var(--gold-primary); font-size:0.78rem; font-weight:600;">+ Criar meta →</div>
+                        </div>
+                        <div onclick="window.location.hash='investments'" style="cursor:pointer; background:var(--bg-accent); border:1px solid var(--glass-border); border-radius:14px; padding:1.5rem; transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold-primary)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+                            <i class="fas fa-chart-line" style="color:var(--gold-primary); font-size:1.5rem; margin-bottom:0.75rem; display:block;"></i>
+                            <div style="color:var(--text-primary); font-weight:600; margin-bottom:0.4rem;">Investimentos</div>
+                            <div style="color:var(--text-secondary); font-size:0.8rem; line-height:1.5;">Registre suas aplicações financeiras, veja a rentabilidade projetada e compare com os índices do mercado.</div>
+                            <div style="margin-top:1rem; color:var(--gold-primary); font-size:0.78rem; font-weight:600;">+ Registrar investimento →</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
         
         // Calculate date range (YYYY-MM string comparison)
         let currentDate;

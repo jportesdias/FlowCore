@@ -263,6 +263,37 @@
 }
 </style>
 
+<!-- ─── TELA DE BOAS-VINDAS (primeiro acesso) ──────────────────── -->
+<div id="welcome-screen" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.85); backdrop-filter:blur(6px); align-items:center; justify-content:center;">
+    <div style="background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:20px; padding:3rem 2.5rem; max-width:480px; width:90%; text-align:center; box-shadow:var(--shadow-lg);">
+        <img src="logo.png" alt="Family Office" style="height:64px; margin-bottom:1.5rem;">
+        <h2 style="font-family:var(--font-d); color:var(--gold-200); font-size:1.8rem; font-weight:400; margin:0 0 0.5rem 0;">Bem-vindo ao Family Office</h2>
+        <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.6; margin:0 0 2rem 0;">Seu espaço privado para organizar e acompanhar a gestão patrimonial da família. Tudo começa com um primeiro lançamento.</p>
+        <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:2rem;">
+            <div style="display:flex; align-items:center; gap:1rem; background:var(--bg-accent); border-radius:10px; padding:0.85rem 1rem; text-align:left;">
+                <i class="fas fa-exchange-alt" style="color:var(--gold-primary); font-size:1.2rem; width:24px; text-align:center;"></i>
+                <div><div style="color:var(--text-primary); font-size:0.85rem; font-weight:500;">Fluxo de Caixa</div><div style="color:var(--text-secondary); font-size:0.75rem;">Registre entradas e saídas do mês</div></div>
+            </div>
+            <div style="display:flex; align-items:center; gap:1rem; background:var(--bg-accent); border-radius:10px; padding:0.85rem 1rem; text-align:left;">
+                <i class="fas fa-landmark" style="color:var(--gold-primary); font-size:1.2rem; width:24px; text-align:center;"></i>
+                <div><div style="color:var(--text-primary); font-size:0.85rem; font-weight:500;">Patrimônio</div><div style="color:var(--text-secondary); font-size:0.75rem;">Cadastre imóveis, veículos e outros ativos</div></div>
+            </div>
+            <div style="display:flex; align-items:center; gap:1rem; background:var(--bg-accent); border-radius:10px; padding:0.85rem 1rem; text-align:left;">
+                <i class="fas fa-bullseye" style="color:var(--gold-primary); font-size:1.2rem; width:24px; text-align:center;"></i>
+                <div><div style="color:var(--text-primary); font-size:0.85rem; font-weight:500;">Metas</div><div style="color:var(--text-secondary); font-size:0.75rem;">Defina objetivos e acompanhe o progresso</div></div>
+            </div>
+        </div>
+        <button onclick="document.getElementById('welcome-screen').style.display='none'; window.location.hash='cashflow';"
+            style="width:100%; padding:1rem; background:linear-gradient(135deg,var(--gold-primary),var(--gold-200)); border:none; border-radius:10px; color:#000; font-weight:700; font-size:0.95rem; letter-spacing:0.08em; cursor:pointer;">
+            COMEÇAR — CRIAR PRIMEIRO LANÇAMENTO
+        </button>
+        <button onclick="document.getElementById('welcome-screen').style.display='none';"
+            style="margin-top:0.75rem; background:none; border:none; color:var(--text-secondary); font-size:0.8rem; cursor:pointer; text-decoration:underline;">
+            Explorar o sistema primeiro
+        </button>
+    </div>
+</div>
+
     <div class="app-container" id="app-container" style="display:none;">
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
@@ -1298,6 +1329,13 @@
 
         // Inicializa o app carregando dados do Supabase
         await window.initApp();
+
+        // Mostra boas-vindas se usuário não tem dados
+        const d = window.store?.getData();
+        const isEmpty = !d || ((!d.cashflow || d.cashflow.length === 0) && (!d.assets || d.assets.length === 0) && (!d.goals || d.goals.length === 0));
+        if (isEmpty) {
+            document.getElementById('welcome-screen').style.display = 'flex';
+        }
     }
 
     async function doLogout() {
