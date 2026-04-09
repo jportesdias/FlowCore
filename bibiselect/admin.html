@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Bibi Select</title>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <!-- ===================== LOGIN PAGE ===================== -->
+  <div id="login-page" class="login-page">
+    <div class="login-card">
+      <div class="login-logo">Bibi Select</div>
+      <p class="login-subtitle">Painel Administrativo</p>
+
+      <div id="login-error" class="login-error">Senha incorreta. Tente novamente.</div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="login-password">Senha</label>
+          <input
+            id="login-password"
+            type="password"
+            class="form-control"
+            placeholder="Digite sua senha"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+        <button type="submit" class="login-btn">Entrar no Painel</button>
+      </form>
+
+      <a href="index.html" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Voltar para a vitrine
+      </a>
+    </div>
+  </div>
+
+  <!-- ===================== ADMIN APP ===================== -->
+  <div id="admin-app">
+    <div class="admin-layout">
+
+      <!-- ---- SIDEBAR OVERLAY (mobile) ---- -->
+      <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+      <!-- ---- SIDEBAR ---- -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <span class="sidebar-logo">Bibi Select</span>
+          <span class="sidebar-role">Administrador</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-section-label">Principal</div>
+
+          <button class="nav-item" data-page="dashboard">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Dashboard
+          </button>
+
+          <button class="nav-item" data-page="products">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+            Produtos
+          </button>
+
+          <div class="nav-section-label">Configurações</div>
+
+          <button class="nav-item" data-page="settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+            </svg>
+            Configurações
+          </button>
+
+          <a href="index.html" class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            Ver Vitrine
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logout()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Sair
+          </button>
+        </div>
+      </aside>
+
+      <!-- ---- MAIN CONTENT ---- -->
+      <div class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+          <div style="display:flex;align-items:center;gap:0.75rem">
+            <button class="mobile-menu-btn" onclick="toggleSidebar()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </button>
+            <span class="topbar-title" id="page-title">Dashboard</span>
+          </div>
+
+          <div class="topbar-actions">
+            <button class="btn btn-primary btn-sm" onclick="openAddModal()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Novo Produto
+            </button>
+          </div>
+        </header>
+
+        <!-- =================== PAGE: DASHBOARD =================== -->
+        <div id="page-dashboard" class="page page-content">
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon purple">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                  <line x1="3" y1="6" x2="21" y2="6"/>
+                  <path d="M16 10a4 4 0 01-8 0"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="dash-total">0</div>
+                <div class="stat-label">Total de Produtos</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="dash-active">0</div>
+                <div class="stat-label">Produtos Ativos</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon yellow">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2"/>
+                  <line x1="8" y1="21" x2="16" y2="21"/>
+                  <line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="dash-ml">0</div>
+                <div class="stat-label">Mercado Livre</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon pink">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="dash-shopee">0</div>
+                <div class="stat-label">Shopee</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon purple">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="dash-featured">0</div>
+                <div class="stat-label">Em Destaque</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Products -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Produtos Recentes</span>
+              <button class="btn btn-outline btn-sm" onclick="navigate('products')">Ver todos</button>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Produto</th>
+                    <th>Loja</th>
+                    <th>Preço</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="dash-recent-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- =================== PAGE: PRODUCTS =================== -->
+        <div id="page-products" class="page page-content" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">
+                Gerenciar Produtos
+                <span id="table-count" style="font-weight:400;color:var(--text-secondary);font-size:0.82rem;margin-left:6px"></span>
+              </span>
+
+              <div class="filter-bar">
+                <div class="search-wrap">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                  <input
+                    id="list-search"
+                    type="search"
+                    class="search-input-admin"
+                    placeholder="Buscar produto..."
+                    autocomplete="off"
+                  />
+                </div>
+
+                <select id="list-store-filter" class="filter-select">
+                  <option value="all">Todas as lojas</option>
+                  <option value="ml">Mercado Livre</option>
+                  <option value="shopee">Shopee</option>
+                </select>
+
+                <select id="list-cat-filter" class="filter-select">
+                  <option value="all">Todas as categorias</option>
+                  <!-- JS populates -->
+                </select>
+
+                <button class="btn btn-primary btn-sm" onclick="openAddModal()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  Adicionar
+                </button>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th class="drag-col" title="Arraste para reordenar"></th>
+                    <th>Produto</th>
+                    <th>Loja</th>
+                    <th>Categoria</th>
+                    <th>Preço</th>
+                    <th>Destaque</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="products-tbody">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- =================== PAGE: SETTINGS =================== -->
+        <div id="page-settings" class="page page-content" style="display:none">
+
+          <!-- Change Password -->
+          <div class="section-block">
+            <h3 class="section-block-title">Alterar Senha</h3>
+            <form id="settings-pass-form" style="max-width:400px">
+              <div class="form-group">
+                <label class="form-label" for="s-current-pass">Senha Atual <span class="required">*</span></label>
+                <input id="s-current-pass" type="password" class="form-control" placeholder="Senha atual" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="s-new-pass">Nova Senha <span class="required">*</span></label>
+                <input id="s-new-pass" type="password" class="form-control" placeholder="Mínimo 6 caracteres" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="s-confirm-pass">Confirmar Nova Senha <span class="required">*</span></label>
+                <input id="s-confirm-pass" type="password" class="form-control" placeholder="Repita a nova senha" />
+              </div>
+              <button type="submit" class="btn btn-primary">Salvar nova senha</button>
+            </form>
+          </div>
+
+          <!-- Backup & Import -->
+          <div class="section-block">
+            <h3 class="section-block-title">Backup de Dados</h3>
+            <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:1.25rem">
+              Exporte todos os seus produtos para um arquivo JSON ou importe um backup anterior.
+            </p>
+            <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="exportData()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Exportar Backup
+              </button>
+
+              <label class="btn btn-outline" style="cursor:pointer">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Importar Backup
+                <input type="file" accept=".json" onchange="importData(event)" style="display:none"/>
+              </label>
+            </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="section-block" style="border:2px solid var(--danger-light)">
+            <h3 class="section-block-title" style="color:var(--danger)">Zona de Perigo</h3>
+            <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:1.25rem">
+              Ações irreversíveis. Tenha certeza antes de prosseguir.
+            </p>
+            <button class="btn btn-danger btn-sm" onclick="clearAllProducts()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                <path d="M10 11v6M14 11v6"/>
+                <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+              </svg>
+              Apagar todos os produtos
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /main-content -->
+    </div><!-- /admin-layout -->
+  </div><!-- /admin-app -->
+
+  <!-- =================== MODAL: ADD/EDIT PRODUCT =================== -->
+  <div id="product-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title" id="modal-title">Novo Produto</span>
+        <button class="modal-close" onclick="closeModal('product-modal')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form id="product-form">
+
+          <!-- Image Preview -->
+          <div class="form-group">
+            <label class="form-label">Imagem do Produto</label>
+            <div class="img-preview-wrap">
+              <img id="img-preview" class="img-preview" alt="Preview" />
+              <div id="img-placeholder" class="img-placeholder">
+                <span class="img-placeholder-icon">🖼️</span>
+                Cole a URL da imagem abaixo
+              </div>
+            </div>
+            <input
+              id="f-image"
+              type="url"
+              class="form-control"
+              placeholder="https://exemplo.com/imagem.jpg"
+            />
+            <div class="form-hint">URL pública da imagem do produto (HTTPS recomendado)</div>
+          </div>
+
+          <!-- Name -->
+          <div class="form-group">
+            <label class="form-label" for="f-name">
+              Nome do Produto <span class="required">*</span>
+            </label>
+            <input
+              id="f-name"
+              type="text"
+              class="form-control"
+              placeholder="Ex: Fone de Ouvido Bluetooth TWS 5.3"
+              maxlength="120"
+            />
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label class="form-label" for="f-description">Descrição</label>
+            <textarea
+              id="f-description"
+              class="form-control"
+              placeholder="Breve descrição do produto..."
+              rows="3"
+              maxlength="400"
+            ></textarea>
+          </div>
+
+          <!-- Store + Category -->
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label" for="f-store">
+                Loja <span class="required">*</span>
+              </label>
+              <select id="f-store" class="form-control">
+                <option value="">Selecione...</option>
+                <option value="ml">Mercado Livre</option>
+                <option value="shopee">Shopee</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label" for="f-category">
+                Categoria <span class="required">*</span>
+              </label>
+              <select id="f-category" class="form-control category-select">
+                <option value="">Selecione...</option>
+                <!-- JS populates -->
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom:1.25rem"></div>
+
+          <!-- Prices -->
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label" for="f-original-price">Preço Original (De)</label>
+              <div class="price-input-wrap">
+                <span class="price-prefix">R$</span>
+                <input
+                  id="f-original-price"
+                  type="number"
+                  class="form-control"
+                  placeholder="0,00"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div class="form-hint">Deixe em branco se não tiver desconto</div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label" for="f-sale-price">
+                Preço de Venda <span class="required">*</span>
+              </label>
+              <div class="price-input-wrap">
+                <span class="price-prefix">R$</span>
+                <input
+                  id="f-sale-price"
+                  type="number"
+                  class="form-control"
+                  placeholder="0,00"
+                  min="0.01"
+                  step="0.01"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:1.25rem"></div>
+
+          <!-- Affiliate Link -->
+          <div class="form-group">
+            <label class="form-label" for="f-affiliate-link">
+              Link de Afiliado <span class="required">*</span>
+            </label>
+            <input
+              id="f-affiliate-link"
+              type="url"
+              class="form-control"
+              placeholder="https://mercadolivre.com/... ou https://shopee.com.br/..."
+            />
+            <div class="form-hint">Cole o link de afiliado completo do produto</div>
+          </div>
+
+          <!-- Options -->
+          <div style="display:flex;gap:2rem;flex-wrap:wrap">
+            <label class="form-check">
+              <input id="f-featured" type="checkbox" />
+              <span class="form-check-label">⭐ Produto em Destaque</span>
+            </label>
+
+            <label class="form-check">
+              <input id="f-active" type="checkbox" checked />
+              <span class="form-check-label">✓ Produto Ativo (visível na vitrine)</span>
+            </label>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('product-modal')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveProductForm()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Salvar Produto
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== MODAL: CONFIRM DELETE =================== -->
+  <div id="confirm-modal" class="modal-overlay">
+    <div class="modal confirm-modal">
+      <div class="modal-body" style="padding:2rem 2rem 1.5rem">
+        <div class="confirm-icon danger">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+            <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+          </svg>
+        </div>
+        <div class="confirm-text">
+          <h3>Excluir Produto</h3>
+          <p>Tem certeza que deseja excluir<br><strong id="confirm-product-name"></strong>?<br>
+          Esta ação não pode ser desfeita.</p>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:center;gap:1rem">
+        <button class="btn btn-outline" onclick="closeModal('confirm-modal')">Cancelar</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+          </svg>
+          Sim, excluir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== TOAST ===================== -->
+  <div id="toast-wrap" class="toast-wrap"></div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>
