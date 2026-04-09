@@ -387,7 +387,7 @@ function renderProductCard(p) {
           <div class="sale-price">${formatCurrency(p.salePrice)}</div>
           ${installment ? `<div class="installment">${installment}</div>` : ''}
         </div>
-        <a class="card-btn" href="${escapeHtml(p.affiliateLink)}" target="_blank" rel="noopener noreferrer">
+        <a class="card-btn" href="ir.html?p=${escapeHtml(p.id)}" target="_blank" rel="noopener noreferrer">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
             <polyline points="15 3 21 3 21 9"/>

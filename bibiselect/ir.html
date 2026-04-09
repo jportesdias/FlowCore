@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Redirecionando… — Bibi Select</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #F3F4F6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: #1F2937;
+    }
+    .box {
+      text-align: center;
+      padding: 2.5rem 2rem;
+    }
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid #EDE9FE;
+      border-top-color: #8B5CF6;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 1.25rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #8B5CF6, #EC4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    p { font-size: 0.875rem; color: #6B7280; }
+    .back { display: inline-block; margin-top: 1.5rem; font-size: 0.82rem; color: #8B5CF6; text-decoration: none; }
+    .back:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="spinner"></div>
+    <div class="logo">Bibi Select</div>
+    <p>Redirecionando para a oferta…</p>
+    <a class="back" href="index.html">← Voltar para a vitrine</a>
+  </div>
+
+  <script>
+    (async function () {
+      const params  = new URLSearchParams(location.search);
+      const id      = params.get('p');
+
+      if (!id) { location.replace('index.html'); return; }
+
+      try {
+        const res      = await fetch('data/products.json?v=' + Date.now());
+        const products = await res.json();
+        const product  = products.find(p => p.id === id);
+
+        if (product && product.affiliateLink) {
+          // Suporte a links em Base64 e links normais
+          let url = product.affiliateLink;
+          try {
+            const decoded = atob(url);
+            if (decoded.startsWith('http')) url = decoded;
+          } catch (_) { /* link já é texto normal */ }
+
+          setTimeout(() => location.replace(url), 400);
+        } else {
+          location.replace('index.html');
+        }
+      } catch (_) {
+        location.replace('index.html');
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -502,21 +502,40 @@ function clearForm() {
   document.getElementById('img-preview').style.display = 'none';
   document.getElementById('img-placeholder').style.display = 'block';
   document.querySelectorAll('#product-form .form-control').forEach(el => el.classList.remove('error'));
+  // Reseta aba de imagem
+  setImgTab('url');
+  const fi = document.getElementById('f-image');
+  if (fi) { fi.value = ''; delete fi.dataset.base64; }
+  document.getElementById('f-image-local').value = '';
+  const area  = document.getElementById('upload-area');
+  const label = document.getElementById('upload-label');
+  if (area)  area.classList.remove('has-file');
+  if (label) label.textContent = 'Clique para escolher uma imagem';
+  // Reseta encode do link
+  linkIsEncoded = false;
+  const linkInput = document.getElementById('f-affiliate-link');
+  if (linkInput) linkInput.style.color = '';
+  const btn  = document.getElementById('btn-encode');
+  const hint = document.getElementById('link-hint');
+  if (btn)  btn.textContent = '🔒 Ocultar link';
+  if (hint) hint.innerHTML  = 'Cole o link de afiliado. Clique em <strong>🔒 Ocultar link</strong> para esconder o URL.';
 }
 
 function fillForm(p) {
-  setValue('f-name',          p.name);
-  setValue('f-description',   p.description);
-  setValue('f-image',         p.image);
+  setValue('f-name',           p.name);
+  setValue('f-description',    p.description);
   setValue('f-original-price', p.originalPrice);
-  setValue('f-sale-price',    p.salePrice);
-  setValue('f-store',         p.store);
-  setValue('f-category',      p.category);
+  setValue('f-sale-price',     p.salePrice);
+  setValue('f-store',          p.store);
+  setValue('f-category',       p.category);
   setValue('f-affiliate-link', p.affiliateLink);
-  setChecked('f-featured',    p.featured);
-  setChecked('f-active',      p.active !== false);
+  setChecked('f-featured',     p.featured);
+  setChecked('f-active',       p.active !== false);
 
+  // Detecta origem da imagem e ativa a aba correta
+  detectImgTab(p.image);
   updateImgPreview(p.image);
+  detectLinkEncoding(p.affiliateLink);
 }
 
 function setValue(id, value) {
@@ -537,6 +556,141 @@ function getValue(id) {
 function getChecked(id) {
   const el = document.getElementById(id);
   return el ? el.checked : false;
+}
+
+// ================================================
+// ENCODE / DECODE LINK DE AFILIADO
+// ================================================
+let linkIsEncoded = false;
+
+function toggleEncodeLink() {
+  const input  = document.getElementById('f-affiliate-link');
+  const btn    = document.getElementById('btn-encode');
+  const hint   = document.getElementById('link-hint');
+  const val    = input.value.trim();
+  if (!val) { showToast('Cole o link primeiro.', 'error'); return; }
+
+  if (!linkIsEncoded) {
+    // Codificar
+    try {
+      const encoded = btoa(unescape(encodeURIComponent(val)));
+      input.value       = encoded;
+      input.type        = 'text';
+      input.style.color = 'var(--text-secondary)';
+      btn.textContent   = '🔓 Mostrar link';
+      hint.innerHTML    = '✅ <strong>Link oculto</strong> — o URL real está codificado e não aparece no site.';
+      linkIsEncoded = true;
+    } catch {
+      showToast('Não foi possível codificar o link.', 'error');
+    }
+  } else {
+    // Decodificar (para editar)
+    try {
+      const decoded = decodeURIComponent(escape(atob(val)));
+      input.value       = decoded;
+      input.type        = 'text';
+      input.style.color = '';
+      btn.textContent   = '🔒 Ocultar link';
+      hint.innerHTML    = 'Cole o link de afiliado. Clique em <strong>🔒 Ocultar link</strong> para esconder o URL.';
+      linkIsEncoded = false;
+    } catch {
+      showToast('Não foi possível decodificar. O link pode não estar codificado.', 'error');
+    }
+  }
+}
+
+// Ao abrir o modal de edição, detecta se o link já está codificado
+function detectLinkEncoding(value) {
+  const btn  = document.getElementById('btn-encode');
+  const hint = document.getElementById('link-hint');
+  const input = document.getElementById('f-affiliate-link');
+  try {
+    const decoded = decodeURIComponent(escape(atob(value)));
+    if (decoded.startsWith('http')) {
+      // Está codificado
+      linkIsEncoded = true;
+      input.style.color = 'var(--text-secondary)';
+      if (btn)  btn.textContent = '🔓 Mostrar link';
+      if (hint) hint.innerHTML  = '✅ <strong>Link oculto</strong> — o URL real está codificado e não aparece no site.';
+      return;
+    }
+  } catch (_) {}
+  // Link normal
+  linkIsEncoded = false;
+  input.style.color = '';
+  if (btn)  btn.textContent = '🔒 Ocultar link';
+  if (hint) hint.innerHTML  = 'Cole o link de afiliado. Clique em <strong>🔒 Ocultar link</strong> para esconder o URL.';
+}
+
+// ================================================
+// IMAGEM — ABAS (URL / LOCAL / UPLOAD)
+// ================================================
+let currentImgTab = 'url';
+
+function setImgTab(tab) {
+  currentImgTab = tab;
+  ['url', 'local', 'upload'].forEach(t => {
+    document.getElementById(`tab-${t}`)?.classList.toggle('active', t === tab);
+    document.getElementById(`img-panel-${t}`).style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+// Detecta automaticamente qual aba usar baseado no valor salvo
+function detectImgTab(value) {
+  if (!value) { setImgTab('url'); return; }
+  if (value.startsWith('data:image')) {
+    setImgTab('upload');
+  } else if (value.startsWith('images/')) {
+    setImgTab('local');
+    const input = document.getElementById('f-image-local');
+    if (input) input.value = value.replace('images/', '');
+    // Limpa o f-image para não conflitar
+    const fi = document.getElementById('f-image');
+    if (fi) fi.value = '';
+  } else {
+    setImgTab('url');
+    const fi = document.getElementById('f-image');
+    if (fi) fi.value = value;
+  }
+}
+
+// Lê o valor da imagem independente da aba ativa
+function getImageValue() {
+  if (currentImgTab === 'local') {
+    const filename = document.getElementById('f-image-local')?.value.trim();
+    return filename ? `images/${filename}` : '';
+  }
+  if (currentImgTab === 'upload') {
+    return document.getElementById('f-image')?.dataset.base64 || document.getElementById('f-image')?.value || '';
+  }
+  return document.getElementById('f-image')?.value.trim() || '';
+}
+
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (file.size > 800 * 1024) {
+    showToast('Imagem muito grande! Use menos de 800KB.', 'error');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const base64 = e.target.result;
+    // Guarda no campo hidden
+    const fi = document.getElementById('f-image');
+    if (fi) { fi.value = base64; fi.dataset.base64 = base64; }
+
+    // Atualiza UI
+    const label = document.getElementById('upload-label');
+    const area  = document.getElementById('upload-area');
+    if (label) label.textContent = `✓ ${file.name}`;
+    if (area)  area.classList.add('has-file');
+
+    updateImgPreview(base64);
+  };
+  reader.readAsDataURL(file);
 }
 
 function updateImgPreview(url) {
@@ -565,7 +719,7 @@ function saveProductForm() {
   const store        = getValue('f-store');
   const category     = getValue('f-category');
   const affiliateLink = getValue('f-affiliate-link');
-  const image        = getValue('f-image');
+  const image        = getImageValue();
 
   let valid = true;
 
@@ -816,9 +970,18 @@ async function initAdmin() {
   });
 
   // Image preview on URL change
+  // Preview ao digitar URL
   const imgInput = document.getElementById('f-image');
   if (imgInput) {
     imgInput.addEventListener('input', e => updateImgPreview(e.target.value));
+  }
+  // Preview ao digitar nome do arquivo local
+  const imgLocalInput = document.getElementById('f-image-local');
+  if (imgLocalInput) {
+    imgLocalInput.addEventListener('input', e => {
+      const val = e.target.value.trim();
+      updateImgPreview(val ? `images/${val}` : '');
+    });
   }
 
   // Product form submit

@@ -453,20 +453,69 @@
           <!-- Image Preview -->
           <div class="form-group">
             <label class="form-label">Imagem do Produto</label>
+
+            <!-- Preview -->
             <div class="img-preview-wrap">
               <img id="img-preview" class="img-preview" alt="Preview" />
               <div id="img-placeholder" class="img-placeholder">
                 <span class="img-placeholder-icon">🖼️</span>
-                Cole a URL da imagem abaixo
+                <span id="img-placeholder-text">Selecione a origem da imagem abaixo</span>
               </div>
             </div>
-            <input
-              id="f-image"
-              type="url"
-              class="form-control"
-              placeholder="https://exemplo.com/imagem.jpg"
-            />
-            <div class="form-hint">URL pública da imagem do produto (HTTPS recomendado)</div>
+
+            <!-- Tabs: URL ou Local -->
+            <div class="img-source-tabs">
+              <button type="button" class="img-tab active" id="tab-url"   onclick="setImgTab('url')">🌐 URL externa</button>
+              <button type="button" class="img-tab"        id="tab-local" onclick="setImgTab('local')">📁 Repositório</button>
+              <button type="button" class="img-tab"        id="tab-upload" onclick="setImgTab('upload')">⬆️ Upload</button>
+            </div>
+
+            <!-- URL externa -->
+            <div id="img-panel-url">
+              <input
+                id="f-image"
+                type="text"
+                class="form-control"
+                placeholder="https://exemplo.com/imagem.jpg"
+              />
+              <div class="form-hint">Cole a URL pública da imagem (HTTPS recomendado)</div>
+            </div>
+
+            <!-- Imagem do repositório -->
+            <div id="img-panel-local" style="display:none">
+              <div style="display:flex;align-items:center;gap:0">
+                <span class="img-prefix">images/</span>
+                <input
+                  id="f-image-local"
+                  type="text"
+                  class="form-control"
+                  style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;border-left:none"
+                  placeholder="nome-do-produto.jpg"
+                />
+              </div>
+              <div class="form-hint">
+                💡 Coloque o arquivo na pasta <code>images/</code> do repositório e escreva só o nome aqui.
+                Ex: <code>tenis-nike.jpg</code>
+              </div>
+            </div>
+
+            <!-- Upload (base64) -->
+            <div id="img-panel-upload" style="display:none">
+              <label class="upload-area" id="upload-area">
+                <input type="file" id="f-image-upload" accept="image/*" onchange="handleImageUpload(event)" style="display:none"/>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="16 16 12 12 8 16"/>
+                  <line x1="12" y1="12" x2="12" y2="21"/>
+                  <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+                </svg>
+                <span id="upload-label">Clique para escolher uma imagem</span>
+                <small>JPG, PNG, WEBP — máx. 500KB recomendado</small>
+              </label>
+              <div class="form-hint">
+                ⚠️ A imagem será convertida e salva diretamente no <code>products.json</code>. Use imagens pequenas.
+              </div>
+            </div>
+
           </div>
 
           <!-- Name -->
@@ -562,16 +611,21 @@
 
           <!-- Affiliate Link -->
           <div class="form-group">
-            <label class="form-label" for="f-affiliate-link">
-              Link de Afiliado <span class="required">*</span>
-            </label>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem">
+              <label class="form-label" for="f-affiliate-link" style="margin-bottom:0">
+                Link de Afiliado <span class="required">*</span>
+              </label>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="toggleEncodeLink()"
+                      id="btn-encode" title="Esconder o link com codificação Base64">
+                🔒 Ocultar link
+              </button>
+            </div>
             <input
               id="f-affiliate-link"
-              type="url"
               class="form-control"
               placeholder="https://mercadolivre.com/... ou https://shopee.com.br/..."
             />
-            <div class="form-hint">Cole o link de afiliado completo do produto</div>
+            <div class="form-hint" id="link-hint">Cole o link de afiliado. Clique em <strong>🔒 Ocultar link</strong> para esconder o URL.</div>
           </div>
 
           <!-- Options -->
