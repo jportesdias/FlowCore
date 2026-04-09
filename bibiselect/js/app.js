@@ -227,16 +227,17 @@ function storeLabel(store) {
 // ================================================
 // DATA
 // ================================================
-function loadProducts() {
+
+// Carrega produtos do arquivo data/products.json (fonte de verdade no repositório).
+// Fallback para SAMPLE_PRODUCTS quando rodando localmente via file://
+async function loadProducts() {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      state.products = JSON.parse(stored);
-    } else {
-      state.products = SAMPLE_PRODUCTS;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(SAMPLE_PRODUCTS));
-    }
+    const res = await fetch('data/products.json?v=' + Date.now());
+    if (!res.ok) throw new Error('not found');
+    const data = await res.json();
+    state.products = Array.isArray(data) ? data : [];
   } catch {
+    // Fallback: desenvolvimento local ou arquivo ausente
     state.products = SAMPLE_PRODUCTS;
   }
 }
@@ -433,8 +434,8 @@ function setSearch(val) {
 // ================================================
 // INIT
 // ================================================
-function init() {
-  loadProducts();
+async function init() {
+  await loadProducts();
   renderStats();
   renderCategories();
   renderProducts();
@@ -454,16 +455,6 @@ function init() {
   if (sortSelect) {
     sortSelect.addEventListener('change', e => setSort(e.target.value));
   }
-
-  // Listen for product updates from admin tab
-  window.addEventListener('storage', e => {
-    if (e.key === STORAGE_KEY) {
-      loadProducts();
-      renderStats();
-      renderCategories();
-      renderProducts();
-    }
-  });
 }
 
 document.addEventListener('DOMContentLoaded', init);

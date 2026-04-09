@@ -131,7 +131,21 @@
           </div>
 
           <div class="topbar-actions">
-            <button class="btn btn-primary btn-sm" onclick="openAddModal()">
+            <!-- Badge: alterações não publicadas -->
+            <button id="publish-badge" class="btn btn-publish btn-sm"
+                    onclick="publishToGithub()" style="display:none"
+                    title="Há alterações não publicadas no GitHub">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5">
+                <polyline points="16 16 12 12 8 16"/>
+                <line x1="12" y1="12" x2="12" y2="21"/>
+                <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+              </svg>
+              Publicar no GitHub
+              <span class="publish-dot"></span>
+            </button>
+
+            <button class="btn btn-outline btn-sm" onclick="openAddModal()">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
                    stroke="currentColor" stroke-width="2.5">
                 <line x1="12" y1="5" x2="12" y2="19"/>
@@ -332,14 +346,48 @@
             </form>
           </div>
 
+          <!-- Publicar no GitHub -->
+          <div class="section-block" style="border:2px solid var(--primary-light)">
+            <h3 class="section-block-title" style="color:var(--primary)">
+              🚀 Publicar no GitHub
+            </h3>
+            <div class="publish-steps">
+              <div class="publish-step">
+                <span class="step-num">1</span>
+                <span>Edite seus produtos aqui no painel normalmente.</span>
+              </div>
+              <div class="publish-step">
+                <span class="step-num">2</span>
+                <span>Clique em <strong>"Gerar products.json"</strong> — um arquivo será baixado.</span>
+              </div>
+              <div class="publish-step">
+                <span class="step-num">3</span>
+                <span>Substitua o arquivo <code>data/products.json</code> no seu repositório GitHub pelo arquivo baixado.</span>
+              </div>
+              <div class="publish-step">
+                <span class="step-num">4</span>
+                <span>Faça <strong>push</strong> e o site atualiza automaticamente. ✓</span>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="publishToGithub()" style="margin-top:1.25rem">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2">
+                <polyline points="16 16 12 12 8 16"/>
+                <line x1="12" y1="12" x2="12" y2="21"/>
+                <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+              </svg>
+              Gerar products.json
+            </button>
+          </div>
+
           <!-- Backup & Import -->
           <div class="section-block">
-            <h3 class="section-block-title">Backup de Dados</h3>
+            <h3 class="section-block-title">Backup de Segurança</h3>
             <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:1.25rem">
-              Exporte todos os seus produtos para um arquivo JSON ou importe um backup anterior.
+              Exporte uma cópia de segurança ou importe um backup anterior.
             </p>
             <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
-              <button class="btn btn-primary" onclick="exportData()">
+              <button class="btn btn-outline" onclick="exportData()">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>

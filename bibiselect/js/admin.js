@@ -3,6 +3,7 @@
 ================================================ */
 
 const STORAGE_KEY   = 'bibi_products';
+const FILE_SYNC_KEY = 'bibi_file_sync';   // guarda o JSON do último arquivo publicado
 const PASS_KEY      = 'bibi_admin_pass';
 const SESSION_KEY   = 'bibi_admin_session';
 const DEFAULT_PASS  = 'bibi2024';
@@ -58,6 +59,7 @@ function logout() {
 // ================================================
 // PRODUCTS CRUD
 // ================================================
+// Carrega do localStorage (rascunho de edição)
 function loadProducts() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -69,6 +71,63 @@ function loadProducts() {
 
 function saveProducts() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.products));
+  updatePublishBadge();
+}
+
+// Sincroniza com data/products.json do repositório ao abrir o admin.
+// Se o localStorage estiver vazio → preenche com o arquivo.
+// Se já houver edições locais → mantém, mas mostra badge de "não publicado".
+async function syncFromFile() {
+  try {
+    const res = await fetch('data/products.json?v=' + Date.now());
+    if (!res.ok) throw new Error('not found');
+    const fileProducts = await res.json();
+    const fileJson = JSON.stringify(fileProducts);
+    const localJson = localStorage.getItem(STORAGE_KEY);
+
+    if (!localJson || localJson === '[]') {
+      // Sem dados locais → usa o arquivo
+      state.products = Array.isArray(fileProducts) ? fileProducts : [];
+      saveProducts();
+      localStorage.setItem(FILE_SYNC_KEY, fileJson);
+    } else {
+      // Já há dados locais → carrega e verifica diferença
+      loadProducts();
+      const lastSync = localStorage.getItem(FILE_SYNC_KEY);
+      if (fileJson !== lastSync) {
+        // Arquivo do repositório foi atualizado externamente
+        // Substitui o local pelo arquivo (o arquivo é a fonte de verdade)
+        state.products = Array.isArray(fileProducts) ? fileProducts : [];
+        saveProducts();
+        localStorage.setItem(FILE_SYNC_KEY, fileJson);
+        showToast('Dados sincronizados do repositório.', 'info');
+      }
+      // else: arquivo igual ao último publicado → manter edições locais
+    }
+  } catch {
+    // Arquivo não encontrado (desenvolvimento local) → usa localStorage
+    loadProducts();
+  }
+  updatePublishBadge();
+}
+
+// Verifica se há alterações locais ainda não publicadas no GitHub
+function hasUnpublishedChanges() {
+  const lastSync = localStorage.getItem(FILE_SYNC_KEY);
+  const local    = localStorage.getItem(STORAGE_KEY);
+  if (!lastSync || !local) return false;
+  return lastSync !== local;
+}
+
+// Atualiza o badge de "não publicado" no topbar
+function updatePublishBadge() {
+  const badge = document.getElementById('publish-badge');
+  if (!badge) return;
+  if (hasUnpublishedChanges()) {
+    badge.style.display = 'inline-flex';
+  } else {
+    badge.style.display = 'none';
+  }
 }
 
 function generateId() {
@@ -606,19 +665,35 @@ function savePassword() {
   showToast('Senha alterada com sucesso!');
 }
 
-function exportData() {
-  const data = {
-    exportedAt: new Date().toISOString(),
-    products: state.products,
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+// Publica: baixa products.json pronto para substituir em data/ e fazer push
+function publishToGithub() {
+  const json = JSON.stringify(state.products, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
-  a.download = `bibi-select-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = 'products.json';
   a.click();
   URL.revokeObjectURL(url);
-  showToast('Backup exportado com sucesso!');
+
+  // Marca como sincronizado
+  localStorage.setItem(FILE_SYNC_KEY, json);
+  updatePublishBadge();
+
+  showToast('✓ products.json baixado! Mova para a pasta data/ e faça push no GitHub.', 'success');
+}
+
+// Backup completo (mantido como segurança)
+function exportData() {
+  const json = JSON.stringify(state.products, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `bibi-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Backup exportado!');
 }
 
 function importData(event) {
@@ -694,7 +769,7 @@ function closeSidebar() {
 // ================================================
 // INIT
 // ================================================
-function initAdmin() {
+async function initAdmin() {
   // Check auth
   if (!isLoggedIn()) {
     document.getElementById('login-page').style.display = 'flex';
@@ -722,7 +797,7 @@ function initAdmin() {
   document.getElementById('login-page').style.display = 'none';
   document.getElementById('admin-app').style.display  = 'block';
 
-  loadProducts();
+  await syncFromFile(); // Sincroniza com data/products.json do repositório
 
   // Populate category dropdowns
   const catSelects = document.querySelectorAll('.category-select');

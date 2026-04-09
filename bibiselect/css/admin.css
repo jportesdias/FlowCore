@@ -477,6 +477,30 @@ body {
 .btn-ghost:hover { background: var(--bg); color: var(--text-primary); }
 
 .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.78rem; }
+
+.btn-publish {
+  background: linear-gradient(135deg, #059669, #047857);
+  color: white;
+  border-color: transparent;
+  position: relative;
+  animation: pulse-green 2s infinite;
+}
+
+.btn-publish:hover { background: linear-gradient(135deg, #047857, #065F46); }
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(5,150,105,0.4); }
+  50%       { box-shadow: 0 0 0 6px rgba(5,150,105,0); }
+}
+
+.publish-dot {
+  width: 7px;
+  height: 7px;
+  background: #FDE68A;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 2px;
+}
 .btn-icon {
   width: 36px;
   height: 36px;
@@ -818,6 +842,48 @@ tr.drag-over td:first-child {
 
 .price-input-wrap .form-control {
   padding-left: 2.25rem;
+}
+
+/* ================================================
+   PUBLISH STEPS
+================================================ */
+.publish-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.publish-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.publish-step code {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.82rem;
+  font-family: monospace;
+  color: var(--primary-dark);
 }
 
 /* ================================================
