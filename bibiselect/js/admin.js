@@ -2,9 +2,10 @@
    BIBI SELECT — PAINEL ADMINISTRATIVO
 ================================================ */
 
-const STORAGE_KEY   = 'bibi_products';
-const FILE_SYNC_KEY = 'bibi_file_sync';   // guarda o JSON do último arquivo publicado
-const PASS_KEY      = 'bibi_admin_pass';
+const STORAGE_KEY      = 'bibi_products';
+const FILE_SYNC_KEY    = 'bibi_file_sync';
+const PASS_KEY         = 'bibi_admin_pass';
+const GITHUB_CONFIG_KEY = 'bibi_github_config';
 const SESSION_KEY   = 'bibi_admin_session';
 const DEFAULT_PASS  = 'bibi2024';
 
@@ -793,7 +794,16 @@ function confirmDelete() {
 // SETTINGS
 // ================================================
 function renderSettings() {
-  // nothing extra needed — form is static
+  // Preenche campos do GitHub se já configurado
+  const cfg = getGithubConfig();
+  if (cfg.token) setValue('s-gh-token', cfg.token);
+  if (cfg.owner) setValue('s-gh-owner', cfg.owner);
+  if (cfg.repo)  setValue('s-gh-repo',  cfg.repo);
+
+  const status = document.getElementById('github-status');
+  if (status && cfg.owner && cfg.repo) {
+    status.innerHTML = `<span style="color:var(--text-secondary)">Configurado para <strong>${cfg.owner}/${cfg.repo}</strong> — clique em "Testar conexão" para validar.</span>`;
+  }
 }
 
 function savePassword() {
@@ -819,22 +829,145 @@ function savePassword() {
   showToast('Senha alterada com sucesso!');
 }
 
-// Publica: baixa products.json pronto para substituir em data/ e fazer push
-function publishToGithub() {
-  const json = JSON.stringify(state.products, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'products.json';
-  a.click();
-  URL.revokeObjectURL(url);
+// ================================================
+// GITHUB API — publicar direto do admin
+// ================================================
+function getGithubConfig() {
+  try { return JSON.parse(localStorage.getItem(GITHUB_CONFIG_KEY)) || {}; }
+  catch { return {}; }
+}
 
-  // Marca como sincronizado
-  localStorage.setItem(FILE_SYNC_KEY, json);
-  updatePublishBadge();
+function saveGithubConfig(cfg) {
+  localStorage.setItem(GITHUB_CONFIG_KEY, JSON.stringify(cfg));
+}
 
-  showToast('✓ products.json baixado! Mova para a pasta data/ e faça push no GitHub.', 'success');
+async function publishToGithub() {
+  const cfg = getGithubConfig();
+
+  if (!cfg.token || !cfg.owner || !cfg.repo) {
+    navigate('settings');
+    showToast('Configure o Token do GitHub nas configurações primeiro.', 'error');
+    // Destaca a seção
+    setTimeout(() => {
+      document.getElementById('github-config-section')?.scrollIntoView({ behavior: 'smooth' });
+    }, 300);
+    return;
+  }
+
+  // Botão loading
+  const btn = document.getElementById('publish-badge');
+  const originalHtml = btn?.innerHTML;
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner-inline"></span> Publicando…`;
+  }
+
+  try {
+    const filePath = 'data/products.json';
+    const apiBase  = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${filePath}`;
+    const headers  = {
+      'Authorization': `Bearer ${cfg.token}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    };
+
+    // 1. Busca SHA atual do arquivo (necessário para atualizar)
+    let sha = null;
+    const getRes = await fetch(apiBase, { headers });
+    if (getRes.ok) {
+      const fileData = await getRes.json();
+      sha = fileData.sha;
+    } else if (getRes.status !== 404) {
+      throw new Error(`Erro ao acessar repositório (${getRes.status})`);
+    }
+
+    // 2. Codifica conteúdo em Base64
+    const json    = JSON.stringify(state.products, null, 2);
+    const content = btoa(unescape(encodeURIComponent(json)));
+
+    // 3. Commit via API
+    const body = {
+      message: `Produtos atualizados — ${new Date().toLocaleString('pt-BR')}`,
+      content,
+      ...(sha ? { sha } : {}),
+    };
+
+    const putRes = await fetch(apiBase, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(body),
+    });
+
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message || `Erro ${putRes.status}`);
+    }
+
+    // 4. Marca como sincronizado
+    localStorage.setItem(FILE_SYNC_KEY, json);
+    updatePublishBadge();
+    showToast('✅ Publicado! O site atualiza em ~1 minuto.', 'success');
+
+  } catch (err) {
+    showToast(`Erro ao publicar: ${err.message}`, 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = originalHtml; }
+  }
+}
+
+// Testa conexão com o GitHub
+async function testGithubConnection() {
+  const cfg = getGithubConfig();
+  if (!cfg.token || !cfg.owner || !cfg.repo) {
+    showToast('Preencha todos os campos antes de testar.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btn-test-github');
+  if (btn) { btn.disabled = true; btn.textContent = 'Testando…'; }
+
+  try {
+    const res = await fetch(
+      `https://api.github.com/repos/${cfg.owner}/${cfg.repo}`,
+      { headers: { 'Authorization': `Bearer ${cfg.token}` } }
+    );
+
+    if (res.ok) {
+      const data = await res.json();
+      showToast(`✅ Conectado! Repositório: ${data.full_name}`, 'success');
+      document.getElementById('github-status').innerHTML =
+        `<span style="color:var(--success)">✅ Conectado — ${data.full_name}</span>`;
+    } else if (res.status === 401) {
+      throw new Error('Token inválido ou expirado.');
+    } else if (res.status === 404) {
+      throw new Error('Repositório não encontrado. Verifique usuário e nome do repo.');
+    } else {
+      throw new Error(`Erro ${res.status}`);
+    }
+  } catch (err) {
+    showToast(`Falha: ${err.message}`, 'error');
+    document.getElementById('github-status').innerHTML =
+      `<span style="color:var(--danger)">❌ ${err.message}</span>`;
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Testar conexão'; }
+  }
+}
+
+// Salva configuração do GitHub
+function saveGithubSettings() {
+  const token = document.getElementById('s-gh-token')?.value.trim();
+  const owner = document.getElementById('s-gh-owner')?.value.trim();
+  const repo  = document.getElementById('s-gh-repo')?.value.trim();
+
+  if (!token || !owner || !repo) {
+    showToast('Preencha todos os campos.', 'error');
+    return;
+  }
+
+  saveGithubConfig({ token, owner, repo });
+  showToast('Configuração salva!', 'success');
+  document.getElementById('github-status').innerHTML =
+    `<span style="color:var(--text-secondary)">Configurado — clique em "Testar conexão" para validar.</span>`;
 }
 
 // Backup completo (mantido como segurança)

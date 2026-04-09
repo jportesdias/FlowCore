@@ -346,38 +346,63 @@
             </form>
           </div>
 
-          <!-- Publicar no GitHub -->
-          <div class="section-block" style="border:2px solid var(--primary-light)">
+          <!-- GitHub Config -->
+          <div class="section-block" id="github-config-section" style="border:2px solid var(--primary-light)">
             <h3 class="section-block-title" style="color:var(--primary)">
-              🚀 Publicar no GitHub
+              🔗 Integração com GitHub
             </h3>
-            <div class="publish-steps">
-              <div class="publish-step">
-                <span class="step-num">1</span>
-                <span>Edite seus produtos aqui no painel normalmente.</span>
-              </div>
-              <div class="publish-step">
-                <span class="step-num">2</span>
-                <span>Clique em <strong>"Gerar products.json"</strong> — um arquivo será baixado.</span>
-              </div>
-              <div class="publish-step">
-                <span class="step-num">3</span>
-                <span>Substitua o arquivo <code>data/products.json</code> no seu repositório GitHub pelo arquivo baixado.</span>
-              </div>
-              <div class="publish-step">
-                <span class="step-num">4</span>
-                <span>Faça <strong>push</strong> e o site atualiza automaticamente. ✓</span>
+            <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:1.25rem">
+              Configure uma vez e publique seus produtos direto do painel — sem baixar arquivos.
+            </p>
+
+            <div class="form-group">
+              <label class="form-label" for="s-gh-token">
+                Token do GitHub (Personal Access Token)
+              </label>
+              <input id="s-gh-token" type="password" class="form-control"
+                     placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off"/>
+              <div class="form-hint">
+                Gere em
+                <a href="https://github.com/settings/tokens/new?scopes=repo&description=Bibi+Select+Admin"
+                   target="_blank" style="color:var(--primary)">
+                  github.com/settings/tokens
+                </a>
+                → marque <strong>Contents → Read and Write</strong>
               </div>
             </div>
-            <button class="btn btn-primary" onclick="publishToGithub()" style="margin-top:1.25rem">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2">
-                <polyline points="16 16 12 12 8 16"/>
-                <line x1="12" y1="12" x2="12" y2="21"/>
-                <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
-              </svg>
-              Gerar products.json
-            </button>
+
+            <div class="form-row">
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label" for="s-gh-owner">Usuário GitHub</label>
+                <input id="s-gh-owner" type="text" class="form-control"
+                       placeholder="flowcoresolutions" autocomplete="off"/>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label" for="s-gh-repo">Nome do Repositório</label>
+                <input id="s-gh-repo" type="text" class="form-control"
+                       placeholder="bibiselect" autocomplete="off"/>
+              </div>
+            </div>
+
+            <div id="github-status" style="font-size:0.82rem;margin:1rem 0 0.75rem"></div>
+
+            <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="saveGithubSettings()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Salvar configuração
+              </button>
+              <button class="btn btn-outline" id="btn-test-github" onclick="testGithubConnection()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Testar conexão
+              </button>
+            </div>
           </div>
 
           <!-- Backup & Import -->

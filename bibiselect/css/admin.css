@@ -501,6 +501,19 @@ body {
   display: inline-block;
   margin-left: 2px;
 }
+
+.spinner-inline {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
 .btn-icon {
   width: 36px;
   height: 36px;
