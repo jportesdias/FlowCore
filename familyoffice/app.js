@@ -425,6 +425,90 @@ class FamilyOfficeApp {
         }
     }
 
+    /**
+     * Verifica fechamento de cartões e gera fatura pendente no fluxo de caixa.
+     * Executado uma vez por sessão, logo após o login.
+     */
+    async checkCardClosings() {
+        const today = new Date();
+        const todayDay = today.getDate();
+
+        try {
+            const [cRes, tRes] = await Promise.all([
+                fetch(`${CARDS_TABLE}?select=*`, { headers: SB_HEADERS }),
+                fetch(`${CARD_TX_TABLE}?status=eq.posted&select=*&limit=5000`, { headers: SB_HEADERS })
+            ]);
+            const cards = await cRes.json();
+            const allTxs = await tRes.json();
+
+            for (const card of cards) {
+                if (!card.closing_day || card.closing_day !== todayDay) continue;
+
+                // Ciclo: do dia seguinte ao fechamento do mês anterior até hoje
+                const cycleEnd   = new Date(today.getFullYear(), today.getMonth(), card.closing_day);
+                const cycleStart = new Date(today.getFullYear(), today.getMonth() - 1, card.closing_day + 1);
+                const cycleStartStr = window.getLocalISODate(cycleStart);
+                const cycleEndStr   = window.getLocalISODate(cycleEnd);
+
+                // Vencimento: due_day do próximo mês
+                const dueDate    = new Date(today.getFullYear(), today.getMonth() + 1, card.due_day || 1);
+                const dueDateStr = window.getLocalISODate(dueDate);
+                const dueMonth   = dueDateStr.substring(0, 7);
+
+                // Chave de deduplicação
+                const descKey = `Fatura ${card.name} ${dueMonth}`;
+
+                // Verifica se já foi gerada
+                const existingRes = await fetch(
+                    `${SB_TABLE}?origin=eq.card_closing&description=eq.${encodeURIComponent(descKey)}&limit=1`,
+                    { headers: SB_HEADERS }
+                );
+                const existing = await existingRes.json();
+                if (Array.isArray(existing) && existing.length > 0) continue;
+
+                // Soma transações do ciclo (usa purchase_date ou date como fallback)
+                const cycleTxs = allTxs.filter(t => {
+                    const txDate = (t.purchase_date || t.date || '').substring(0, 10);
+                    return String(t.card_id) === String(card.id) &&
+                           txDate >= cycleStartStr &&
+                           txDate <= cycleEndStr;
+                });
+
+                if (cycleTxs.length === 0) continue;
+
+                const total = cycleTxs.reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
+                if (total <= 0) continue;
+
+                // Cria entrada pendente no fluxo de caixa
+                const entry = withUser({
+                    date:        dueDateStr,
+                    description: descKey,
+                    amount:      parseFloat(total.toFixed(2)),
+                    type:        'expense',
+                    category:    'DIVIDAS_E_OBRIGACOES',
+                    subcategory: 'cartao_credito',
+                    status:      'pending',
+                    origin:      'card_closing',
+                    notes:       `${cycleTxs.length} lançamento(s) — ciclo ${cycleStartStr} a ${cycleEndStr}`
+                });
+
+                await sbFetch(SB_TABLE, {
+                    method: 'POST',
+                    headers: { 'Prefer': 'return=representation' },
+                    body: JSON.stringify(entry)
+                });
+
+                console.log(`[CardClosing] Fatura gerada: ${descKey} = R$ ${total.toFixed(2)}`);
+            }
+
+            // Atualiza badge de pendentes após eventuais novas faturas
+            await this.fetchPendingEntries();
+
+        } catch (err) {
+            console.error('[CardClosing] Erro ao verificar fechamentos:', err);
+        }
+    }
+
     updateAIStatus() {
         const statusElem = document.getElementById('ai-global-status');
         if (!statusElem) return;
@@ -4109,4 +4193,6 @@ window.initApp = async function() {
     } else {
         window.app.renderActivePage();
     }
+    // Verifica fechamento de cartões (gera fatura pendente se for o dia de fechamento)
+    await window.app.checkCardClosings();
 };
