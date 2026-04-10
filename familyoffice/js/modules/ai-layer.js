@@ -11,6 +11,20 @@ class AIProviderLayer {
 
     loadConfig() {
         const data = window.store?.getData() || {};
+
+        // Se o store ainda não tem API key, lê direto do localStorage (antes do loadFromSupabase)
+        if (!data.aiConfig?.providers?.gemini?.apiKey) {
+            try {
+                const raw = localStorage.getItem('family_office_data');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.aiConfig?.providers?.gemini?.apiKey) {
+                        return parsed.aiConfig;
+                    }
+                }
+            } catch(e) {}
+        }
+
         if (!data.aiConfig || !data.aiConfig.provider) {
             const legacyKey = data.aiConfig?.apiKey || '';
             return {
@@ -145,6 +159,10 @@ class AIProviderLayer {
     }
 
     async execute(request) {
+        // Sempre recarrega config do store (resolve race condition de init vs login)
+        this.config = this.loadConfig();
+        this.config.provider = "gemini";
+
         const provider = "gemini";
         const preflight = await this.preflightCheck(provider);
         
