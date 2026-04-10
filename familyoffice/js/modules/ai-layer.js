@@ -88,25 +88,52 @@ class AIProviderLayer {
         const apiKey = this.config.providers.gemini.apiKey;
         const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
 
+        // Modelos estáveis preferidos, em ordem de prioridade
+        const PREFERRED = [
+            "gemini-2.0-flash",
+            "gemini-1.5-flash",
+            "gemini-1.5-pro",
+            "gemini-pro"
+        ];
+
         try {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
-            
-            // Filter models: support generateContent and exclude known flash/obsolete if needed 
-            // but usually we just want the first stable one found
-            const compatible = data.models?.filter(m => 
+
+            // Apenas modelos que suportam generateContent, excluindo experimentais/preview
+            const compatible = data.models?.filter(m =>
                 m.supportedGenerationMethods?.includes("generateContent") &&
-                !m.name.includes("vision-alpha") && 
-                !m.name.includes("embedding")
+                !m.name.includes("embedding") &&
+                !m.name.includes("vision-alpha") &&
+                !m.name.includes("preview") &&
+                !m.name.includes("experimental")
             ) || [];
 
+            // Tenta preferidos na ordem
+            for (const preferred of PREFERRED) {
+                const found = compatible.find(m => m.name.includes(preferred));
+                if (found) {
+                    console.log(`[GEMINI_DISCOVERY] Modelo estável encontrado: ${found.name}`);
+                    return { success: true, model: found.name };
+                }
+            }
+
+            // Fallback: qualquer flash disponível (mesmo preview se não houver outro)
+            const anyFlash = data.models?.find(m =>
+                m.supportedGenerationMethods?.includes("generateContent") &&
+                m.name.includes("flash") &&
+                !m.name.includes("embedding")
+            );
+            if (anyFlash) {
+                console.log(`[GEMINI_DISCOVERY] Fallback flash: ${anyFlash.name}`);
+                return { success: true, model: anyFlash.name };
+            }
+
+            // Último recurso: primeiro compatível da lista
             if (compatible.length > 0) {
-                // Priority: flash -> pro -> first
-                const flash = compatible.find(m => m.name.includes("flash"));
-                const best = flash ? flash.name : compatible[0].name;
-                console.log(`[GEMINI_DISCOVERY] Best Model Found: ${best}`);
-                return { success: true, model: best };
+                console.log(`[GEMINI_DISCOVERY] Fallback genérico: ${compatible[0].name}`);
+                return { success: true, model: compatible[0].name };
             }
 
             return { success: false, errorType: "NO_COMPATIBLE_MODEL_FOUND" };
@@ -259,6 +286,12 @@ class AIProviderLayer {
         if (status === 429) {
             this.cooldowns[provider] = Date.now() + 30000;
             return "RATE_LIMIT_EXCEEDED";
+        }
+        if (status === 503 || status === 502 || status === 500) {
+            // Modelo instável — limpa o cache para forçar redescoberta na próxima chamada
+            this.lastValidModels[provider] = null;
+            this.config.providers[provider].model = '';
+            return "SERVER_ERROR";
         }
         return "SERVER_ERROR";
     }
