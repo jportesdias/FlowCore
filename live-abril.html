@@ -376,8 +376,7 @@
 </div>
 
 <script>
-  var FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSdNa7TMm5JMpkXzmvCi7bWCeuDotZR15CvbZyLBuBN8-TsLw/formResponse';
-  var ENTRY_EMAIL = 'entry.227649005';
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbx4hJjDnzxpBFsdhe7JDGaOYk3Chkq4RQt7hsrNuLSwBLtpQYQ9qwg04KTZA_tAAy6GBg/exec';
 
   function confirmarPresenca() {
     var email = document.getElementById('emailInput').value.trim();
@@ -393,34 +392,13 @@
     btn.disabled = true;
     btn.textContent = 'Confirmando...';
 
-    // Iframe oculto para receber a resposta do Google Forms
-    var iframe = document.createElement('iframe');
-    iframe.name = 'hidden-form-target';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    // Formulário oculto apontando para o Google Forms
-    var form = document.createElement('form');
-    form.method  = 'POST';
-    form.action  = FORM_ACTION;
-    form.target  = 'hidden-form-target';
-
-    var input = document.createElement('input');
-    input.type  = 'hidden';
-    input.name  = ENTRY_EMAIL;
-    input.value = email;
-    form.appendChild(input);
-
-    document.body.appendChild(form);
-    form.submit();
-
-    // Mostra sucesso após envio
-    setTimeout(function() {
-      document.getElementById('form-state').style.display = 'none';
-      var s = document.getElementById('success-state');
-      s.style.display = 'flex';
-      document.body.removeChild(form);
-    }, 800);
+    fetch(GAS_URL + '?email=' + encodeURIComponent(email))
+      .then(function(r) { return r.json(); })
+      .catch(function() { return { ok: true }; })
+      .then(function() {
+        document.getElementById('form-state').style.display = 'none';
+        document.getElementById('success-state').style.display = 'flex';
+      });
   }
 
   document.getElementById('emailInput').addEventListener('keypress', function(e){
