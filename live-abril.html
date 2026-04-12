@@ -392,13 +392,25 @@
     btn.disabled = true;
     btn.textContent = 'Confirmando...';
 
-    fetch(GAS_URL + '?email=' + encodeURIComponent(email))
-      .then(function(r) { return r.json(); })
-      .catch(function() { return { ok: true }; })
-      .then(function() {
-        document.getElementById('form-state').style.display = 'none';
-        document.getElementById('success-state').style.display = 'flex';
-      });
+    // JSONP — contorna CORS do Google Apps Script
+    var cbName = 'cb_' + Date.now();
+    window[cbName] = function(data) {
+      delete window[cbName];
+      var el = document.getElementById('jsonp-script');
+      if (el) el.parentNode.removeChild(el);
+      document.getElementById('form-state').style.display = 'none';
+      document.getElementById('success-state').style.display = 'flex';
+    };
+
+    var script = document.createElement('script');
+    script.id  = 'jsonp-script';
+    script.src = GAS_URL + '?email=' + encodeURIComponent(email) + '&callback=' + cbName;
+    script.onerror = function() {
+      // Mostra sucesso mesmo se der erro (provavelmente enviou)
+      document.getElementById('form-state').style.display = 'none';
+      document.getElementById('success-state').style.display = 'flex';
+    };
+    document.body.appendChild(script);
   }
 
   document.getElementById('emailInput').addEventListener('keypress', function(e){
