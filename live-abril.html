@@ -399,6 +399,7 @@
 
     // JSONP — contorna CORS do Google Apps Script
     var cbName = 'cb_' + Date.now();
+    console.log('Chamando GAS URL:', GAS_URL);
     var timeout = setTimeout(function() {
       btn.disabled = false;
       btn.textContent = 'Confirmar Presença →';
@@ -425,7 +426,7 @@
 
     var script = document.createElement('script');
     script.id  = 'jsonp-script';
-    script.src = GAS_URL + '?email=' + encodeURIComponent(email) + '&callback=' + cbName;
+    script.src = GAS_URL + '?email=' + encodeURIComponent(email) + '&callback=' + cbName + '&_t=' + Date.now();
     script.onerror = function() {
       clearTimeout(timeout);
       btn.disabled = false;
