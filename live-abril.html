@@ -350,6 +350,11 @@
         Confirmar Presença →
       </button>
 
+      <!-- Mensagem de erro (oculta por padrão) -->
+      <p id="error-msg" style="display:none; color:#ef4444; font-size:0.85rem; margin-top:12px; font-weight:600;">
+        Falha ao confirmar. Tente novamente ou use outro e-mail.
+      </p>
+
       <p class="privacy-note">Sem spam. Apenas o link do Zoom no dia da live.</p>
 
     </div>
@@ -394,21 +399,40 @@
 
     // JSONP — contorna CORS do Google Apps Script
     var cbName = 'cb_' + Date.now();
+    var timeout = setTimeout(function() {
+      btn.disabled = false;
+      btn.textContent = 'Confirmar Presença →';
+      document.getElementById('error-msg').style.display = 'block';
+      document.getElementById('error-msg').textContent = 'O servidor demorou a responder. Tente novamente.';
+    }, 8000);
+
     window[cbName] = function(data) {
+      clearTimeout(timeout);
       delete window[cbName];
       var el = document.getElementById('jsonp-script');
       if (el) el.parentNode.removeChild(el);
-      document.getElementById('form-state').style.display = 'none';
-      document.getElementById('success-state').style.display = 'flex';
+      
+      if (data && data.ok) {
+        document.getElementById('form-state').style.display = 'none';
+        document.getElementById('success-state').style.display = 'flex';
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Confirmar Presença →';
+        document.getElementById('error-msg').style.display = 'block';
+        document.getElementById('error-msg').textContent = data.msg || 'Erro na inscrição. Tente novamente.';
+      }
     };
 
     var script = document.createElement('script');
     script.id  = 'jsonp-script';
     script.src = GAS_URL + '?email=' + encodeURIComponent(email) + '&callback=' + cbName;
     script.onerror = function() {
-      // Mostra sucesso mesmo se der erro (provavelmente enviou)
-      document.getElementById('form-state').style.display = 'none';
-      document.getElementById('success-state').style.display = 'flex';
+      clearTimeout(timeout);
+      btn.disabled = false;
+      btn.textContent = 'Confirmar Presença →';
+      document.getElementById('error-msg').style.display = 'block';
+      document.getElementById('error-msg').textContent = 'Erro de conexão com o servidor.';
+      console.error('Erro ao carregar script JSONP. Verifique se a URL do GAS está correta e implantada como Web App.');
     };
     document.body.appendChild(script);
   }
