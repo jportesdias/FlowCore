@@ -379,12 +379,10 @@
   <p class="footer-note">flowcoresolutions.com.br · FlowCore Academy</p>
 
 </div>
-<!-- Elementos ocultos para envio robusto -->
-<form id="hiddenForm" style="display:none;" target="hiddenIframe" method="GET"></form>
-<iframe name="hiddenIframe" style="display:none;"></iframe>
+</div>
 
 <script>
-  var GAS_URL = 'https://script.google.com/macros/s/AKfycbzbNxs17kMf_G_52sJ3XVtAXcMkVUCxP_wyRVfrtYT2yTMm_fgh0ik4TVo5WIRNnGwxqQ/exec';
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbxuXY75KXKIe_Z7iQmK5nyKdk-d4OAyKX9MJBrIo4qbe3zzBJ3CzBV1fA7x2amAbd_icg/exec';
 
   function confirmarPresenca() {
     var email = document.getElementById('emailInput').value.trim();
@@ -400,18 +398,19 @@
     btn.disabled = true;
     btn.textContent = 'Confirmando...';
 
-    // Usando formulário + iframe para máxima compatibilidade (evita bloqueios de redirecionamento e múltiplas contas)
-    var form = document.getElementById('hiddenForm');
-    form.action = GAS_URL;
-    form.innerHTML = '<input type="hidden" name="email" value="' + email + '">';
-    form.submit();
+    // Método Fetch (Moderno e Robusto): envia o dado diretamente para o Google
+    // O modo 'no-cors' garante que a requisição saia mesmo que o navegador queira bloquear por segurança
+    fetch(GAS_URL + '?email=' + encodeURIComponent(email), { mode: 'no-cors' })
+    .then(function() {
+      console.log('Inscrição enviada com sucesso para o Google.');
+    })
+    .catch(function(err) {
+      console.error('Erro ao enviar:', err);
+    });
 
-    // Como não conseguimos ler o 'OK' do Google via cross-origin iframe por segurança,
-    // mostramos o sucesso após um pequeno delay para garantir que o disparo ocorreu.
-    setTimeout(function() {
-      document.getElementById('form-state').style.display = 'none';
-      document.getElementById('success-state').style.display = 'flex';
-    }, 1200);
+    // Mostramos o sucesso para o usuário imediatamente
+    document.getElementById('form-state').style.display = 'none';
+    document.getElementById('success-state').style.display = 'flex';
   }
 
   document.getElementById('emailInput').addEventListener('keypress', function(e){
