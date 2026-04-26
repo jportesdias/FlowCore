@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Mestre — IHM Metering | FlowCore Solutions</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --or:#E55B13; --bl:#1F3F68; --bg:#06040e; --pn:#0d0b1a;
+  --bd:#3a2060; --tx:#d0c8f0; --mu:#7a6a9a; --gr:#00c97a;
+  --rd:#e03030; --yl:#ffd600; --cy:#4ab8ff; --pu:#cc88ff;
+  --pu2:#9955ee; --dark:#08060f;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-serif;
+  font-size:13px;height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+/* ─── HEADER ─── */
+#hdr{background:#100830;padding:6px 16px;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:2px solid var(--pu2);flex-shrink:0;}
+.hbrand{display:flex;align-items:center;gap:10px;}
+.hbrand .logo{font-size:20px;font-weight:900;color:#fff;letter-spacing:1px;}
+.hbrand .proj{font-size:10px;color:#9a88cc;border-left:1px solid #5a3090;
+  padding-left:10px;line-height:1.7;}
+.htitle{text-align:center;}
+.htitle .t1{font-size:13px;font-weight:700;color:var(--pu);text-transform:uppercase;letter-spacing:2px;}
+.htitle .t2{font-size:10px;color:#9a88cc;}
+.hright{display:flex;align-items:center;gap:10px;}
+.hclock{font-family:'Courier New',monospace;font-size:14px;color:var(--cy);
+  background:rgba(0,0,0,.35);padding:2px 8px;border-radius:3px;}
+.conn-badge{font-size:10px;padding:2px 9px;border-radius:3px;font-weight:700;}
+.conn-badge.ok{background:#001a30;color:var(--cy);border:1px solid var(--cy);}
+.conn-badge.err{background:#200000;color:var(--rd);border:1px solid var(--rd);}
+.conn-badge.wait{background:#1a1a00;color:var(--yl);border:1px solid var(--yl);}
+
+/* ─── AUTH OVERLAY ─── */
+#auth-overlay{position:fixed;inset:0;background:rgba(4,2,10,.96);z-index:3000;
+  display:flex;align-items:center;justify-content:center;}
+.auth-box{background:var(--pn);border:2px solid var(--pu2);border-radius:8px;
+  padding:32px;min-width:340px;max-width:440px;width:90vw;text-align:center;}
+.auth-logo{font-size:30px;font-weight:900;color:var(--pu);letter-spacing:2px;margin-bottom:4px;}
+.auth-sub{font-size:11px;color:var(--mu);margin-bottom:24px;}
+.auth-title{font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;
+  letter-spacing:1.5px;margin-bottom:16px;}
+.auth-field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;text-align:left;}
+.auth-field label{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;}
+.auth-field input{background:#0b0820;border:1px solid var(--bd);color:var(--tx);
+  padding:9px 12px;border-radius:4px;font-size:14px;width:100%;letter-spacing:2px;}
+.auth-field input:focus{outline:none;border-color:var(--pu2);}
+.auth-err{color:var(--rd);font-size:11px;margin-top:6px;min-height:16px;}
+
+/* ─── LAYOUT ─── */
+#main{flex:1;display:grid;grid-template-columns:270px 1fr;overflow:hidden;}
+
+/* ─── LEFT SIDEBAR ─── */
+#sidebar{background:var(--pn);border-right:1px solid var(--bd);
+  display:flex;flex-direction:column;overflow:hidden;}
+.sb-sec{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--pu);
+  border-bottom:1px solid var(--bd);padding:6px 12px;background:#0a0818;flex-shrink:0;}
+.sb-body{padding:10px;overflow-y:auto;flex:1;}
+
+/* Broadcast section */
+.bc-card{background:#0a0818;border:1px solid var(--bd);border-radius:4px;
+  padding:9px;margin-bottom:8px;}
+.bc-lbl{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.bc-select{width:100%;background:#080618;border:1px solid var(--bd);color:var(--tx);
+  padding:5px 7px;font-size:11px;border-radius:3px;margin-bottom:5px;}
+.bc-select:focus{outline:none;border-color:var(--pu2);}
+.bc-btn{width:100%;padding:6px 0;background:#280050;border:1px solid var(--pu2);
+  color:var(--pu);font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.8px;cursor:pointer;border-radius:3px;margin-top:3px;}
+.bc-btn:hover{background:#3a0070;}
+.bc-btn.danger{background:#280000;border-color:var(--rd);color:var(--rd);}
+.bc-btn.danger:hover{background:#3a0000;}
+.bc-input{width:100%;background:#080618;border:1px solid var(--bd);color:var(--tx);
+  padding:5px 7px;font-size:11px;border-radius:3px;margin-bottom:4px;}
+.bc-input:focus{outline:none;border-color:var(--pu2);}
+
+/* Session count */
+.sess-count{display:flex;align-items:baseline;gap:5px;padding:8px 12px;
+  background:#0a0818;border-bottom:1px solid var(--bd);}
+.sess-count .n{font-size:28px;font-weight:900;color:var(--pu);font-family:'Courier New',monospace;}
+.sess-count .lbl{font-size:10px;color:var(--mu);}
+
+/* ─── SESSION GRID ─── */
+#grid-area{overflow-y:auto;padding:10px;background:#060410;}
+.grid-header{display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:10px;padding:0 2px;}
+.grid-header h2{font-size:11px;font-weight:700;color:var(--pu);text-transform:uppercase;
+  letter-spacing:1px;}
+.ghost{color:var(--mu);font-size:12px;text-align:center;padding:40px 0;}
+
+/* Session card */
+.scard{background:var(--pn);border:1px solid var(--bd);border-radius:6px;
+  margin-bottom:10px;overflow:hidden;transition:border-color .2s;}
+.scard:hover{border-color:var(--pu2);}
+.scard.selected{border-color:var(--pu);box-shadow:0 0 0 1px var(--pu);}
+.sc-head{display:flex;align-items:center;gap:10px;padding:8px 12px;
+  background:#0c0a1c;border-bottom:1px solid var(--bd);cursor:pointer;}
+.sc-token{font-family:'Courier New',monospace;font-size:16px;font-weight:900;
+  color:var(--pu);letter-spacing:3px;}
+.sc-operator{font-size:12px;color:#fff;font-weight:600;}
+.sc-time{font-size:9px;color:var(--mu);margin-left:auto;}
+.sc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sc-dot.ok{background:var(--gr);box-shadow:0 0 4px var(--gr);}
+.sc-dot.warn{background:var(--yl);box-shadow:0 0 4px var(--yl);}
+.sc-dot.alm{background:var(--rd);animation:blink 1s ease-in-out infinite;}
+
+.sc-body{padding:10px 12px;}
+
+/* Process readings row */
+.sc-readings{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;}
+.sc-rd{background:#080618;border:1px solid #1a1040;border-radius:3px;padding:4px 7px;text-align:center;}
+.sc-rd .rl{font-size:8px;color:var(--mu);text-transform:uppercase;letter-spacing:.3px;}
+.sc-rd .rv{font-family:'Courier New',monospace;font-size:13px;font-weight:700;color:var(--cy);}
+.sc-rd .ru{font-size:8px;color:var(--mu);}
+
+/* Train flows */
+.sc-trains{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px;}
+.sc-train{background:#080618;border:1px solid #1a1040;border-radius:3px;padding:4px 6px;}
+.sc-train .tl{font-size:8px;color:var(--mu);}
+.sc-train .tq{font-family:'Courier New',monospace;font-size:11px;color:var(--gr);font-weight:700;}
+.sc-train .tf{font-size:8px;color:var(--mu);}
+
+/* Faults badge row */
+.sc-faults{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px;min-height:18px;}
+.sc-fault-tag{font-size:8px;padding:1px 5px;border-radius:2px;background:#280000;
+  color:var(--rd);border:1px solid #500000;font-weight:700;text-transform:uppercase;}
+
+/* Control row */
+.sc-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;}
+.sc-btn{padding:4px 0;font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.5px;cursor:pointer;border-radius:3px;border:1px solid var(--bd);
+  background:#0d0b1a;color:var(--mu);transition:all .15s;}
+.sc-btn:hover{background:#1a1040;color:var(--tx);}
+.sc-btn.act{background:#1a0040;border-color:var(--pu2);color:var(--pu);}
+
+/* Fault injection panel (inline per card) */
+.sc-fault-panel{display:none;background:#080618;border-top:1px solid var(--bd);
+  padding:8px 12px;}
+.sc-fault-panel.on{display:block;}
+.fault-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:6px;}
+.fbt{padding:3px 4px;font-size:8px;border:1px solid #3a1060;background:#0d0020;
+  color:var(--pu);cursor:pointer;border-radius:2px;text-align:center;font-weight:700;}
+.fbt:hover{background:#1a0035;}
+.fbt.on{background:#3a0088;border-color:var(--pu);color:#fff;}
+.fcv-mini-row{display:grid;grid-template-columns:auto 1fr auto;gap:5px;align-items:center;
+  margin-bottom:3px;}
+.fcv-mini-lbl{font-size:9px;color:var(--mu);white-space:nowrap;}
+.fcv-mini-val{font-family:'Courier New',monospace;font-size:9px;color:var(--cy);text-align:right;white-space:nowrap;}
+.msg-row{display:flex;gap:4px;margin-top:5px;}
+.msg-inp{flex:1;background:#080618;border:1px solid var(--bd);color:var(--tx);
+  padding:3px 7px;font-size:10px;border-radius:3px;}
+.msg-inp:focus{outline:none;border-color:var(--pu2);}
+
+/* ─── STATUS LOG ─── */
+#log-area{border-top:1px solid var(--bd);max-height:120px;overflow-y:auto;
+  font-size:10px;font-family:'Courier New',monospace;padding:5px 10px;
+  background:#04020a;flex-shrink:0;}
+.log-line{padding:1px 0;color:var(--mu);}
+.log-line .lt{color:#5a4080;margin-right:6px;}
+.log-line.info .lm{color:var(--tx);}
+.log-line.warn .lm{color:var(--yl);}
+.log-line.ok .lm{color:var(--gr);}
+.log-line.err .lm{color:var(--rd);}
+
+/* ─── BUTTONS ─── */
+.btn{padding:5px 14px;border-radius:4px;border:none;font-size:11px;font-weight:700;
+  cursor:pointer;text-transform:uppercase;letter-spacing:.5px;}
+.bpu{background:#3a0088;color:var(--pu);border:1px solid var(--pu2);}
+.bpu:hover{background:#520099;}
+.brd{background:#580000;color:#ff9999;border:1px solid var(--rd);}
+.brd:hover{background:#750000;}
+.bgr{background:#003a15;color:var(--gr);border:1px solid var(--gr);}
+.bgr:hover{background:#005020;}
+
+/* ─── ANIMATIONS ─── */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3;}}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:#06040e;}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- ═══ AUTH OVERLAY ═══ -->
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-logo">⬡ FlowCore</div>
+    <div class="auth-sub">FLOWCORE FPSO — Painel Mestre</div>
+    <div class="auth-title">Acesso Restrito — Instrutor</div>
+    <div class="auth-field">
+      <label>Senha Mestre</label>
+      <input type="password" id="auth-pwd" placeholder="••••••••"
+        autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')authLogin()">
+    </div>
+    <button class="btn bpu" style="width:100%;padding:9px 0;font-size:13px"
+      onclick="authLogin()">▶ ENTRAR</button>
+    <div class="auth-err" id="auth-err"></div>
+  </div>
+</div>
+
+<!-- ═══ HEADER ═══ -->
+<div id="hdr">
+  <div class="hbrand">
+    <span class="logo">⬡ FlowCore</span>
+    <div class="proj">
+      <div>FLOWCORE FPSO — Painel Mestre</div>
+      <div>Controle de Sessões · IHM Medição Fiscal</div>
+    </div>
+  </div>
+  <div class="htitle">
+    <div class="t1">⚗ Modo Instrutor — Injeção de Falhas &amp; Cenários</div>
+    <div class="t2">Supabase Realtime · Channel: ihm-training-v1</div>
+  </div>
+  <div class="hright">
+    <span id="conn-badge" class="conn-badge wait">⏳ Conectando…</span>
+    <span id="hclock" class="hclock">00:00:00</span>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div id="main">
+
+  <!-- ── LEFT SIDEBAR ── -->
+  <div id="sidebar">
+    <div class="sess-count">
+      <span class="n" id="sess-n">0</span>
+      <span class="lbl">sessões ativas</span>
+    </div>
+
+    <div class="sb-sec">▦ Broadcast Global</div>
+    <div class="sb-body">
+
+      <!-- Scenario broadcast -->
+      <div class="bc-card">
+        <div class="bc-lbl">Cenário → Todos</div>
+        <select class="bc-select" id="bc-scen">
+          <option value="">— selecionar cenário —</option>
+          <option value="normal">Normal (reset)</option>
+          <option value="highflow">Vazão Alta</option>
+          <option value="lowflow">Vazão Baixa</option>
+          <option value="highpres">Pressão Alta</option>
+          <option value="lowpres">Pressão Baixa</option>
+          <option value="kdrift1">Desvio K+ (Positivo)</option>
+          <option value="kdrift2">Desvio K− (Negativo)</option>
+          <option value="detdelay">Atraso Detector</option>
+          <option value="combined">Combinado (P↑ + K+)</option>
+        </select>
+        <button class="bc-btn" onclick="broadcastScenario()">⬆ APLICAR A TODOS</button>
+      </div>
+
+      <!-- Fault broadcast -->
+      <div class="bc-card">
+        <div class="bc-lbl">Falha Individual → Todos</div>
+        <select class="bc-select" id="bc-fault-name">
+          <option value="highQ">Vazão Alta (provando)</option>
+          <option value="lowQ">Vazão Baixa (provando)</option>
+          <option value="highP">Pressão Alta</option>
+          <option value="lowP">Pressão Baixa</option>
+          <option value="highT">Temperatura Alta</option>
+          <option value="lowT">Temperatura Baixa</option>
+          <option value="kPos">Desvio K Positivo</option>
+          <option value="kNeg">Desvio K Negativo</option>
+          <option value="delay">Atraso Detector</option>
+          <option value="air">Arrastamento de Gás</option>
+          <option value="pulseLoss">Pulso Perdido</option>
+          <option value="chatter">Chatter Detector</option>
+          <option value="unstableQ">Vazão Instável</option>
+        </select>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:3px;">
+          <button class="bc-btn" onclick="broadcastFault(true)">⬆ ON → TODOS</button>
+          <button class="bc-btn danger" onclick="broadcastFault(false)">⬇ OFF → TODOS</button>
+        </div>
+      </div>
+
+      <!-- Reset all -->
+      <div class="bc-card">
+        <div class="bc-lbl">Reset Geral</div>
+        <button class="bc-btn danger" onclick="broadcastReset()">⚠ RESET FALHAS — TODOS</button>
+      </div>
+
+      <!-- Message broadcast -->
+      <div class="bc-card">
+        <div class="bc-lbl">Mensagem → Todos</div>
+        <input class="bc-input" type="text" id="bc-msg-text" placeholder="Digite a mensagem…"
+          maxlength="120" onkeydown="if(event.key==='Enter')broadcastMessage()">
+        <button class="bc-btn" onclick="broadcastMessage()">📣 ENVIAR MENSAGEM</button>
+      </div>
+
+    </div><!-- /sb-body -->
+  </div><!-- /sidebar -->
+
+  <!-- ── SESSION GRID ── -->
+  <div id="grid-wrap" style="display:flex;flex-direction:column;overflow:hidden;">
+    <div id="grid-area">
+      <div class="grid-header">
+        <h2>Sessões Ativas</h2>
+        <span style="font-size:10px;color:var(--mu)" id="last-update">—</span>
+      </div>
+      <div id="sessions-grid">
+        <div class="ghost" id="ghost-msg">Aguardando conexão ao servidor…</div>
+      </div>
+    </div>
+
+    <!-- Status log -->
+    <div id="log-area" style="display:flex;flex-direction:column-reverse;">
+      <div id="log-lines"></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ═══════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════
+const SB_URL     = 'https://aygqljoobkjccipsqebi.supabase.co';
+const SB_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5Z3Fsam9vYmtqY2NpcHNxZWJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyODc2NDEsImV4cCI6MjA4ODg2MzY0MX0.DnmzLYZy0p2dAJZhCjo7EBgx4o4C5L9BVCK79FM9EA4';
+const SB_CHANNEL = 'ihm-training-v1';
+const MESTRE_PASS = 'fcmaster';
+
+// ═══════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════
+const el = id => document.getElementById(id);
+
+function fmt1(v) { return (+v).toFixed(1); }
+function fmt0(v) { return Math.round(+v).toString(); }
+function ts()    { return new Date().toLocaleTimeString('pt-BR'); }
+
+function log(msg, type='info') {
+  const div = document.createElement('div');
+  div.className = `log-line ${type}`;
+  div.innerHTML = `<span class="lt">${ts()}</span><span class="lm">${msg}</span>`;
+  const box = el('log-lines');
+  box.prepend(div);
+  // Keep last 80 lines
+  while (box.children.length > 80) box.removeChild(box.lastChild);
+}
+
+// Clock
+setInterval(() => {
+  const n = new Date();
+  el('hclock').textContent = n.toLocaleTimeString('pt-BR');
+}, 1000);
+
+// ═══════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════
+function authLogin() {
+  const pwd = el('auth-pwd').value;
+  if (pwd !== MESTRE_PASS) {
+    el('auth-err').textContent = 'Senha incorreta.';
+    el('auth-pwd').select();
+    return;
+  }
+  el('auth-overlay').style.display = 'none';
+  initMestre();
+}
+el('auth-pwd').focus();
+
+// ═══════════════════════════════════════════════════
+//  SUPABASE
+// ═══════════════════════════════════════════════════
+let _sb      = null;
+let _channel = null;
+let _sessions = {};  // token → presence payload
+
+function initMestre() {
+  log('Conectando ao Supabase…', 'info');
+  try {
+    _sb = supabase.createClient(SB_URL, SB_KEY);
+  } catch(e) {
+    el('conn-badge').className = 'conn-badge err';
+    el('conn-badge').textContent = '✗ Erro SDK';
+    log('Erro ao inicializar Supabase: ' + e.message, 'err');
+    return;
+  }
+
+  _channel = _sb.channel(SB_CHANNEL, {
+    config: { presence: { key: 'mestre' } }
+  });
+
+  _channel
+    .on('presence', { event: 'sync' }, () => {
+      const state = _channel.presenceState();
+      handlePresenceSync(state);
+    })
+    .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+      if (key === 'mestre') return;
+      log(`Sessão entrou: ${key} — ${newPresences[0]?.operator || '?'}`, 'ok');
+    })
+    .on('presence', { event: 'leave' }, ({ key }) => {
+      if (key === 'mestre') return;
+      log(`Sessão saiu: ${key}`, 'warn');
+      delete _sessions[key];
+      renderGrid();
+    })
+    .subscribe(status => {
+      if (status === 'SUBSCRIBED') {
+        el('conn-badge').className = 'conn-badge ok';
+        el('conn-badge').textContent = '● Online';
+        log('Conectado ao canal ' + SB_CHANNEL, 'ok');
+        el('ghost-msg') && (el('ghost-msg').textContent = 'Nenhuma sessão ativa. Aguardando operadores…');
+        // Track own mestre presence
+        _channel.track({ role:'mestre', ts: Date.now() });
+      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        el('conn-badge').className = 'conn-badge err';
+        el('conn-badge').textContent = '✗ Desconectado';
+        log('Canal desconectado: ' + status, 'err');
+      }
+    });
+}
+
+function handlePresenceSync(state) {
+  _sessions = {};
+  for (const key in state) {
+    if (key === 'mestre') continue;
+    const arr = state[key];
+    if (arr && arr.length) {
+      const p = arr[arr.length - 1]; // latest payload
+      _sessions[key] = p;
+    }
+  }
+  renderGrid();
+  el('sess-n').textContent = Object.keys(_sessions).length;
+  el('last-update').textContent = 'Atualizado: ' + ts();
+}
+
+// ═══════════════════════════════════════════════════
+//  RENDER SESSION GRID
+// ═══════════════════════════════════════════════════
+let _expanded = {}; // token → bool (fault panel open)
+
+function renderGrid() {
+  const grid = el('sessions-grid');
+  const tokens = Object.keys(_sessions);
+
+  if (!tokens.length) {
+    grid.innerHTML = '<div class="ghost">Nenhuma sessão ativa. Aguardando operadores…</div>';
+    return;
+  }
+
+  // Remove cards for sessions that left
+  Array.from(grid.querySelectorAll('.scard')).forEach(card => {
+    if (!_sessions[card.dataset.token]) card.remove();
+  });
+
+  tokens.forEach(token => {
+    const p = _sessions[token];
+    let card = grid.querySelector(`.scard[data-token="${token}"]`);
+    if (!card) {
+      card = document.createElement('div');
+      card.className = 'scard';
+      card.dataset.token = token;
+      grid.appendChild(card);
+    }
+    card.innerHTML = buildCardHTML(token, p);
+    // Restore expanded state
+    if (_expanded[token]) {
+      const fp = card.querySelector('.sc-fault-panel');
+      if (fp) fp.classList.add('on');
+    }
+  });
+}
+
+function buildCardHTML(token, p) {
+  const faults = p.faults || [];
+  const alarms = p.alarms || 0;
+  const dotClass = alarms > 0 ? 'alm' : (p.warmup ? 'warn' : 'ok');
+  const dotTitle = alarms > 0 ? `${alarms} alarme(s) ativo(s)` : (p.warmup ? 'Aquecimento' : 'Operando');
+
+  const ago = p.ts ? Math.round((Date.now() - p.ts)/1000) : '?';
+  const agoStr = ago < 60 ? `${ago}s atrás` : `${Math.floor(ago/60)}m atrás`;
+
+  const faultsBadges = faults.length
+    ? faults.map(f => `<span class="sc-fault-tag">${f}</span>`).join('')
+    : '<span style="font-size:9px;color:var(--mu)">Sem falhas ativas</span>';
+
+  const provStr = p.provingTrain
+    ? `T-${p.provingTrain} · ${(p.proverPhase||'?').toUpperCase()}`
+    : '—';
+
+  return `
+  <div class="sc-head" onclick="toggleCard('${token}')">
+    <div class="sc-dot ${dotClass}" title="${dotTitle}"></div>
+    <span class="sc-token">${token}</span>
+    <span class="sc-operator">${p.operator || '?'}</span>
+    <span class="sc-time">${agoStr}</span>
+  </div>
+  <div class="sc-body">
+    <div class="sc-readings">
+      <div class="sc-rd">
+        <div class="rl">Temp.</div>
+        <div class="rv" style="color:var(--yl)">${fmt1(p.T||0)}</div>
+        <div class="ru">°C</div>
+      </div>
+      <div class="sc-rd">
+        <div class="rl">Pressão</div>
+        <div class="rv" style="color:var(--cy)">${fmt0(p.P||0)}</div>
+        <div class="ru">kPa</div>
+      </div>
+      <div class="sc-rd">
+        <div class="rl">Q Total</div>
+        <div class="rv" style="color:var(--gr)">${fmt0(p.Q||0)}</div>
+        <div class="ru">m³/h</div>
+      </div>
+    </div>
+    <div class="sc-trains">
+      <div class="sc-train">
+        <div class="tl">T-01 · FCV ${fmt1(p.fcv01||0)}%</div>
+        <div class="tq">${fmt0(p.q01||0)} <span class="tu" style="font-size:8px;color:var(--mu)">m³/h</span></div>
+      </div>
+      <div class="sc-train">
+        <div class="tl">T-02 · FCV ${fmt1(p.fcv02||0)}%</div>
+        <div class="tq">${fmt0(p.q02||0)} <span style="font-size:8px;color:var(--mu)">m³/h</span></div>
+      </div>
+      <div class="sc-train">
+        <div class="tl">T-03 · FCV ${fmt1(p.fcv03||0)}%</div>
+        <div class="tq">${fmt0(p.q03||0)} <span style="font-size:8px;color:var(--mu)">m³/h</span></div>
+      </div>
+    </div>
+    <div class="sc-faults">${faultsBadges}</div>
+    <div style="display:flex;gap:5px;margin-bottom:6px;align-items:center;">
+      <span style="font-size:9px;color:var(--mu)">Prova:</span>
+      <span style="font-size:10px;color:${p.provingTrain?'var(--gr)':'var(--mu)'};font-family:'Courier New',monospace">${provStr}</span>
+      <span style="margin-left:auto;font-size:9px;color:${alarms?'var(--rd)':'var(--mu)'}">
+        ${alarms ? `⚠ ${alarms} alarme${alarms>1?'s':''}` : ''}
+        ${p.warmup ? '▲ aquecimento' : ''}
+      </span>
+    </div>
+    <div class="sc-controls">
+      <button class="sc-btn act" onclick="toggleFaultPanel('${token}')">⚗ Falhas</button>
+      <button class="sc-btn" onclick="sendScenarioToSession('${token}')">▦ Cenário</button>
+      <button class="sc-btn" onclick="sendResetToSession('${token}')">↺ Reset</button>
+    </div>
+  </div>
+  <div class="sc-fault-panel" id="fp-${token}">
+    ${buildFaultPanel(token, p)}
+  </div>`;
+}
+
+function buildFaultPanel(token, p) {
+  const faults = p.faults || [];
+  const faultDefs = [
+    { k:'highQ',     l:'Q↑' },
+    { k:'lowQ',      l:'Q↓' },
+    { k:'highP',     l:'P↑' },
+    { k:'lowP',      l:'P↓' },
+    { k:'highT',     l:'T↑' },
+    { k:'lowT',      l:'T↓' },
+    { k:'kPos',      l:'K+' },
+    { k:'kNeg',      l:'K−' },
+    { k:'delay',     l:'DLY' },
+    { k:'air',       l:'GAS' },
+    { k:'pulseLoss', l:'PLS' },
+    { k:'chatter',   l:'CHT' },
+    { k:'unstableQ', l:'QΩ' },
+  ];
+  const btns = faultDefs.map(f => {
+    const on = faults.includes(f.k);
+    return `<button class="fbt ${on?'on':''}" onclick="sendFaultToSession('${token}','${f.k}',${!on})" title="${f.k}">${f.l}</button>`;
+  }).join('');
+
+  return `
+  <div class="bc-lbl" style="margin-bottom:5px">Falhas — clique para toggle</div>
+  <div class="fault-grid">${btns}</div>
+  <div class="bc-lbl" style="margin-bottom:4px">FCV Manual</div>
+  ${['01','02','03'].map(id => `
+  <div class="fcv-mini-row">
+    <span class="fcv-mini-lbl">FCV-${id==='01'?'3102':id==='02'?'3202':'3302'}</span>
+    <input type="range" id="fcv-sl-${token}-${id}" min="0" max="100"
+      value="${Math.round(p['fcv'+id]||33)}" step="1"
+      oninput="el('fcv-vl-${token}-${id}').textContent=this.value+'%'"
+      onchange="sendFCVToSession('${token}','${id}',this.value)"
+      style="width:100%;accent-color:var(--pu2)">
+    <span class="fcv-mini-val" id="fcv-vl-${token}-${id}">${Math.round(p['fcv'+id]||33)}%</span>
+  </div>`).join('')}
+  <div class="msg-row">
+    <input class="msg-inp" type="text" id="msg-inp-${token}"
+      placeholder="Mensagem para operador…" maxlength="100"
+      onkeydown="if(event.key==='Enter')sendMsgToSession('${token}')">
+    <button class="sc-btn act" style="padding:3px 8px" onclick="sendMsgToSession('${token}')">📣</button>
+  </div>`;
+}
+
+function toggleCard(token) {
+  _expanded[token] = !_expanded[token];
+  const fp = document.getElementById('fp-' + token);
+  if (fp) fp.classList.toggle('on', _expanded[token]);
+}
+
+function toggleFaultPanel(token) {
+  _expanded[token] = !_expanded[token];
+  const fp = document.getElementById('fp-' + token);
+  if (fp) fp.classList.toggle('on', _expanded[token]);
+}
+
+// ═══════════════════════════════════════════════════
+//  SEND COMMANDS
+// ═══════════════════════════════════════════════════
+async function sendCmd(target, payload) {
+  if (!_channel) { log('Canal não conectado', 'err'); return; }
+  try {
+    await _channel.send({
+      type: 'broadcast',
+      event: 'MESTRE_CMD',
+      payload: { target, ...payload }
+    });
+    log(`→ [${target}] ${payload.type}${payload.fault?' '+payload.fault.name:''}${payload.scenario?' '+payload.scenario:''}${payload.text?' "'+payload.text+'"':''}`, 'ok');
+  } catch(e) {
+    log('Erro ao enviar: ' + e.message, 'err');
+  }
+}
+
+// Per-session
+function sendFaultToSession(token, name, value) {
+  sendCmd(token, { type:'FAULT', fault:{ name, value } });
+  // Optimistic UI update
+  if (_sessions[token]) {
+    const f = _sessions[token].faults || [];
+    if (value) { if (!f.includes(name)) f.push(name); }
+    else { const i = f.indexOf(name); if (i>=0) f.splice(i,1); }
+    _sessions[token].faults = f;
+    // Re-render fault panel only
+    const fp = document.getElementById('fp-' + token);
+    if (fp && fp.classList.contains('on')) {
+      fp.innerHTML = buildFaultPanel(token, _sessions[token]);
+    }
+  }
+}
+
+function sendScenarioToSession(token) {
+  const scen = prompt('Cenário para ' + token + ':\nnormal / highflow / lowflow / highpres / lowpres / kdrift1 / kdrift2 / detdelay / combined');
+  if (scen) sendCmd(token, { type:'SCENARIO', scenario: scen.trim() });
+}
+
+function sendResetToSession(token) {
+  sendCmd(token, { type:'RESET' });
+  if (_sessions[token]) { _sessions[token].faults = []; renderGrid(); }
+}
+
+function sendFCVToSession(token, id, pct) {
+  sendCmd(token, { type:'FCVSET', fcv:{ id, pct:+pct } });
+}
+
+function sendMsgToSession(token) {
+  const inp = el('msg-inp-' + token);
+  const text = (inp?.value || '').trim();
+  if (!text) return;
+  sendCmd(token, { type:'MESSAGE', text });
+  if (inp) inp.value = '';
+}
+
+// Broadcast to all
+function broadcastScenario() {
+  const scen = el('bc-scen').value;
+  if (!scen) { log('Selecione um cenário', 'warn'); return; }
+  sendCmd('*', { type:'SCENARIO', scenario: scen });
+  el('bc-scen').value = '';
+}
+
+function broadcastFault(value) {
+  const name = el('bc-fault-name').value;
+  if (!name) { log('Selecione uma falha', 'warn'); return; }
+  sendCmd('*', { type:'FAULT', fault:{ name, value } });
+}
+
+function broadcastReset() {
+  if (!confirm('Resetar TODAS as falhas de TODAS as sessões?')) return;
+  sendCmd('*', { type:'RESET' });
+  // Clear local fault state
+  Object.keys(_sessions).forEach(t => { if(_sessions[t]) _sessions[t].faults = []; });
+  renderGrid();
+}
+
+function broadcastMessage() {
+  const text = (el('bc-msg-text').value || '').trim();
+  if (!text) return;
+  sendCmd('*', { type:'MESSAGE', text });
+  el('bc-msg-text').value = '';
+}
+</script>
+</body>
+</html>

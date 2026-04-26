@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual do Simulador — FlowCore Metering IHM</title>
+<style>
+:root{
+  --or:#E55B13; --bl:#1F3F68; --bg:#080d14; --pn:#0f1824;
+  --bd:#1e3a5f; --tx:#c8d8f0; --mu:#5a7a9a; --gr:#00c97a;
+  --rd:#e03030; --yl:#ffd600; --cy:#4ab8ff; --pu:#cc88ff;
+  --sbw:260px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-serif;
+  font-size:14px;line-height:1.7;}
+
+/* ─── LAYOUT ─── */
+#app{display:flex;min-height:100vh;}
+#sidebar{width:var(--sbw);background:#060c14;border-right:1px solid var(--bd);
+  position:fixed;top:0;left:0;height:100vh;overflow-y:auto;flex-shrink:0;z-index:100;}
+#content{margin-left:var(--sbw);flex:1;max-width:960px;padding:0 48px 80px 48px;}
+
+/* ─── SIDEBAR ─── */
+.sb-logo{padding:20px 16px 10px;border-bottom:2px solid var(--or);}
+.sb-logo .lg{font-size:18px;font-weight:900;color:#fff;letter-spacing:1px;}
+.sb-logo .sub{font-size:10px;color:#6a8aaa;margin-top:2px;}
+.sb-part{padding:10px 16px 4px;font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1.5px;color:var(--or);margin-top:6px;}
+.sb-item{display:block;padding:5px 16px 5px 24px;font-size:11px;color:var(--mu);
+  text-decoration:none;border-left:2px solid transparent;transition:all .15s;
+  line-height:1.4;}
+.sb-item:hover{color:var(--tx);border-left-color:var(--bd);}
+.sb-item.active{color:var(--cy);border-left-color:var(--cy);background:rgba(74,184,255,.06);}
+.sb-item.l2{padding-left:32px;font-size:10px;}
+
+/* ─── CONTEÚDO ─── */
+h1.page-title{font-size:28px;font-weight:900;color:#fff;margin:40px 0 6px;
+  border-bottom:2px solid var(--or);padding-bottom:10px;letter-spacing:.5px;}
+h1.page-title .tag{font-size:12px;font-weight:400;color:var(--or);
+  background:#180800;border:1px solid var(--or);padding:2px 8px;
+  border-radius:3px;margin-left:10px;vertical-align:middle;}
+
+h2.sec{font-size:18px;font-weight:700;color:var(--cy);margin:44px 0 12px;
+  padding-bottom:6px;border-bottom:1px solid var(--bd);}
+h3.sub{font-size:14px;font-weight:700;color:#fff;margin:28px 0 8px;}
+h4{font-size:12px;font-weight:700;color:var(--mu);text-transform:uppercase;
+  letter-spacing:1px;margin:20px 0 6px;}
+
+p{margin-bottom:12px;color:var(--tx);}
+p.lead{font-size:15px;color:#a0c0e0;line-height:1.8;}
+
+/* ─── CALLOUTS ─── */
+.info,.warn,.tip,.req{border-left:3px solid;padding:10px 14px;border-radius:0 4px 4px 0;
+  margin:14px 0;font-size:13px;}
+.info{background:#040f1e;border-color:var(--cy);color:#a0d0f0;}
+.warn{background:#1a0e00;border-color:var(--yl);color:#f0d080;}
+.tip{background:#001a0a;border-color:var(--gr);color:#80e0a0;}
+.req{background:#0a0020;border-color:var(--pu);color:#d0b0f0;}
+.info b,.warn b,.tip b,.req b{display:block;margin-bottom:4px;font-size:11px;
+  text-transform:uppercase;letter-spacing:.8px;opacity:.8;}
+
+/* ─── TABELAS ─── */
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:12px;}
+th{background:#0b1220;color:var(--mu);padding:7px 12px;text-align:left;
+  border:1px solid var(--bd);font-size:10px;text-transform:uppercase;letter-spacing:.5px;}
+td{padding:6px 12px;border:1px solid #162030;vertical-align:top;}
+tr:nth-child(even) td{background:#080e18;}
+td.ok{color:var(--gr);font-weight:700;}
+td.fail{color:var(--rd);font-weight:700;}
+td.warn{color:var(--yl);font-weight:700;background:inherit !important;border:inherit !important;}
+td code{background:#0b1220;padding:1px 5px;border-radius:2px;
+  font-family:'Courier New',monospace;font-size:11px;color:var(--cy);}
+
+/* ─── CÓDIGO / TAGS ─── */
+code{background:#0b1220;padding:1px 6px;border-radius:3px;
+  font-family:'Courier New',monospace;font-size:12px;color:var(--cy);}
+.badge{display:inline-block;padding:1px 7px;border-radius:10px;
+  font-size:10px;font-weight:700;vertical-align:middle;}
+.badge-or{background:#2a0c00;color:var(--or);border:1px solid var(--or);}
+.badge-cy{background:#001828;color:var(--cy);border:1px solid var(--cy);}
+.badge-gr{background:#001a0a;color:var(--gr);border:1px solid var(--gr);}
+.badge-rd{background:#1a0000;color:var(--rd);border:1px solid var(--rd);}
+.badge-pu{background:#0a0020;color:var(--pu);border:1px solid var(--pu);}
+.badge-yl{background:#1a1200;color:var(--yl);border:1px solid var(--yl);}
+
+/* ─── STEPS ─── */
+.steps{counter-reset:step;margin:14px 0;}
+.step{counter-increment:step;display:flex;gap:14px;margin-bottom:12px;
+  align-items:flex-start;}
+.step::before{content:counter(step);background:var(--or);color:#fff;
+  font-size:11px;font-weight:900;width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body{flex:1;}
+.step-body b{color:#fff;}
+
+/* ─── GRID CARDS ─── */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:10px;margin:14px 0;}
+.card{background:var(--pn);border:1px solid var(--bd);border-radius:5px;
+  padding:12px 14px;}
+.card .ct{font-size:10px;color:var(--or);text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:4px;}
+.card .cv{font-size:13px;color:#fff;font-weight:600;}
+.card .cd{font-size:11px;color:var(--mu);margin-top:3px;}
+
+/* ─── DIVIDER ─── */
+hr{border:none;border-top:1px solid var(--bd);margin:36px 0;}
+.part-divider{background:linear-gradient(90deg,var(--pu),transparent);
+  height:2px;margin:48px 0;border-radius:2px;}
+
+/* ─── SCREEN MOCK ─── */
+.screen-mock{background:#060c14;border:1px solid var(--bd);border-radius:6px;
+  padding:14px 16px;margin:14px 0;font-size:11px;font-family:'Courier New',monospace;}
+.screen-mock .sm-bar{background:#0b1220;padding:4px 10px;border-radius:3px;
+  margin-bottom:8px;color:var(--mu);font-size:10px;}
+.sm-row{display:flex;gap:8px;align-items:baseline;margin-bottom:2px;}
+.sm-lbl{color:var(--mu);min-width:110px;}
+.sm-val{color:var(--cy);font-weight:700;}
+.sm-ok{color:var(--gr);}
+.sm-fail{color:var(--rd);}
+.sm-warn{color:var(--yl);}
+
+/* ─── FORMULA ─── */
+.formula{background:#050e18;border:1px solid #1a3050;border-radius:4px;
+  padding:12px 16px;margin:14px 0;text-align:center;}
+.formula .fm{font-size:17px;color:var(--cy);font-family:'Courier New',monospace;
+  letter-spacing:1px;}
+.formula .fd{font-size:11px;color:var(--mu);margin-top:6px;}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:#060c14;}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
+
+/* ─── PRINT ─── */
+@media print{
+  #sidebar{display:none;}
+  #content{margin-left:0;max-width:100%;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ═══ SIDEBAR ═══ -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <div class="lg">⬡ FlowCore</div>
+    <div class="sub">Manual do Simulador de Medição</div>
+  </div>
+
+  <div class="sb-part">Simulador IHM</div>
+  <a class="sb-item" href="#visao-geral">Visão Geral</a>
+  <a class="sb-item" href="#sessao">Identificação de Sessão</a>
+  <a class="sb-item" href="#interface">Interface Principal</a>
+  <a class="sb-item l2" href="#header">→ Cabeçalho</a>
+  <a class="sb-item l2" href="#statusbar">→ Barra de Status</a>
+  <a class="sb-item l2" href="#tabs">→ Abas</a>
+  <a class="sb-item" href="#aquecimento">Aquecimento</a>
+  <a class="sb-item" href="#fcv">Controle de Fluxo (FCVs)</a>
+  <a class="sb-item" href="#alinhamento">Alinhamento ao Prover</a>
+  <a class="sb-item" href="#prova">Sequência de Prova</a>
+  <a class="sb-item l2" href="#modo-app">→ Modo de Aplicação</a>
+  <a class="sb-item l2" href="#tabela-runs">→ Tabela de Corridas</a>
+  <a class="sb-item l2" href="#criterios">→ Critérios REQ-CP</a>
+  <a class="sb-item l2" href="#resultado">→ Resultado Final</a>
+  <a class="sb-item" href="#alarmes">Alarmes</a>
+  <a class="sb-item" href="#relatorio">Relatório</a>
+
+  <div class="sb-part">Painel Mestre</div>
+  <a class="sb-item" href="#mestre-visao">Visão Geral</a>
+  <a class="sb-item" href="#mestre-acesso">Acesso e Autenticação</a>
+  <a class="sb-item" href="#mestre-sessoes">Monitoramento de Sessões</a>
+  <a class="sb-item" href="#mestre-falhas">Injeção de Falhas</a>
+  <a class="sb-item" href="#mestre-cenarios">Cenários</a>
+  <a class="sb-item" href="#mestre-fcv">Controle Remoto FCV</a>
+  <a class="sb-item" href="#mestre-msg">Mensagens</a>
+  <a class="sb-item" href="#mestre-broadcast">Broadcast Global</a>
+
+  <div class="sb-part">Referência</div>
+  <a class="sb-item" href="#req-table">Tabela REQ-CP</a>
+  <a class="sb-item" href="#falhas-ref">Catálogo de Falhas</a>
+  <a class="sb-item" href="#glossario">Glossário Técnico</a>
+</nav>
+
+<!-- ═══ CONTEÚDO ═══ -->
+<main id="content">
+
+<!-- ════════════════════════════════════════
+  PARTE 1 — SIMULADOR IHM
+════════════════════════════════════════ -->
+
+<h1 class="page-title" id="visao-geral">
+  IHM — Simulador de Medição Fiscal
+  <span class="tag">1923-ODMS-30</span>
+</h1>
+
+<p class="lead">
+  O simulador reproduz fielmente a operação de um Skid de Medição Fiscal FPSO com
+  três tramos de turbina em operação paralela e um Compact Prover conforme os
+  requisitos da API MPMS 4.x / 13.2. Destina-se ao treinamento de operadores e
+  inspetores de medição fiscal.
+</p>
+
+<div class="card-grid">
+  <div class="card">
+    <div class="ct">Vazão Total</div>
+    <div class="cv">5.400 m³/h</div>
+    <div class="cd">Distribuída nos 3 tramos via FCV</div>
+  </div>
+  <div class="card">
+    <div class="ct">Volume Prover</div>
+    <div class="cv">0,4543 m³</div>
+    <div class="cd">Compact Prover 1923-CPA-01</div>
+  </div>
+  <div class="card">
+    <div class="ct">Corridas</div>
+    <div class="cv">Até 6 / min 5</div>
+    <div class="cd">REQ-CP-001 · 5 válidas necessárias</div>
+  </div>
+  <div class="card">
+    <div class="ct">Repetitividade Fiscal</div>
+    <div class="cv">ΔMF ≤ 0,0005</div>
+    <div class="cd">0,05% · REQ-CP-004</div>
+  </div>
+</div>
+
+<div class="info">
+  <b>ℹ Sobre o simulador</b>
+  O skid possui três tramos (T-01, T-02, T-03) com turbinas FT-3101/3201/3301 e válvulas de controle
+  FCV-3102/3202/3302. O fluxo é proporcional à abertura das FCVs e sempre soma 5.400 m³/h.
+  O prover se conecta a um tramo de cada vez sem interromper os demais.
+</div>
+
+<!-- ─── SESSÃO ─── -->
+<h2 class="sec" id="sessao">Identificação de Sessão</h2>
+
+<p>
+  Ao abrir o simulador, surge o modal de identificação. Cada aba do navegador gera um
+  <strong>token de 6 caracteres</strong> único que identifica sua sessão para o instrutor.
+</p>
+
+<div class="steps">
+  <div class="step"><div class="step-body"><b>Token exibido em destaque</b> — anote ou comunique ao instrutor antes de iniciar.</div></div>
+  <div class="step"><div class="step-body"><b>Digite seu nome</b> no campo "Nome do Operador" e pressione <code>Enter</code> ou clique em <b>▶ ENTRAR NA SESSÃO</b>.</div></div>
+  <div class="step"><div class="step-body"><b>Confirmação de conexão</b> — o status exibido abaixo do botão muda para <span class="badge badge-gr">✓ Servidor conectado</span>. Se aparecer <span class="badge badge-yl">⚠ Sem conexão</span>, o simulador funciona em modo local.</div></div>
+  <div class="step"><div class="step-body"><b>Simulação iniciada</b> — a fase de aquecimento começa automaticamente após o login.</div></div>
+</div>
+
+<div class="warn">
+  <b>⚠ Atenção</b>
+  A simulação só começa após identificação. O token e o nome ficam visíveis no cabeçalho
+  durante toda a sessão. O instrutor usa esses dados para enviar cenários e falhas direcionadas.
+</div>
+
+<!-- ─── INTERFACE ─── -->
+<h2 class="sec" id="interface">Interface Principal</h2>
+
+<h3 class="sub" id="header">Cabeçalho</h3>
+<p>O cabeçalho superior contém as informações permanentes da sessão:</p>
+<table>
+  <tr><th>Elemento</th><th>Descrição</th></tr>
+  <tr><td><b>⬡ FlowCore</b></td><td>Logotipo e identificação do projeto (FLOWCORE FPSO · 1923-ODMS-30)</td></tr>
+  <tr><td><b>Token / Operador</b></td><td>Exibido no canto direito após login. Ex.: <code>A3KP7Q · João Silva</code></td></tr>
+  <tr><td><span class="badge badge-yl">▲ AQUECIMENTO</span></td><td>Visível durante os 2 minutos iniciais de estabilização</td></tr>
+  <tr><td><span class="badge badge-gr">✓ ESTÁVEL</span></td><td>Sistema estabilizado e pronto para prova</td></tr>
+  <tr><td><b>Relógio HH:MM:SS</b></td><td>Tempo decorrido desde o início da sessão</td></tr>
+  <tr><td><b>⚙ MESTRE</b></td><td>Botão de acesso ao painel local de injeção de falhas (senha: <code>fcmaster</code>)</td></tr>
+</table>
+
+<h3 class="sub" id="statusbar">Barra de Status</h3>
+<p>Linha abaixo do cabeçalho com as principais variáveis do processo em tempo real:</p>
+<table>
+  <tr><th>Campo</th><th>Cor Normal</th><th>Cor de Alarme</th></tr>
+  <tr><td><b>T Entrada</b> (°C)</td><td>Ciano</td><td>Vermelho se &lt;55°C ou &gt;72°C</td></tr>
+  <tr><td><b>P Entrada</b> (kPa)</td><td>Ciano</td><td>Vermelho se &lt;600 ou &gt;950 kPa</td></tr>
+  <tr><td><b>Q Total</b> (m³/h)</td><td>Verde</td><td>Amarelo se desvio &gt;5% de 5.400</td></tr>
+  <tr><td><b>T-01 / T-02 / T-03</b></td><td>Pill indicando estado do tramo</td><td>—</td></tr>
+  <tr><td><b>Prova</b></td><td>Fase atual do prover</td><td>—</td></tr>
+  <tr><td><b>Alarmes</b></td><td>Verde</td><td>Vermelho — número de alarmes ativos</td></tr>
+</table>
+
+<h4>Pills de estado dos tramos</h4>
+<table>
+  <tr><th>Pill</th><th>Significado</th></tr>
+  <tr><td><span class="badge badge-cy">ATIVO</span></td><td>Tramo fluindo normalmente</td></tr>
+  <tr><td><span class="badge badge-gr">PROVANDO</span></td><td>Corrida de prova em andamento neste tramo</td></tr>
+  <tr><td><span class="badge badge-cy">NO PROVER</span></td><td>Tramo alinhado ao prover, aguardando início</td></tr>
+  <tr><td><span class="badge">AQUEÇ.</span></td><td>Fase de aquecimento</td></tr>
+  <tr><td><span class="badge">FECHADO</span></td><td>FCV em 0% — sem fluxo</td></tr>
+</table>
+
+<h3 class="sub" id="tabs">Abas de Navegação</h3>
+<table>
+  <tr><th>Aba</th><th>Conteúdo</th></tr>
+  <tr><td><b>▦ Visão Geral</b></td><td>Diagrama P&amp;ID com estado em tempo real, controles de FCV e botões de alinhamento ao prover</td></tr>
+  <tr><td><b>⊙ Prova</b></td><td>Painel completo de prova: configuração, corridas, resultados e histórico</td></tr>
+  <tr><td><b>⚠ Alarmes</b></td><td>Lista de alarmes com prioridade, hora e status de reconhecimento</td></tr>
+  <tr><td><b>≡ Relatório</b></td><td>Score de desempenho, resultado detalhado da prova e log de ações</td></tr>
+</table>
+
+<!-- ─── AQUECIMENTO ─── -->
+<h2 class="sec" id="aquecimento">Fase de Aquecimento</h2>
+
+<p>
+  Ao iniciar a sessão, o skid passa por <strong>2 minutos de aquecimento</strong> que simula
+  a estabilização do sistema antes da medição fiscal. Nenhuma prova pode ser iniciada durante este período.
+</p>
+
+<table>
+  <tr><th>Variável</th><th>Valor Inicial</th><th>Valor Final</th><th>Critério de Liberação</th></tr>
+  <tr><td>Temperatura</td><td>35°C</td><td>65°C</td><td>T ≥ 58°C</td></tr>
+  <tr><td>Pressão</td><td>480 kPa</td><td>750 kPa</td><td>P ≥ 680 kPa</td></tr>
+  <tr><td>Vazão (cada tramo)</td><td>0 m³/h</td><td>1.800 m³/h</td><td>Rampa proporcional às FCVs</td></tr>
+</table>
+
+<div class="tip">
+  <b>✓ Boa prática</b>
+  Durante o aquecimento, ajuste as FCVs para a distribuição de vazão desejada.
+  A rampa de aquecimento respeita as aberturas configuradas.
+</div>
+
+<!-- ─── FCVs ─── -->
+<h2 class="sec" id="fcv">Controle de Fluxo — FCVs</h2>
+
+<p>
+  Três válvulas de controle modulam a distribuição de vazão entre os tramos.
+  O fluxo de cada tramo é <strong>proporcional à abertura da FCV</strong> correspondente,
+  e a soma sempre é mantida em 5.400 m³/h.
+</p>
+
+<div class="formula">
+  <div class="fm">Q<sub>i</sub> = (FCV<sub>i</sub>% / ΣFCVs%) × 5.400 m³/h</div>
+  <div class="fd">Válvulas: FCV-3102 (T-01) · FCV-3202 (T-02) · FCV-3302 (T-03)</div>
+</div>
+
+<h4>Exemplos de distribuição</h4>
+<table>
+  <tr><th>FCV-3102</th><th>FCV-3202</th><th>FCV-3302</th><th>Q T-01</th><th>Q T-02</th><th>Q T-03</th></tr>
+  <tr><td>33%</td><td>33%</td><td>33%</td><td>1.800 m³/h</td><td>1.800 m³/h</td><td>1.800 m³/h</td></tr>
+  <tr><td>50%</td><td>25%</td><td>25%</td><td>2.700 m³/h</td><td>1.350 m³/h</td><td>1.350 m³/h</td></tr>
+  <tr><td>100%</td><td>0%</td><td>0%</td><td>5.400 m³/h</td><td>0 m³/h</td><td>0 m³/h</td></tr>
+  <tr><td>60%</td><td>40%</td><td>0%</td><td>3.240 m³/h</td><td>2.160 m³/h</td><td>0 m³/h</td></tr>
+</table>
+
+<div class="warn">
+  <b>⚠ REQ-CP-011</b>
+  A corrida de prova será <b>invalidada</b> se a vazão média do tramo durante a corrida
+  ficar fora de ±10% da vazão de referência registrada no início da prova.
+  Ajuste a FCV antes de iniciar a sequência.
+</div>
+
+<h4>Controles de FCV na tela</h4>
+<p>
+  Na aba <b>▦ Visão Geral</b>, na barra inferior, há um slider por FCV (0–100%).
+  O valor numérico ao lado mostra a abertura atual. As válvulas no diagrama P&amp;ID mudam de cor:
+  <span class="badge badge-gr">Verde</span> quando abertura &gt; 1%,
+  <span class="badge badge-rd">Vermelho</span> quando fechada.
+</p>
+
+<!-- ─── ALINHAMENTO ─── -->
+<h2 class="sec" id="alinhamento">Alinhamento ao Prover</h2>
+
+<p>
+  O Compact Prover 1923-CPA-01 se conecta a <strong>um tramo por vez</strong> através do
+  loop de prova, sem interromper os demais tramos.
+</p>
+
+<h4>Sequência de alinhamento</h4>
+<div class="steps">
+  <div class="step"><div class="step-body">Na barra de controles da aba Visão Geral, clique em <b>⊙ Tramo 01</b>, <b>⊙ Tramo 02</b> ou <b>⊙ Tramo 03</b>.</div></div>
+  <div class="step"><div class="step-body">Um <b>modal de confirmação</b> é exibido mostrando a vazão atual do tramo e informando se já existe outro tramo alinhado.</div></div>
+  <div class="step"><div class="step-body">Clique em <b>Confirmar</b>. O sistema abre <code>MOV-3401</code> e <code>MOV-3403</code> (preenchimento lento do prover).</div></div>
+  <div class="step"><div class="step-body">O botão do tramo fica laranja <span class="badge badge-or">● Tramo 01</span> indicando alinhamento. O pill na barra de status muda para <span class="badge badge-cy">NO PROVER</span>.</div></div>
+  <div class="step"><div class="step-body">O botão <b>▶ Iniciar</b> na barra de controles fica habilitado assim que as condições de processo forem atendidas.</div></div>
+</div>
+
+<table>
+  <tr><th>Válvula</th><th>Função</th><th>Estado Normal</th></tr>
+  <tr><td><code>MOV-3401</code></td><td>Entrada do prover</td><td>Fechada (abre no alinhamento)</td></tr>
+  <tr><td><code>MOV-3402</code></td><td>Válvula de prova principal</td><td>Fechada (abre na corrida)</td></tr>
+  <tr><td><code>MOV-3403</code></td><td>Preenchimento lento (bypass)</td><td>Fechada (abre no alinhamento)</td></tr>
+  <tr><td><code>MOV-3101/3201/3301</code></td><td>Isolamento de tramo (inlet)</td><td>Abertas (manutenção apenas)</td></tr>
+</table>
+
+<!-- ─── PROVA ─── -->
+<h2 class="sec" id="prova">Sequência de Prova</h2>
+
+<p class="lead">
+  A sequência de prova segue os requisitos da API MPMS 4.x com Compact Prover,
+  conforme os critérios REQ-CP-001 a REQ-CP-013.
+</p>
+
+<h3 class="sub" id="modo-app">Modo de Aplicação</h3>
+<p>Antes de iniciar a prova, selecione o modo na aba <b>⊙ Prova</b>:</p>
+
+<table>
+  <tr><th>Modo</th><th>Aplicação</th><th>Limite ΔMF</th><th>Falha Presumida</th></tr>
+  <tr>
+    <td><span class="badge badge-or">⚖ Fiscal / Custódia</span></td>
+    <td>Transferência de custódia, medição fiscal</td>
+    <td class="ok">≤ 0,0005 (0,05%)</td>
+    <td>Desvio MF anterior &gt; 0,25%</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-cy">📊 Apropriação</span></td>
+    <td>Controle interno, balanço de massa</td>
+    <td class="ok">≤ 0,004 (0,40%)</td>
+    <td>Desvio MF anterior &gt; 2,00%</td>
+  </tr>
+</table>
+
+<div class="req">
+  <b>REQ-CP-001</b>
+  O modo escolhido define os limites de repetitividade (REQ-CP-002/003), os critérios de
+  aprovação/reprovação (REQ-CP-005/006) e os alertas de falha presumida (REQ-CP-008/009).
+  Selecione antes de clicar em ▶ Iniciar.
+</div>
+
+<h3 class="sub">Condições para Início</h3>
+<p>O botão <b>▶ Iniciar</b> só fica habilitado quando <strong>todas</strong> as condições são atendidas:</p>
+<table>
+  <tr><th>Condição</th><th>Valor Mínimo</th><th>Referência</th></tr>
+  <tr><td>Tramo alinhado ao prover</td><td>Sim</td><td>—</td></tr>
+  <tr><td>Aquecimento concluído</td><td>Sim</td><td>—</td></tr>
+  <tr><td>Temperatura de processo</td><td>≥ 55°C</td><td>REQ-CP-010</td></tr>
+  <tr><td>Pressão de processo</td><td>≥ 680 kPa</td><td>REQ-CP-010</td></tr>
+  <tr><td>Prover ocioso</td><td>Fase = OCIOSO ou CONCLUÍDO</td><td>—</td></tr>
+</table>
+
+<div class="info">
+  <b>ℹ Alertas de condição</b>
+  Se T ou P estiverem fora da faixa operacional (T = 65±5°C, P = 750±10%), alarmes são gerados
+  mas a prova não é bloqueada. Corridas individuais poderão ser invalidadas por Q fora de faixa (REQ-CP-011).
+</div>
+
+<h3 class="sub">Fases da Prova</h3>
+<div class="steps">
+  <div class="step">
+    <div class="step-body">
+      <b>INICIALIZANDO</b> — MOV-3403 abre (preenchimento lento ~1,6 s). Pistão em movimento inicial.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-body">
+      <b>ESTABILIZANDO</b> — MOV-3403 fecha, MOV-3402 abre. Aguarda ~2 s para estabilizar o fluxo
+      antes de cada corrida. O contador de pulsos é zerado (Nstart registrado).
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-body">
+      <b>PROVANDO</b> — O prover acumula pulsos até atingir o volume de referência (0,454323 m³ × CT × CP).
+      A barra de progresso e os campos N, Vref, Vmed, MF atualizam em tempo real.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-body">
+      <b>FIM DE CORRIDA</b> — MF calculado, corrida validada (Q, pulsos, detector).
+      Se não atingiu 5 válidas e não completou 6 corridas → retorna a ESTABILIZANDO para a próxima corrida.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-body">
+      <b>CONCLUÍDO</b> — MOV-3401 e MOV-3402 fecham. Resultado final calculado e exibido.
+    </div>
+  </div>
+</div>
+
+<h3 class="sub" id="tabela-runs">Tabela de Corridas (REQ-CP-012)</h3>
+<p>A tabela na aba <b>⊙ Prova</b> exibe até 6 linhas com as seguintes colunas:</p>
+
+<table>
+  <tr><th>#</th><th>Coluna</th><th>Descrição</th></tr>
+  <tr><td>1</td><td><b>N Eff</b></td><td>Número efetivo de pulsos com interpolação fracionária</td></tr>
+  <tr><td>2</td><td><b>V Ref (m³)</b></td><td>Volume de referência corrigido: 0,454323 × CT × CP</td></tr>
+  <tr><td>3</td><td><b>V Med (m³)</b></td><td>Volume medido pela turbina: Neff / K</td></tr>
+  <tr><td>4</td><td><b>MF</b></td><td>Fator do medidor: Vref / Vmed</td></tr>
+  <tr><td>5</td><td><b>Δ MF</b></td><td>Desvio do MF da corrida em relação à média provisória das corridas válidas</td></tr>
+  <tr><td>6</td><td><b>Q Média</b></td><td>Vazão média do tramo durante a corrida (m³/h) — verificação REQ-CP-011</td></tr>
+  <tr><td>7</td><td><b>Válida</b></td><td><span class="badge badge-gr">✓</span> Corrida aceita · <span class="badge badge-yl">✕</span> Invalidada por Q, pulso, chatter ou bolha</td></tr>
+  <tr><td>8</td><td><b>Status</b></td><td>✓ OK / ✕ REPET. / ⚠ INVÁLIDA / ⟳ EM CURSO</td></tr>
+</table>
+
+<p>Abaixo da tabela, três indicadores acumulados atualizam a cada corrida:</p>
+<ul style="margin:0 0 12px 20px;color:var(--tx);">
+  <li><b>ΔMF acumulado</b> — Range atual entre MFmax e MFmin das corridas válidas</li>
+  <li><b>Válidas / 5 necessárias</b> — Contador de corridas aceitas</li>
+  <li><b>Faltam X corridas válidas</b> — Quantas ainda precisam ser concluídas</li>
+</ul>
+
+<h3 class="sub" id="criterios">Critérios de Aprovação / Reprovação</h3>
+
+<div class="req">
+  <b>REQ-CP-004 — Fórmula de Repetitividade</b>
+  <div class="formula" style="margin-top:8px;">
+    <div class="fm">ΔMF = MF<sub>max</sub> − MF<sub>min</sub></div>
+    <div class="fd">Calculado sobre as 5 corridas válidas aceitas</div>
+  </div>
+</div>
+
+<table>
+  <tr><th>Critério</th><th>Fiscal / Custódia</th><th>Apropriação</th></tr>
+  <tr><td>Corridas válidas mínimas</td><td>5 de até 6</td><td>5 de até 6</td></tr>
+  <tr><td>Limite ΔMF (absoluto)</td><td class="ok">0,0005</td><td class="ok">0,004</td></tr>
+  <tr><td>Limite ΔMF (%)</td><td>0,05%</td><td>0,40%</td></tr>
+  <tr><td>Falha presumida</td><td>Desvio MF ant. &gt; 0,25%</td><td>Desvio MF ant. &gt; 2,00%</td></tr>
+</table>
+
+<h4>Causas de invalidação de corrida (REQ-CP-006)</h4>
+<table>
+  <tr><th>Causa</th><th>Flag</th><th>Consequência</th></tr>
+  <tr><td>Vazão média fora de ±10% do ref.</td><td><code>Q_FORA_FAIXA</code></td><td class="fail">Corrida inválida</td></tr>
+  <tr><td>Perda de pulsos (fault ativo)</td><td><code>PULSO_PERDIDO</code></td><td class="fail">Corrida inválida</td></tr>
+  <tr><td>Chatter severo do detector (&gt;0,12%)</td><td><code>CHATTER_SEV</code></td><td class="fail">Corrida inválida</td></tr>
+  <tr><td>Bolha de gás detectada</td><td><code>BOLHA_GAS</code></td><td class="fail">Corrida inválida</td></tr>
+  <tr><td>Atraso no detector</td><td><code>ATRASO_DET</code></td><td class="warn">Corrida válida (MF afetado)</td></tr>
+  <tr><td>Chatter leve (&lt;0,12%)</td><td><code>CHATTER</code></td><td class="warn">Corrida válida (MF afetado)</td></tr>
+</table>
+
+<h3 class="sub" id="resultado">Resultado Final</h3>
+
+<div class="formula">
+  <div class="fm">MF<sub>final</sub> = (MF₁ + MF₂ + MF₃ + MF₄ + MF₅) / 5</div>
+  <div class="fd">REQ-CP-007 — Média das 5 primeiras corridas válidas</div>
+</div>
+
+<p>Após a prova, o painel de resultado exibe:</p>
+<div class="screen-mock">
+  <div class="sm-bar">⊙ Prova — Resultado</div>
+  <div class="sm-row"><span class="sm-lbl">ΔMF (Range)</span><span class="sm-val sm-ok">0,00032</span></div>
+  <div class="sm-row"><span class="sm-lbl">Limite Repet.</span><span class="sm-val">0,00050 (Fiscal)</span></div>
+  <div class="sm-row"><span class="sm-lbl">MF Final (média 5)</span><span class="sm-val sm-ok">1,000412</span></div>
+  <div class="sm-row"><span class="sm-lbl">Corridas válidas</span><span class="sm-val">5 / 5 corridas</span></div>
+</div>
+
+<div class="warn">
+  <b>⚠ REQ-CP-008/009 — Falha Presumida</b>
+  Se o MF final diferir do MF da prova anterior em mais de 0,25% (Fiscal) ou 2% (Apropriação),
+  o banner <b>⚠ FALHA PRESUMIDA — Manutenção Necessária</b> é exibido em vermelho e um alarme
+  de alta prioridade é gerado. A prova pode estar aprovada em repetitividade, mas o desvio histórico
+  indica degradação do medidor.
+</div>
+
+<!-- ─── ALARMES ─── -->
+<h2 class="sec" id="alarmes">Alarmes</h2>
+
+<p>A aba <b>⚠ Alarmes</b> lista todos os eventos gerados durante a sessão com prioridade codificada por cor:</p>
+
+<table>
+  <tr><th>Cor</th><th>Prioridade</th><th>Exemplos</th></tr>
+  <tr><td><span class="badge badge-rd">ALTA</span></td><td>Falhas críticas</td><td>Temperatura alta, prova reprovada, falha presumida, PRV-XXX crítico</td></tr>
+  <tr><td><span class="badge badge-yl">MÉDIA</span></td><td>Desvios operacionais</td><td>Pressão fora de faixa, corrida invalidada, falha do Mestre ativa</td></tr>
+  <tr><td><span class="badge badge-gr">BAIXA</span></td><td>Informativo</td><td>Sistema estabilizado, prova aprovada, alinhamento confirmado</td></tr>
+</table>
+
+<h4>Botões de gestão</h4>
+<table>
+  <tr><th>Botão</th><th>Ação</th></tr>
+  <tr><td><b>✓ ACK Todos</b></td><td>Reconhece todos os alarmes — muda o estado para "reconhecido"</td></tr>
+  <tr><td><b>✕ Limpar Ativos</b></td><td>Remove alarmes já reconhecidos da lista</td></tr>
+  <tr><td><b>ACK</b> (por item)</td><td>Reconhece um alarme individualmente</td></tr>
+</table>
+
+<div class="info">
+  <b>ℹ Contador no cabeçalho</b>
+  A aba "⚠ Alarmes" exibe um badge vermelho com o número de alarmes não reconhecidos.
+  A barra de status também mostra o total de alarmes ativos.
+</div>
+
+<!-- ─── RELATÓRIO ─── -->
+<h2 class="sec" id="relatorio">Relatório de Sessão</h2>
+
+<p>
+  A aba <b>≡ Relatório</b> é gerada automaticamente ao final de uma prova concluída.
+  Contém quatro seções:
+</p>
+
+<table>
+  <tr><th>Seção</th><th>Conteúdo</th></tr>
+  <tr><td><b>Resumo da Sessão</b></td><td>Tempo total, tramos provados, provas aprovadas, alarmes gerados</td></tr>
+  <tr><td><b>Resultado da Prova</b></td><td>Modo de aplicação, corridas válidas/inválidas, MFmin, MFmax, ΔMF, MF Final, critério REQ-CP-005, flag de falha presumida, T e P da prova</td></tr>
+  <tr><td><b>Detalhe das Corridas</b></td><td>Tabela com Neff, Vref, Vmed, MF, Δ da média, Q Média e flag de validade por corrida</td></tr>
+  <tr><td><b>Análise de Performance</b></td><td>Score de 0–100 com breakdown: base 60pts, prova aprovada +20, alarmes -3/cada (máx -20), sistema estabilizado +5</td></tr>
+</table>
+
+<div class="tip">
+  <b>✓ Dica</b>
+  Use <code>Ctrl+P</code> para imprimir o relatório. O menu lateral é ocultado automaticamente na impressão.
+</div>
+
+<!-- DIVISOR DE PARTES -->
+<div class="part-divider"></div>
+
+<!-- ════════════════════════════════════════
+  PARTE 2 — PAINEL MESTRE
+════════════════════════════════════════ -->
+
+<h1 class="page-title" id="mestre-visao">
+  Painel Mestre — Controle de Sessões
+  <span class="tag" style="color:var(--pu);border-color:var(--pu);background:#0a0020">INSTRUTOR</span>
+</h1>
+
+<p class="lead">
+  O Painel Mestre (<code>ihm-mestre.html</code>) é exclusivo para o instrutor e permite
+  monitorar todas as sessões ativas em tempo real, injetar falhas individualmente ou
+  em broadcast, aplicar cenários e enviar mensagens aos operadores.
+</p>
+
+<div class="warn">
+  <b>⚠ Acesso restrito</b>
+  Esta página é destinada exclusivamente ao instrutor. Não compartilhe a URL ou senha com os operadores.
+</div>
+
+<!-- ─── ACESSO ─── -->
+<h2 class="sec" id="mestre-acesso">Acesso e Autenticação</h2>
+
+<div class="steps">
+  <div class="step"><div class="step-body">Abra <code>ihm-mestre.html</code> no navegador. Um modal de autenticação é exibido imediatamente.</div></div>
+  <div class="step"><div class="step-body">Digite a senha: <code>fcmaster</code> e pressione <code>Enter</code> ou clique em <b>▶ ENTRAR</b>.</div></div>
+  <div class="step"><div class="step-body">O sistema se conecta ao Supabase Realtime. O badge no canto superior direito muda para <span class="badge badge-cy">● Online</span>.</div></div>
+  <div class="step"><div class="step-body">O grid de sessões ativas começa a ser preenchido à medida que operadores fazem login no simulador.</div></div>
+</div>
+
+<div class="info">
+  <b>ℹ Canal Supabase</b>
+  O painel e o simulador compartilham o canal <code>ihm-training-v1</code>. A comunicação é
+  em tempo real via Supabase Realtime Presence e Broadcast. Sem conexão à internet, as falhas
+  locais do simulador funcionam mas o Painel Mestre não recebe atualizações.
+</div>
+
+<!-- ─── SESSÕES ─── -->
+<h2 class="sec" id="mestre-sessoes">Monitoramento de Sessões</h2>
+
+<p>
+  Cada operador conectado aparece como um <strong>card de sessão</strong> no grid central.
+  Os cards atualizam automaticamente a cada ~5 segundos via Presence.
+</p>
+
+<h4>Anatomia de um card de sessão</h4>
+<table>
+  <tr><th>Elemento</th><th>Descrição</th></tr>
+  <tr><td><b>Token</b></td><td>6 caracteres únicos da sessão. Ex.: <code>A3KP7Q</code></td></tr>
+  <tr><td><b>Nome do operador</b></td><td>Nome informado no modal de login do simulador</td></tr>
+  <tr><td><b>Dot de status</b></td><td><span class="badge badge-gr">●</span> Normal · <span class="badge badge-yl">●</span> Aquecimento · <span class="badge badge-rd">●</span> Alarmes ativos</td></tr>
+  <tr><td><b>Tempo</b></td><td>"Xs atrás" ou "Xm atrás" — tempo desde a última atualização de presença</td></tr>
+  <tr><td><b>T / P / Q</b></td><td>Temperatura, pressão e vazão total do processo em tempo real</td></tr>
+  <tr><td><b>T-01/02/03</b></td><td>Vazão e abertura da FCV de cada tramo</td></tr>
+  <tr><td><b>Falhas ativas</b></td><td>Badges vermelhos listando as falhas atualmente injetadas</td></tr>
+  <tr><td><b>Prova</b></td><td>Tramo alinhado ao prover e fase atual</td></tr>
+</table>
+
+<div class="tip">
+  <b>✓ Painel de falhas por card</b>
+  Clique em <b>⚗ Falhas</b> dentro de um card para expandir o painel inline de controle
+  daquela sessão específica.
+</div>
+
+<!-- ─── FALHAS ─── -->
+<h2 class="sec" id="mestre-falhas">Injeção de Falhas (REQ-CP-013)</h2>
+
+<p>
+  Cada sessão pode receber falhas individuais. Clique em <b>⚗ Falhas</b> no card
+  para abrir o painel inline e clique nos botões para alternar ON/OFF:
+</p>
+
+<table>
+  <tr><th>Botão</th><th>Fault ID</th><th>Efeito no Simulador</th><th>Impacto na Prova</th></tr>
+  <tr>
+    <td><b>Q↑</b></td><td><code>highQ</code></td>
+    <td>FCV do tramo em prova aumenta +40%</td>
+    <td class="warn">Q pode sair de ±10% → corrida inválida</td>
+  </tr>
+  <tr>
+    <td><b>Q↓</b></td><td><code>lowQ</code></td>
+    <td>FCV do tramo em prova reduz para 45%</td>
+    <td class="warn">Q pode sair de ±10% → corrida inválida</td>
+  </tr>
+  <tr>
+    <td><b>P↑</b></td><td><code>highP</code></td>
+    <td>Pressão aumenta +0,5 kPa/tick (até 1.400 kPa)</td>
+    <td>Afeta correção CP → MF desviado</td>
+  </tr>
+  <tr>
+    <td><b>P↓</b></td><td><code>lowP</code></td>
+    <td>Pressão diminui -0,5 kPa/tick (até 490 kPa)</td>
+    <td>Afeta correção CP → MF desviado</td>
+  </tr>
+  <tr>
+    <td><b>T↑</b></td><td><code>highT</code></td>
+    <td>Temperatura aumenta +0,02°C/tick (até 82°C)</td>
+    <td>Afeta correção CT → MF desviado</td>
+  </tr>
+  <tr>
+    <td><b>T↓</b></td><td><code>lowT</code></td>
+    <td>Temperatura diminui -0,02°C/tick (até 42°C)</td>
+    <td>Afeta correção CT → MF desviado</td>
+  </tr>
+  <tr>
+    <td><b>K+</b></td><td><code>kPos</code></td>
+    <td>K-factor efetivo aumenta +0,5%</td>
+    <td>MF desviado positivamente</td>
+  </tr>
+  <tr>
+    <td><b>K−</b></td><td><code>kNeg</code></td>
+    <td>K-factor efetivo reduz -0,5%</td>
+    <td>MF desviado negativamente</td>
+  </tr>
+  <tr>
+    <td><b>DLY</b></td><td><code>delay</code></td>
+    <td>Atraso de 80ms no detector de pulsos</td>
+    <td>Neff aumentado → MF afetado (corrida válida)</td>
+  </tr>
+  <tr>
+    <td><b>GAS</b></td><td><code>air</code></td>
+    <td>Ruído aleatório ±4% na vazão</td>
+    <td class="warn">30% de chance de bolha → corrida inválida</td>
+  </tr>
+  <tr>
+    <td><b>PLS</b></td><td><code>pulseLoss</code></td>
+    <td>Perde 2–5 pulsos por corrida (75% de chance)</td>
+    <td class="fail">Corrida inválida — REQ-CP-006</td>
+  </tr>
+  <tr>
+    <td><b>CHT</b></td><td><code>chatter</code></td>
+    <td>Ruído ±0,15% no Neff por corrida</td>
+    <td class="fail">Severo (&gt;0,12%) → corrida inválida</td>
+  </tr>
+  <tr>
+    <td><b>QΩ</b></td><td><code>unstableQ</code></td>
+    <td>Oscilação senoidal ±25% na vazão do tramo</td>
+    <td class="warn">Qavg pode sair de ±10% → corrida inválida</td>
+  </tr>
+</table>
+
+<div class="warn">
+  <b>⚠ Timing de injeção</b>
+  Falhas que afetam a validade de corridas (<code>pulseLoss</code>, <code>chatter</code>,
+  <code>unstableQ</code>) têm efeito máximo quando ativadas <b>antes</b> da corrida iniciar.
+  Se ativadas durante uma corrida, podem afetar somente a corrida seguinte.
+</div>
+
+<!-- ─── CENÁRIOS ─── -->
+<h2 class="sec" id="mestre-cenarios">Cenários Pré-configurados</h2>
+
+<p>
+  Cenários combinam múltiplas falhas em um único clique.
+  Disponíveis tanto por sessão (botão <b>▦ Cenário</b> no card) quanto em broadcast.
+</p>
+
+<table>
+  <tr><th>Cenário</th><th>Falhas Ativadas</th><th>Objetivo Pedagógico</th></tr>
+  <tr><td><b>Normal</b></td><td>Todas desativadas (reset)</td><td>Retornar à operação normal</td></tr>
+  <tr><td><b>Vazão Alta</b></td><td><code>highQ</code></td><td>Operador identifica Q fora de faixa → corrida inválida</td></tr>
+  <tr><td><b>Vazão Baixa</b></td><td><code>lowQ</code></td><td>Operador ajusta FCV para manter Q dentro de ±10%</td></tr>
+  <tr><td><b>Pressão Alta</b></td><td><code>highP</code></td><td>Operador observa MF desviado pela correção CP</td></tr>
+  <tr><td><b>Pressão Baixa</b></td><td><code>lowP</code></td><td>Idem — desvio negativo de CP</td></tr>
+  <tr><td><b>Desvio K+</b></td><td><code>kPos</code></td><td>Operador percebe MF sistematicamente alto (deriva do medidor)</td></tr>
+  <tr><td><b>Desvio K−</b></td><td><code>kNeg</code></td><td>Operador percebe MF sistematicamente baixo</td></tr>
+  <tr><td><b>Atraso Detector</b></td><td><code>delay</code></td><td>MF afetado por atraso — impacto calculável</td></tr>
+  <tr><td><b>Combinado</b></td><td><code>highP</code> + <code>kPos</code></td><td>Múltiplas causas simultâneas — diagnóstico complexo</td></tr>
+</table>
+
+<!-- ─── FCV REMOTO ─── -->
+<h2 class="sec" id="mestre-fcv">Controle Remoto de FCV</h2>
+
+<p>
+  No painel expandido de cada card (botão <b>⚗ Falhas</b>), há três sliders de FCV —
+  um para cada tramo. Ao ajustar o slider, o comando <code>FCVSET</code> é enviado
+  via Broadcast e o simulador do operador atualiza a válvula imediatamente.
+</p>
+
+<div class="info">
+  <b>ℹ Uso pedagógico</b>
+  Use o controle remoto de FCV para forçar o operador a rebalancear os tramos ou
+  para simular um problema de instrumento que modifica a abertura da válvula.
+</div>
+
+<!-- ─── MENSAGENS ─── -->
+<h2 class="sec" id="mestre-msg">Mensagens para Operadores</h2>
+
+<p>
+  Use o campo de texto no painel expandido de um card para enviar uma mensagem
+  individual ao operador. No simulador, a mensagem aparece como um <b>toast roxo</b>
+  no topo da tela com duração de 6 segundos.
+</p>
+
+<p>Exemplos de uso:</p>
+<ul style="margin:0 0 12px 20px;color:var(--tx);">
+  <li>"Verifique a pressão antes de iniciar a próxima corrida"</li>
+  <li>"Compare o MF com a última calibração registrada"</li>
+  <li>"O que acontece se você reduzir a FCV-3102 para 10%?"</li>
+</ul>
+
+<!-- ─── BROADCAST ─── -->
+<h2 class="sec" id="mestre-broadcast">Broadcast Global</h2>
+
+<p>
+  O painel lateral esquerdo contém ações que afetam <strong>todas as sessões</strong>
+  simultaneamente:
+</p>
+
+<table>
+  <tr><th>Seção</th><th>Ação</th><th>Comando</th></tr>
+  <tr>
+    <td><b>Cenário → Todos</b></td>
+    <td>Seleciona cenário no dropdown e clica <b>⬆ APLICAR A TODOS</b></td>
+    <td><code>SCENARIO</code> target: *</td>
+  </tr>
+  <tr>
+    <td><b>Falha Individual → Todos</b></td>
+    <td>Seleciona a falha e clica <b>⬆ ON → TODOS</b> ou <b>⬇ OFF → TODOS</b></td>
+    <td><code>FAULT</code> target: *</td>
+  </tr>
+  <tr>
+    <td><b>Reset Geral</b></td>
+    <td>Clica <b>⚠ RESET FALHAS — TODOS</b> (pede confirmação)</td>
+    <td><code>RESET</code> target: *</td>
+  </tr>
+  <tr>
+    <td><b>Mensagem → Todos</b></td>
+    <td>Digita texto e clica <b>📣 ENVIAR MENSAGEM</b></td>
+    <td><code>MESSAGE</code> target: *</td>
+  </tr>
+</table>
+
+<div class="tip">
+  <b>✓ Log de atividade</b>
+  O rodapé do painel exibe um log em tempo real de todos os comandos enviados,
+  com timestamp e identificação do alvo (token ou *).
+  Verde = enviado com sucesso · Vermelho = erro de comunicação.
+</div>
+
+<hr>
+
+<!-- ════════════════════════════════════════
+  APÊNDICE
+════════════════════════════════════════ -->
+
+<h2 class="sec" id="req-table">Apêndice A — Tabela REQ-CP Completa</h2>
+
+<table>
+  <tr>
+    <th>REQ</th><th>Descrição</th><th>Fiscal</th><th>Apropriação</th><th>Implementação</th>
+  </tr>
+  <tr>
+    <td><code>CP-001</code></td>
+    <td>Máximo de corridas / mínimo válidas</td>
+    <td>6 máx / 5 mín</td>
+    <td>6 máx / 5 mín</td>
+    <td><code>RUNS_MAX=6</code>, <code>RUNS_VALID_REQ=5</code></td>
+  </tr>
+  <tr>
+    <td><code>CP-002</code></td>
+    <td>Repetitividade Fiscal</td>
+    <td class="ok">ΔMF ≤ 0,05%</td>
+    <td>—</td>
+    <td><code>REPEAT_FISCAL=0.0005</code></td>
+  </tr>
+  <tr>
+    <td><code>CP-003</code></td>
+    <td>Repetitividade Apropriação</td>
+    <td>—</td>
+    <td class="ok">ΔMF ≤ 0,40%</td>
+    <td><code>REPEAT_APROP=0.004</code></td>
+  </tr>
+  <tr>
+    <td><code>CP-004</code></td>
+    <td>Fórmula ΔMF = MFmax − MFmin</td>
+    <td colspan="2" style="text-align:center">Ambos os modos</td>
+    <td><code>finishProving()</code></td>
+  </tr>
+  <tr>
+    <td><code>CP-005</code></td>
+    <td>Critério de aprovação</td>
+    <td colspan="2" style="text-align:center">5 válidas + ΔMF ≤ limite</td>
+    <td>Early-stop + MF final</td>
+  </tr>
+  <tr>
+    <td><code>CP-006</code></td>
+    <td>Reprovação automática</td>
+    <td colspan="2" style="text-align:center">&lt;5 válidas / ΔMF / falha crítica</td>
+    <td>Flags por corrida</td>
+  </tr>
+  <tr>
+    <td><code>CP-007</code></td>
+    <td>MFfinal = média das 5 aceitas</td>
+    <td colspan="2" style="text-align:center">Ambos os modos</td>
+    <td><code>runsUsed.slice(0,5)</code></td>
+  </tr>
+  <tr>
+    <td><code>CP-008</code></td>
+    <td>Falha presumida — Fiscal</td>
+    <td class="fail">&gt; 0,25% do MF ant.</td>
+    <td>—</td>
+    <td><code>PRESUME_FISCAL=0.0025</code></td>
+  </tr>
+  <tr>
+    <td><code>CP-009</code></td>
+    <td>Falha presumida — Apropriação</td>
+    <td>—</td>
+    <td class="fail">&gt; 2,00% do MF ant.</td>
+    <td><code>PRESUME_APROP=0.020</code></td>
+  </tr>
+  <tr>
+    <td><code>CP-010</code></td>
+    <td>Condições de calibração</td>
+    <td colspan="2" style="text-align:center">T ±5°C · P ±10% · Alertas</td>
+    <td><code>startProving()</code></td>
+  </tr>
+  <tr>
+    <td><code>CP-011</code></td>
+    <td>Critério de vazão por corrida</td>
+    <td colspan="2" style="text-align:center">Q ±10% do Qref</td>
+    <td><code>Qavg</code> por run</td>
+  </tr>
+  <tr>
+    <td><code>CP-012</code></td>
+    <td>Interface — informações por run</td>
+    <td colspan="2" style="text-align:center">MF, ΔMF, Q, válida, range acc.</td>
+    <td>Tabela + rodapé acumulado</td>
+  </tr>
+  <tr>
+    <td><code>CP-013</code></td>
+    <td>Falhas randômicas opcionais</td>
+    <td colspan="2" style="text-align:center">13 falhas + 9 cenários</td>
+    <td>Mestre + painel local</td>
+  </tr>
+</table>
+
+<!-- ─── CATÁLOGO DE FALHAS ─── -->
+<h2 class="sec" id="falhas-ref">Apêndice B — Catálogo de Falhas</h2>
+
+<table>
+  <tr><th>Código</th><th>Nome</th><th>Ativação</th><th>Efeito</th><th>Corrida</th></tr>
+  <tr><td><code>highQ</code></td><td>Vazão Alta</td><td>Mestre</td><td>FCV prover +40%</td><td class="warn">Pode invalidar</td></tr>
+  <tr><td><code>lowQ</code></td><td>Vazão Baixa</td><td>Mestre</td><td>FCV prover ×0,45</td><td class="warn">Pode invalidar</td></tr>
+  <tr><td><code>highP</code></td><td>Pressão Alta</td><td>Mestre</td><td>+0,5 kPa/tick</td><td>MF afetado (válida)</td></tr>
+  <tr><td><code>lowP</code></td><td>Pressão Baixa</td><td>Mestre</td><td>−0,5 kPa/tick</td><td>MF afetado (válida)</td></tr>
+  <tr><td><code>highT</code></td><td>Temperatura Alta</td><td>Mestre</td><td>+0,02°C/tick</td><td>MF afetado (válida)</td></tr>
+  <tr><td><code>lowT</code></td><td>Temperatura Baixa</td><td>Mestre</td><td>−0,02°C/tick</td><td>MF afetado (válida)</td></tr>
+  <tr><td><code>kPos</code></td><td>Deriva K Positivo</td><td>Mestre</td><td>Keff ×1,005</td><td>MF desviado (válida)</td></tr>
+  <tr><td><code>kNeg</code></td><td>Deriva K Negativo</td><td>Mestre</td><td>Keff ×0,995</td><td>MF desviado (válida)</td></tr>
+  <tr><td><code>delay</code></td><td>Atraso Detector</td><td>Mestre</td><td>Neff +80ms</td><td>MF afetado (válida)</td></tr>
+  <tr><td><code>air</code></td><td>Arrastamento Gás</td><td>Mestre</td><td>Qeff ±4% rand.</td><td class="fail">30% → inválida</td></tr>
+  <tr><td><code>pulseLoss</code></td><td>Pulso Perdido</td><td>Mestre</td><td>Neff −2 a 5 pulsos</td><td class="fail">75% → inválida</td></tr>
+  <tr><td><code>chatter</code></td><td>Chatter Detector</td><td>Mestre</td><td>Neff ±0,15% rand.</td><td class="fail">&gt;0,12% → inválida</td></tr>
+  <tr><td><code>unstableQ</code></td><td>Vazão Instável</td><td>Mestre</td><td>Qeff ±25% senoidal</td><td class="warn">Pode invalidar</td></tr>
+</table>
+
+<!-- ─── GLOSSÁRIO ─── -->
+<h2 class="sec" id="glossario">Apêndice C — Glossário Técnico</h2>
+
+<table>
+  <tr><th>Termo</th><th>Definição</th></tr>
+  <tr><td><b>MF (Meter Factor)</b></td><td>Fator de correção do medidor. MF = Vref / Vmed. Valor ideal = 1,000000.</td></tr>
+  <tr><td><b>ΔMF</b></td><td>Diferença absoluta entre o maior e o menor MF das corridas válidas. Critério central de repetitividade.</td></tr>
+  <tr><td><b>K-Factor</b></td><td>Constante de calibração da turbina em pulsos/m³. Específica por medidor (5018–5031 p/m³).</td></tr>
+  <tr><td><b>Vref</b></td><td>Volume de referência do prover corrigido: BASE_VOL × CT × CP.</td></tr>
+  <tr><td><b>Vmed</b></td><td>Volume medido pela turbina: Neff / K.</td></tr>
+  <tr><td><b>Neff</b></td><td>Número efetivo de pulsos com interpolação fracionária de início e fim de corrida.</td></tr>
+  <tr><td><b>CT</b></td><td>Fator de correção de temperatura: 1 + (T − 20) × 0,00065</td></tr>
+  <tr><td><b>CP</b></td><td>Fator de correção de pressão: 1 + (P − 800) × 1,2×10⁻⁷</td></tr>
+  <tr><td><b>Compact Prover</b></td><td>Instrumento de referência volumétrica portátil com pistão de precisão para calibração de medidores de vazão.</td></tr>
+  <tr><td><b>Falha Presumida</b></td><td>Desvio do MF atual em relação ao MF da última calibração que excede o limite normativo, indicando degradação do medidor.</td></tr>
+  <tr><td><b>Repetitividade</b></td><td>Capacidade do medidor de fornecer resultados consistentes em condições iguais. Expressa como ΔMF ou %.</td></tr>
+  <tr><td><b>FCV</b></td><td>Flow Control Valve — válvula de controle de vazão com atuador modulante 0–100%.</td></tr>
+  <tr><td><b>MOV</b></td><td>Motor-Operated Valve — válvula de isolamento (todo aberta / todo fechada).</td></tr>
+  <tr><td><b>Token de Sessão</b></td><td>Código de 6 caracteres alfanuméricos gerado aleatoriamente para identificar unicamente cada sessão aberta.</td></tr>
+  <tr><td><b>Presence</b></td><td>Mecanismo do Supabase Realtime que rastreia quem está conectado a um canal e seu estado atual.</td></tr>
+  <tr><td><b>Broadcast</b></td><td>Mecanismo do Supabase Realtime para envio de mensagens a todos os assinantes de um canal.</td></tr>
+</table>
+
+<div style="margin-top:48px;padding:16px;background:var(--pn);border:1px solid var(--bd);
+  border-radius:6px;font-size:11px;color:var(--mu);text-align:center;">
+  <b style="color:var(--or)">⬡ FlowCore Solutions</b> · Manual do Simulador de Medição Fiscal FPSO<br>
+  IHM 1923-ODMS-30 · Compact Prover 1923-CPA-01 · API MPMS 4.x / 13.2<br>
+  Rev. 01 · 2026
+</div>
+
+</main>
+</div>
+
+<script>
+// ── Sidebar: highlight da seção ativa ──
+const items = document.querySelectorAll('.sb-item');
+const sections = Array.from(document.querySelectorAll('h1[id], h2[id], h3[id]'));
+
+function onScroll() {
+  const scrollY = window.scrollY + 80;
+  let current = '';
+  sections.forEach(s => {
+    if (s.offsetTop <= scrollY) current = s.id;
+  });
+  items.forEach(a => {
+    const href = a.getAttribute('href').slice(1);
+    a.classList.toggle('active', href === current);
+  });
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+</script>
+</body>
+</html>
