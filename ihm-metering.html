@@ -248,6 +248,12 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
       <label>Nome do Operador</label>
       <input type="text" id="join-name" placeholder="Ex.: João Silva"
         maxlength="40" autocomplete="off"
+        onkeydown="if(event.key==='Enter')document.getElementById('join-email').focus()">
+    </div>
+    <div class="join-field">
+      <label>E-mail</label>
+      <input type="email" id="join-email" placeholder="Ex.: joao.silva@empresa.com"
+        maxlength="80" autocomplete="email"
         onkeydown="if(event.key==='Enter')joinSession()">
     </div>
     <button class="btn bor" style="width:100%;padding:9px 0;font-size:13px"
@@ -700,8 +706,12 @@ let _simTimer  = null;   // setInterval handle for tick()
 const SESSION = {
   token:    '',
   operator: '',
+  email:    '',
   joined:   false,
 };
+
+// Google Apps Script Web App URL — substitua após implantar o simulador_webapp.gs
+const GS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxq3kY_QXsPZSgqFIe0vJNG_UInnhH-t9CbVceQcFkyMU4OXaR0lBpJi936iQxL_9fn1w/exec';
 
 /** Generates a 6-char alphanumeric token (no 0/O/I/1 ambiguity) */
 function genToken() {
@@ -723,14 +733,22 @@ function initSupabase() {
 }
 
 function joinSession() {
-  const name = (el('join-name').value || '').trim();
+  const name  = (el('join-name').value  || '').trim();
+  const email = (el('join-email').value || '').trim();
   if (!name) {
     el('join-err').textContent = 'Informe seu nome para continuar.';
     el('join-name').focus();
     return;
   }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    el('join-err').textContent = 'Informe um e-mail válido.';
+    el('join-email').focus();
+    return;
+  }
   el('join-err').textContent = '';
   SESSION.operator = name;
+  SESSION.email    = email;
+  registerUserInSheet(name, email, SESSION.token);
 
   // Display token in header
   el('tb-token').textContent = SESSION.token;
@@ -765,6 +783,20 @@ function joinSession() {
 
   raiseAlarm('SYS-000',
     `Sessão iniciada — Operador: ${name} · Token: ${SESSION.token} · 3 tramos em operação paralela · aguardando estabilização (2 min)`, 'lo');
+}
+
+/** Registra operador na planilha simulador_usuario via Apps Script */
+async function registerUserInSheet(name, email, token) {
+  if (!GS_WEBAPP_URL || GS_WEBAPP_URL.includes('SEU_ID_AQUI')) return;
+  try {
+    const params = new URLSearchParams({
+      nome:      name,
+      email:     email,
+      token:     token,
+      timestamp: new Date().toISOString(),
+    });
+    await fetch(`${GS_WEBAPP_URL}?${params}`, { method: 'GET', mode: 'no-cors' });
+  } catch (_) { /* falha silenciosa — não impede a sessão */ }
 }
 
 /** Publish current state to Supabase Presence */
