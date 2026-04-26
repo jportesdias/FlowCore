@@ -499,8 +499,112 @@
     /* --- PRODUCTS / BOOKS SECTION --- */
     .products-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr 1fr;
       gap: 32px;
+    }
+
+    /* ── Card fundido dos dois livros ── */
+    .books-card {
+      grid-column: 1 / -1;
+      flex-direction: row !important;
+      align-items: center;
+      gap: 48px;
+      padding: 48px;
+    }
+
+    .books-visual {
+      position: relative;
+      width: 340px;
+      min-width: 340px;
+      height: 380px;
+      flex-shrink: 0;
+    }
+
+    .bk-wrap {
+      position: absolute;
+      transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
+                  box-shadow 0.55s ease;
+    }
+
+    .bk-back {
+      top: 40px;
+      left: 10px;
+      z-index: 1;
+      transform: rotate(-10deg);
+    }
+
+    .bk-front {
+      top: 15px;
+      left: 140px;
+      z-index: 2;
+      transform: rotate(6deg);
+    }
+
+    .books-card:hover .bk-back {
+      transform: rotate(-15deg) translateX(-28px) translateY(-12px);
+    }
+
+    .books-card:hover .bk-front {
+      transform: rotate(11deg) translateX(28px) translateY(-12px);
+    }
+
+    .bk-img {
+      width: 165px;
+      border-radius: 10px;
+      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.5);
+      display: block;
+      transition: box-shadow 0.55s ease;
+    }
+
+    .books-card:hover .bk-img {
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Tag reposicionada para o books-card (não sobrepor conteúdo) */
+    .books-card > .product-tag {
+      top: 24px;
+      right: auto;
+      left: 32px;
+    }
+
+    .books-details {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: stretch;   /* colunas de mesma altura → margin-top:auto funciona */
+    }
+
+    .book-detail {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .book-detail h3 {
+      font-size: 1.35rem;
+      margin-bottom: 10px;
+      color: var(--text-heading);
+    }
+
+    .book-detail p {
+      font-size: 0.875rem;
+      color: var(--text-body);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .book-detail .features-list {
+      margin-bottom: 20px;
+    }
+
+    .book-detail .price-action {
+      margin-top: auto;
+      margin-bottom: 16px;
+    }
+
+    .book-detail .btn-buy {
+      width: 100%;
+      justify-content: center;
     }
 
     .product-card {
@@ -864,6 +968,28 @@
         grid-template-columns: 1fr;
       }
 
+      .books-card {
+        flex-direction: column !important;
+        padding: 32px 24px;
+        gap: 32px;
+      }
+
+      .books-visual {
+        width: 100%;
+        min-width: unset;
+        height: 300px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .bk-back  { left: calc(50% - 160px); }
+      .bk-front { left: calc(50% - 30px);  }
+
+      .books-details {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+
       .author-grid {
         grid-template-columns: 1fr;
       }
@@ -1041,61 +1167,90 @@
         <div class="products-grid">
 
           <!-- Product 1 -->
-          <div class="product-card">
-            <div class="product-tag">Técnico & Operacional</div>
+          <!-- Products 1+2: Livros (card fundido, largura total) -->
+          <div class="product-card books-card">
+            <div class="product-tag">Biblioteca FlowCore</div>
 
-            <div class="product-image-wrapper">
-              <img src="capa_nfcm.png" alt="Nunca Foi Certo Medir" class="product-image" />
+            <!-- Capas sobrepostas -->
+            <div class="books-visual">
+              <div class="bk-wrap bk-back">
+                <img src="capa_nfcm.png" alt="Nunca Foi Certo Medir" class="bk-img" />
+              </div>
+              <div class="bk-wrap bk-front">
+                <img src="capa_pro_exc.png" alt="Profissional de Excelência" class="bk-img" />
+              </div>
             </div>
 
-            <div class="product-info">
-              <h3>Nunca Foi Certo Medir</h3>
-              <p>Este material explora a metrologia como uma ciência essencial que vai além de simples números,
-                destacando que a incerteza de medição é um elemento inevitável em qualquer processo técnico.</p>
+            <!-- Info dos dois livros lado a lado -->
+            <div class="books-details">
 
-              <ul class="features-list">
-                <li>Desmistificando a incerteza de medição na indústria</li>
-                <li>Metrologia é a ciência que todos usam todos os dias, mesmo sem perceber.</li>
-                <li>Não há evolução sem precisão. Isso é Metrologia.</li>
-              </ul>
-            </div>
+              <div class="book-detail">
+                <h3>Nunca Foi Certo Medir</h3>
+                <p>Este material explora a metrologia como uma ciência essencial que vai além de simples números,
+                  destacando que a incerteza de medição é um elemento inevitável em qualquer processo técnico.</p>
+                <ul class="features-list">
+                  <li>Desmistificando a incerteza de medição na indústria</li>
+                  <li>Metrologia é a ciência que todos usam todos os dias</li>
+                  <li>Não há evolução sem precisão. Isso é Metrologia.</li>
+                </ul>
+                <div class="price-action">
+                  <div class="format">eBook / PDF (Acesso Imediato)</div>
+                </div>
+                <a href="https://pay.kiwify.com.br/FbceEsd" target="_blank" class="btn btn-primary btn-buy">
+                  Comprar via Kiwify
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
 
-            <div class="price-action">
-              <div class="format">eBook / PDF (Acesso Imediato)</div>
+              <div class="book-detail">
+                <h3>Profissional de Excelência</h3>
+                <p>O caminho prático para você se destacar. Construa sua reputação, entregue resultados consistentes e
+                  desenvolva as habilidades necessárias para alcançar o próximo nível.</p>
+                <ul class="features-list">
+                  <li>Como construir Autoridade Técnica Real</li>
+                  <li>Gestão de competências e responsabilidade técnica</li>
+                  <li>Networking e posicionamento sem parecer forçado</li>
+                </ul>
+                <div class="price-action">
+                  <div class="format">eBook / PDF (Acesso Imediato)</div>
+                </div>
+                <a href="https://pay.kiwify.com.br/9TPrEiP" target="_blank" class="btn btn-outline btn-buy">
+                  Comprar via Kiwify
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+
             </div>
-            <a href="https://pay.kiwify.com.br/FbceEsd" target="_blank" class="btn btn-primary btn-buy">
-              Comprar via Kiwify
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </a>
           </div>
 
-          <!-- Product 2 -->
+          <!-- Product 4: Simulador de Prova -->
           <div class="product-card">
-            <div class="product-tag">Carreira & Soft Skills</div>
+            <div class="product-tag">Treinamento & Simulação</div>
 
             <div class="product-image-wrapper">
-              <img src="capa_pro_exc.png" alt="Profissional de Excelência na Indústria" class="product-image" />
+              <img src="simulador.png" alt="Simulador de Prova com Compact Prover" class="product-image" style="box-shadow: none; max-width: 90%;" />
             </div>
 
             <div class="product-info">
-              <h3>Profissional de Excelência</h3>
-              <p>O caminho prático para você se destacar. Construa sua reputação, entregue resultados consistentes e
-                desenvolva as habilidades necessárias para alcançar o próximo nível.</p>
+              <h3>Simulador de Prova</h3>
+              <p>Simulação realista de medição fiscal FPSO com Compact Prover. Treine a sequência de prova, interprete o fator do medidor e domine os critérios da API MPMS 4.x em ambiente controlado.</p>
 
               <ul class="features-list">
-                <li>Como construir Autoridade Técnica Real</li>
-                <li>Gestão de competências e responsabilidade técnica</li>
-                <li>Networking e posicionamento sem parecer forçado</li>
+                <li>3 Tramos com FCVs e Prover Compacto</li>
+                <li>Critérios Fiscais e de Apropriação (REQ-CP)</li>
+                <li>Injeção de Falhas e Cenários pelo Instrutor</li>
               </ul>
             </div>
 
             <div class="price-action">
-              <div class="format">eBook / PDF (Acesso Imediato)</div>
+              <div class="format">Simulador Web Interativo</div>
             </div>
-            <a href="https://pay.kiwify.com.br/9TPrEiP" target="_blank" class="btn btn-outline btn-buy">
-              Comprar via Kiwify
+            <a href="ihm-metering.html" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-buy" style="background: linear-gradient(135deg, #1F3F68, #4ab8ff); color: white; box-shadow: 0 8px 24px rgba(74, 184, 255, 0.3);">
+              Acessar Simulador
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
