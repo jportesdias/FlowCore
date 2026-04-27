@@ -1495,74 +1495,240 @@ class FamilyOfficeApp {
             `;
             return;
         }
-        
-        // Calculate date range (YYYY-MM string comparison)
-        let currentDate;
-        try {
-            currentDate = new Date();
-            const startYear = currentDate.getFullYear();
-            const startMonth = currentDate.getMonth() - monthsCount + 1;
-            const d = new Date(startYear, startMonth, 1);
-            const startLabel = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-            
-            console.log(`--- DASHBOARD SUMMARY DIAGNOSTIC ---`);
-            console.log(`Period: Last ${monthsCount} months (from ${startLabel})`);
-            console.log(`Total Records in Store: ${cashflow.length}`);
-            
-            const filteredFlow = data.cashflow.filter(c => {
-                if (!c.date) return false;
-                const rowMonth = FamilyOfficeStore.normalizeMonth(c.date);
-                const match = rowMonth >= startLabel;
-                return match;
-            });
-            
-            console.log(`Filtered Records for Dashboard: ${filteredFlow.length}`);
-            if (filteredFlow.length === 0 && cashflow.length > 0) {
-                const earliest = cashflow.sort((a,b) => a.date.localeCompare(b.date))[0].date;
-                console.warn(`Dashboard is EMPTY because all ${cashflow.length} records are older than ${startLabel}. Earliest record: ${earliest}`);
-            }
 
-            const totalIncome = filteredFlow.filter(c => c.type === 'income').reduce((s, c) => s + parseFloat(c.amount), 0);
-            const totalExpense = filteredFlow.filter(c => c.type === 'expense').reduce((s, c) => s + parseFloat(c.amount), 0);
+        try {
+            const now = new Date();
+            const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+            const prevMonthDate = new Date(now.getFullYear(), now.getMonth()-1, 1);
+            const prevMonthStr = `${prevMonthDate.getFullYear()}-${String(prevMonthDate.getMonth()+1).padStart(2,'0')}`;
+
+            // Período do seletor (N meses)
+            const periodStart = new Date(now.getFullYear(), now.getMonth() - monthsCount + 1, 1);
+            const periodStartStr = `${periodStart.getFullYear()}-${String(periodStart.getMonth()+1).padStart(2,'0')}`;
+
+            const periodFlow = cashflow.filter(c => c.date && FamilyOfficeStore.normalizeMonth(c.date) >= periodStartStr);
+            const currentMonthFlow = cashflow.filter(c => c.date && FamilyOfficeStore.normalizeMonth(c.date) === currentMonthStr);
+            const prevMonthFlow = cashflow.filter(c => c.date && FamilyOfficeStore.normalizeMonth(c.date) === prevMonthStr);
+
+            // KPIs
+            const totalIncome  = periodFlow.filter(c => c.type === 'income').reduce((s,c) => s + parseFloat(c.amount||0), 0);
+            const totalExpense = periodFlow.filter(c => c.type === 'expense').reduce((s,c) => s + parseFloat(c.amount||0), 0);
             const net = totalIncome - totalExpense;
+            const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpense) / totalIncome * 100) : 0;
+
+            const curIncome  = currentMonthFlow.filter(c => c.type === 'income').reduce((s,c) => s + parseFloat(c.amount||0), 0);
+            const curExpense = currentMonthFlow.filter(c => c.type === 'expense').reduce((s,c) => s + parseFloat(c.amount||0), 0);
+            const curNet = curIncome - curExpense;
+
+            const prevExpense = prevMonthFlow.filter(c => c.type === 'expense').reduce((s,c) => s + parseFloat(c.amount||0), 0);
+            const expenseDelta = prevExpense > 0 ? ((curExpense - prevExpense) / prevExpense * 100) : 0;
+
+            const totalPatrimony = (data.assets||[]).reduce((s,a) => s + parseFloat(a.currentEstimatedValue||a.current_estimated_value||0), 0);
+
+            // Gastos por categoria (período)
+            const categories = store.getCategories();
+            const catMap = {};
+            categories.forEach(c => { catMap[c.id] = { ...c, total: 0 }; });
+            periodFlow.filter(c => c.type === 'expense').forEach(c => {
+                const key = c.category || 'OUTROS';
+                if (!catMap[key]) catMap[key] = { id: key, name: key, color: '#94A3B8', icon: 'fa-circle', total: 0 };
+                catMap[key].total += parseFloat(c.amount||0);
+            });
+            const catList = Object.values(catMap).filter(c => c.total > 0).sort((a,b) => b.total - a.total);
+            const maxCatTotal = catList[0]?.total || 1;
+            const topCategory = catList[0];
+
+            // Top 5 despesas do mês atual
+            const top5 = [...currentMonthFlow]
+                .filter(c => c.type === 'expense')
+                .sort((a,b) => parseFloat(b.amount||0) - parseFloat(a.amount||0))
+                .slice(0, 5);
+
+            // Evolução mensal (últimos 6 meses)
+            const monthHistory = [];
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const mStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                const mFlow = cashflow.filter(c => c.date && FamilyOfficeStore.normalizeMonth(c.date) === mStr);
+                const inc = mFlow.filter(c => c.type === 'income').reduce((s,c) => s + parseFloat(c.amount||0), 0);
+                const exp = mFlow.filter(c => c.type === 'expense').reduce((s,c) => s + parseFloat(c.amount||0), 0);
+                monthHistory.push({ label: d.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase(), income: inc, expense: exp, net: inc - exp });
+            }
+            const maxBar = Math.max(...monthHistory.map(m => Math.max(m.income, m.expense)), 1);
+
+            // Metas
+            const goals = (data.goals||[]).slice(0,3);
+
+            // Alertas
+            const alerts = [];
+            catList.forEach(cat => {
+                const histAvg = cashflow
+                    .filter(c => c.type === 'expense' && c.category === cat.id && FamilyOfficeStore.normalizeMonth(c.date) < currentMonthStr)
+                    .reduce((acc, c, _, arr) => {
+                        const months = new Set(arr.map(x => FamilyOfficeStore.normalizeMonth(x.date))).size || 1;
+                        return parseFloat(c.amount||0) / months;
+                    }, 0);
+                const curCatTotal = currentMonthFlow.filter(c => c.type === 'expense' && c.category === cat.id).reduce((s,c) => s + parseFloat(c.amount||0), 0);
+                if (histAvg > 0 && curCatTotal > histAvg * 1.3) {
+                    alerts.push({ cat: cat.name, color: cat.color, pct: Math.round((curCatTotal / histAvg - 1) * 100) });
+                }
+            });
+
+            const savingsColor = savingsRate >= 20 ? 'var(--success)' : savingsRate >= 10 ? '#FF9F0A' : 'var(--danger)';
+            const deltaColor = expenseDelta <= 0 ? 'var(--success)' : 'var(--danger)';
+            const deltaIcon = expenseDelta <= 0 ? 'fa-arrow-down' : 'fa-arrow-up';
 
             container.innerHTML = `
-                <div class="summary-card main ${net >= 0 ? 'positive' : 'negative'}">
-                    <div class="summary-icon-bg">
-                        <i class="fas ${net >= 0 ? 'fa-chart-line' : 'fa-chart-area'}"></i>
+            <div style="grid-column:1/-1; display:flex; flex-direction:column; gap:1.5rem;">
+
+                <!-- LINHA 1: KPIs -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;">
+                    <div style="background:var(--bg-accent); border:0.5px solid var(--glass-border); border-radius:16px; padding:1.25rem 1.5rem;">
+                        <div style="font-size:0.7rem; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.5rem;">Resultado do Mês</div>
+                        <div style="font-family:'Times New Roman',serif; font-size:1.8rem; color:${curNet>=0?'var(--success)':'var(--danger)'}; font-weight:400;">${window.formatBRL(curNet)}</div>
+                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:0.4rem;">${curNet>=0?'Superávit':'Déficit'} em ${now.toLocaleDateString('pt-BR',{month:'long'})}</div>
                     </div>
-                    <div class="summary-content">
-                        <div class="summary-label">Resultado Consolidado</div>
-                        <div class="summary-value">${window.formatBRL(net)}</div>
-                        <div class="summary-footer">
-                            <span class="period-badge"><i class="far fa-calendar-alt"></i> ${monthsCount} MESES</span>
+                    <div style="background:var(--bg-accent); border:0.5px solid var(--glass-border); border-radius:16px; padding:1.25rem 1.5rem;">
+                        <div style="font-size:0.7rem; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.5rem;">Taxa de Poupança</div>
+                        <div style="font-family:'Times New Roman',serif; font-size:1.8rem; color:${savingsColor}; font-weight:400;">${savingsRate.toFixed(1)}%</div>
+                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:0.4rem;">Últimos ${monthsCount} meses · Meta: 20%</div>
+                    </div>
+                    <div style="background:var(--bg-accent); border:0.5px solid var(--glass-border); border-radius:16px; padding:1.25rem 1.5rem;">
+                        <div style="font-size:0.7rem; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.5rem;">Despesas vs Mês Ant.</div>
+                        <div style="font-family:'Times New Roman',serif; font-size:1.8rem; color:${deltaColor}; font-weight:400; display:flex; align-items:center; gap:0.4rem;">
+                            <i class="fas ${deltaIcon}" style="font-size:1.2rem;"></i>${Math.abs(expenseDelta).toFixed(1)}%
                         </div>
+                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:0.4rem;">${window.formatBRL(curExpense)} este mês</div>
+                    </div>
+                    <div style="background:var(--bg-accent); border:0.5px solid var(--glass-border); border-radius:16px; padding:1.25rem 1.5rem; cursor:pointer;" onclick="window.location.hash='assets'">
+                        <div style="font-size:0.7rem; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.5rem;">Patrimônio Total</div>
+                        <div style="font-family:'Times New Roman',serif; font-size:1.8rem; color:var(--gold-primary); font-weight:400;">${window.formatBRL(totalPatrimony)}</div>
+                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:0.4rem;">${(data.assets||[]).length} ativo(s) cadastrado(s)</div>
                     </div>
                 </div>
-                <div class="summary-details">
-                    <div class="summary-mini-card">
-                        <div class="mini-icon income"><i class="fas fa-arrow-up"></i></div>
-                        <div class="mini-data">
-                            <div class="mini-label">Total Entradas</div>
-                            <div class="mini-value">${window.formatBRL(totalIncome)}</div>
-                        </div>
+
+                <!-- LINHA 2: Gastos por Categoria + Top 5 -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+
+                    <!-- Gastos por Categoria -->
+                    <div style="background:var(--bg-accent); border:0.5px solid var(--glass-border); border-radius:16px; padding:1.5rem;">
+                        <div style="font-size:0.7rem; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-bottom:1.25rem;">Gastos por Categoria · ${monthsCount}m</div>
+                        ${catList.length === 0 ? `<div style="color:var(--text-muted); font-size:0.82rem; text-align:center; padding:2rem 0;">Nenhuma despesa no período</div>` :
+                        catList.map(cat => {
+                            const pct = (cat.total / totalExpense * 100).toFixed(1);
+                            const barPct = (cat.total / maxCatTotal * 100).toFixed(1);
+                            return `
+                            <div style="margin-bottom:1rem;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                                        <i class="fas ${cat.icon}" style="color:${cat.color}; font-size:0.8rem; width:14px;"></i>
+                                        <span style="font-size:0.8rem; color:var(--text-primary); font-weight:500;">${cat.name}</span>
+                                    </div>
+                                    <div style="text-align:right;">
+                                        <span style="font-family:'Times New Roman',serif; font-size:0.95rem; color:var(--text-primary);">${window.formatBRL(cat.total)}</span>
+                                        <span style="font-size:0.7rem; color:var(--text-muted); margin-left:0.4rem;">${pct}%</span>
+                                    </div>
+                                </div>
+                                <div style="height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;">
+                                    <div style="height:100%; width:${barPct}%; background:${cat.color}; border-radius:2px; transition:width 0.6s ease;"></div>
+                                </div>
+                            </div>`;
+                        }).join('')}
                     </div>
-                    <div class="summary-mini-card">
-                        <div class="mini-icon expense"><i class="fas fa-arrow-down"></i></div>
-                        <div class="mini-data">
-                            <div class="mini-label">Total Saídas</div>
-                            <div class="mini-value">${window.formatBRL(totalExpense)}</div>
-                        </div>
-                    </div>
-                    <div class="summary-mini-card">
-                        <div class="mini-icon avg"><i class="fas fa-divide"></i></div>
-                        <div class="mini-data">
-                            <div class="mini-label">Média Mensal</div>
-                            <div class="mini-value">${window.formatBRL(net / monthsCount)}</div>
-                        </div>
+
+                    <!-- Top 5 Despesas do Mês -->
+                    <div style="background:var(--bg-accent); border:0.5px solid var(--glass-border); border-radius:16px; padding:1.5rem;">
+                        <div style="font-size:0.7rem; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-bottom:1.25rem;">Top 5 Despesas · ${now.toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}</div>
+                        ${top5.length === 0 ? `<div style="color:var(--text-muted); font-size:0.82rem; text-align:center; padding:2rem 0;">Nenhuma despesa este mês</div>` :
+                        top5.map((e, i) => {
+                            const cat = categories.find(c => c.id === e.category);
+                            return `
+                            <div style="display:flex; align-items:center; gap:0.75rem; padding:0.65rem 0; border-bottom:0.5px solid var(--glass-border);">
+                                <div style="font-family:'Times New Roman',serif; font-size:1rem; color:var(--text-muted); width:16px; text-align:center;">${i+1}</div>
+                                <div style="flex:1; min-width:0;">
+                                    <div style="font-size:0.83rem; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${e.description}</div>
+                                    <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">${cat ? cat.name : (e.category||'Sem categoria')} · ${new Date(e.date+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}</div>
+                                </div>
+                                <div style="font-family:'Times New Roman',serif; font-size:1rem; color:var(--danger); flex-shrink:0;">${window.formatBRL(parseFloat(e.amount))}</div>
+                            </div>`;
+                        }).join('')}
                     </div>
                 </div>
-            `;
+
+                <!-- LINHA 3: Evolução Mensal -->
+                <div style="background:var(--bg-accent); border:0.5px solid var(--glass-border); border-radius:16px; padding:1.5rem;">
+                    <div style="font-size:0.7rem; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-bottom:1.25rem;">Evolução Mensal · Últimos 6 meses</div>
+                    <div style="display:flex; align-items:flex-end; gap:8px; height:100px;">
+                        ${monthHistory.map(m => {
+                            const incH = Math.round((m.income / maxBar) * 80);
+                            const expH = Math.round((m.expense / maxBar) * 80);
+                            return `
+                            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;">
+                                <div style="width:100%; display:flex; gap:2px; align-items:flex-end; height:80px;">
+                                    <div style="flex:1; background:var(--success); border-radius:3px 3px 0 0; height:${incH}px; opacity:0.7; min-height:2px;" title="Receitas: ${window.formatBRL(m.income)}"></div>
+                                    <div style="flex:1; background:var(--danger); border-radius:3px 3px 0 0; height:${expH}px; opacity:0.7; min-height:2px;" title="Despesas: ${window.formatBRL(m.expense)}"></div>
+                                </div>
+                                <div style="font-size:0.62rem; color:var(--text-muted); letter-spacing:0.05em;">${m.label}</div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                    <div style="display:flex; gap:1.5rem; margin-top:0.75rem;">
+                        <div style="display:flex; align-items:center; gap:0.4rem;"><div style="width:10px; height:10px; border-radius:2px; background:var(--success); opacity:0.7;"></div><span style="font-size:0.7rem; color:var(--text-muted);">Receitas</span></div>
+                        <div style="display:flex; align-items:center; gap:0.4rem;"><div style="width:10px; height:10px; border-radius:2px; background:var(--danger); opacity:0.7;"></div><span style="font-size:0.7rem; color:var(--text-muted);">Despesas</span></div>
+                    </div>
+                </div>
+
+                <!-- LINHA 4: Metas + Alertas -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+
+                    <!-- Metas -->
+                    <div style="background:var(--bg-accent); border:0.5px solid var(--glass-border); border-radius:16px; padding:1.5rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+                            <div style="font-size:0.7rem; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase;">Metas</div>
+                            <a onclick="window.location.hash='goals'" style="font-size:0.7rem; color:var(--gold-primary); cursor:pointer; text-decoration:none;">Ver todas →</a>
+                        </div>
+                        ${goals.length === 0 ? `<div style="color:var(--text-muted); font-size:0.82rem; text-align:center; padding:1.5rem 0;">Nenhuma meta cadastrada</div>` :
+                        goals.map(g => {
+                            const pct = Math.min((parseFloat(g.current||0) / parseFloat(g.target||1)) * 100, 100).toFixed(1);
+                            const color = pct >= 100 ? 'var(--success)' : pct >= 60 ? 'var(--gold-primary)' : 'var(--text-muted)';
+                            return `
+                            <div style="margin-bottom:1rem;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+                                    <span style="font-size:0.82rem; color:var(--text-primary);">${g.name}</span>
+                                    <span style="font-size:0.75rem; color:${color}; font-weight:600;">${pct}%</span>
+                                </div>
+                                <div style="height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;">
+                                    <div style="height:100%; width:${pct}%; background:${color}; border-radius:2px; transition:width 0.6s ease;"></div>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-top:0.3rem;">
+                                    <span style="font-size:0.68rem; color:var(--text-muted);">${window.formatBRL(parseFloat(g.current||0))}</span>
+                                    <span style="font-size:0.68rem; color:var(--text-muted);">${window.formatBRL(parseFloat(g.target||0))}</span>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+
+                    <!-- Alertas -->
+                    <div style="background:var(--bg-accent); border:0.5px solid var(--glass-border); border-radius:16px; padding:1.5rem;">
+                        <div style="font-size:0.7rem; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-bottom:1.25rem;">Alertas</div>
+                        ${alerts.length === 0 ? `
+                            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1.5rem 0; gap:0.5rem;">
+                                <i class="fas fa-check-circle" style="color:var(--success); font-size:1.5rem;"></i>
+                                <span style="font-size:0.82rem; color:var(--text-muted); text-align:center;">Gastos dentro do padrão histórico</span>
+                            </div>` :
+                        alerts.map(a => `
+                            <div style="display:flex; align-items:center; gap:0.75rem; padding:0.7rem 0.9rem; border-radius:10px; background:rgba(255,69,58,0.07); border:0.5px solid rgba(255,69,58,0.15); margin-bottom:0.6rem;">
+                                <i class="fas fa-exclamation-triangle" style="color:var(--danger); font-size:0.85rem;"></i>
+                                <div>
+                                    <div style="font-size:0.8rem; color:var(--text-primary); font-weight:500;">${a.cat}</div>
+                                    <div style="font-size:0.7rem; color:var(--danger);">+${a.pct}% acima da média histórica</div>
+                                </div>
+                            </div>`).join('')}
+                    </div>
+                </div>
+
+            </div>`;
+
         } catch (err) {
             console.error('CRITICAL: Dashboard Render Failure', err);
             container.innerHTML = `<div class="alert alert-danger">Erro ao carregar dashboard: ${err.message}</div>`;
