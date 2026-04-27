@@ -238,7 +238,8 @@ class FamilyOfficeApp {
     /* ─── REALTIME & APPROVAL METHODS ────────────────────────────── */
     async fetchPendingEntries() {
         try {
-            const resp = await fetch(`${SB_TABLE}?status=eq.pending&origin=eq.mobile`, { headers: SB_HEADERS });
+            const authH = window.AUTH_TOKEN ? { ...SB_HEADERS, 'Authorization': `Bearer ${window.AUTH_TOKEN}` } : SB_HEADERS;
+            const resp = await fetch(`${SB_TABLE}?status=eq.pending&origin=in.(mobile,card_closing)`, { headers: authH });
             if (!resp.ok) throw new Error('Falha ao buscar pendentes');
             const data = await resp.json();
             
@@ -432,74 +433,81 @@ class FamilyOfficeApp {
      */
     async checkCardClosings() {
         const today = new Date();
-        const todayDay = today.getDate();
+        const authH = window.AUTH_TOKEN ? { ...SB_HEADERS, 'Authorization': `Bearer ${window.AUTH_TOKEN}` } : SB_HEADERS;
 
         try {
             const [cRes, tRes] = await Promise.all([
-                fetch(`${CARDS_TABLE}?select=*`, { headers: SB_HEADERS }),
-                fetch(`${CARD_TX_TABLE}?status=eq.posted&select=*&limit=5000`, { headers: SB_HEADERS })
+                fetch(`${CARDS_TABLE}?select=*`, { headers: authH }),
+                fetch(`${CARD_TX_TABLE}?status=eq.posted&select=*&limit=5000`, { headers: authH })
             ]);
             const cards = await cRes.json();
             const allTxs = await tRes.json();
 
             for (const card of cards) {
-                if (!card.closing_day || card.closing_day !== todayDay) continue;
+                if (!card.closing_day) continue;
 
-                // Ciclo: do dia seguinte ao fechamento do mês anterior até hoje
-                const cycleEnd   = new Date(today.getFullYear(), today.getMonth(), card.closing_day);
-                const cycleStart = new Date(today.getFullYear(), today.getMonth() - 1, card.closing_day + 1);
-                const cycleStartStr = window.getLocalISODate(cycleStart);
-                const cycleEndStr   = window.getLocalISODate(cycleEnd);
+                // Verifica os últimos 3 meses para recuperar fechamentos perdidos
+                for (let monthsBack = 0; monthsBack <= 3; monthsBack++) {
+                    const refDate    = new Date(today.getFullYear(), today.getMonth() - monthsBack, card.closing_day);
+                    const cycleEnd   = new Date(refDate.getFullYear(), refDate.getMonth(), card.closing_day);
+                    const cycleStart = new Date(refDate.getFullYear(), refDate.getMonth() - 1, card.closing_day + 1);
 
-                // Vencimento: due_day do próximo mês
-                const dueDate    = new Date(today.getFullYear(), today.getMonth() + 1, card.due_day || 1);
-                const dueDateStr = window.getLocalISODate(dueDate);
-                const dueMonth   = dueDateStr.substring(0, 7);
+                    // Não gera fatura futura
+                    if (cycleEnd > today) continue;
 
-                // Chave de deduplicação
-                const descKey = `Fatura ${card.name} ${dueMonth}`;
+                    const cycleStartStr = window.getLocalISODate(cycleStart);
+                    const cycleEndStr   = window.getLocalISODate(cycleEnd);
 
-                // Verifica se já foi gerada
-                const existingRes = await fetch(
-                    `${SB_TABLE}?origin=eq.card_closing&description=eq.${encodeURIComponent(descKey)}&limit=1`,
-                    { headers: SB_HEADERS }
-                );
-                const existing = await existingRes.json();
-                if (Array.isArray(existing) && existing.length > 0) continue;
+                    // Vencimento: due_day do mês seguinte ao fechamento
+                    const dueDate    = new Date(refDate.getFullYear(), refDate.getMonth() + 1, card.due_day || 1);
+                    const dueDateStr = window.getLocalISODate(dueDate);
+                    const dueMonth   = dueDateStr.substring(0, 7);
 
-                // Soma transações do ciclo (usa purchase_date ou date como fallback)
-                const cycleTxs = allTxs.filter(t => {
-                    const txDate = (t.purchase_date || t.date || '').substring(0, 10);
-                    return String(t.card_id) === String(card.id) &&
-                           txDate >= cycleStartStr &&
-                           txDate <= cycleEndStr;
-                });
+                    // Chave de deduplicação
+                    const descKey = `Fatura ${card.name} ${dueMonth}`;
 
-                if (cycleTxs.length === 0) continue;
+                    // Verifica se já foi gerada
+                    const existingRes = await fetch(
+                        `${SB_TABLE}?origin=eq.card_closing&description=eq.${encodeURIComponent(descKey)}&limit=1`,
+                        { headers: authH }
+                    );
+                    const existing = await existingRes.json();
+                    if (Array.isArray(existing) && existing.length > 0) continue;
 
-                const total = cycleTxs.reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
-                if (total <= 0) continue;
+                    // Soma transações do ciclo
+                    const cycleTxs = allTxs.filter(t => {
+                        const txDate = (t.purchase_date || t.date || '').substring(0, 10);
+                        return String(t.card_id) === String(card.id) &&
+                               txDate >= cycleStartStr &&
+                               txDate <= cycleEndStr;
+                    });
 
-                // Cria entrada pendente no fluxo de caixa
-                const entry = withUser({
-                    date:        dueDateStr,
-                    description: descKey,
-                    amount:      parseFloat(total.toFixed(2)),
-                    type:        'expense',
-                    category:    'DIVIDAS_E_OBRIGACOES',
-                    subcategory: 'cartao_credito',
-                    status:      'pending',
-                    origin:      'card_closing',
-                    notes:       `${cycleTxs.length} lançamento(s) — ciclo ${cycleStartStr} a ${cycleEndStr}`
-                });
+                    if (cycleTxs.length === 0) continue;
 
-                await sbFetch(SB_TABLE, {
-                    method: 'POST',
-                    headers: { 'Prefer': 'return=representation' },
-                    body: JSON.stringify(entry)
-                });
+                    const total = cycleTxs.reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
+                    if (total <= 0) continue;
 
-                console.log(`[CardClosing] Fatura gerada: ${descKey} = R$ ${total.toFixed(2)}`);
+                    // Cria entrada pendente no fluxo de caixa
+                    const entry = withUser({
+                        date:        dueDateStr,
+                        description: descKey,
+                        amount:      parseFloat(total.toFixed(2)),
+                        type:        'expense',
+                        category:    'DIVIDAS_E_OBRIGACOES',
+                        subcategory: 'cartao_credito',
+                        status:      'pending',
+                        origin:      'card_closing',
+                        notes:       `${cycleTxs.length} lançamento(s) — ciclo ${cycleStartStr} a ${cycleEndStr}`
+                    });
+
+                    await sbFetch(SB_TABLE, {
+                        method: 'POST',
+                        headers: { 'Prefer': 'return=representation' },
+                        body: JSON.stringify(entry)
+                    });
+
+                    console.log(`[CardClosing] Fatura gerada: ${descKey} = R$ ${total.toFixed(2)}`);
+                }
             }
 
             // Atualiza badge de pendentes após eventuais novas faturas
