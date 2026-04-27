@@ -397,12 +397,12 @@ class FamilyOfficeApp {
 
     async approveCardTx(id) {
         try {
+            const authH = window.AUTH_TOKEN ? { ...SB_HEADERS, 'Authorization': `Bearer ${window.AUTH_TOKEN}` } : SB_HEADERS;
             await fetch(`${CARD_TX_TABLE}?id=eq.${id}`, {
                 method: 'PATCH',
-                headers: SB_HEADERS,
+                headers: authH,
                 body: JSON.stringify({ status: 'posted' })
             });
-            // Re-fetch and re-render to update UI
             await this.renderCardsView();
         } catch (err) {
             console.error('Error approving card tx:', err);
@@ -412,9 +412,10 @@ class FamilyOfficeApp {
     async rejectCardTx(id) {
         if (!confirm('Rejeitar este lançamento de cartão?')) return;
         try {
+            const authH = window.AUTH_TOKEN ? { ...SB_HEADERS, 'Authorization': `Bearer ${window.AUTH_TOKEN}` } : SB_HEADERS;
             await fetch(`${CARD_TX_TABLE}?id=eq.${id}`, {
                 method: 'PATCH',
-                headers: SB_HEADERS,
+                headers: authH,
                 body: JSON.stringify({ status: 'rejected' })
             });
             // Re-fetch and re-render. Since status is now 'rejected', 
@@ -843,8 +844,9 @@ class FamilyOfficeApp {
     async deleteCard(id) {
         if (confirm('Tem certeza? Isso apagará o cartão e todas as suas transações vinculadas.')) {
             try {
-                await fetch(`${CARDS_TABLE}?id=eq.${id}`, { method: 'DELETE', headers: SB_HEADERS });
-                await fetch(`${CARD_TX_TABLE}?card_id=eq.${id}`, { method: 'DELETE', headers: SB_HEADERS });
+                const authH = window.AUTH_TOKEN ? { ...SB_HEADERS, 'Authorization': `Bearer ${window.AUTH_TOKEN}` } : SB_HEADERS;
+                await fetch(`${CARDS_TABLE}?id=eq.${id}`, { method: 'DELETE', headers: authH });
+                await fetch(`${CARD_TX_TABLE}?card_id=eq.${id}`, { method: 'DELETE', headers: authH });
                 this.renderCardsView();
             } catch(e) { alert('Erro ao deletar cartão'); }
         }
@@ -996,7 +998,8 @@ class FamilyOfficeApp {
     async deleteCardTx(id) {
         if (confirm('Excluir esta transação?')) {
             try {
-                await fetch(`${CARD_TX_TABLE}?id=eq.${id}`, { method: 'DELETE', headers: SB_HEADERS });
+                const authH = window.AUTH_TOKEN ? { ...SB_HEADERS, 'Authorization': `Bearer ${window.AUTH_TOKEN}` } : SB_HEADERS;
+                await fetch(`${CARD_TX_TABLE}?id=eq.${id}`, { method: 'DELETE', headers: authH });
                 this.renderCardsView();
             } catch(e) { alert('Erro ao deletar transação'); }
         }
@@ -1079,10 +1082,11 @@ class FamilyOfficeApp {
             };
             
             try {
+                const authH = window.AUTH_TOKEN ? { ...SB_HEADERS, 'Authorization': `Bearer ${window.AUTH_TOKEN}` } : SB_HEADERS;
                 if (id) {
-                    await fetch(`${CARDS_TABLE}?id=eq.${id}`, { method: 'PATCH', headers: SB_HEADERS, body: JSON.stringify(card) });
+                    await fetch(`${CARDS_TABLE}?id=eq.${id}`, { method: 'PATCH', headers: authH, body: JSON.stringify(card) });
                 } else {
-                    await fetch(CARDS_TABLE, { method: 'POST', headers: SB_HEADERS, body: JSON.stringify(withUser(card)) });
+                    await fetch(CARDS_TABLE, { method: 'POST', headers: { ...authH, 'Prefer': 'return=representation' }, body: JSON.stringify(withUser(card)) });
                 }
                 document.getElementById('fo-card-modal-overlay').classList.add('hidden');
                 this.renderCardsView();
