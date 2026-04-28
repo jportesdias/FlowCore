@@ -1091,14 +1091,24 @@ class FamilyOfficeApp {
             
             try {
                 const authH = window.AUTH_TOKEN ? { ...SB_HEADERS, 'Authorization': `Bearer ${window.AUTH_TOKEN}` } : SB_HEADERS;
+                const payload = withUser(card);
+                console.log('[card-save] payload:', JSON.stringify(payload));
+                console.log('[card-save] user_id:', window.FO_USER_ID, '| AUTH_TOKEN:', !!window.AUTH_TOKEN);
+                let res;
                 if (id) {
-                    await fetch(`${CARDS_TABLE}?id=eq.${id}`, { method: 'PATCH', headers: authH, body: JSON.stringify(card) });
+                    res = await fetch(`${CARDS_TABLE}?id=eq.${id}`, { method: 'PATCH', headers: authH, body: JSON.stringify(card) });
                 } else {
-                    await fetch(CARDS_TABLE, { method: 'POST', headers: { ...authH, 'Prefer': 'return=representation' }, body: JSON.stringify(withUser(card)) });
+                    res = await fetch(CARDS_TABLE, { method: 'POST', headers: { ...authH, 'Prefer': 'return=representation' }, body: JSON.stringify(payload) });
+                }
+                if (!res.ok) {
+                    const errText = await res.text();
+                    console.error('[card-save] ERRO HTTP', res.status, errText);
+                    alert('Erro ao salvar cartão (' + res.status + '): ' + errText);
+                    return;
                 }
                 document.getElementById('fo-card-modal-overlay').classList.add('hidden');
                 this.renderCardsView();
-            } catch(e) { alert('Erro ao salvar cartão'); }
+            } catch(e) { console.error('Erro ao salvar cartão:', e?.message || e); alert('Erro ao salvar cartão: ' + (e?.message || 'ver console')); }
         });
 
         document.getElementById('fo-tx-form')?.addEventListener('submit', async (e) => {
