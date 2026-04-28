@@ -562,13 +562,13 @@ class FamilyOfficeApp {
         }
         
         try {
-            const [cRes, tRes] = await Promise.all([
-                fetch(`${CARDS_TABLE}?select=*&order=name.asc`, { headers: SB_HEADERS }),
-                fetch(`${CARD_TX_TABLE}?select=*&or=(status.is.null,status.neq.rejected)&order=date.desc&limit=5000`, { headers: SB_HEADERS })
+            const [cards, txs] = await Promise.all([
+                sbFetch(`${CARDS_TABLE}?select=*&order=name.asc`),
+                sbFetch(`${CARD_TX_TABLE}?select=*&or=(status.is.null,status.neq.rejected)&order=date.desc&limit=5000`)
             ]);
-            
-            this.cards = await cRes.json();
-            this.cardTransactions = await tRes.json();
+
+            this.cards = cards;
+            this.cardTransactions = txs;
             
             console.log(`DEBUG: renderCardsView loaded ${this.cards.length} cards and ${this.cardTransactions.length} transactions.`);
             
