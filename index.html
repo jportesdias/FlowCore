@@ -18,8 +18,8 @@
   <style>
     :root {
       /* Color Palette Based on Logo (Light Corporate Theme) */
-      --bg-dark: #F8F9FA;
-      /* Off-white, soft background */
+      --bg-dark: #EEF2F8;
+      /* Soft blue-gray background */
       --bg-card: #FFFFFF;
       /* Pure white cards */
       --bg-card-hover: #F1F3F5;
@@ -799,30 +799,49 @@
     /* --- FINAL CTA --- */
     .cta-final {
       padding: 120px 0;
+      position: relative;
+      background-image: url('wallpaper_flowcore.png');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+
+    .cta-final::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(5, 14, 30, 0.78) 0%,
+        rgba(10, 25, 55, 0.68) 100%
+      );
+      z-index: 0;
+    }
+
+    .cta-final .container {
+      position: relative;
+      z-index: 1;
     }
 
     .cta-box {
-      background: #F8F9FA;
-      /* Matches the outer page background */
-      border: 1px solid rgba(31, 63, 104, 0.08);
-      /* Very subtle inset border edge */
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: var(--radius-xl);
       padding: 80px 40px;
       text-align: center;
       position: relative;
       overflow: hidden;
-      /* Inset shadows create the "pressed in" / debossed low-relief effect */
-      box-shadow: inset 4px 4px 15px rgba(31, 63, 104, 0.05), inset -4px -4px 15px rgba(255, 255, 255, 1);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
-
-    /* Removed the yellow ambient glow (.cta-box::before) from dark mode */
-
 
     .cta-box h2 {
       font-size: clamp(2rem, 4vw, 3.5rem);
       margin-bottom: 24px;
       position: relative;
       z-index: 1;
+      color: #FFFFFF;
     }
 
     .cta-box p {
@@ -831,6 +850,21 @@
       margin: 0 auto 40px;
       position: relative;
       z-index: 1;
+      color: rgba(255, 255, 255, 0.80);
+    }
+
+    .cta-final .btn-outline {
+      background: rgba(255, 255, 255, 0.10);
+      color: #FFFFFF;
+      border-color: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .cta-final .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.65);
+      color: #FFFFFF;
     }
 
 
@@ -1018,6 +1052,100 @@
         gap: 20px;
         text-align: center;
       }
+    }
+
+    /* ========================================
+       WALLPAPER HERO — dark industrial bg
+       ======================================== */
+    .hero {
+      background-image: url('wallpaper_flowcore.png');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        rgba(5, 14, 30, 0.72) 0%,
+        rgba(5, 14, 30, 0.52) 55%,
+        rgba(5, 14, 30, 0.20) 100%
+      );
+      z-index: 1;
+    }
+
+    .hero .container {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Nav: white text while header is transparent over dark hero */
+    header:not(.scrolled) .logo-text {
+      color: #FFFFFF;
+    }
+
+    header:not(.scrolled) .nav-links a.link {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    header:not(.scrolled) .nav-links a.link:hover {
+      color: var(--accent-light);
+    }
+
+    /* Hero text adaptations for dark background */
+    .hero .hero-title {
+      color: #FFFFFF;
+    }
+
+    .hero .text-gradient {
+      background: linear-gradient(to right, #F48A50, #E55B13);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero .hero-subtitle {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .hero .badge {
+      background: rgba(229, 91, 19, 0.18);
+      border-color: rgba(229, 91, 19, 0.40);
+      color: #F48A50;
+    }
+
+    .hero .btn-outline {
+      background: rgba(255, 255, 255, 0.10);
+      color: #FFFFFF;
+      border-color: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .hero .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.20);
+      border-color: rgba(255, 255, 255, 0.65);
+      color: #FFFFFF;
+    }
+
+    .hero .social-proof {
+      border-top-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .hero .social-proof p {
+      color: rgba(255, 255, 255, 0.50);
+    }
+
+    .hero .logos {
+      opacity: 1;
+    }
+
+    .hero .logos span {
+      color: rgba(255, 255, 255, 0.70);
     }
   </style>
 </head>
