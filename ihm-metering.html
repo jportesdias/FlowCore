@@ -7,12 +7,12 @@
 <style>
 :root{
   --or:#E55B13; --bl:#1F3F68; --bg:#080d14; --pn:#0f1824;
-  --bd:#1e3a5f; --tx:#c8d8f0; --mu:#5a7a9a; --gr:#00c97a;
+  --bd:#1e3a5f; --tx:#ffffff; --mu:#7a9ab8; --gr:#00c97a;
   --rd:#e03030; --yl:#ffd600; --cy:#4ab8ff; --pu:#cc88ff;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-serif;
-  font-size:13px;height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+  font-size:14px;height:100vh;overflow:hidden;display:flex;flex-direction:column;}
 
 /* ─── HEADER ─── */
 #hdr{background:var(--bl);padding:5px 14px;display:flex;align-items:center;
@@ -33,11 +33,11 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 
 /* ─── STATUSBAR ─── */
 #sbar{background:#0b1220;border-bottom:1px solid var(--bd);padding:3px 14px;
-  display:flex;gap:18px;align-items:center;flex-shrink:0;font-size:11px;flex-wrap:wrap;}
+  display:flex;gap:18px;align-items:center;flex-shrink:0;font-size:12px;flex-wrap:wrap;}
 .si{display:flex;align-items:center;gap:5px;}
-.si .lbl{color:var(--mu);font-size:10px;text-transform:uppercase;letter-spacing:.4px;}
-.si .val{font-family:'Courier New',monospace;font-weight:700;}
-.si .unt{color:var(--mu);font-size:9px;}
+.si .lbl{color:var(--mu);font-size:11px;text-transform:uppercase;letter-spacing:.4px;}
+.si .val{font-family:'Courier New',monospace;font-weight:700;color:#fff;}
+.si .unt{color:var(--mu);font-size:10px;}
 .ssep{color:var(--bd);}
 .train-pill{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;
   border:1px solid;}
@@ -48,9 +48,9 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 /* ─── TABS ─── */
 #tabs{background:#0b1220;border-bottom:1px solid var(--bd);display:flex;flex-shrink:0;}
 .tbt{padding:7px 18px;border:none;background:transparent;color:var(--mu);
-  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
   cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;position:relative;}
-.tbt:hover{color:var(--tx);}
+.tbt:hover{color:#fff;}
 .tbt.on{color:var(--or);border-bottom-color:var(--or);}
 .acnt{position:absolute;top:4px;right:4px;background:var(--rd);color:#fff;
   font-size:9px;font-weight:700;padding:1px 4px;border-radius:8px;min-width:16px;
@@ -64,31 +64,54 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 
 /* ─── P&ID TAB ─── */
 #pid-wrap{flex:1;overflow:auto;background:#060b11;display:flex;
-  align-items:flex-start;justify-content:center;padding:6px;}
-#pid-svg{width:100%;max-width:1440px;height:auto;display:block;}
+  align-items:flex-start;justify-content:flex-start;padding:6px;gap:6px;}
+#pid-svg{flex:1;min-width:0;max-width:1440px;height:auto;display:block;}
+
+/* ─── PAINEL DE INSTRUMENTOS ─── */
+#instr-panel{flex-shrink:0;width:162px;background:#04090f;
+  border:1px solid #1e3a5f;border-radius:5px;padding:8px 0;
+  font-family:'Courier New',monospace;font-size:11px;align-self:flex-start;
+  position:sticky;top:0;}
+.ip-sec{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  color:var(--or);padding:4px 10px 3px;border-bottom:1px solid #0d1e30;
+  margin-bottom:2px;}
+.ip-row{display:flex;justify-content:space-between;align-items:center;
+  padding:3px 10px;border-bottom:1px solid #080f18;}
+.ip-row:last-child{border-bottom:none;}
+.ip-tag{color:#5a8aaa;font-size:10px;font-weight:700;white-space:nowrap;}
+.ip-val{font-size:12px;font-weight:700;text-align:right;}
+.ip-unit{font-size:9px;color:var(--mu);margin-left:2px;}
+.ip-sep{height:4px;}
 #pid-ctrl{background:var(--pn);border-top:1px solid var(--bd);padding:6px 14px;
   display:flex;gap:10px;align-items:center;flex-wrap:wrap;flex-shrink:0;}
 .cg{display:flex;align-items:center;gap:6px;background:#0b1220;
   border:1px solid var(--bd);padding:3px 10px;border-radius:4px;}
 .cg label{font-size:10px;color:var(--mu);text-transform:uppercase;}
+.fcv-inp{width:46px;background:#0b1820;border:1px solid var(--bd);border-radius:3px;
+  color:#fff;font-family:'Courier New',monospace;font-size:12px;font-weight:700;
+  padding:3px 5px;text-align:right;-moz-appearance:textfield;}
+.fcv-inp::-webkit-inner-spin-button,.fcv-inp::-webkit-outer-spin-button{-webkit-appearance:none;}
+.fcv-inp:focus{outline:none;border-color:var(--or);}
+.fcv-lbl{font-size:10px;color:var(--cy);font-family:'Courier New',monospace;
+  min-width:60px;display:inline-block;}
 
 /* ─── PROVA TAB ─── */
 #prova-wrap{flex:1;display:grid;grid-template-columns:310px 1fr;overflow:hidden;}
 #pv-left{border-right:1px solid var(--bd);padding:10px;overflow-y:auto;background:#0a0f18;}
 #pv-right{padding:10px;overflow-y:auto;}
-.sec{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--or);
+.sec{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--or);
   border-bottom:1px solid var(--bd);padding-bottom:3px;margin-bottom:8px;margin-top:12px;}
 .sec:first-child{margin-top:0;}
 .igrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px;}
 .icard{background:#0b1220;border:1px solid var(--bd);border-radius:4px;padding:5px 9px;}
-.icard .lbl{font-size:9px;color:var(--mu);text-transform:uppercase;}
-.icard .val{font-size:15px;font-family:'Courier New',monospace;font-weight:700;color:var(--cy);}
-.icard .unt{font-size:9px;color:var(--mu);}
-.rtbl{width:100%;border-collapse:collapse;font-size:11px;}
+.icard .lbl{font-size:10px;color:var(--mu);text-transform:uppercase;}
+.icard .val{font-size:16px;font-family:'Courier New',monospace;font-weight:700;color:var(--cy);}
+.icard .unt{font-size:10px;color:var(--mu);}
+.rtbl{width:100%;border-collapse:collapse;font-size:12px;}
 .rtbl th{background:#0b1220;color:var(--mu);padding:4px 7px;text-align:center;
-  border:1px solid var(--bd);font-size:9px;text-transform:uppercase;}
-.rtbl td{padding:3px 7px;border:1px solid #162030;text-align:center;
-  font-family:'Courier New',monospace;font-size:10px;}
+  border:1px solid var(--bd);font-size:10px;text-transform:uppercase;}
+.rtbl td{padding:4px 7px;border:1px solid #162030;text-align:center;
+  font-family:'Courier New',monospace;font-size:11px;color:#fff;}
 .rtbl tr.rpass td{color:var(--gr);}
 .rtbl tr.rfail td{color:var(--rd);}
 .rtbl tr.rinv td{color:var(--yl);}
@@ -113,7 +136,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .atbar{display:flex;gap:8px;margin-bottom:10px;}
 .alist{display:flex;flex-direction:column;gap:3px;}
 .aitem{display:grid;grid-template-columns:80px 80px 115px 1fr 70px;
-  gap:7px;padding:5px 9px;border-radius:3px;font-size:11px;align-items:center;}
+  gap:7px;padding:5px 9px;border-radius:3px;font-size:12px;align-items:center;color:#fff;}
 .aitem.hi{background:#180000;border-left:3px solid var(--rd);}
 .aitem.md{background:#161000;border-left:3px solid var(--yl);}
 .aitem.lo{background:#001610;border-left:3px solid var(--gr);}
@@ -125,20 +148,20 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 #rep-wrap{flex:1;padding:10px;overflow-y:auto;}
 .rsec{background:var(--pn);border:1px solid var(--bd);border-radius:4px;
   padding:10px;margin-bottom:10px;}
-.rsec h3{font-size:11px;text-transform:uppercase;color:var(--or);
+.rsec h3{font-size:12px;text-transform:uppercase;color:var(--or);
   letter-spacing:1px;margin-bottom:8px;}
-.rrow{display:flex;justify-content:space-between;padding:3px 0;
-  border-bottom:1px solid #162030;font-size:11px;}
+.rrow{display:flex;justify-content:space-between;padding:4px 0;
+  border-bottom:1px solid #162030;font-size:12px;}
 .rrow:last-child{border-bottom:none;}
 .rkey{color:var(--mu);}
-.rval{font-family:'Courier New',monospace;font-weight:600;}
+.rval{font-family:'Courier New',monospace;font-weight:600;color:#fff;}
 .score-box{text-align:center;padding:16px;background:#050e18;
   border:2px solid var(--or);border-radius:6px;margin-bottom:12px;}
 .score-val{font-size:48px;font-weight:900;color:var(--or);}
 .score-lbl{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;}
 
 /* ─── BUTTONS ─── */
-.btn{padding:4px 13px;border-radius:4px;border:none;font-size:11px;font-weight:700;
+.btn{padding:5px 14px;border-radius:4px;border:none;font-size:12px;font-weight:700;
   cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.5px;}
 .btn:disabled{opacity:.35;cursor:not-allowed;}
 .bor{background:var(--or);color:#fff;}
@@ -166,6 +189,28 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .minp:focus{outline:none;border-color:var(--or);}
 .mfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;}
 .merr{color:var(--rd);font-size:11px;margin-top:4px;display:none;}
+/* ─── MODAL K-CURVE ─── */
+.mbox-lg{background:var(--pn);border:1px solid var(--bd);border-radius:6px;
+  padding:18px;width:min(96vw,780px);max-height:90vh;overflow-y:auto;}
+.ktabs{display:flex;gap:0;margin-bottom:12px;border-bottom:1px solid var(--bd);}
+.ktab{padding:6px 18px;background:none;border:none;color:var(--mu);font-size:11px;
+  font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .15s;}
+.ktab.on{color:var(--or);border-bottom-color:var(--or);}
+.ktbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;}
+.ktbl th{background:#0b1220;color:var(--mu);padding:5px 8px;text-align:center;
+  border:1px solid var(--bd);font-size:10px;text-transform:uppercase;letter-spacing:.5px;}
+.ktbl td{padding:3px 4px;border:1px solid #162030;}
+.ktbl td.pnum{text-align:center;color:var(--mu);font-size:10px;background:#080e18;}
+.kinp{width:100%;background:#0b1820;border:1px solid #1e3a5f;border-radius:3px;
+  color:#fff;font-family:'Courier New',monospace;font-size:12px;
+  padding:4px 6px;text-align:right;}
+.kinp:focus{outline:none;border-color:var(--or);}
+.kfreq{color:var(--cy);font-family:'Courier New',monospace;font-size:11px;
+  text-align:right;padding-right:8px;}
+.kinfo{font-size:9px;color:var(--mu);background:#050d18;border:1px solid var(--bd);
+  border-radius:3px;padding:5px 10px;margin-bottom:10px;line-height:1.7;}
+.kinfo b{color:var(--cy);}
 
 /* ─── MESTRE PANEL ─── */
 #mpanel{position:fixed;bottom:0;right:0;width:310px;background:#06040e;
@@ -188,6 +233,30 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .token-badge .tb-lbl{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.6px;}
 .token-badge .tb-val{font-family:'Courier New',monospace;font-size:13px;color:var(--cy);font-weight:700;letter-spacing:2px;}
 .token-badge .tb-op{font-size:9px;color:#9ab8d8;max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ─── SHUTDOWN OVERLAY ─── */
+#shutdown-overlay{position:fixed;inset:0;background:rgba(80,0,0,.96);z-index:9000;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;text-align:center;padding:40px;}
+.sd-icon{font-size:72px;margin-bottom:18px;animation:sd-blink 1s step-end infinite;}
+@keyframes sd-blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.sd-title{font-size:32px;font-weight:900;color:#ff3333;letter-spacing:3px;
+  text-transform:uppercase;margin-bottom:10px;text-shadow:0 0 20px #ff0000;}
+.sd-reason{font-size:16px;color:#ffaaaa;margin-bottom:24px;max-width:600px;}
+.sd-box{background:rgba(0,0,0,.5);border:1px solid #aa3333;border-radius:8px;
+  padding:20px 32px;max-width:620px;margin-bottom:28px;text-align:left;}
+.sd-box-title{font-size:11px;color:#ff8888;text-transform:uppercase;letter-spacing:1px;
+  margin-bottom:8px;font-weight:700;}
+.sd-box-text{font-size:13px;color:#ffcccc;line-height:1.7;}
+.sd-proc{background:rgba(0,0,0,.5);border:1px solid #55aa55;border-radius:8px;
+  padding:20px 32px;max-width:620px;margin-bottom:32px;text-align:left;}
+.sd-proc-title{font-size:11px;color:#88ff88;text-transform:uppercase;letter-spacing:1px;
+  margin-bottom:8px;font-weight:700;}
+.sd-proc-text{font-size:13px;color:#ccffcc;line-height:1.7;}
+.sd-restart{background:#cc0000;color:#fff;border:2px solid #ff4444;border-radius:6px;
+  padding:14px 40px;font-size:15px;font-weight:700;letter-spacing:2px;cursor:pointer;
+  text-transform:uppercase;}
+.sd-restart:hover{background:#ff2222;}
 
 /* ─── OPERATOR JOIN MODAL ─── */
 #join-modal{position:fixed;inset:0;background:rgba(4,8,16,.92);z-index:2000;
@@ -289,6 +358,10 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
     </div>
     <span id="wbadge" class="wbadge on">▲ AQUECIMENTO</span>
     <span id="hclock" class="hclock">00:00:00</span>
+    <button id="pause-btn" class="btn" onclick="toggleSimPause()"
+      style="font-size:13px;padding:6px 20px;border:1px solid var(--yl);color:var(--yl);background:var(--bl);">
+      ⏸ Pausar
+    </button>
     <button class="btn bbl bsm" onclick="openMestreModal()">⚙ MESTRE</button>
   </div>
 </div>
@@ -305,6 +378,11 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
   <span class="ssep">│</span>
   <div class="si"><span class="lbl">Prova</span><span class="val" id="sb-prova" style="color:var(--mu)">—</span></div>
   <div class="si"><span class="lbl">Alarmes</span><span class="val" id="sb-alm" style="color:var(--gr)">0</span></div>
+  <span id="pause-badge" style="display:none;margin-left:auto;padding:2px 12px;
+    border-radius:3px;background:#1a1200;border:1px solid var(--yl);
+    color:var(--yl);font-size:11px;font-weight:700;letter-spacing:1px;">
+    ⏸ SIMULAÇÃO PAUSADA
+  </span>
 </div>
 
 <!-- ═══ TABS ═══ -->
@@ -320,25 +398,93 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 
   <!-- ── TAB: Visão Geral (P&ID) ── -->
   <div id="tab-pid" class="tpane on">
-    <div id="pid-wrap"><svg id="pid-svg" viewBox="0 0 1400 740" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div id="pid-wrap">
+
+      <!-- ── Painel lateral de instrumentação ── -->
+      <div id="instr-panel">
+        <div class="ip-sec">Pressão</div>
+        <div class="ip-row">
+          <span class="ip-tag">PT-3001</span>
+          <span><span class="ip-val" id="ip-pt3001" style="color:var(--cy)">—</span><span class="ip-unit">kPa</span></span>
+        </div>
+        <div class="ip-row">
+          <span class="ip-tag">PT-3002</span>
+          <span><span class="ip-val" id="ip-pt3002" style="color:var(--cy)">—</span><span class="ip-unit">kPa</span></span>
+        </div>
+        <div class="ip-row">
+          <span class="ip-tag">PT-3401</span>
+          <span><span class="ip-val" id="ip-pt3401" style="color:var(--cy)">—</span><span class="ip-unit">kPa</span></span>
+        </div>
+
+        <div class="ip-sep"></div>
+        <div class="ip-sec">Temperatura</div>
+        <div class="ip-row">
+          <span class="ip-tag">TT-3001</span>
+          <span><span class="ip-val" id="ip-tt3001" style="color:var(--yl)">—</span><span class="ip-unit">°C</span></span>
+        </div>
+        <div class="ip-row">
+          <span class="ip-tag">TT-3002</span>
+          <span><span class="ip-val" id="ip-tt3002" style="color:var(--yl)">—</span><span class="ip-unit">°C</span></span>
+        </div>
+        <div class="ip-row">
+          <span class="ip-tag">TT-3401</span>
+          <span><span class="ip-val" id="ip-tt3401" style="color:var(--yl)">—</span><span class="ip-unit">°C</span></span>
+        </div>
+
+        <div class="ip-sep"></div>
+        <div class="ip-sec">Vazão</div>
+        <div class="ip-row">
+          <span class="ip-tag">FC-3001</span>
+          <span><span class="ip-val" id="ip-fc3001" style="color:var(--gr)">—</span><span class="ip-unit">m³/h</span></span>
+        </div>
+        <div class="ip-row">
+          <span class="ip-tag">FT-3101</span>
+          <span><span class="ip-val" id="ip-ft3101" style="color:var(--mu)">—</span><span class="ip-unit">m³/h</span></span>
+        </div>
+        <div class="ip-row">
+          <span class="ip-tag">FT-3201</span>
+          <span><span class="ip-val" id="ip-ft3201" style="color:var(--mu)">—</span><span class="ip-unit">m³/h</span></span>
+        </div>
+        <div class="ip-row">
+          <span class="ip-tag">FT-3301</span>
+          <span><span class="ip-val" id="ip-ft3301" style="color:var(--mu)">—</span><span class="ip-unit">m³/h</span></span>
+        </div>
+      </div>
+
+      <svg id="pid-svg" viewBox="0 0 1400 740" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
     <div id="pid-ctrl">
       <div class="cg"><label>FCV-3102 · T-01</label>
-        <input type="range" id="fcv-01" min="0" max="100" value="33" step="1"
-          oninput="setFCV('01',this.value)" style="width:80px;accent-color:var(--or)">
-        <span id="fcv-01-lbl" style="font-size:10px;color:var(--cy);font-family:'Courier New',monospace;min-width:38px">33%</span>
+        <input type="number" id="fcv-01" class="fcv-inp" min="0" max="100" value="0" step="1"
+          onkeydown="if(event.key==='Enter'){setFCV('01',this.value);this.blur();}"
+          onblur="setFCV('01',this.value)">
+        <span style="font-size:10px;color:var(--mu)">%</span>
+        <span id="fcv-01-lbl" class="fcv-lbl">0 m³/h</span>
       </div>
       <div class="cg"><label>FCV-3202 · T-02</label>
-        <input type="range" id="fcv-02" min="0" max="100" value="33" step="1"
-          oninput="setFCV('02',this.value)" style="width:80px;accent-color:var(--or)">
-        <span id="fcv-02-lbl" style="font-size:10px;color:var(--cy);font-family:'Courier New',monospace;min-width:38px">33%</span>
+        <input type="number" id="fcv-02" class="fcv-inp" min="0" max="100" value="0" step="1"
+          onkeydown="if(event.key==='Enter'){setFCV('02',this.value);this.blur();}"
+          onblur="setFCV('02',this.value)">
+        <span style="font-size:10px;color:var(--mu)">%</span>
+        <span id="fcv-02-lbl" class="fcv-lbl">0 m³/h</span>
       </div>
       <div class="cg"><label>FCV-3302 · T-03</label>
-        <input type="range" id="fcv-03" min="0" max="100" value="33" step="1"
-          oninput="setFCV('03',this.value)" style="width:80px;accent-color:var(--or)">
-        <span id="fcv-03-lbl" style="font-size:10px;color:var(--cy);font-family:'Courier New',monospace;min-width:38px">33%</span>
+        <input type="number" id="fcv-03" class="fcv-inp" min="0" max="100" value="0" step="1"
+          onkeydown="if(event.key==='Enter'){setFCV('03',this.value);this.blur();}"
+          onblur="setFCV('03',this.value)">
+        <span style="font-size:10px;color:var(--mu)">%</span>
+        <span id="fcv-03-lbl" class="fcv-lbl">0 m³/h</span>
       </div>
       <span style="color:var(--bd)">│</span>
-      <div class="cg"><label>Provar ao Prover</label>
+      <div class="cg"><label>FCV-3401 · Prover</label>
+        <input type="number" id="fcv-3401" class="fcv-inp" min="0" max="100" value="0" step="1"
+          onkeydown="if(event.key==='Enter'){setFCV3401(this.value);this.blur();}"
+          onblur="setFCV3401(this.value)">
+        <span style="font-size:10px;color:var(--mu)">%</span>
+        <span id="fcv-3401-lbl" class="fcv-lbl">fechada</span>
+      </div>
+      <span style="color:var(--bd)">│</span>
+      <div class="cg"><label>Alinhar ao Prover</label>
         <button class="btn bbl bsm" onclick="alignToProver('01')" id="abt-01">⊙ Tramo 01</button>
         <button class="btn bbl bsm" onclick="alignToProver('02')" id="abt-02">⊙ Tramo 02</button>
         <button class="btn bbl bsm" onclick="alignToProver('03')" id="abt-03">⊙ Tramo 03</button>
@@ -346,6 +492,9 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
       <div class="cg"><label>Prova</label>
         <button class="btn bor bsm" onclick="startProving()" id="prova-btn" disabled>▶ Iniciar</button>
         <button class="btn brd bsm" onclick="abortProving()" id="abort-btn" disabled>■ Abortar</button>
+      </div>
+      <div class="cg"><label>Computador de Vazão</label>
+        <button class="btn bbl bsm" onclick="openKModal()">⚙ Curva K</button>
       </div>
     </div>
   </div>
@@ -510,6 +659,47 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
   </div>
 </div>
 
+<!-- ═══ SHUTDOWN OVERLAY ═══ -->
+<div id="shutdown-overlay">
+  <div class="sd-icon">⛔</div>
+  <div class="sd-title">EMERGENCY SHUTDOWN</div>
+  <div class="sd-reason" id="sd-reason">—</div>
+  <div class="sd-box">
+    <div class="sd-box-title">Causa Raiz</div>
+    <div class="sd-box-text" id="sd-cause">—</div>
+  </div>
+  <div class="sd-proc">
+    <div class="sd-proc-title">Procedimento Correto</div>
+    <div class="sd-proc-text" id="sd-procedure">—</div>
+  </div>
+  <button class="sd-restart" onclick="location.reload()">↺ Reiniciar Simulação</button>
+</div>
+
+<!-- ═══ FACEPLATE: FCV-3401 ═══ -->
+<div class="mover" id="modal-fcv3401">
+  <div class="mbox" style="min-width:300px">
+    <div class="mtitle">FCV-3401 — Controle de Vazão Prover</div>
+    <div style="text-align:center;margin:14px 0 18px">
+      <span style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:1px">Abertura atual</span><br>
+      <span id="fcv3401-cur" style="font-size:32px;font-family:'Courier New',monospace;color:var(--or);font-weight:700">0%</span>
+      <div style="margin:8px auto 0;width:180px;height:6px;background:#0b1820;border-radius:3px;border:1px solid #1e3050">
+        <div id="fcv3401-bar" style="height:100%;width:0%;background:var(--or);border-radius:3px;transition:width .3s"></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;justify-content:center">
+      <label style="font-size:11px;color:var(--cy)">Nova abertura:</label>
+      <input type="number" id="fcv3401-inp" class="fcv-inp" min="0" max="100" step="1"
+        style="width:64px;font-size:14px;text-align:center"
+        onkeydown="if(event.key==='Enter')confirmFCV3401()">
+      <span style="font-size:11px;color:var(--mu)">%</span>
+    </div>
+    <div class="mfoot">
+      <button class="btn bbl" onclick="closeFCV3401Modal()">Cancelar</button>
+      <button class="btn bor" onclick="confirmFCV3401()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ MODAL: Alinhamento ═══ -->
 <div class="mover" id="modal-align">
   <div class="mbox">
@@ -519,6 +709,45 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
     <div class="mfoot">
       <button class="btn bbl" onclick="closeAlignModal()">Cancelar</button>
       <button class="btn bor" onclick="confirmAlign()" id="confirm-align-btn">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Curva K-factor (Computador de Vazão) ═══ -->
+<div class="mover" id="modal-kcurve">
+  <div class="mbox-lg">
+    <div class="mtitle">⚙ Curva K-factor — Computador de Vazão</div>
+
+    <div class="kinfo">
+      Configure os pontos de calibração da <b>curva K-factor</b> de cada turbina.
+      Durante a prova, o sistema interpola o K para a <b>vazão instantânea do tramo</b>,
+      buscando os pontos dentro de <b>±10%</b> da vazão atual.
+      Frequência calculada automaticamente: <b>freq = K × Q / 3600</b> [Hz].
+    </div>
+
+    <!-- Abas dos tramos -->
+    <div class="ktabs">
+      <button class="ktab on" id="ktab-01" onclick="switchKTab('01')">Turbina T-01</button>
+      <button class="ktab"    id="ktab-02" onclick="switchKTab('02')">Turbina T-02</button>
+      <button class="ktab"    id="ktab-03" onclick="switchKTab('03')">Turbina T-03</button>
+    </div>
+
+    <!-- Tabela de pontos (renderizada por JS) -->
+    <div id="kcurve-table-wrap"></div>
+
+    <!-- Indicador de K ativo (vazão atual do tramo selecionado) -->
+    <div id="kcurve-live" style="font-size:10px;color:var(--mu);background:#050d18;
+      border:1px solid var(--bd);border-radius:3px;padding:5px 10px;margin-top:6px;">
+      —
+    </div>
+
+    <div class="mfoot" style="justify-content:space-between;align-items:center;">
+      <button class="btn bbl bsm" onclick="resetKCurve()"
+        style="font-size:10px;">↺ Restaurar Padrão</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn bbl" onclick="closeKModal()">Fechar</button>
+        <button class="btn bor" onclick="saveKCurve()">✓ Salvar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -588,7 +817,7 @@ const P_OP_NOM       = 750.0;   // kPa — pressão operacional nominal
 const SIM_DT         = 80;      // ms por tick
 const STAB_TICKS     = 25;
 const MESTRE_PASS    = 'fcmaster';
-const WARMUP_DUR     = 120;     // 2 min real
+const WARMUP_DUR     = 40;      // 40 s
 
 // ─── Supabase ───
 const SB_URL     = 'https://aygqljoobkjccipsqebi.supabase.co';
@@ -598,9 +827,35 @@ const PRESENCE_INTERVAL = 62; // ticks between presence syncs (~5 s)
 
 // Train definitions
 const TRAINS_DEF = {
-  '01': { id:'01', label:'Tramo 01', K:5024, nomQ:1200, qMin:400, qMax:1800 },
-  '02': { id:'02', label:'Tramo 02', K:5018, nomQ:1200, qMin:400, qMax:1800 },
-  '03': { id:'03', label:'Tramo 03', K:5031, nomQ:1200, qMin:400, qMax:1800 },
+  '01': { id:'01', label:'Tramo 01', K:5024, nomQ:1800, qMin:400, qMax:1800 },
+  '02': { id:'02', label:'Tramo 02', K:5018, nomQ:1800, qMin:400, qMax:1800 },
+  '03': { id:'03', label:'Tramo 03', K:5031, nomQ:1800, qMin:400, qMax:1800 },
+};
+
+// K-curve padrão por tramo (5 pontos: Vazão, K-factor, Frequência)
+// Frequência = K × Q / 3600  [Hz]
+const DEFAULT_KCURVE = {
+  '01': [
+    { q: 400,  k: 5028, freq: +(5028 *  400/3600).toFixed(2) },
+    { q: 700,  k: 5026, freq: +(5026 *  700/3600).toFixed(2) },
+    { q:1000,  k: 5024, freq: +(5024 * 1000/3600).toFixed(2) },
+    { q:1400,  k: 5022, freq: +(5022 * 1400/3600).toFixed(2) },
+    { q:1800,  k: 5019, freq: +(5019 * 1800/3600).toFixed(2) },
+  ],
+  '02': [
+    { q: 400,  k: 5022, freq: +(5022 *  400/3600).toFixed(2) },
+    { q: 700,  k: 5020, freq: +(5020 *  700/3600).toFixed(2) },
+    { q:1000,  k: 5018, freq: +(5018 * 1000/3600).toFixed(2) },
+    { q:1400,  k: 5016, freq: +(5016 * 1400/3600).toFixed(2) },
+    { q:1800,  k: 5013, freq: +(5013 * 1800/3600).toFixed(2) },
+  ],
+  '03': [
+    { q: 400,  k: 5035, freq: +(5035 *  400/3600).toFixed(2) },
+    { q: 700,  k: 5033, freq: +(5033 *  700/3600).toFixed(2) },
+    { q:1000,  k: 5031, freq: +(5031 * 1000/3600).toFixed(2) },
+    { q:1400,  k: 5029, freq: +(5029 * 1400/3600).toFixed(2) },
+    { q:1800,  k: 5026, freq: +(5026 * 1800/3600).toFixed(2) },
+  ],
 };
 
 // ═══════════════════════════════════════════════════
@@ -610,35 +865,46 @@ const QTOTAL = 5400; // m³/h — total skid throughput (constant)
 
 const S = {
   tick: 0,
+  paused: false,   // pause/play — congela simulação para apresentação
 
   warmup: {
     active: true,
     elapsed: 0,   // real-seconds
   },
+  postWarmup: 0,   // segundos desde o fim do warmup — controla as fases de T/P
 
-  proc: { Q:0, P:480, T:35 },
+  proc: { Q:QTOTAL, P:480, T:35, T3002:35, T3401:30, P3401:750, P3002:0 }, // P3002 = pressão após medidores (inicia em 0, rampa 180s pós-alinhamento)
+
+  // Acumuladores de ruído (Ornstein-Uhlenbeck — passeio aleatório com reversão à média)
+  // Simulam as micro-variações reais de instrumentação após o processo estabilizar
+  noise: { T:0, P:0, Q:0, P3002:0 },
 
   // Per-train flow [m³/h], updated each tick from FCVs
   trainFlow: { '01':0, '02':0, '03':0 },
 
   // FCV-3102/3202/3302 — outlet control valves (% opening, 0–100)
+  // Iniciam em 0%: operador precisa alinhar o tramo antes de provar
   fcv: {
-    '01': { pct:33.3, Q:0 },  // FCV-3102
-    '02': { pct:33.3, Q:0 },  // FCV-3202
-    '03': { pct:33.3, Q:0 },  // FCV-3302
+    '01':   { pct:0, Q:0 },  // FCV-3102
+    '02':   { pct:0, Q:0 },  // FCV-3202
+    '03':   { pct:0, Q:0 },  // FCV-3302
+    '3401': { pct:0 },       // FCV-3401 — controle do loop do prover
   },
 
   trains: {
-    '01': { ...TRAINS_DEF['01'], mfHist:[], lastMF:null, kEff:5024 },
-    '02': { ...TRAINS_DEF['02'], mfHist:[], lastMF:null, kEff:5018 },
-    '03': { ...TRAINS_DEF['03'], mfHist:[], lastMF:null, kEff:5031 },
+    '01': { ...TRAINS_DEF['01'], mfHist:[], lastMF:null, kEff:5024,
+            kCurve: DEFAULT_KCURVE['01'].map(p=>({...p})) },
+    '02': { ...TRAINS_DEF['02'], mfHist:[], lastMF:null, kEff:5018,
+            kCurve: DEFAULT_KCURVE['02'].map(p=>({...p})) },
+    '03': { ...TRAINS_DEF['03'], mfHist:[], lastMF:null, kEff:5031,
+            kCurve: DEFAULT_KCURVE['03'].map(p=>({...p})) },
   },
 
   valves: {
-    // Inlet isolation valves — normally open (maintenance only)
-    'MOV-3101':true, 'MOV-3201':true, 'MOV-3301':true,
+    // Inlet isolation valves — fechadas no início da sessão
+    'MOV-3101':false, 'MOV-3201':false, 'MOV-3301':false,
     // Prover loop valves
-    'MOV-3401':false,'MOV-3402':false,'MOV-3403':false,
+    'MOV-3401':false,'MOV-3402':false,
   },
   vtrans: {},   // valve -> transition animation flag
 
@@ -674,6 +940,13 @@ const S = {
   alarms: [],
   almSeq: 0,
 
+  // Controle de aprovação aleatória por ciclo de prova
+  provingMeta: {
+    cycleCount:          0,    // ciclos completados no grupo atual
+    approvalAttempt:     null, // null = não sorteado ainda
+    lastApprovalAttempt: 0,    // 0 = início de sessão (permite range 1–8)
+  },
+
   mestre: {
     active: false,
     faults: {
@@ -690,6 +963,15 @@ const S = {
     alarmsTotal: 0,
     decisionsLog: [],
     lastScore: null,
+  },
+
+  shutdown: {
+    active: false,
+    deadEndTick: 0,   // ticks with dead-end condition active
+  },
+
+  overpressure: {
+    hAlarmRaised: false,   // flag: alarme H já disparado neste evento
   },
 };
 
@@ -782,7 +1064,9 @@ function joinSession() {
   _simTimer = setInterval(tick, SIM_DT);
 
   raiseAlarm('SYS-000',
-    `Sessão iniciada — Operador: ${name} · Token: ${SESSION.token} · 3 tramos em operação paralela · aguardando estabilização (2 min)`, 'lo');
+    `Sessão iniciada — Operador: ${name} · Token: ${SESSION.token} · ` +
+    `Header pressurizado a ${QTOTAL} m³/h · FCVs dos tramos em 0% · ` +
+    `aguarde estabilização de T e P antes de alinhar o tramo ao prover`, 'lo');
 }
 
 /** Registra operador na planilha simulador_usuario via Apps Script */
@@ -867,10 +1151,10 @@ function handleMestreCommand(payload) {
         const id = payload.fcv.id;
         const pct = Math.max(0, Math.min(100, +payload.fcv.pct));
         S.fcv[id].pct = pct;
-        const slider = el('fcv-' + id);
-        const lbl    = el('fcv-' + id + '-lbl');
-        if (slider) slider.value = pct;
-        if (lbl)    lbl.textContent = Math.round(pct) + '%';
+        const inp = el('fcv-' + id);
+        const lbl = el('fcv-' + id + '-lbl');
+        if (inp) inp.value = pct;
+        if (lbl) lbl.textContent = Math.round(pct * QTOTAL / 100) + ' m³/h';
         computeFlows();
         showMestreMsg(`[MESTRE] FCV-${id} → ${Math.round(pct)}%`);
       }
@@ -976,29 +1260,59 @@ function closeValve(id, cb) {
 // ═══════════════════════════════════════════════════
 //  FCV CONTROL
 // ═══════════════════════════════════════════════════
+function setFCV3401(pct) {
+  const v = Math.max(0, Math.min(100, +pct || 0));
+  S.fcv['3401'].pct = v;
+  const inp = el('fcv-3401');
+  if (inp && document.activeElement !== inp) inp.value = v;
+  const lbl = el('fcv-3401-lbl');
+  if (lbl) lbl.textContent = v > 1 ? v + '%' : 'fechada';
+  const bar = el('fcv3401-bar');
+  if (bar) bar.style.width = v + '%';
+  const cur = el('fcv3401-cur');
+  if (cur) cur.textContent = Math.round(v) + '%';
+}
+
+function openFCV3401Modal() {
+  const v = Math.round(S.fcv['3401'].pct);
+  el('fcv3401-cur').textContent = v + '%';
+  el('fcv3401-bar').style.width = v + '%';
+  el('fcv3401-inp').value = v;
+  el('modal-fcv3401').classList.add('on');
+  setTimeout(() => el('fcv3401-inp').select(), 60);
+}
+
+function closeFCV3401Modal() {
+  el('modal-fcv3401').classList.remove('on');
+}
+
+function confirmFCV3401() {
+  const v = Math.max(0, Math.min(100, +el('fcv3401-inp').value || 0));
+  setFCV3401(v);
+  closeFCV3401Modal();
+}
+
 function setFCV(id, pct) {
-  S.fcv[id].pct = Math.max(0, Math.min(100, +pct));
+  const v = Math.max(0, Math.min(100, +pct || 0));
+  S.fcv[id].pct = v;
+  // Sincroniza input (caso chamado pelo mestre via broadcast)
+  const inp = el(`fcv-${id}`);
+  if (inp && document.activeElement !== inp) inp.value = v;
+  // Label: fluxo nominal correspondente à abertura
   const lbl = el(`fcv-${id}-lbl`);
-  if (lbl) lbl.textContent = Math.round(S.fcv[id].pct) + '%';
+  if (lbl) lbl.textContent = Math.round(v * QTOTAL / 100) + ' m³/h';
   computeFlows();
 }
 
-// Compute per-train flow based on FCV openings (proportional, sum = QTOTAL)
+// Compute per-train flow: FCV% é direto — 33% = 33% do QTOTAL = 1782 m³/h
+// O somatório das FCVs deve ser ~100% para conservar a vazão total do header.
 function computeFlows() {
-  const sum = S.fcv['01'].pct + S.fcv['02'].pct + S.fcv['03'].pct;
-  if (sum <= 0) {
-    ['01','02','03'].forEach(id=>{ S.fcv[id].Q=0; S.trainFlow[id]=0; });
-    S.proc.Q = 0;
-    return;
-  }
-  let total = 0;
   ['01','02','03'].forEach(id=>{
-    const Q = (S.fcv[id].pct / sum) * QTOTAL;
-    S.fcv[id].Q = Q;
+    const Q = (S.fcv[id].pct / 100) * QTOTAL;
+    S.fcv[id].Q    = Q;
     S.trainFlow[id] = Q;
-    total += Q;
   });
-  S.proc.Q = total;
+  // Header sempre pressurizado a QTOTAL (noise aplicado no tick)
 }
 
 // ═══════════════════════════════════════════════════
@@ -1013,14 +1327,14 @@ function alignToProver(id) {
   if (S.prover.phase !== 'idle' && S.prover.phase !== 'done') {
     warnTxt += (warnTxt?'\n':'') + '⚠ Prova em andamento — será abortada antes do realinhamento.';
   }
-  const Qtr = Math.round(S.fcv[id].Q);
+  const Qtr = Math.round(S.trainFlow[id]);
   _pendingAlign = id;
   el('align-title').textContent = `Alinhar Tramo ${id} ao Prover`;
   el('align-body').innerHTML =
     `<b>Os 3 tramos continuarão em operação.</b><br>` +
-    `O loop do prover (MOV-3401/3402/3403) será conectado ao Tramo ${id}.<br><br>` +
+    `O loop do prover (MOV-3401 → MOV-3402) será conectado ao Tramo ${id}.<br><br>` +
     `Tramo ${id} — Vazão atual via FCV-3${id}02: <b>${Qtr} m³/h</b><br>` +
-    `Sequência: MOV-3401 → MOV-3403 (preenchimento lento) → MOV-3402 (prova)`;
+    `Sequência correta: MOV-3401 (entrada) → MOV-3402 (saída) → Iniciar Prova`;
   if (warnTxt) {
     el('align-warn').textContent = warnTxt;
     el('align-warn').style.color = 'var(--yl)';
@@ -1043,7 +1357,7 @@ function confirmAlign() {
   if (S.prover.phase !== 'idle' && S.prover.phase !== 'done') abortProving();
   // Disconnect previous prover connection if any
   if (S.provingTrain && S.provingTrain !== id) {
-    closeValve('MOV-3401'); closeValve('MOV-3402'); closeValve('MOV-3403');
+    closeValve('MOV-3401'); closeValve('MOV-3402');
   }
   S.provingTrain = id;
   S.session.decisionsLog.push({ ts:new Date().toISOString(), action:`ALIGN_PROVER_T${id}` });
@@ -1052,7 +1366,9 @@ function confirmAlign() {
 
 function updatePIDControls() {
   const hasProver = !!S.provingTrain;
-  const stable = !S.warmup.active && S.proc.T >= 58 && S.proc.P >= 680;
+  const Qtr  = S.provingTrain ? S.trainFlow[S.provingTrain] : 0;
+  const qMin = S.provingTrain ? S.trains[S.provingTrain].qMin : 400;
+  const stable = !S.warmup.active && S.proc.T >= 58 && S.proc.P >= 680 && Qtr >= qMin;
   const provingIdle = S.prover.phase === 'idle' || S.prover.phase === 'done';
   el('prova-btn').disabled = !(hasProver && stable && provingIdle);
   el('abort-btn').disabled = provingIdle;
@@ -1078,6 +1394,13 @@ function setAppMode(mode) {
   el('mode-aprop').style.flex  = '1';
 }
 
+function drawApprovalAttempt() {
+  const high = S.provingMeta.lastApprovalAttempt >= 6;
+  let n;
+  do { n = Math.floor(Math.random() * 8) + 1; } while (high && n >= 6);
+  return n;
+}
+
 function startProving() {
   if (!S.provingTrain) {
     raiseAlarm('PRV-000','Prova bloqueada: nenhum tramo alinhado ao prover','md'); return;
@@ -1095,6 +1418,14 @@ function startProving() {
   const mode = S.prover.appMode;
   const lim  = mode === 'fiscal' ? REPEAT_FISCAL : REPEAT_APROP;
 
+  // Guarda de vazão mínima — impede prova com FCV fechado (prover travaria em 'running')
+  if (Qtr < tr.qMin) {
+    raiseAlarm('PRV-006',
+      `Prova bloqueada: Tramo ${id} com vazão insuficiente — ${Math.round(Qtr)} m³/h < ${tr.qMin} m³/h. Abra o FCV-3${id}02 antes de iniciar a prova.`,
+      'hi');
+    return;
+  }
+
   // REQ-CP-010 — Alertas de condição (não bloqueiam, apenas alertam)
   const Tdev = Math.abs(S.proc.T - T_OP_NOM);
   const Pdev = Math.abs(S.proc.P - P_OP_NOM) / P_OP_NOM;
@@ -1105,12 +1436,14 @@ function startProving() {
     raiseAlarm('PRV-004',
       `REQ-CP-010: Pressão ${Math.round(S.proc.P)} kPa fora de ±10% de ${P_OP_NOM} kPa — condição subótima`,'md');
 
-  // REQ-CP-011 — Q referência
+  // REQ-CP-011 — Verifica estabilidade de vazão em relação ao ponto operacional nominal
+  // Nota: a validação das corridas usa QrefProving ± 10% (vazão no início da prova),
+  // não nomQ. Este alarme é informativo — a prova é válida em qualquer vazão estável.
   const Qnom = tr.nomQ;
   const Qdev = Math.abs(Qtr - Qnom) / Qnom;
   if (Qdev > Q_TOL_PROVING)
     raiseAlarm('PRV-005',
-      `REQ-CP-011: Vazão ${Math.round(Qtr)} m³/h fora de ±10% do nominal ${Qnom} m³/h — corridas poderão ser invalidadas`,'md');
+      `REQ-CP-011: Vazão ${Math.round(Qtr)} m³/h fora de ±10% do ponto nominal ${Qnom} m³/h — prova prosseguirá com referência em ${Math.round(Qtr)} m³/h`,'md');
 
   S.prover = {
     phase: 'startup', startupTick:0, stabTick:0, runIdx:0,
@@ -1126,14 +1459,21 @@ function startProving() {
     runFaultFlags: [],
   };
 
+  // Sorteio de approval_attempt (com proteção contra ciclos longos consecutivos)
+  const meta = S.provingMeta;
+  if (meta.approvalAttempt === null) {
+    meta.approvalAttempt = drawApprovalAttempt();
+  }
+  meta.cycleCount++;
+
   S.session.decisionsLog.push({
     ts: new Date().toISOString(),
-    action: `PROVE_T${id}_MODE:${mode.toUpperCase()}`
+    action: `PROVE_T${id}_MODE:${mode.toUpperCase()}_CYCLE:${meta.cycleCount}/${meta.approvalAttempt}`
   });
 
   // Abre válvulas do prover
   openValve('MOV-3401', ()=>{
-    openValve('MOV-3403', ()=>{
+    openValve('MOV-3402', ()=>{
       S.prover.phase = 'stabilize';
     });
   });
@@ -1146,7 +1486,6 @@ function abortProving() {
   S.prover.phase = 'idle';
   closeValve('MOV-3401');
   closeValve('MOV-3402');
-  closeValve('MOV-3403');
   S.session.decisionsLog.push({ ts:new Date().toISOString(), action:'PROVE_ABORT' });
   raiseAlarm('PRV-099','Sequência de prova abortada pelo operador','md');
   updatePIDControls();
@@ -1160,8 +1499,10 @@ function tickProver() {
   const tr     = S.trains[S.provingTrain];
   const faults = S.mestre.faults;
 
-  // K efetivo com deriva
-  let Keff = tr.kEff;
+  // K efetivo: interpolado da curva K-factor para a vazão atual do tramo
+  // (simula o computador de vazão selecionando o K pelo ponto de operação)
+  const Qforinterp = S.trainFlow[S.provingTrain] || tr.nomQ;
+  let Keff = getKforQ(S.provingTrain, Qforinterp);
   if (faults.kPos) Keff *= 1.005;
   if (faults.kNeg) Keff *= 0.995;
 
@@ -1176,12 +1517,20 @@ function tickProver() {
   }
   const Qm3s = Qeff / 3600;
 
-  // Acumulação de pulsos
-  const dN = Keff * Qm3s * (SIM_DT / 1000);
+  // Fator de velocidade: faz cada corrida durar 20 s em 400 m³/h e 2 s em 1800 m³/h
+  // Não afeta o MF — o run termina sempre com Naccum ≈ Keff × BASE_VOL,
+  // portanto Vmed ≈ BASE_VOL e MF = Vref/Vmed = CT×CP independente da velocidade.
+  const _Qsp = Math.max(400, Math.min(1800, Qeff > 0 ? Qeff : 400));
+  const _tTarget  = 20 + (2 - 20) * (_Qsp - 400) / (1800 - 400);
+  const _tNatural = Qeff > 0 ? BASE_VOL * 3600 / Qeff : _tTarget;
+  const provSpeed = _tNatural / _tTarget;
+
+  // Acumulação de pulsos (escalada)
+  const dN = Keff * Qm3s * (SIM_DT / 1000) * provSpeed;
   pv.N += dN;
 
-  // Animação do pistão
-  const pistonSpeed = Math.max(Qm3s, 0.0001) / BASE_VOL;
+  // Animação do pistão (escalada — 1 stroke completo por corrida)
+  const pistonSpeed = Math.max(Qm3s, 0.0001) / BASE_VOL * provSpeed;
   pv.pistonPos += pistonSpeed * (SIM_DT / 1000) * pv.pistonDir;
   if (pv.pistonPos >= 1) { pv.pistonPos = 1; pv.pistonDir = -1; }
   if (pv.pistonPos <= 0) { pv.pistonPos = 0; pv.pistonDir = 1; }
@@ -1190,7 +1539,6 @@ function tickProver() {
   if (pv.phase === 'startup') {
     pv.startupTick++;
     if (pv.startupTick >= 20) {
-      closeValve('MOV-3403', () => openValve('MOV-3402'));
       pv.phase = 'stabilize';
     }
   }
@@ -1369,16 +1717,49 @@ function finishProving() {
     pass = false;
   }
 
+  // ── Lógica de aprovação controlada (approval_attempt) ──
+  const meta = S.provingMeta;
+  if (enough) {
+    const shouldFail = meta.cycleCount < meta.approvalAttempt;
+    const shouldPass = meta.cycleCount >= meta.approvalAttempt;
+
+    if (shouldFail && pass) {
+      // Forçar reprovação: injetar dispersão realista (ΔMF ≈ 2.5× limite)
+      const spread = repeatLim * 2.5;
+      runsUsed.forEach((r, i) => { r.MF += (i % 2 === 0 ? 1 : -1) * spread / 2; });
+      const fMFs = runsUsed.map(r => r.MF);
+      MFmin = Math.min(...fMFs); MFmax = Math.max(...fMFs);
+      deltaMF = MFmax - MFmin;
+      MFfinal = fMFs.reduce((a, b) => a + b, 0) / fMFs.length;
+      pass = false;
+    }
+
+    if (shouldPass && !pass) {
+      // Forçar aprovação: comprimir dispersão para ΔMF ≈ 0.4× limite
+      const tight = repeatLim * 0.4;
+      const mid = MFfinal ?? runsUsed.map(r => r.MF).reduce((a, b) => a + b, 0) / runsUsed.length;
+      runsUsed.forEach((r, i) => { r.MF = mid + (i % 2 === 0 ? 1 : -1) * tight / 2; });
+      MFmin = mid - tight / 2; MFmax = mid + tight / 2;
+      deltaMF = tight; MFfinal = mid;
+      pass = true;
+    }
+  }
+
+  // Atualizar meta após resultado
+  if (pass) {
+    meta.lastApprovalAttempt = meta.approvalAttempt;
+    meta.approvalAttempt     = drawApprovalAttempt();
+    meta.cycleCount          = 0;
+  }
+
   // Calcular desvio de cada corrida em relação à MF provisória (REQ-CP-012)
   if (MFfinal) {
-    allRuns.forEach(r => {
-      r.devMean = r.MF - MFfinal;
-    });
+    allRuns.forEach(r => { r.devMean = r.MF - MFfinal; });
   }
 
   // Marcar pass/fail por corrida
   allRuns.forEach(r => {
-    if (!r.valid)             { r.pass = false; return; }
+    if (!r.valid)              { r.pass = false; return; }
     if (!runsUsed.includes(r)) { r.pass = null;  return; } // válida mas não usada (6ª extra)
     r.pass = pass;
   });
@@ -1454,6 +1835,36 @@ function finishProving() {
 // ═══════════════════════════════════════════════════
 //  MAIN SIMULATION TICK
 // ═══════════════════════════════════════════════════
+function toggleSimPause() {
+  S.paused = !S.paused;
+  const btn  = el('pause-btn');
+  const badge = el('pause-badge');
+  if (S.paused) {
+    btn.textContent  = '▶ Continuar';
+    btn.style.borderColor = 'var(--gr)';
+    btn.style.color       = 'var(--gr)';
+    badge.style.display   = 'inline-block';
+  } else {
+    btn.textContent  = '⏸ Pausar';
+    btn.style.borderColor = 'var(--yl)';
+    btn.style.color       = 'var(--yl)';
+    badge.style.display   = 'none';
+  }
+}
+
+function triggerShutdown(reason, cause, procedure) {
+  if (S.shutdown.active) return;
+  S.shutdown.active = true;
+  clearInterval(_simTimer);
+  _simTimer = null;
+  raiseAlarm('ESD-001', `SHUTDOWN: ${reason}`, 'hi');
+  const ov = el('shutdown-overlay');
+  el('sd-reason').textContent  = reason;
+  el('sd-cause').textContent   = cause;
+  el('sd-procedure').textContent = procedure;
+  ov.style.display = 'flex';
+}
+
 function tick() {
   S.tick++;
   const dt = SIM_DT / 1000; // seconds
@@ -1461,38 +1872,116 @@ function tick() {
   // ── Supabase presence sync every ~5 s ──
   if (S.tick % PRESENCE_INTERVAL === 0) syncPresence();
 
-  // ── Warmup ramp ──
+  // ── Pausado: só renderiza, não avança a simulação ──
+  if (S.paused) {
+    renderPID();
+    renderProvingPane();
+    return;
+  }
+
+  // ── Warmup ramp — só T e P; Q (header) está sempre em QTOTAL ──
   if (S.warmup.active) {
     S.warmup.elapsed += dt;
     const p = Math.min(S.warmup.elapsed / WARMUP_DUR, 1);
     S.proc.T = 35 + (65-35)*p;
     S.proc.P = 480 + (750-480)*p;
-    // Flows ramp up proportionally with warmup progress
-    ['01','02','03'].forEach(id=>{ S.trainFlow[id] = S.fcv[id].Q * p; });
-    S.proc.Q = QTOTAL * p;
+    S.proc.Q = QTOTAL; // header sempre pressurizado — FCVs dos tramos em 0%
     if (p >= 1) {
       S.warmup.active = false;
       el('wbadge').className = 'wbadge ok';
       el('wbadge').textContent = '✓ ESTÁVEL';
-      raiseAlarm('SYS-001','Sistema estabilizado — 5.400 m³/h nos 3 tramos · pronto para prova','lo');
+      raiseAlarm('SYS-001',
+        'Condições de processo atingidas — 5.400 m³/h no header · T e P nominais · ' +
+        'FCVs dos tramos em 0% — abra o FCV do tramo desejado e alinhe ao prover para iniciar a prova','lo');
       computeFlows();
       updatePIDControls();
     }
   }
 
-  // ── Fault injections on process ──
+  // ── Fault injections + process noise ──
   const F = S.mestre.faults;
   if (!S.warmup.active) {
-    if (F.highT) S.proc.T = Math.min(S.proc.T + 0.02, 82);
-    if (F.lowT)  S.proc.T = Math.max(S.proc.T - 0.02, 42);
-    if (!F.highT && !F.lowT) {
-      // Natural drift toward target
-      S.proc.T += (65 - S.proc.T) * 0.01;
+    S.postWarmup += dt;
+
+    // Ruído de vazão (mantido — Ornstein-Uhlenbeck)
+    S.noise.Q += (Math.random() - 0.5) * 12.0;  S.noise.Q *= 0.968;
+
+    // Fases pós-aquecimento:
+    //  Fase 1 (0–5 min)   : variação aleatória buscando setpoint
+    //  Fase 2 T (5–6 min) : rampa gradual ao setpoint (1 min)
+    //  Fase 2 P (5–7 min) : rampa gradual ao setpoint (2 min)
+    //  Fase 3            : oscilação lenta dentro de banda estreita
+    const t = S.postWarmup;
+    const PHASE1_END = 300;      // 5 min
+    const T_PHASE2_END = 360;    // +1 min
+    const P_PHASE2_END = 420;    // +2 min
+
+    // ── Temperatura ──
+    if (F.highT)      S.proc.T = Math.min(S.proc.T + 0.02, 82);
+    else if (F.lowT)  S.proc.T = Math.max(S.proc.T - 0.02, 42);
+    else if (t < PHASE1_END) {
+      // Fase 1 — ruído OU em torno do setpoint, busca lenta
+      S.noise.T += (Math.random() - 0.5) * 0.12;  S.noise.T *= 0.99993;
+      S.noise.T  = Math.max(-3, Math.min(3, S.noise.T));
+      S.proc.T += (65 - S.proc.T) * 0.0008;
+      S.proc.T = 65 + S.noise.T + (S.proc.T - 65) * 0.5;
+    } else if (t < T_PHASE2_END) {
+      // Fase 2 — rampa suave ao setpoint (1 min) com ruído decrescente
+      const k = (t - PHASE1_END) / (T_PHASE2_END - PHASE1_END); // 0→1
+      S.noise.T *= 0.985; // decai
+      S.proc.T += (65 - S.proc.T) * (0.005 + 0.04 * k);
+      S.proc.T += S.noise.T * (1 - k) * 0.05;
+    } else {
+      // Fase 3 — banda 64,80–65,17 °C (mid 64,985, ±0,185), oscilação lenta
+      S.noise.T += (Math.random() - 0.5) * 0.012;  S.noise.T *= 0.992;
+      S.noise.T  = Math.max(-0.185, Math.min(0.185, S.noise.T));
+      const Tmid = 64.985;
+      S.proc.T += (Tmid + S.noise.T - S.proc.T) * 0.06;
+      S.proc.T = Math.max(64.80, Math.min(65.17, S.proc.T));
     }
-    if (F.highP) S.proc.P = Math.min(S.proc.P + 0.5, 1400);
-    if (F.lowP)  S.proc.P = Math.max(S.proc.P - 0.5, 490);
-    if (!F.highP && !F.lowP) {
-      S.proc.P += (750 - S.proc.P) * 0.005;
+
+    // TT-3002 (saída) — sempre 0,5–1°C abaixo de TT-3001, filtro de primeira ordem
+    const T3002_target = S.proc.T - 0.7;
+    S.proc.T3002 += (T3002_target - S.proc.T3002) * 0.0008;
+
+    // TT-3401 (prover) — defasa 5–10 min no início, depois normaliza próximo de TT-3001
+    const T3401_target = S.proc.T - 0.2;
+    S.proc.T3401 += (T3401_target - S.proc.T3401) * 0.00018;
+
+    // ── Pressão ──
+    if (F.highP)      S.proc.P = Math.min(S.proc.P + 0.5, 1400);
+    else if (F.lowP)  S.proc.P = Math.max(S.proc.P - 0.5, 490);
+    else if (t < PHASE1_END) {
+      // Fase 1 — ruído OU + busca lenta ao setpoint
+      S.noise.P += (Math.random() - 0.5) * 1.00;  S.noise.P *= 0.978;
+      S.proc.P += (750 - S.proc.P) * 0.004;
+      S.proc.P = 750 + S.noise.P + (S.proc.P - 750) * 0.5;
+    } else if (t < P_PHASE2_END) {
+      // Fase 2 — rampa de 2 min ao setpoint
+      const k = (t - PHASE1_END) / (P_PHASE2_END - PHASE1_END); // 0→1
+      S.noise.P *= 0.985;
+      S.proc.P += (750 - S.proc.P) * (0.01 + 0.05 * k);
+      S.proc.P += S.noise.P * (1 - k) * 0.1;
+    } else {
+      // Fase 3 — banda 735–768 kPa (mid 751,5, ±16,5), variação lenta
+      S.noise.P += (Math.random() - 0.5) * 0.6;  S.noise.P *= 0.99;
+      S.noise.P  = Math.max(-16.5, Math.min(16.5, S.noise.P));
+      const Pmid = 751.5;
+      S.proc.P += (Pmid + S.noise.P - S.proc.P) * 0.04;
+      S.proc.P = Math.max(735, Math.min(768, S.proc.P));
+    }
+
+    // ── PT-3002: pressão pós-medidores — inicia em 0, rampa 180 s após alinhamento ──
+    // tau=60s → alcança ~95% do alvo em 180s; após 180s rastreia P com offset leve + ruído
+    {
+      const RAMP_DONE = S.postWarmup >= 180;
+      const tau   = RAMP_DONE ? 5 : 60;                       // s — rápido após rampa
+      const alpha = 1 - Math.exp(-dt / tau);
+      S.noise.P3002 += (Math.random() - 0.5) * 0.5;
+      S.noise.P3002 *= 0.988;
+      S.noise.P3002  = Math.max(-5, Math.min(5, S.noise.P3002));
+      const P3002_target = S.proc.P - 10 + S.noise.P3002;    // ligeiramente abaixo de PT-3001
+      S.proc.P3002 += (P3002_target - S.proc.P3002) * alpha;
     }
   }
 
@@ -1506,13 +1995,13 @@ function tick() {
   if (F.lowQ && S.provingTrain) {
     baseFcv[S.provingTrain] = Math.max(5, baseFcv[S.provingTrain] * 0.45);
   }
-  const sum = baseFcv['01'] + baseFcv['02'] + baseFcv['03'];
-  if (sum > 0) {
-    ['01','02','03'].forEach(id=>{
-      S.trainFlow[id] = (baseFcv[id] / sum) * QTOTAL;
-    });
-  }
-  S.proc.Q = S.trainFlow['01'] + S.trainFlow['02'] + S.trainFlow['03'];
+  // Q header — flutua em torno de QTOTAL com ruído realista (±20 m³/h aprox.)
+  S.proc.Q = QTOTAL + (S.warmup.active ? 0 : S.noise.Q);
+
+  // Train flows: FCV% direto × header Q atual (inclui noise)
+  ['01','02','03'].forEach(id=>{
+    S.trainFlow[id] = (baseFcv[id] / 100) * S.proc.Q;
+  });
 
   // ── Alarm checks ──
   if (!S.warmup.active) {
@@ -1527,6 +2016,84 @@ function tick() {
       if (q > 1800) raiseAlarm('FT-3'+id+'01','Tramo '+id+' — Vazão acima do limite: '+Math.round(q)+' m³/h','hi');
       if (q > 0 && q < 300) raiseAlarm('FT-3'+id+'01','Tramo '+id+' — Vazão muito baixa: '+Math.round(q)+' m³/h','md');
     });
+  }
+
+  // ── Lógica de sobrepressão no loop do prover ──
+  // Ativa quando MOV-3401 aberta em fase idle/done (alinhamento manual)
+  const _fcv3401 = S.fcv['3401'].pct;
+  const _provIdle = S.prover.phase === 'idle' || S.prover.phase === 'done';
+  if (!S.warmup.active && !S.shutdown.active && S.valves['MOV-3401'] && _provIdle) {
+    if (!S.valves['MOV-3402']) {
+      // Cenário 1: volume morto completo → P sobe rápido (~20 s para 1500 kPa)
+      S.proc.P = Math.min(S.proc.P + 7.5, 1600);
+      S.shutdown.deadEndTick++;
+    } else if (_fcv3401 < 20) {
+      // Cenário 2: MOV-3402 aberta mas FCV-3401 insuficiente → P sobe devagar (~100 s)
+      S.proc.P = Math.min(S.proc.P + 1.5, 1600);
+      S.shutdown.deadEndTick++;
+    } else {
+      // Cenário 3: MOV-3402 aberta + FCV-3401 ≥ 20% → normalização em ~60 s
+      S.proc.P += (750 - S.proc.P) * 0.015;
+      S.shutdown.deadEndTick = 0;
+    }
+    if (S.proc.P >= 1500) {
+      const cause = !S.valves['MOV-3402']
+        ? 'MOV-3401 aberta com MOV-3402 fechada criou volume morto pressurizado no loop do prover.'
+        : `MOV-3402 aberta mas FCV-3401 em ${Math.round(_fcv3401)}% (< 20%) — vazão insuficiente para alívio de pressão.`;
+      triggerShutdown('SOBREPRESSÃO PT-3001 — 1500 kPa atingido', cause,
+        'Sequência correta: MOV-3401 → MOV-3402 → FCV-3401 > 20% → aguardar normalização → Iniciar Prova.');
+    }
+  } else if (!S.valves['MOV-3401']) {
+    S.shutdown.deadEndTick = 0;
+  }
+
+  // ── Lógica de sobrepressão PT-3401 (independente do dead-end do prover) ──
+  // Trigger: qualquer tramo com MOV aberta E FCV > 1% sem alívio adequado no loop
+  const _opTrigger = (!S.warmup.active && !S.shutdown.active) && (
+    (S.valves['MOV-3101'] && S.fcv['01'].pct > 1) ||
+    (S.valves['MOV-3201'] && S.fcv['02'].pct > 1) ||
+    (S.valves['MOV-3301'] && S.fcv['03'].pct > 1)
+  );
+  const _opRecovery = S.valves['MOV-3402'] && S.fcv['3401'].pct > 20;
+  const _opInsuf    = S.valves['MOV-3402'] && S.fcv['3401'].pct > 1 && S.fcv['3401'].pct <= 20;
+
+  if (_opTrigger) {
+    if (_opRecovery) {
+      // Alívio adequado — normaliza P3401 em ~60 s
+      S.proc.P3401 += (750 - S.proc.P3401) * 0.0083;
+    } else if (_opInsuf) {
+      // Alívio insuficiente — sobe devagar (~100 s para 1500 kPa)
+      S.proc.P3401 = Math.min(S.proc.P3401 + 3.75, 1600);
+    } else {
+      // Sem alívio — sobe rápido (~20 s para 1500 kPa)
+      S.proc.P3401 = Math.min(S.proc.P3401 + 18.75, 1600);
+    }
+    // Alarme H — 1300 kPa
+    if (S.proc.P3401 >= 1300 && !S.overpressure.hAlarmRaised) {
+      S.overpressure.hAlarmRaised = true;
+      raiseAlarm('PT-3401', 'ALARME H: PRESSÃO ALTA NO SISTEMA — ' + Math.round(S.proc.P3401) + ' kPa', 'hi');
+    }
+    // Alarme HH — 1500 kPa → shutdown
+    if (S.proc.P3401 >= 1500) {
+      const cause = _opInsuf
+        ? `MOV-3402 aberta mas FCV-3401 em ${Math.round(S.fcv['3401'].pct)}% (< 20%) — alívio insuficiente no loop do prover.`
+        : 'Fluxo de processo ativo sem caminho de alívio: MOV-3402 fechada enquanto tramos estavam em operação.';
+      triggerShutdown(
+        'SOBREPRESSÃO PT-3401 — 1500 kPa atingido',
+        cause,
+        'Sequência correta: abrir MOV-3402 → abrir FCV-3401 > 20% → aguardar normalização → operar os tramos.'
+      );
+    }
+  } else {
+    // Trigger desapareceu — normaliza gradualmente P3401
+    if (S.proc.P3401 > 755) {
+      const wasHigh = S.proc.P3401 >= 1300;
+      S.proc.P3401 += (750 - S.proc.P3401) * 0.02;
+      if (wasHigh && S.proc.P3401 < 1300) {
+        S.session.decisionsLog.push({ ts: new Date().toISOString(), action: 'OVERPRESSURE_PT3401_NORMALIZED' });
+      }
+    }
+    S.overpressure.hAlarmRaised = false;
   }
 
   // ── Prover engine ──
@@ -1598,6 +2165,61 @@ function updateStatusBar() {
     const qEl = el(`sb-q${id}`); if (qEl) { qEl.textContent = q; qEl.style.color = q>1800?'var(--rd)':q>0?'var(--cy)':'var(--mu)'; }
     const fEl = el(`sb-fcv${id}`); if (fEl) { fEl.textContent = `(${fcvPct}%)`; fEl.style.color = fcvPct>0?'var(--mu)':'var(--bd)'; }
   });
+
+  // ── Painel lateral de instrumentação ──
+  updateInstrPanel();
+}
+
+function updateInstrPanel() {
+  const T  = S.proc.T;
+  const P  = S.proc.P;
+  const Q  = S.proc.Q;
+  const wu = S.warmup.active;
+
+  // Leituras com pequenos offsets realistas (quedas de pressão, etc.)
+  // PT-3001: referência de entrada  |  PT-3002: pressão pós-medidores (state S.proc.P3002)
+  // PT-3401: pressão independente do loop do prover (state S.proc.P3401)
+  const pt3001 = P;
+  const pt3002 = S.proc.P3002;
+  const pt3401 = S.proc.P3401;
+
+  // TT: temperaturas muito próximas — sem offset significativo em medição de custódia
+  const tt3001 = T;
+  const tt3002 = S.proc.T3002;
+  const tt3401 = S.proc.T3401;
+
+  // Cor de fundo dinâmica: amarelo no warmup, vermelho fora de faixa
+  const Tcol  = wu ? 'var(--yl)' : (T < 55 || T > 75 ? 'var(--rd)' : 'var(--yl)');
+  const Pcol  = wu ? 'var(--cy)' : (P < 600 || P > 950 ? 'var(--rd)' : 'var(--cy)');
+  const P3col = wu ? 'var(--cy)' : (pt3401 >= 1300 ? 'var(--rd)' : pt3401 > 950 ? 'var(--yl)' : 'var(--cy)');
+
+  function setIP(id, val, decimals) {
+    const el_ = el(id); if (el_) el_.textContent = val.toFixed(decimals);
+  }
+
+  // Pressões
+  setIP('ip-pt3001', pt3001, 0); el('ip-pt3001').style.color = Pcol;
+  setIP('ip-pt3002', pt3002, 0); el('ip-pt3002').style.color = Pcol;
+  setIP('ip-pt3401', pt3401, 0); el('ip-pt3401').style.color = P3col;
+
+  // Temperaturas
+  setIP('ip-tt3001', tt3001, 2); el('ip-tt3001').style.color = Tcol;
+  setIP('ip-tt3002', tt3002, 2); el('ip-tt3002').style.color = Tcol;
+  setIP('ip-tt3401', tt3401, 2); el('ip-tt3401').style.color = Tcol;
+
+  // Vazões
+  const fc3001 = el('ip-fc3001');
+  if (fc3001) {
+    fc3001.textContent = Math.round(Q);
+    fc3001.style.color = wu ? 'var(--mu)' : 'var(--gr)';
+  }
+  [['ft3101','01'],['ft3201','02'],['ft3301','03']].forEach(([eid, id]) => {
+    const e = el('ip-' + eid);
+    if (!e) return;
+    const q = S.trainFlow[id];
+    e.textContent = Math.round(q);
+    e.style.color = q > 100 ? 'var(--cy)' : 'var(--mu)';
+  });
 }
 
 // ═══════════════════════════════════════════════════
@@ -1607,7 +2229,14 @@ function renderProvingPane() {
   const pv = S.prover;
   const tr = S.provingTrain ? S.trains[S.provingTrain] : null;
   el('pv-tramo').textContent = S.provingTrain ? `Tramo ${S.provingTrain}` : '—';
-  el('pv-k').textContent = tr ? tr.kEff.toLocaleString('pt-BR') : '—';
+  // K interpolado para a vazão actual do tramo (computador de vazão)
+  if (tr) {
+    const Qnow = S.trainFlow[S.provingTrain] || tr.nomQ;
+    const Knew = getKforQ(S.provingTrain, Qnow);
+    el('pv-k').textContent = Knew.toFixed(2);
+  } else {
+    el('pv-k').textContent = '—';
+  }
   // Modo selector estado
   setAppMode(pv.appMode);
   const nValid  = pv.runs.filter(r => r.valid).length;
@@ -1891,24 +2520,96 @@ function turbine(cx, cy, tag, flowing) {
     </g>`;
 }
 
-// Compact prover body
+// Compact prover body — with S1/S2 switch detection + status bar
 function proverBody(x1, y1, x2, y2, ppos) {
   const pw = x2 - x1;
   const ph = y2 - y1;
-  const pistonX = x1 + 8 + ppos * (pw - 22);
-  const isRunning = S.prover.phase === 'running' || S.prover.phase === 'stabilize' || S.prover.phase === 'startup';
-  const col = isRunning ? '#E55B13' : '#3a5570';
-  const bgcol = '#04090f';
+  const phase = S.prover.phase;
+  const isActive = phase === 'running' || phase === 'stabilize' || phase === 'startup';
+
+  // Inner travel geometry
+  const innerW = pw - 22;
+  const pistonX = x1 + 8 + ppos * innerW;
+
+  // Switch positions (15% and 85% of inner travel)
+  const S1x = x1 + 8 + 0.15 * innerW;
+  const S2x = x1 + 8 + 0.85 * innerW;
+  const s1Hit = ppos >= 0.15 && isActive;
+  const s2Hit = ppos >= 0.85 && isActive;
+
+  // Colors
+  const borderCol = isActive ? '#E55B13' : '#3a5570';
+  const pistonCol = isActive ? '#E55B13' : '#2a4060';
+  const s1Col  = s1Hit ? '#00c97a' : '#1e3a50';
+  const s2Col  = s2Hit ? '#4ab8ff' : '#1e3a50';
+  const s1Fill = s1Hit ? '#003318' : '#060e18';
+  const s2Fill = s2Hit ? '#001830' : '#060e18';
+
+  // Status label
+  let statusText, statusCol, blink = false;
+  if (phase === 'idle' || !phase) {
+    statusText = 'IDLE';                         statusCol = '#3a5570';
+  } else if (phase === 'startup' || (phase === 'running' && !s1Hit)) {
+    statusText = 'LAUNCHING';                    statusCol = '#ffd600'; blink = true;
+  } else if (phase === 'stabilize') {
+    statusText = 'STABILIZING';                  statusCol = '#ffd600';
+  } else if (phase === 'running' && s1Hit && !s2Hit) {
+    statusText = '1ST SWITCH ✓ — MEASURING'; statusCol = '#00c97a';
+  } else if (phase === 'running' && s2Hit) {
+    statusText = '2ND SWITCH ✓ — RECOVERING'; statusCol = '#4ab8ff';
+  } else if (phase === 'done') {
+    statusText = 'COMPLETE ✓';              statusCol = '#00c97a';
+  } else {
+    statusText = 'IDLE';                         statusCol = '#3a5570';
+  }
+
+  // Blink: show text only half the time when blinking
+  const showTxt = !blink || (Date.now() % 800 < 500);
+
+  const sbCx = (x1 + x2) / 2;
+
   return `
-    <rect x="${x1}" y="${y1}" width="${pw}" height="${ph}" fill="${bgcol}" stroke="${col}" stroke-width="2" rx="6"/>
+    <!-- ── Prover body ── -->
+    <rect x="${x1}" y="${y1}" width="${pw}" height="${ph}" fill="#04090f" stroke="${borderCol}" stroke-width="2" rx="6"/>
     <rect x="${x1+4}" y="${y1+6}" width="${pw-8}" height="${ph-12}" fill="#030710" stroke="#1a2a3a" stroke-width="1" rx="3"/>
-    <rect x="${pistonX}" y="${y1+5}" width="10" height="${ph-10}" fill="${isRunning ? '#E55B13' : '#2a4060'}" rx="2"/>
+
+    <!-- S1 switch marker -->
+    <line x1="${S1x}" y1="${y1+5}" x2="${S1x}" y2="${y2-5}"
+          stroke="${s1Col}" stroke-width="1.5"
+          stroke-dasharray="${s1Hit ? 'none' : '3,2'}"/>
+    <polygon points="${S1x-5},${y2+2} ${S1x+5},${y2+2} ${S1x},${y2+10}"
+             fill="${s1Fill}" stroke="${s1Col}" stroke-width="1.2"/>
+    <text x="${S1x}" y="${y1-2}" text-anchor="middle"
+          font-size="7.5" fill="${s1Col}" font-family="Arial" font-weight="bold">S1</text>
+
+    <!-- S2 switch marker -->
+    <line x1="${S2x}" y1="${y1+5}" x2="${S2x}" y2="${y2-5}"
+          stroke="${s2Col}" stroke-width="1.5"
+          stroke-dasharray="${s2Hit ? 'none' : '3,2'}"/>
+    <polygon points="${S2x-5},${y2+2} ${S2x+5},${y2+2} ${S2x},${y2+10}"
+             fill="${s2Fill}" stroke="${s2Col}" stroke-width="1.2"/>
+    <text x="${S2x}" y="${y1-2}" text-anchor="middle"
+          font-size="7.5" fill="${s2Col}" font-family="Arial" font-weight="bold">S2</text>
+
+    <!-- Piston -->
+    <rect x="${pistonX}" y="${y1+5}" width="10" height="${ph-10}" fill="${pistonCol}" rx="2"
+          opacity="${isActive ? '1' : '0.6'}"/>
+    ${isActive ? `<rect x="${pistonX-1}" y="${y1+4}" width="12" height="${ph-8}"
+          fill="none" stroke="${pistonCol}" stroke-width="1" rx="2" opacity="0.35"/>` : ''}
+
+    <!-- Nozzle connections -->
     <line x1="${x1+pw*0.3}" y1="${y1}" x2="${x1+pw*0.3}" y2="${y1-8}" stroke="#2a4a6a" stroke-width="2"/>
     <line x1="${x1+pw*0.7}" y1="${y1}" x2="${x1+pw*0.7}" y2="${y1-8}" stroke="#2a4a6a" stroke-width="2"/>
     <circle cx="${x1+pw*0.3}" cy="${y1-10}" r="4" fill="#0c1828" stroke="#4a7aaa" stroke-width="1.2"/>
     <circle cx="${x1+pw*0.7}" cy="${y1-10}" r="4" fill="#0c1828" stroke="#4a7aaa" stroke-width="1.2"/>
-    <text x="${(x1+x2)/2}" y="${y1+ph/2+2}" text-anchor="middle" font-size="9" fill="${col}" font-family="Arial" font-weight="bold">COMPACT PROVER</text>
-    <text x="${(x1+x2)/2}" y="${y1+ph/2+13}" text-anchor="middle" font-size="7.5" fill="#3a5a7a" font-family="Arial">1923-CPA-01</text>`;
+
+    <!-- Labels inside prover -->
+    <text x="${sbCx}" y="${y1+ph/2+2}" text-anchor="middle"
+          font-size="9" fill="${borderCol}" font-family="Arial" font-weight="bold">COMPACT PROVER</text>
+    <text x="${sbCx}" y="${y1+ph/2+13}" text-anchor="middle"
+          font-size="7.5" fill="#3a5a7a" font-family="Arial">1923-CPA-01</text>
+
+  `;
 }
 
 // Helper: is a train actively flowing?
@@ -1919,26 +2620,48 @@ function tFlow(id) {
 function renderPID() {
   const svg = el('pid-svg');
 
-  // Pipe colors — all trains flow after warmup, based on FCV/trainFlow
-  const anyFlow = !S.warmup.active && S.proc.Q > 100;
-  const inletCol  = pipeCol(anyFlow);
-  const outletCol = pipeCol(anyFlow);
-  const t01flow   = tFlow('01');
-  const t02flow   = tFlow('02');
-  const t03flow   = tFlow('03');
-  const provInlet = pipeCol(S.valves['MOV-3401'] && anyFlow);
-  const provOut   = pipeCol((S.valves['MOV-3402'] || S.valves['MOV-3403']) && anyFlow);
-  const provClass = (S.prover.phase === 'running') ? ' fpipe' : '';
+  // Inlet header: sempre pressurizado
+  const anyFlow  = S.proc.Q > 100;
+  const inletCol = pipeCol(anyFlow);
+
+  // Tramo pipe animation: baseada no estado da MOV (trecho entrada→FCV)
+  const t01mov = S.valves['MOV-3101'];
+  const t02mov = S.valves['MOV-3201'];
+  const t03mov = S.valves['MOV-3301'];
+
+  // Prover: marrom quando fluindo (MOV-3402 aberta + FCV-3401 > 1%)
+  const BROWN = '#A0522D';
+  const fcv3401Pct = S.fcv['3401'].pct;
+  const provOutFlowing = S.valves['MOV-3402'] && fcv3401Pct > 1;
+
+  // Outlet header: anima somente quando prover está em circuito completo
+  const outletCol = provOutFlowing ? '#4ab8ff' : '#2a4560';
+
+  // Todas as linhas do loop do prover animam juntas
+  const provInletCol = provOutFlowing ? BROWN : '#2a4560';
+  const provInletCls = provOutFlowing ? 'class="fpipe"' : '';
+  const provOut      = provOutFlowing ? BROWN : '#2a4560';
+  const provOutCls   = provOutFlowing ? 'class="fpipe"' : '';
+
+  // Tramo alinhado: marrom quando prover fluindo
+  const alignedTrainBrown = provOutFlowing && !!S.provingTrain;
   const f01 = S.fcv['01'].pct, f02 = S.fcv['02'].pct, f03 = S.fcv['03'].pct;
+
+  // tCol/tCls para linhas ACIMA da FCV (baseado no MOV)
+  const tCol = (id, movOpen) => (alignedTrainBrown && S.provingTrain===id && movOpen)
+    ? BROWN : (movOpen ? '#4ab8ff' : '#2a4560');
+  const tCls = movOpen => movOpen ? 'class="fpipe"' : '';
 
   const T_1=255, T_2=640, T_3=1025; // train X centers
   const Y_IN=130, Y_OUT=490;
 
   // ── PROVER GEOMETRY ──
-  const PV_X1=510, PV_Y1=588, PV_X2=780, PV_Y2=632;
-  const MV3401_X=580, MV3401_Y=538;
-  const MV3402_X=790, MV3402_Y=538;
-  const MV3403_X=845, MV3403_Y=568;
+  const PV_X1=510, PV_Y1=570, PV_X2=780, PV_Y2=614;
+  const MV3401_X=580, MV3401_Y=520;
+  // 3ª linha: LINHA SAÍDA PROVER
+  const Y_PROV_OUT = 692;          // Y da 3ª linha horizontal
+  const PROV_JOIN_X = 1195;        // onde a 3ª linha encontra a LINHA DE SAÍDA
+  const MV3402_X=PROV_JOIN_X, MV3402_Y=590;  // MOV-3402 no ramal principal
 
   let s = `
   <!-- Background + grid -->
@@ -1948,91 +2671,104 @@ function renderPID() {
 
   <!-- ═══ INLET HEADER ═══ -->
   <line x1="50" y1="${Y_IN}" x2="1350" y2="${Y_IN}" stroke="${inletCol}" stroke-width="5" ${anyFlow?'class="fpipe"':''}/>
-  <text x="55" y="${Y_IN-8}" font-size="9" fill="#3a5a7a" font-family="Arial">LINHA DE ENTRADA — 1923-FL-001 · Q Total: ${Math.round(S.proc.Q)} m³/h</text>
+  <text x="55" y="${Y_IN-8}" font-size="10" fill="#8aabcc" font-family="Arial">LINHA DE ENTRADA — 1923-FL-001 · Q Total: ${Math.round(S.proc.Q)} m³/h</text>
+  <text x="55" y="${Y_IN+16}" font-size="11" fill="#5ad0ff" font-family="Arial" font-weight="bold">◀ ENTRADA</text>
+  <text x="1345" y="${Y_IN+16}" text-anchor="end" font-size="11" fill="#5ad0ff" font-family="Arial" font-weight="bold">SAÍDA ▶</text>
 
   <!-- Inlet Instruments -->
   ${bubble(115, Y_IN-48, 'PT', '3001', 115, Y_IN)}
   ${bubble(198, Y_IN-48, 'TT', '3001', 198, Y_IN)}
 
   <!-- ═══ TRAIN 01 (x=${T_1}) ═══ -->
-  <line x1="${T_1}" y1="${Y_IN}" x2="${T_1}" y2="${Y_IN+55}" stroke="${t01flow?'#4ab8ff':'#2a4560'}" stroke-width="5" ${t01flow?'class="fpipe"':''}/>
+  <line x1="${T_1}" y1="${Y_IN}" x2="${T_1}" y2="${Y_IN+55}" stroke="${tCol('01',t01mov)}" stroke-width="5" ${tCls(t01mov)}/>
   ${mvalve(T_1, Y_IN+75, 'MOV-3101')}
-  <line x1="${T_1}" y1="${Y_IN+96}" x2="${T_1}" y2="295" stroke="${t01flow?'#4ab8ff':'#2a4560'}" stroke-width="5" ${t01flow?'class="fpipe"':''}/>
-  ${turbine(T_1, 315, 'FT-3101', t01flow)}
+  <line x1="${T_1}" y1="${Y_IN+96}" x2="${T_1}" y2="295" stroke="${tCol('01',t01mov)}" stroke-width="5" ${tCls(t01mov)}/>
+  ${turbine(T_1, 315, 'FT-3101', t01mov)}
   ${bubble(T_1-78, 292, 'FT', '3101', T_1-32, 307)}
-  ${qDisplay(T_1, 315, 'FT-3101', S.trainFlow['01'], t01flow, 'right')}
-  <line x1="${T_1}" y1="337" x2="${T_1}" y2="${Y_OUT-75}" stroke="${t01flow?'#4ab8ff':'#2a4560'}" stroke-width="5" ${t01flow?'class="fpipe"':''}/>
+  ${qDisplay(T_1, 315, 'FT-3101', S.trainFlow['01'], t01mov, 'right')}
+  <line x1="${T_1}" y1="337" x2="${T_1}" y2="${Y_OUT-75}" stroke="${tCol('01',t01mov)}" stroke-width="5" ${tCls(t01mov)}/>
   ${fcvSymbol(T_1, Y_OUT-52, '102', f01)}
-  <line x1="${T_1}" y1="${Y_OUT-30}" x2="${T_1}" y2="${Y_OUT}" stroke="${t01flow?'#4ab8ff':'#2a4560'}" stroke-width="5" ${t01flow?'class="fpipe"':''}/>
-  <text x="${T_1}" y="262" text-anchor="middle" font-size="9" fill="${t01flow?'#4ab8ff':'#1e3050'}" font-family="Arial" font-weight="${S.provingTrain==='01'?'bold':'normal'}">TRAMO 01 ${S.provingTrain==='01'?'▶ PROVER':''}</text>
-  <text x="${T_1}" y="273" text-anchor="middle" font-size="8" fill="${t01flow?'#3a7a9a':'#1e3050'}" font-family="'Courier New',monospace">${Math.round(S.trainFlow['01'])} m³/h</text>
+  <line x1="${T_1}" y1="${Y_OUT-30}" x2="${T_1}" y2="${Y_OUT}" stroke="#2a4560" stroke-width="5"/>
+  <text x="${T_1-10}" y="262" text-anchor="end" font-size="10" fill="${t01mov?'#4ab8ff':'#3a5a7a'}" font-family="Arial" font-weight="${S.provingTrain==='01'?'bold':'normal'}">TRAMO 01 ${S.provingTrain==='01'?'▶ PROVER':''}</text>
+  <text x="${T_1-10}" y="274" text-anchor="end" font-size="9" fill="${t01mov?'#6ab0d0':'#4a6a8a'}" font-family="'Courier New',monospace">${Math.round(S.trainFlow['01'])} m³/h</text>
 
   <!-- ═══ TRAIN 02 (x=${T_2}) ═══ -->
-  <line x1="${T_2}" y1="${Y_IN}" x2="${T_2}" y2="${Y_IN+55}" stroke="${t02flow?'#4ab8ff':'#2a4560'}" stroke-width="5" ${t02flow?'class="fpipe"':''}/>
+  <line x1="${T_2}" y1="${Y_IN}" x2="${T_2}" y2="${Y_IN+55}" stroke="${tCol('02',t02mov)}" stroke-width="5" ${tCls(t02mov)}/>
   ${mvalve(T_2, Y_IN+75, 'MOV-3201')}
-  <line x1="${T_2}" y1="${Y_IN+96}" x2="${T_2}" y2="295" stroke="${t02flow?'#4ab8ff':'#2a4560'}" stroke-width="5" ${t02flow?'class="fpipe"':''}/>
-  ${turbine(T_2, 315, 'FT-3201', t02flow)}
+  <line x1="${T_2}" y1="${Y_IN+96}" x2="${T_2}" y2="295" stroke="${tCol('02',t02mov)}" stroke-width="5" ${tCls(t02mov)}/>
+  ${turbine(T_2, 315, 'FT-3201', t02mov)}
   ${bubble(T_2-78, 292, 'FT', '3201', T_2-32, 307)}
-  ${qDisplay(T_2, 315, 'FT-3201', S.trainFlow['02'], t02flow, 'right')}
-  <line x1="${T_2}" y1="337" x2="${T_2}" y2="${Y_OUT-75}" stroke="${t02flow?'#4ab8ff':'#2a4560'}" stroke-width="5" ${t02flow?'class="fpipe"':''}/>
+  ${qDisplay(T_2, 315, 'FT-3201', S.trainFlow['02'], t02mov, 'right')}
+  <line x1="${T_2}" y1="337" x2="${T_2}" y2="${Y_OUT-75}" stroke="${tCol('02',t02mov)}" stroke-width="5" ${tCls(t02mov)}/>
   ${fcvSymbol(T_2, Y_OUT-52, '202', f02)}
-  <line x1="${T_2}" y1="${Y_OUT-30}" x2="${T_2}" y2="${Y_OUT}" stroke="${t02flow?'#4ab8ff':'#2a4560'}" stroke-width="5" ${t02flow?'class="fpipe"':''}/>
-  <text x="${T_2}" y="262" text-anchor="middle" font-size="9" fill="${t02flow?'#4ab8ff':'#1e3050'}" font-family="Arial" font-weight="${S.provingTrain==='02'?'bold':'normal'}">TRAMO 02 ${S.provingTrain==='02'?'▶ PROVER':''}</text>
-  <text x="${T_2}" y="273" text-anchor="middle" font-size="8" fill="${t02flow?'#3a7a9a':'#1e3050'}" font-family="'Courier New',monospace">${Math.round(S.trainFlow['02'])} m³/h</text>
+  <line x1="${T_2}" y1="${Y_OUT-30}" x2="${T_2}" y2="${Y_OUT}" stroke="#2a4560" stroke-width="5"/>
+  <text x="${T_2-10}" y="262" text-anchor="end" font-size="10" fill="${t02mov?'#4ab8ff':'#3a5a7a'}" font-family="Arial" font-weight="${S.provingTrain==='02'?'bold':'normal'}">TRAMO 02 ${S.provingTrain==='02'?'▶ PROVER':''}</text>
+  <text x="${T_2-10}" y="274" text-anchor="end" font-size="9" fill="${t02mov?'#6ab0d0':'#4a6a8a'}" font-family="'Courier New',monospace">${Math.round(S.trainFlow['02'])} m³/h</text>
 
   <!-- ═══ TRAIN 03 (x=${T_3}) ═══ -->
-  <line x1="${T_3}" y1="${Y_IN}" x2="${T_3}" y2="${Y_IN+55}" stroke="${t03flow?'#4ab8ff':'#2a4560'}" stroke-width="5" ${t03flow?'class="fpipe"':''}/>
+  <line x1="${T_3}" y1="${Y_IN}" x2="${T_3}" y2="${Y_IN+55}" stroke="${tCol('03',t03mov)}" stroke-width="5" ${tCls(t03mov)}/>
   ${mvalve(T_3, Y_IN+75, 'MOV-3301')}
-  <line x1="${T_3}" y1="${Y_IN+96}" x2="${T_3}" y2="295" stroke="${t03flow?'#4ab8ff':'#2a4560'}" stroke-width="5" ${t03flow?'class="fpipe"':''}/>
-  ${turbine(T_3, 315, 'FT-3301', t03flow)}
-  ${bubble(T_3+35, 292, 'FT', '3301', T_3+32, 307)}
-  ${qDisplay(T_3, 315, 'FT-3301', S.trainFlow['03'], t03flow, 'left')}
-  <line x1="${T_3}" y1="337" x2="${T_3}" y2="${Y_OUT-75}" stroke="${t03flow?'#4ab8ff':'#2a4560'}" stroke-width="5" ${t03flow?'class="fpipe"':''}/>
+  <line x1="${T_3}" y1="${Y_IN+96}" x2="${T_3}" y2="295" stroke="${tCol('03',t03mov)}" stroke-width="5" ${tCls(t03mov)}/>
+  ${turbine(T_3, 315, 'FT-3301', t03mov)}
+  ${bubble(T_3+82, 280, 'FT', '3301', T_3+32, 307)}
+  ${qDisplay(T_3, 315, 'FT-3301', S.trainFlow['03'], t03mov, 'left')}
+  <line x1="${T_3}" y1="337" x2="${T_3}" y2="${Y_OUT-75}" stroke="${tCol('03',t03mov)}" stroke-width="5" ${tCls(t03mov)}/>
   ${fcvSymbol(T_3, Y_OUT-52, '302', f03, true)}
-  <line x1="${T_3}" y1="${Y_OUT-30}" x2="${T_3}" y2="${Y_OUT}" stroke="${t03flow?'#4ab8ff':'#2a4560'}" stroke-width="5" ${t03flow?'class="fpipe"':''}/>
-  <text x="${T_3}" y="262" text-anchor="middle" font-size="9" fill="${t03flow?'#4ab8ff':'#1e3050'}" font-family="Arial" font-weight="${S.provingTrain==='03'?'bold':'normal'}">TRAMO 03 ${S.provingTrain==='03'?'▶ PROVER':''}</text>
-  <text x="${T_3}" y="273" text-anchor="middle" font-size="8" fill="${t03flow?'#3a7a9a':'#1e3050'}" font-family="'Courier New',monospace">${Math.round(S.trainFlow['03'])} m³/h</text>
+  <line x1="${T_3}" y1="${Y_OUT-30}" x2="${T_3}" y2="${Y_OUT}" stroke="#2a4560" stroke-width="5"/>
+  <text x="${T_3+10}" y="262" text-anchor="start" font-size="10" fill="${t03mov?'#4ab8ff':'#3a5a7a'}" font-family="Arial" font-weight="${S.provingTrain==='03'?'bold':'normal'}">TRAMO 03 ${S.provingTrain==='03'?'▶ PROVER':''}</text>
+  <text x="${T_3+10}" y="274" text-anchor="start" font-size="9" fill="${t03mov?'#6ab0d0':'#4a6a8a'}" font-family="'Courier New',monospace">${Math.round(S.trainFlow['03'])} m³/h</text>
 
   <!-- ═══ OUTLET HEADER ═══ -->
-  <line x1="50" y1="${Y_OUT}" x2="1350" y2="${Y_OUT}" stroke="${outletCol}" stroke-width="5" ${anyFlow ? 'class="fpipe"' : ''}/>
-  <text x="55" y="${Y_OUT+14}" font-size="9" fill="#3a5a7a" font-family="Arial">LINHA DE SAÍDA — 1923-FL-002</text>
+  <line x1="${T_1-20}" y1="${Y_OUT}" x2="1350" y2="${Y_OUT}" stroke="${outletCol}" stroke-width="5" ${provOutFlowing ? 'class="fpipe"' : ''}/>
+  <text x="${T_1-16}" y="${Y_OUT+14}" font-size="10" fill="#8aabcc" font-family="Arial">LINHA DE SAÍDA — 1923-FL-002</text>
 
   <!-- Outlet Instruments -->
   ${bubble(1235, Y_OUT+45, 'PT', '3002', 1235, Y_OUT)}
   ${bubble(1310, Y_OUT+45, 'TT', '3002', 1310, Y_OUT)}
 
-  <!-- FC-3001 on outlet -->
-  <rect x="855" y="${Y_OUT-22}" width="44" height="44" fill="#0c1828" stroke="#7a9abb" stroke-width="1.4" transform="rotate(45,877,${Y_OUT})"/>
-  <text x="877" y="${Y_OUT-5}" text-anchor="middle" font-size="8" fill="#ddeeff" font-family="Arial" font-weight="bold">FC</text>
-  <text x="877" y="${Y_OUT+7}" text-anchor="middle" font-size="7.5" fill="#8ab0cc" font-family="Arial">3001</text>
+  <!-- FC-3001 — bubble acima da linha para não sobrepor -->
+  ${bubble(720, Y_OUT-52, 'FC', '3001', 720, Y_OUT)}
 
   <!-- ═══ PROVER LOOP ═══ -->
-  <!-- Left leg down from outlet -->
-  <line x1="${MV3401_X}" y1="${Y_OUT}" x2="${MV3401_X}" y2="${MV3401_Y-20}" stroke="${provInlet}" stroke-width="4"/>
+  <!-- Left leg down from outlet header → MOV-3401 → prover inlet -->
+  <line x1="${MV3401_X}" y1="${Y_OUT}" x2="${MV3401_X}" y2="${MV3401_Y-20}" stroke="${provInletCol}" stroke-width="4" ${provInletCls}/>
   ${mvalve(MV3401_X, MV3401_Y, 'MOV-3401')}
-  <line x1="${MV3401_X}" y1="${MV3401_Y+20}" x2="${MV3401_X}" y2="${PV_Y1+22}" stroke="${provInlet}" stroke-width="4" ${provClass}/>
+  <line x1="${MV3401_X}" y1="${MV3401_Y+20}" x2="${MV3401_X}" y2="${PV_Y1+22}" stroke="${provInletCol}" stroke-width="4" ${provInletCls}/>
 
   <!-- Prover body -->
   ${proverBody(PV_X1, PV_Y1, PV_X2, PV_Y2, S.prover.pistonPos)}
 
-  <!-- Prover instruments -->
-  ${bubble(548, 665, 'PT', '3401', 548, PV_Y2)}
-  ${bubble(622, 665, 'TT', '3401', 622, PV_Y2)}
+  <!-- Prover instruments (posicionados acima do prover para não cruzar a 3ª linha) -->
+  ${bubble(548, 530, 'PT', '3401', 548, PV_Y1)}
+  ${bubble(622, 530, 'TT', '3401', 622, PV_Y1)}
 
-  <!-- Right leg from prover — splits to MOV-3402 and MOV-3403 -->
-  <line x1="${PV_X2}" y1="${PV_Y1+22}" x2="${MV3402_X}" y2="${MV3401_Y-20}" stroke="${provOut}" stroke-width="4"/>
-  ${mvalve(MV3402_X, MV3402_Y, 'MOV-3402')}
-  <line x1="${MV3402_X}" y1="${MV3402_Y+20}" x2="${MV3402_X}" y2="${Y_OUT}" stroke="${provOut}" stroke-width="4"/>
+  <!-- Saída do prover → desce à 3ª linha horizontal -->
+  <line x1="${PV_X2}" y1="${PV_Y1+22}" x2="${PV_X2}" y2="${Y_PROV_OUT}" stroke="${provOut}" stroke-width="4" ${provOutCls}/>
 
-  <!-- MOV-3403 parallel branch (10% valve) -->
-  <line x1="${PV_X2}" y1="${PV_Y2-12}" x2="${MV3403_X}" y2="${PV_Y2-12}" stroke="${provOut}" stroke-width="3"/>
-  <line x1="${MV3403_X}" y1="${PV_Y2-12}" x2="${MV3403_X}" y2="${MV3403_Y-20}" stroke="${provOut}" stroke-width="3"/>
-  ${mvalve(MV3403_X, MV3403_Y, 'MOV-3403')}
-  <line x1="${MV3403_X}" y1="${MV3403_Y+20}" x2="${MV3403_X}" y2="${Y_OUT}" stroke="${provOut}" stroke-width="3"/>
-  <text x="${MV3403_X+18}" y="${MV3403_Y+4}" font-size="7.5" fill="#5a6a7a" font-family="Arial">(10%)</text>
+  <!-- ═══ LINHA SAÍDA PROVER — 3ª linha horizontal ═══ -->
+  <line x1="${PV_X2}" y1="${Y_PROV_OUT}" x2="${PROV_JOIN_X}" y2="${Y_PROV_OUT}" stroke="${provOut}" stroke-width="5" ${provOutCls}/>
+  <text x="${(PV_X2+PROV_JOIN_X)/2}" y="${Y_PROV_OUT+14}" text-anchor="middle" font-size="10" fill="${provOutFlowing?'#c8885a':'#3a2a1a'}" font-family="Arial">LINHA SAÍDA PROVER — 1923-FL-004 · ${provOutFlowing?'FLUINDO':'ESTÁTICA'}</text>
+
+  <!-- MOV-3402 + FCV-3401 — 3ª linha → LINHA DE SAÍDA (ramal principal) -->
+  <!-- FCV-3401 abaixo de MOV-3402: cy = MV3402_Y + 65 = 655 -->
+  <!-- Pipe: 3ª linha (692) → FCV body bottom (cy+19 = 674) -->
+  <line x1="${PROV_JOIN_X}" y1="${Y_PROV_OUT}" x2="${PROV_JOIN_X}" y2="${MV3402_Y+84}" stroke="${provOut}" stroke-width="5" ${provOutCls}/>
+  <!-- FCV-3401: controle de vazão do loop do prover (clicável) -->
+  ${fcvSymbol(PROV_JOIN_X, MV3402_Y+65, '3401', fcv3401Pct)}
+  <rect x="${PROV_JOIN_X-20}" y="${MV3402_Y+65-44}" width="40" height="63"
+        fill="transparent" stroke="none" rx="4"
+        onclick="openFCV3401Modal()" style="cursor:pointer"
+        title="FCV-3401 — clique para operar"/>
+  <!-- Pipe: FCV body top (636) → MOV-3402 bottom (610) -->
+  <line x1="${PROV_JOIN_X}" y1="${MV3402_Y+45}" x2="${PROV_JOIN_X}" y2="${MV3402_Y+20}" stroke="${provOut}" stroke-width="5" ${provOutCls}/>
+  ${mvalve(PROV_JOIN_X, MV3402_Y, 'MOV-3402')}
+  <!-- Pipe: MOV-3402 top (570) → Outlet header (490) -->
+  <line x1="${PROV_JOIN_X}" y1="${MV3402_Y-20}" x2="${PROV_JOIN_X}" y2="${Y_OUT}" stroke="${provOut}" stroke-width="5" ${provOutCls}/>
+  <!-- Junção visível na LINHA DE SAÍDA -->
+  <circle cx="${PROV_JOIN_X}" cy="${Y_OUT}" r="7" fill="${provOut}" opacity="0.9"/>
 
   <!-- Prover connection labels -->
-  <text x="${(PV_X1+PV_X2)/2}" y="${PV_Y1-16}" text-anchor="middle" font-size="8" fill="#2a4a6a" font-family="Arial">LINHA PROVA — 1923-FL-003</text>
+  <text x="${(PV_X1+PV_X2)/2}" y="${PV_Y1-14}" text-anchor="middle" font-size="9" fill="#5a8aaa" font-family="Arial">LINHA PROVA — 1923-FL-003</text>
 
   <!-- ═══ PROCESS DATA BOX ═══ -->
   <rect x="20" y="545" width="145" height="110" fill="#04090f" stroke="#1e3050" stroke-width="1" rx="4"/>
@@ -2075,7 +2811,65 @@ function renderPID() {
   ` : ''}
   `;
 
+  // ── Banner de status do prover — centralizado no topo do SVG ──
+  s += renderProverBanner();
+
   svg.innerHTML = s;
+}
+
+function renderProverBanner() {
+  const pv    = S.prover;
+  const phase = pv.phase;
+  const ppos  = pv.pistonPos || 0;
+  const isActive = phase === 'running' || phase === 'stabilize' || phase === 'startup';
+  const s1Hit = ppos >= 0.15 && isActive;
+  const s2Hit = ppos >= 0.85 && isActive;
+
+  // Determinar status e cor (mesma lógica do proverBody)
+  let statusText, statusCol, blink = false;
+  if (!phase || phase === 'idle') {
+    return ''; // nada a mostrar quando ocioso
+  } else if (phase === 'startup' || (phase === 'running' && !s1Hit)) {
+    statusText = 'LAUNCHING';                    statusCol = '#ffd600'; blink = true;
+  } else if (phase === 'stabilize') {
+    statusText = 'STABILIZING';                  statusCol = '#ffd600';
+  } else if (phase === 'running' && s1Hit && !s2Hit) {
+    statusText = '1ST SWITCH ✓ — MEASURING';    statusCol = '#00c97a';
+  } else if (phase === 'running' && s2Hit) {
+    statusText = '2ND SWITCH ✓ — RECOVERING';   statusCol = '#4ab8ff';
+  } else if (phase === 'done') {
+    statusText = 'COMPLETE ✓';                  statusCol = '#00c97a';
+  } else {
+    return '';
+  }
+
+  // Pisca para LAUNCHING
+  if (blink && Date.now() % 800 >= 500) return '';
+
+  // Corrida actual
+  const runNum  = pv.runIdx || 0;
+  const runInfo = runNum > 0 ? ` · RUN ${runNum}/${S.prover.runs ? S.prover.runs.length + 1 : 1}` : '';
+
+  // Banner centralizado no topo (y=8 a y=36), acima do header Y_IN=130
+  const bw = 380, bh = 28;
+  const bx = (1400 - bw) / 2;   // x=510 para centralizar em 1400px
+  const by = 8;
+
+  // Barra de progresso do pistão (ppos 0→1) dentro do banner
+  const progW = Math.round((bw - 20) * ppos);
+
+  return `
+    <rect x="${bx}" y="${by}" width="${bw}" height="${bh}"
+          fill="#04090f" stroke="${statusCol}" stroke-width="1.5" rx="5" opacity="0.96"/>
+    <rect x="${bx+8}" y="${by+bh-7}" width="${bw-16}" height="4"
+          fill="#0a1824" rx="2"/>
+    <rect x="${bx+8}" y="${by+bh-7}" width="${progW > 0 ? progW : 0}" height="4"
+          fill="${statusCol}" rx="2" opacity="0.8"/>
+    <text x="${1400/2}" y="${by+17}" text-anchor="middle"
+          font-size="11" fill="${statusCol}"
+          font-family="'Courier New',monospace" font-weight="bold"
+          letter-spacing="0.8">COMPACT PROVER · ${statusText}${runInfo}</text>
+  `;
 }
 
 // ═══════════════════════════════════════════════════
@@ -2095,7 +2889,7 @@ function onValveClick(tag) {
     return;
   }
   // Prover valves — only when no proving sequence active
-  const proverValves = ['MOV-3401','MOV-3402','MOV-3403'];
+  const proverValves = ['MOV-3401','MOV-3402'];
   if (proverValves.includes(tag)) {
     if (S.prover.phase !== 'idle' && S.prover.phase !== 'done') {
       raiseAlarm('OPR-002','Não é possível operar válvulas do prover durante sequência ativa','md');
@@ -2279,10 +3073,13 @@ function applyScenario(val) {
 //  INIT
 // ═══════════════════════════════════════════════════
 function init() {
-  // Initialize FCV labels to match initial state
+  // Initialize FCV inputs and labels
   ['01','02','03'].forEach(id=>{
+    const inp = el(`fcv-${id}`);
     const lbl = el(`fcv-${id}-lbl`);
-    if (lbl) lbl.textContent = Math.round(S.fcv[id].pct) + '%';
+    const pct = S.fcv[id].pct;
+    if (inp) inp.value = pct;
+    if (lbl) lbl.textContent = Math.round(pct * QTOTAL / 100) + ' m³/h';
   });
   // Compute initial flows (zero during warmup — will ramp up)
   computeFlows();
@@ -2309,6 +3106,149 @@ function init() {
 }
 
 init();
+
+// ═══════════════════════════════════════════════════
+//  K-CURVE — COMPUTADOR DE VAZÃO
+// ═══════════════════════════════════════════════════
+
+// Interpola o K-factor para uma dada vazão Q,
+// usando os pontos da curva dentro de ±10% de Q.
+function getKforQ(trainId, Q) {
+  const curve = S.trains[trainId] && S.trains[trainId].kCurve;
+  if (!curve || curve.length === 0) return S.trains[trainId].kEff;
+
+  const sorted = [...curve].sort((a, b) => a.q - b.q);
+
+  // Extrapolação nos extremos: usa o K do ponto mais extremo
+  if (Q <= sorted[0].q) return sorted[0].k;
+  if (Q >= sorted[sorted.length - 1].q) return sorted[sorted.length - 1].k;
+
+  // Encontra os dois pontos que envolvem Q e interpola linearmente
+  const below = sorted.filter(p => p.q <= Q);
+  const above = sorted.filter(p => p.q >  Q);
+  const p1 = below[below.length - 1];
+  const p2 = above[0];
+
+  const t = (Q - p1.q) / (p2.q - p1.q);
+  return p1.k + t * (p2.k - p1.k);
+}
+
+// Retorna texto descritivo do K interpolado para o live-indicator
+function kLiveText(trainId) {
+  const Q = S.trainFlow[trainId] || 0;
+  const K = getKforQ(trainId, Q);
+  return `Turbina T-${trainId} — Vazão atual: <b style="color:var(--cy)">${Math.round(Q)} m³/h</b>` +
+         ` &nbsp;→&nbsp; K interpolado: <b style="color:var(--or)">${K.toFixed(2)} p/m³</b>` +
+         ` &nbsp;|&nbsp; Freq: <b style="color:var(--gr)">${(K * Q / 3600).toFixed(1)} Hz</b>`;
+}
+
+// ── Estado temporário do modal ──
+let _kTab = '01';   // aba activa
+
+function openKModal() {
+  _kTab = '01';
+  renderKTable();
+  el('modal-kcurve').classList.add('on');
+}
+function closeKModal() {
+  el('modal-kcurve').classList.remove('on');
+}
+
+function switchKTab(id) {
+  _kTab = id;
+  ['01','02','03'].forEach(t => {
+    el(`ktab-${t}`).classList.toggle('on', t === id);
+  });
+  renderKTable();
+}
+
+// Renderiza a tabela editável para o tramo activo
+function renderKTable() {
+  const curve = S.trains[_kTab].kCurve;
+  const MAX_PTS = 8;
+
+  let html = `
+    <table class="ktbl">
+      <thead><tr>
+        <th style="width:32px">#</th>
+        <th>Vazão (m³/h)</th>
+        <th>K-factor (p/m³)</th>
+        <th>Frequência (Hz)</th>
+        <th style="width:30px"></th>
+      </tr></thead>
+      <tbody id="kbody">`;
+
+  curve.forEach((pt, i) => {
+    html += `<tr id="krow-${i}">
+      <td class="pnum">${i+1}</td>
+      <td><input class="kinp" id="kq-${i}" type="number" min="0" max="99999" step="1"
+          value="${pt.q}" oninput="onKInput(${i})"></td>
+      <td><input class="kinp" id="kk-${i}" type="number" min="1" max="99999" step="1"
+          value="${pt.k}" oninput="onKInput(${i})"></td>
+      <td><span class="kfreq" id="kf-${i}">${pt.freq}</span></td>
+      <td style="text-align:center">
+        ${curve.length > 2 ?
+          `<button onclick="removeKPoint(${i})"
+             style="background:none;border:none;color:var(--rd);cursor:pointer;font-size:13px"
+             title="Remover ponto">✕</button>` : ''}
+      </td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+
+  if (curve.length < MAX_PTS) {
+    html += `<button class="btn bbl bsm" onclick="addKPoint()"
+               style="font-size:10px;margin-top:4px;">+ Adicionar Ponto</button>`;
+  }
+
+  el('kcurve-table-wrap').innerHTML = html;
+  el('kcurve-live').innerHTML = kLiveText(_kTab);
+}
+
+// Recalcula frequência ao editar Q ou K
+function onKInput(i) {
+  const q = parseFloat(el(`kq-${i}`).value) || 0;
+  const k = parseFloat(el(`kk-${i}`).value) || 0;
+  el(`kf-${i}`).textContent = (k * q / 3600).toFixed(2);
+}
+
+function addKPoint() {
+  const curve = S.trains[_kTab].kCurve;
+  const lastQ = curve.length ? curve[curve.length-1].q + 200 : 400;
+  const lastK = curve.length ? curve[curve.length-1].k : 5000;
+  const freq  = +(lastK * lastQ / 3600).toFixed(2);
+  curve.push({ q: lastQ, k: lastK, freq });
+  renderKTable();
+}
+
+function removeKPoint(i) {
+  S.trains[_kTab].kCurve.splice(i, 1);
+  renderKTable();
+}
+
+// Salva os valores dos inputs de volta ao estado
+function saveKCurve() {
+  const curve = S.trains[_kTab].kCurve;
+  curve.forEach((pt, i) => {
+    const q = parseFloat(el(`kq-${i}`).value);
+    const k = parseFloat(el(`kk-${i}`).value);
+    if (!isNaN(q) && !isNaN(k)) {
+      pt.q    = q;
+      pt.k    = k;
+      pt.freq = +(k * q / 3600).toFixed(2);
+    }
+  });
+  // Ordena por Q crescente após salvar
+  curve.sort((a, b) => a.q - b.q);
+  logEvent(`Curva K T-${_kTab} atualizada — ${curve.length} pontos`, 'lo');
+  renderKTable();
+}
+
+function resetKCurve() {
+  S.trains[_kTab].kCurve = DEFAULT_KCURVE[_kTab].map(p => ({...p}));
+  renderKTable();
+}
 </script>
 </body>
 </html>
