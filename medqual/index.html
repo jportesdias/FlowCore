@@ -1,1 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MED&QUAL | Medição e Qualidade</title>
+  <meta name="description" content="Consultoria, assessoria e capacitação técnica especializada em sistemas de medição de vazão, metrologia aplicada, qualidade do gás, processamento e conformidade regulatória." />
+  <style>
+    :root {
+      --black: #0b0b0c;
+      --dark: #151618;
+      --graphite: #2b2d30;
+      --gray: #6f747a;
+      --light-gray: #d9dbde;
+      --soft-gray: #f4f4f5;
+      --white: #ffffff;
+      --line: rgba(11, 11, 12, 0.14);
+      --max: 1180px;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--black);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .container {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      min-height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .brand img {
+      display: block;
+      width: 220px;
+      height: auto;
+    }
+
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--graphite);
+    }
+
+    .menu a {
+      opacity: 0.82;
+      transition: opacity 0.2s ease;
+    }
+
+    .menu a:hover {
+      opacity: 1;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 22px;
+      border: 1px solid var(--black);
+      background: var(--black);
+      color: var(--white);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--white);
+      color: var(--black);
+    }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--black);
+      border-color: var(--line);
+    }
+
+    .btn.secondary:hover {
+      border-color: var(--black);
+    }
+
+    .hero {
+      min-height: calc(100vh - 82px);
+      display: grid;
+      place-items: center;
+      padding: 96px 0 82px;
+      background:
+        radial-gradient(circle at 80% 20%, rgba(0, 0, 0, 0.06), transparent 30%),
+        linear-gradient(180deg, #ffffff 0%, #f7f7f8 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      align-items: center;
+      gap: 70px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 22px;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
+
+    h1 {
+      max-width: 790px;
+      font-size: clamp(42px, 6vw, 78px);
+      line-height: 0.96;
+      letter-spacing: -0.055em;
+      font-weight: 700;
+    }
+
+    .hero p {
+      max-width: 650px;
+      margin-top: 28px;
+      font-size: 18px;
+      color: var(--graphite);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 38px;
+    }
+
+    .hero-card {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+      padding: 42px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.08);
+    }
+
+    .hero-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin-bottom: 34px;
+    }
+
+    .hero-card .line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--black), transparent);
+      margin: 22px 0;
+    }
+
+    .hero-card p {
+      margin: 0;
+      font-size: 15px;
+      color: var(--graphite);
+    }
+
+    section {
+      padding: 104px 0;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 0.55fr 1fr;
+      gap: 54px;
+      align-items: start;
+      margin-bottom: 56px;
+    }
+
+    .section-number {
+      color: var(--gray);
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: clamp(32px, 4vw, 54px);
+      line-height: 1.04;
+      letter-spacing: -0.04em;
+      font-weight: 700;
+    }
+
+    .lead {
+      margin-top: 22px;
+      max-width: 760px;
+      color: var(--graphite);
+      font-size: 17px;
+    }
+
+    .dark {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .dark .section-number,
+    .dark .lead,
+    .dark p,
+    .dark li {
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      padding: 30px;
+      background: var(--white);
+      min-height: 100%;
+    }
+
+    .dark .card {
+      background: #111214;
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .card .tag {
+      display: block;
+      margin-bottom: 22px;
+      color: var(--gray);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .card h3 {
+      margin-bottom: 14px;
+      font-size: 20px;
+      line-height: 1.22;
+      letter-spacing: -0.02em;
+    }
+
+    .card p,
+    .card li {
+      color: var(--graphite);
+      font-size: 15px;
+    }
+
+    .dark .card p,
+    .dark .card li {
+      color: rgba(255, 255, 255, 0.68);
+    }
+
+    .services {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    .service {
+      background: var(--white);
+      padding: 30px;
+    }
+
+    .service span {
+      display: block;
+      margin-bottom: 20px;
+      color: var(--gray);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+    }
+
+    .service h3 {
+      margin-bottom: 12px;
+      font-size: 20px;
+      line-height: 1.24;
+      letter-spacing: -0.02em;
+    }
+
+    .service p {
+      color: var(--graphite);
+      font-size: 15px;
+    }
+
+    .profile {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 70px;
+      align-items: start;
+    }
+
+    .profile-box {
+      border: 1px solid var(--line);
+      padding: 36px;
+      background: var(--soft-gray);
+    }
+
+    .profile-box h3 {
+      font-size: 28px;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .profile-box p {
+      color: var(--graphite);
+    }
+
+    .profile-list {
+      display: grid;
+      gap: 18px;
+    }
+
+    .profile-item {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 18px;
+    }
+
+    .profile-item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .profile-item p {
+      color: var(--graphite);
+    }
+
+    .training-list {
+      columns: 2;
+      column-gap: 50px;
+      list-style: none;
+    }
+
+    .training-list li {
+      break-inside: avoid;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 17px;
+    }
+
+    .method {
+      background: var(--soft-gray);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .steps {
+      counter-reset: step;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    .step {
+      counter-increment: step;
+      background: var(--white);
+      padding: 30px;
+    }
+
+    .step::before {
+      content: "0" counter(step);
+      display: block;
+      margin-bottom: 34px;
+      color: var(--gray);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+    }
+
+    .step h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+
+    .step p {
+      color: var(--graphite);
+      font-size: 15px;
+    }
+
+    .cta {
+      padding: 96px 0;
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .cta-box {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.18);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 52px 0;
+    }
+
+    .cta h2 {
+      max-width: 760px;
+    }
+
+    .cta p {
+      max-width: 680px;
+      margin-top: 18px;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .cta .btn {
+      background: var(--white);
+      color: var(--black);
+      border-color: var(--white);
+    }
+
+    footer {
+      padding: 42px 0;
+      background: var(--black);
+      color: rgba(255, 255, 255, 0.62);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 13px;
+    }
+
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .section-head,
+      .profile,
+      .cta-box {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-3,
+      .steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .menu {
+        display: none;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .container {
+        width: min(var(--max), calc(100% - 28px));
+      }
+
+      .nav {
+        min-height: 72px;
+      }
+
+      .brand img {
+        width: 180px;
+      }
+
+      .hero {
+        padding: 70px 0 58px;
+      }
+
+      .hero-card {
+        padding: 28px;
+      }
+
+      section {
+        padding: 72px 0;
+      }
+
+      .grid-2,
+      .grid-3,
+      .services,
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .training-list {
+        columns: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="container nav">
+        <a href="#top" class="brand" aria-label="MED&QUAL">
+          <img src="ink_4.png" alt="MED&QUAL Medição e Qualidade" />
+        </a>
+
+        <nav class="menu" aria-label="Menu principal">
+          <a href="#sobre">Sobre</a>
+          <a href="#servicos">Consultoria</a>
+          <a href="#treinamentos">Treinamentos</a>
+          <a href="#contato">Contato</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="container hero-grid">
+          <div>
+            <span class="eyebrow">Medição, qualidade e conformidade regulatória</span>
+            <h1>Engenharia independente para sistemas de medição tecnicamente defensáveis.</h1>
+            <p>
+              Consultoria, assessoria e capacitação técnica especializada em medição de vazão de petróleo e gás natural, metrologia aplicada, qualidade do gás, processamento e segurança de processo.
+            </p>
+            <div class="hero-actions">
+              <a class="btn" href="#servicos">Conhecer serviços</a>
+              <a class="btn secondary" href="#treinamentos">Ver treinamentos</a>
+            </div>
+          </div>
+
+          <aside class="hero-card" aria-label="Identidade MED&QUAL">
+            <img src="ink_4.png" alt="Logo MED&QUAL" />
+            <div class="line"></div>
+            <p>
+              Atuação fundamentada em rigor normativo, análise crítica e rastreabilidade metrológica para auditorias, fiscalizações, disputas técnicas e decisões de engenharia.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <section id="sobre">
+        <div class="container">
+          <div class="section-head">
+            <span class="section-number">01 / Apresentação</span>
+            <div>
+              <h2>Precisão técnica para decisões que precisam resistir à auditoria.</h2>
+              <p class="lead">
+                A MED&QUAL integra fundamentos físicos, prática operacional e requisitos regulatórios para entregar análises técnicas consistentes, rastreáveis e adequadas ao ambiente industrial de óleo e gás.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="card">
+              <span class="tag">Base técnica</span>
+              <h3>Engenharia independente</h3>
+              <p>Análises conduzidas com foco técnico, sem conflito operacional, comercial ou documental.</p>
+            </article>
+
+            <article class="card">
+              <span class="tag">Rastreabilidade</span>
+              <h3>Resultado defensável</h3>
+              <p>Relatórios e pareceres estruturados para sustentar auditorias, fiscalizações e disputas técnicas.</p>
+            </article>
+
+            <article class="card">
+              <span class="tag">Regulação</span>
+              <h3>Conformidade ANP e INMETRO</h3>
+              <p>Avaliações alinhadas aos requisitos regulatórios aplicáveis aos sistemas de medição.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="method">
+        <div class="container">
+          <div class="section-head">
+            <span class="section-number">02 / Forma de atuação</span>
+            <div>
+              <h2>Consultoria técnica estruturada a partir de dados, registros e documentação.</h2>
+              <p class="lead">
+                Os serviços podem ser realizados como consultorias pontuais, estudos completos, revisões de projeto, auditorias documentais ou assessoria técnica continuada, com atuação predominantemente remota e rastreável.
+              </p>
+            </div>
+          </div>
+
+          <div class="steps">
+            <article class="step">
+              <h3>Levantamento</h3>
+              <p>Recebimento de dados, documentos, registros históricos e evidências do sistema avaliado.</p>
+            </article>
+
+            <article class="step">
+              <h3>Análise crítica</h3>
+              <p>Avaliação técnica com base em metrologia aplicada, normas, requisitos regulatórios e prática operacional.</p>
+            </article>
+
+            <article class="step">
+              <h3>Diagnóstico</h3>
+              <p>Identificação de inconsistências, impactos, riscos de medição e oportunidades de adequação.</p>
+            </article>
+
+            <article class="step">
+              <h3>Entrega</h3>
+              <p>Emissão de recomendações, relatório ou parecer técnico com rastreabilidade e clareza decisória.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="servicos">
+        <div class="container">
+          <div class="section-head">
+            <span class="section-number">03 / Consultoria técnica</span>
+            <div>
+              <h2>Serviços especializados para medição fiscal, transferência de custódia e apropriação.</h2>
+              <p class="lead">
+                As frentes de consultoria cobrem desde projeto e auditoria de sistemas de medição até incerteza, computadores de vazão, qualidade do gás, flare e suporte a disputas técnicas.
+              </p>
+            </div>
+          </div>
+
+          <div class="services">
+            <article class="service">
+              <span>01</span>
+              <h3>Projetos e revisões de sistemas de medição</h3>
+              <p>Avaliação de arquiteturas, critérios de projeto, trechos de medição, arranjos instrumentais, tecnologias aplicáveis e recomendações de melhoria.</p>
+            </article>
+
+            <article class="service">
+              <span>02</span>
+              <h3>Auditoria técnica de sistemas de medição</h3>
+              <p>Análise de históricos, relatórios eletrônicos, parâmetros configurados, eventos inválidos e consistência entre instrumentação, cálculo e registros.</p>
+            </article>
+
+            <article class="service">
+              <span>03</span>
+              <h3>Estudos de incerteza de medição</h3>
+              <p>Modelagem do mensurando, fontes de incerteza, incerteza padrão e expandida, desempenho metrológico e impacto de desvios operacionais.</p>
+            </article>
+
+            <article class="service">
+              <span>04</span>
+              <h3>Análise dimensional e conformidade metrológica</h3>
+              <p>Verificação crítica de certificados dimensionais, requisitos AGA, ISO, API e RTM, identificação de não conformidades e parecer dimensional.</p>
+            </article>
+
+            <article class="service">
+              <span>05</span>
+              <h3>Apropriação de produção e teste de poços</h3>
+              <p>Revisão de metodologias, critérios de estabilização, representatividade, validação metrológica e suporte técnico junto à ANP.</p>
+            </article>
+
+            <article class="service">
+              <span>06</span>
+              <h3>Qualidade do gás natural</h3>
+              <p>Avaliação de amostragem e cromatografia, validação de PCS, índice de Wobbe, compressibilidade e conformidade com requisitos regulatórios.</p>
+            </article>
+
+            <article class="service">
+              <span>07</span>
+              <h3>Processamento de gás natural</h3>
+              <p>Diagnóstico de UPGNs e UTGs, desidratação, remoção de gases ácidos, compressão, eficiência energética e gargalos operacionais.</p>
+            </article>
+
+            <article class="service">
+              <span>08</span>
+              <h3>Sistemas de flare e vent</h3>
+              <p>Revisão técnica de projetos, critérios API 521, ISO 23251 e API 537, riscos operacionais e recomendações de segurança de processo.</p>
+            </article>
+
+            <article class="service">
+              <span>09</span>
+              <h3>Computadores de vazão e medição eletrônica</h3>
+              <p>Análise de algoritmos, parametrização, amostragem, médias, cut-off, integração, QTR, rastreabilidade e impactos volumétricos.</p>
+            </article>
+
+            <article class="service">
+              <span>10</span>
+              <h3>Falhas de medição e disputas técnicas</h3>
+              <p>Investigação de falhas, indisponibilidade, impacto volumétrico e financeiro, divergências de volumes e suporte técnico contratual.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="responsavel" class="dark">
+        <div class="container profile">
+          <div>
+            <span class="eyebrow">Responsável técnico</span>
+            <h2>Experiência aplicada em medição, gás natural e conformidade regulatória.</h2>
+          </div>
+
+          <div class="profile-box">
+            <h3>Eduardo Gertrudes</h3>
+            <p>
+              Engenheiro especializado em medição de vazão de hidrocarbonetos, com mais de duas décadas de experiência em metrologia aplicada, instrumentação industrial, qualidade do gás natural, processamento e regulação técnica de sistemas de medição fiscal, transferência de custódia e apropriação de produção.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="treinamentos" class="dark">
+        <div class="container">
+          <div class="section-head">
+            <span class="section-number">04 / Treinamentos técnicos</span>
+            <div>
+              <h2>Capacitação para quem precisa entender como medir, por que medir e quais são os limites técnicos.</h2>
+              <p class="lead">
+                Treinamentos ao vivo, online e interativos, com discussão de casos reais, análise de problemas operacionais, material próprio e suporte técnico durante o curso.
+              </p>
+            </div>
+          </div>
+
+          <ul class="training-list">
+            <li>Medição de Vazão e Volumes de Petróleo</li>
+            <li>Medição de Vazão de Gás Natural</li>
+            <li>Medição de Apropriação de Produção e Teste de Poços</li>
+            <li>Computadores de Vazão e Medição Eletrônica</li>
+            <li>Incerteza de Medição Aplicada à Vazão</li>
+            <li>Inspeção Dimensional e Conformidade Metrológica</li>
+            <li>Qualidade do Gás Natural</li>
+            <li>Processamento de Gás Natural</li>
+            <li>Sistemas de Flare e Vent</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-head">
+            <span class="section-number">05 / Posicionamento</span>
+            <div>
+              <h2>Problemas reais, análise técnica e soluções engenheiradas.</h2>
+              <p class="lead">
+                Todo treinamento e toda consultoria da MED&QUAL parte de problemas reais enfrentados em sistemas de medição e processamento industrial, transformando dados, documentação e registros operacionais em soluções rastreáveis e tecnicamente defensáveis.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contato" class="cta">
+        <div class="container cta-box">
+          <div>
+            <span class="eyebrow">Contato</span>
+            <h2>Precisa revisar, auditar ou defender tecnicamente um sistema de medição?</h2>
+            <p>
+              Envie sua demanda, documentação disponível e objetivo técnico. A MED&QUAL avalia o melhor formato de atendimento: parecer, estudo, auditoria, revisão de projeto, treinamento ou assessoria continuada.
+            </p>
+          </div>
+          <a class="btn" href="mailto:contato@medequal.com.br">Solicitar avaliação</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container footer-row">
+        <p>MED&QUAL · Medição e Qualidade</p>
+        <p>Consultoria técnica · Treinamentos · Conformidade regulatória</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
