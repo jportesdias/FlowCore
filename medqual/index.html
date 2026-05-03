@@ -35,9 +35,16 @@
       line-height: 1.6;
     }
 
-    a {
+    a, button {
       color: inherit;
       text-decoration: none;
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      background: none;
+      border: 0;
     }
 
     .page {
@@ -73,6 +80,12 @@
       height: auto;
     }
 
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
     .menu {
       display: flex;
       align-items: center;
@@ -90,6 +103,40 @@
 
     .menu a:hover {
       opacity: 1;
+    }
+
+    .language-switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-left: 18px;
+      border-left: 1px solid var(--line);
+    }
+
+    .lang-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 34px;
+      padding: 0 10px;
+      border: 1px solid transparent;
+      color: var(--gray);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+    }
+
+    .lang-btn span {
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .lang-btn.active,
+    .lang-btn:hover {
+      color: var(--black);
+      border-color: var(--line);
+      background: var(--soft-gray);
     }
 
     .btn {
@@ -248,12 +295,6 @@
       gap: 18px;
     }
 
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
-    }
-
     .card {
       border: 1px solid var(--line);
       padding: 30px;
@@ -286,11 +327,6 @@
     .card li {
       color: var(--graphite);
       font-size: 15px;
-    }
-
-    .dark .card p,
-    .dark .card li {
-      color: rgba(255, 255, 255, 0.68);
     }
 
     .services {
@@ -334,9 +370,9 @@
     }
 
     .profile-box {
-      border: 1px solid var(--line);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       padding: 36px;
-      background: var(--soft-gray);
+      background: #111214;
     }
 
     .profile-box h3 {
@@ -344,32 +380,6 @@
       line-height: 1.1;
       letter-spacing: -0.03em;
       margin-bottom: 16px;
-    }
-
-    .profile-box p {
-      color: var(--graphite);
-    }
-
-    .profile-list {
-      display: grid;
-      gap: 18px;
-    }
-
-    .profile-item {
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 18px;
-    }
-
-    .profile-item strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 15px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .profile-item p {
-      color: var(--graphite);
     }
 
     .training-list {
@@ -488,6 +498,15 @@
       .menu {
         display: none;
       }
+
+      .nav-right {
+        gap: 0;
+      }
+
+      .language-switch {
+        border-left: 0;
+        padding-left: 0;
+      }
     }
 
     @media (max-width: 680px) {
@@ -500,7 +519,19 @@
       }
 
       .brand img {
-        width: 180px;
+        width: 170px;
+      }
+
+      .language-switch {
+        gap: 4px;
+      }
+
+      .lang-btn {
+        padding: 0 7px;
+      }
+
+      .lang-label {
+        display: none;
       }
 
       .hero {
@@ -515,7 +546,6 @@
         padding: 72px 0;
       }
 
-      .grid-2,
       .grid-3,
       .services,
       .steps {
@@ -536,12 +566,19 @@
           <img src="ink_4.png" alt="MED&QUAL Medição e Qualidade" />
         </a>
 
-        <nav class="menu" aria-label="Menu principal">
-          <a href="#sobre">Sobre</a>
-          <a href="#servicos">Consultoria</a>
-          <a href="#treinamentos">Treinamentos</a>
-          <a href="#contato">Contato</a>
-        </nav>
+        <div class="nav-right">
+          <nav class="menu" aria-label="Menu principal">
+            <a href="#sobre" data-i18n="nav.about">Sobre</a>
+            <a href="#servicos" data-i18n="nav.consulting">Consultoria</a>
+            <a href="#treinamentos" data-i18n="nav.training">Treinamentos</a>
+            <a href="#contato" data-i18n="nav.contact">Contato</a>
+          </nav>
+
+          <div class="language-switch" aria-label="Seleção de idioma">
+            <button class="lang-btn active" type="button" data-lang="pt" aria-label="Português Brasil"><span>🇧🇷</span><span class="lang-label">PT</span></button>
+            <button class="lang-btn" type="button" data-lang="en" aria-label="English United States"><span>🇺🇸</span><span class="lang-label">EN</span></button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -549,23 +586,19 @@
       <section class="hero">
         <div class="container hero-grid">
           <div>
-            <span class="eyebrow">Medição, qualidade e conformidade regulatória</span>
-            <h1>Engenharia independente para sistemas de medição tecnicamente defensáveis.</h1>
-            <p>
-              Consultoria, assessoria e capacitação técnica especializada em medição de vazão de petróleo e gás natural, metrologia aplicada, qualidade do gás, processamento e segurança de processo.
-            </p>
+            <span class="eyebrow" data-i18n="hero.eyebrow">Medição, qualidade e conformidade regulatória</span>
+            <h1 data-i18n="hero.title">Engenharia independente para sistemas de medição tecnicamente defensáveis.</h1>
+            <p data-i18n="hero.text">Consultoria, assessoria e capacitação técnica especializada em medição de vazão de petróleo e gás natural, metrologia aplicada, qualidade do gás, processamento e segurança de processo.</p>
             <div class="hero-actions">
-              <a class="btn" href="#servicos">Conhecer serviços</a>
-              <a class="btn secondary" href="#treinamentos">Ver treinamentos</a>
+              <a class="btn" href="#servicos" data-i18n="hero.btn1">Conhecer serviços</a>
+              <a class="btn secondary" href="#treinamentos" data-i18n="hero.btn2">Ver treinamentos</a>
             </div>
           </div>
 
           <aside class="hero-card" aria-label="Identidade MED&QUAL">
             <img src="ink_4.png" alt="Logo MED&QUAL" />
             <div class="line"></div>
-            <p>
-              Atuação fundamentada em rigor normativo, análise crítica e rastreabilidade metrológica para auditorias, fiscalizações, disputas técnicas e decisões de engenharia.
-            </p>
+            <p data-i18n="hero.card">Atuação fundamentada em rigor normativo, análise crítica e rastreabilidade metrológica para auditorias, fiscalizações, disputas técnicas e decisões de engenharia.</p>
           </aside>
         </div>
       </section>
@@ -573,32 +606,30 @@
       <section id="sobre">
         <div class="container">
           <div class="section-head">
-            <span class="section-number">01 / Apresentação</span>
+            <span class="section-number" data-i18n="about.number">01 / Apresentação</span>
             <div>
-              <h2>Precisão técnica para decisões que precisam resistir à auditoria.</h2>
-              <p class="lead">
-                A MED&QUAL integra fundamentos físicos, prática operacional e requisitos regulatórios para entregar análises técnicas consistentes, rastreáveis e adequadas ao ambiente industrial de óleo e gás.
-              </p>
+              <h2 data-i18n="about.title">Precisão técnica para decisões que precisam resistir à auditoria.</h2>
+              <p class="lead" data-i18n="about.lead">A MED&QUAL integra fundamentos físicos, prática operacional e requisitos regulatórios para entregar análises técnicas consistentes, rastreáveis e adequadas ao ambiente industrial de óleo e gás.</p>
             </div>
           </div>
 
           <div class="grid-3">
             <article class="card">
-              <span class="tag">Base técnica</span>
-              <h3>Engenharia independente</h3>
-              <p>Análises conduzidas com foco técnico, sem conflito operacional, comercial ou documental.</p>
+              <span class="tag" data-i18n="about.card1.tag">Base técnica</span>
+              <h3 data-i18n="about.card1.title">Engenharia independente</h3>
+              <p data-i18n="about.card1.text">Análises conduzidas com foco técnico, sem conflito operacional, comercial ou documental.</p>
             </article>
 
             <article class="card">
-              <span class="tag">Rastreabilidade</span>
-              <h3>Resultado defensável</h3>
-              <p>Relatórios e pareceres estruturados para sustentar auditorias, fiscalizações e disputas técnicas.</p>
+              <span class="tag" data-i18n="about.card2.tag">Rastreabilidade</span>
+              <h3 data-i18n="about.card2.title">Resultado defensável</h3>
+              <p data-i18n="about.card2.text">Relatórios e pareceres estruturados para sustentar auditorias, fiscalizações e disputas técnicas.</p>
             </article>
 
             <article class="card">
-              <span class="tag">Regulação</span>
-              <h3>Conformidade ANP e INMETRO</h3>
-              <p>Avaliações alinhadas aos requisitos regulatórios aplicáveis aos sistemas de medição.</p>
+              <span class="tag" data-i18n="about.card3.tag">Regulação</span>
+              <h3 data-i18n="about.card3.title">Conformidade ANP e INMETRO</h3>
+              <p data-i18n="about.card3.text">Avaliações alinhadas aos requisitos regulatórios aplicáveis aos sistemas de medição.</p>
             </article>
           </div>
         </div>
@@ -607,34 +638,32 @@
       <section class="method">
         <div class="container">
           <div class="section-head">
-            <span class="section-number">02 / Forma de atuação</span>
+            <span class="section-number" data-i18n="method.number">02 / Forma de atuação</span>
             <div>
-              <h2>Consultoria técnica estruturada a partir de dados, registros e documentação.</h2>
-              <p class="lead">
-                Os serviços podem ser realizados como consultorias pontuais, estudos completos, revisões de projeto, auditorias documentais ou assessoria técnica continuada, com atuação predominantemente remota e rastreável.
-              </p>
+              <h2 data-i18n="method.title">Consultoria técnica estruturada a partir de dados, registros e documentação.</h2>
+              <p class="lead" data-i18n="method.lead">Os serviços podem ser realizados como consultorias pontuais, estudos completos, revisões de projeto, auditorias documentais ou assessoria técnica continuada, com atuação predominantemente remota e rastreável.</p>
             </div>
           </div>
 
           <div class="steps">
             <article class="step">
-              <h3>Levantamento</h3>
-              <p>Recebimento de dados, documentos, registros históricos e evidências do sistema avaliado.</p>
+              <h3 data-i18n="method.step1.title">Levantamento</h3>
+              <p data-i18n="method.step1.text">Recebimento de dados, documentos, registros históricos e evidências do sistema avaliado.</p>
             </article>
 
             <article class="step">
-              <h3>Análise crítica</h3>
-              <p>Avaliação técnica com base em metrologia aplicada, normas, requisitos regulatórios e prática operacional.</p>
+              <h3 data-i18n="method.step2.title">Análise crítica</h3>
+              <p data-i18n="method.step2.text">Avaliação técnica com base em metrologia aplicada, normas, requisitos regulatórios e prática operacional.</p>
             </article>
 
             <article class="step">
-              <h3>Diagnóstico</h3>
-              <p>Identificação de inconsistências, impactos, riscos de medição e oportunidades de adequação.</p>
+              <h3 data-i18n="method.step3.title">Diagnóstico</h3>
+              <p data-i18n="method.step3.text">Identificação de inconsistências, impactos, riscos de medição e oportunidades de adequação.</p>
             </article>
 
             <article class="step">
-              <h3>Entrega</h3>
-              <p>Emissão de recomendações, relatório ou parecer técnico com rastreabilidade e clareza decisória.</p>
+              <h3 data-i18n="method.step4.title">Entrega</h3>
+              <p data-i18n="method.step4.text">Emissão de recomendações, relatório ou parecer técnico com rastreabilidade e clareza decisória.</p>
             </article>
           </div>
         </div>
@@ -643,74 +672,72 @@
       <section id="servicos">
         <div class="container">
           <div class="section-head">
-            <span class="section-number">03 / Consultoria técnica</span>
+            <span class="section-number" data-i18n="services.number">03 / Consultoria técnica</span>
             <div>
-              <h2>Serviços especializados para medição fiscal, transferência de custódia e apropriação.</h2>
-              <p class="lead">
-                As frentes de consultoria cobrem desde projeto e auditoria de sistemas de medição até incerteza, computadores de vazão, qualidade do gás, flare e suporte a disputas técnicas.
-              </p>
+              <h2 data-i18n="services.title">Serviços especializados para medição fiscal, transferência de custódia e apropriação.</h2>
+              <p class="lead" data-i18n="services.lead">As frentes de consultoria cobrem desde projeto e auditoria de sistemas de medição até incerteza, computadores de vazão, qualidade do gás, flare e suporte a disputas técnicas.</p>
             </div>
           </div>
 
           <div class="services">
             <article class="service">
               <span>01</span>
-              <h3>Projetos e revisões de sistemas de medição</h3>
-              <p>Avaliação de arquiteturas, critérios de projeto, trechos de medição, arranjos instrumentais, tecnologias aplicáveis e recomendações de melhoria.</p>
+              <h3 data-i18n="services.s1.title">Projetos e revisões de sistemas de medição</h3>
+              <p data-i18n="services.s1.text">Avaliação de arquiteturas, critérios de projeto, trechos de medição, arranjos instrumentais, tecnologias aplicáveis e recomendações de melhoria.</p>
             </article>
 
             <article class="service">
               <span>02</span>
-              <h3>Auditoria técnica de sistemas de medição</h3>
-              <p>Análise de históricos, relatórios eletrônicos, parâmetros configurados, eventos inválidos e consistência entre instrumentação, cálculo e registros.</p>
+              <h3 data-i18n="services.s2.title">Auditoria técnica de sistemas de medição</h3>
+              <p data-i18n="services.s2.text">Análise de históricos, relatórios eletrônicos, parâmetros configurados, eventos inválidos e consistência entre instrumentação, cálculo e registros.</p>
             </article>
 
             <article class="service">
               <span>03</span>
-              <h3>Estudos de incerteza de medição</h3>
-              <p>Modelagem do mensurando, fontes de incerteza, incerteza padrão e expandida, desempenho metrológico e impacto de desvios operacionais.</p>
+              <h3 data-i18n="services.s3.title">Estudos de incerteza de medição</h3>
+              <p data-i18n="services.s3.text">Modelagem do mensurando, fontes de incerteza, incerteza padrão e expandida, desempenho metrológico e impacto de desvios operacionais.</p>
             </article>
 
             <article class="service">
               <span>04</span>
-              <h3>Análise dimensional e conformidade metrológica</h3>
-              <p>Verificação crítica de certificados dimensionais, requisitos AGA, ISO, API e RTM, identificação de não conformidades e parecer dimensional.</p>
+              <h3 data-i18n="services.s4.title">Análise dimensional e conformidade metrológica</h3>
+              <p data-i18n="services.s4.text">Verificação crítica de certificados dimensionais, requisitos AGA, ISO, API e RTM, identificação de não conformidades e parecer dimensional.</p>
             </article>
 
             <article class="service">
               <span>05</span>
-              <h3>Apropriação de produção e teste de poços</h3>
-              <p>Revisão de metodologias, critérios de estabilização, representatividade, validação metrológica e suporte técnico junto à ANP.</p>
+              <h3 data-i18n="services.s5.title">Apropriação de produção e teste de poços</h3>
+              <p data-i18n="services.s5.text">Revisão de metodologias, critérios de estabilização, representatividade, validação metrológica e suporte técnico junto à ANP.</p>
             </article>
 
             <article class="service">
               <span>06</span>
-              <h3>Qualidade do gás natural</h3>
-              <p>Avaliação de amostragem e cromatografia, validação de PCS, índice de Wobbe, compressibilidade e conformidade com requisitos regulatórios.</p>
+              <h3 data-i18n="services.s6.title">Qualidade do gás natural</h3>
+              <p data-i18n="services.s6.text">Avaliação de amostragem e cromatografia, validação de PCS, índice de Wobbe, compressibilidade e conformidade com requisitos regulatórios.</p>
             </article>
 
             <article class="service">
               <span>07</span>
-              <h3>Processamento de gás natural</h3>
-              <p>Diagnóstico de UPGNs e UTGs, desidratação, remoção de gases ácidos, compressão, eficiência energética e gargalos operacionais.</p>
+              <h3 data-i18n="services.s7.title">Processamento de gás natural</h3>
+              <p data-i18n="services.s7.text">Diagnóstico de UPGNs e UTGs, desidratação, remoção de gases ácidos, compressão, eficiência energética e gargalos operacionais.</p>
             </article>
 
             <article class="service">
               <span>08</span>
-              <h3>Sistemas de flare e vent</h3>
-              <p>Revisão técnica de projetos, critérios API 521, ISO 23251 e API 537, riscos operacionais e recomendações de segurança de processo.</p>
+              <h3 data-i18n="services.s8.title">Sistemas de flare e vent</h3>
+              <p data-i18n="services.s8.text">Revisão técnica de projetos, critérios API 521, ISO 23251 e API 537, riscos operacionais e recomendações de segurança de processo.</p>
             </article>
 
             <article class="service">
               <span>09</span>
-              <h3>Computadores de vazão e medição eletrônica</h3>
-              <p>Análise de algoritmos, parametrização, amostragem, médias, cut-off, integração, QTR, rastreabilidade e impactos volumétricos.</p>
+              <h3 data-i18n="services.s9.title">Computadores de vazão e medição eletrônica</h3>
+              <p data-i18n="services.s9.text">Análise de algoritmos, parametrização, amostragem, médias, cut-off, integração, QTR, rastreabilidade e impactos volumétricos.</p>
             </article>
 
             <article class="service">
               <span>10</span>
-              <h3>Falhas de medição e disputas técnicas</h3>
-              <p>Investigação de falhas, indisponibilidade, impacto volumétrico e financeiro, divergências de volumes e suporte técnico contratual.</p>
+              <h3 data-i18n="services.s10.title">Falhas de medição e disputas técnicas</h3>
+              <p data-i18n="services.s10.text">Investigação de falhas, indisponibilidade, impacto volumétrico e financeiro, divergências de volumes e suporte técnico contratual.</p>
             </article>
           </div>
         </div>
@@ -719,15 +746,13 @@
       <section id="responsavel" class="dark">
         <div class="container profile">
           <div>
-            <span class="eyebrow">Responsável técnico</span>
-            <h2>Experiência aplicada em medição, gás natural e conformidade regulatória.</h2>
+            <span class="eyebrow" data-i18n="profile.eyebrow">Responsável técnico</span>
+            <h2 data-i18n="profile.title">Experiência aplicada em medição, gás natural e conformidade regulatória.</h2>
           </div>
 
           <div class="profile-box">
             <h3>Eduardo Gertrudes</h3>
-            <p>
-              Engenheiro especializado em medição de vazão de hidrocarbonetos, com mais de duas décadas de experiência em metrologia aplicada, instrumentação industrial, qualidade do gás natural, processamento e regulação técnica de sistemas de medição fiscal, transferência de custódia e apropriação de produção.
-            </p>
+            <p data-i18n="profile.text">Engenheiro especializado em medição de vazão de hidrocarbonetos, com mais de duas décadas de experiência em metrologia aplicada, instrumentação industrial, qualidade do gás natural, processamento e regulação técnica de sistemas de medição fiscal, transferência de custódia e apropriação de produção.</p>
           </div>
         </div>
       </section>
@@ -735,25 +760,23 @@
       <section id="treinamentos" class="dark">
         <div class="container">
           <div class="section-head">
-            <span class="section-number">04 / Treinamentos técnicos</span>
+            <span class="section-number" data-i18n="training.number">04 / Treinamentos técnicos</span>
             <div>
-              <h2>Capacitação para quem precisa entender como medir, por que medir e quais são os limites técnicos.</h2>
-              <p class="lead">
-                Treinamentos ao vivo, online e interativos, com discussão de casos reais, análise de problemas operacionais, material próprio e suporte técnico durante o curso.
-              </p>
+              <h2 data-i18n="training.title">Capacitação para quem precisa entender como medir, por que medir e quais são os limites técnicos.</h2>
+              <p class="lead" data-i18n="training.lead">Treinamentos ao vivo, online e interativos, com discussão de casos reais, análise de problemas operacionais, material próprio e suporte técnico durante o curso.</p>
             </div>
           </div>
 
           <ul class="training-list">
-            <li>Medição de Vazão e Volumes de Petróleo</li>
-            <li>Medição de Vazão de Gás Natural</li>
-            <li>Medição de Apropriação de Produção e Teste de Poços</li>
-            <li>Computadores de Vazão e Medição Eletrônica</li>
-            <li>Incerteza de Medição Aplicada à Vazão</li>
-            <li>Inspeção Dimensional e Conformidade Metrológica</li>
-            <li>Qualidade do Gás Natural</li>
-            <li>Processamento de Gás Natural</li>
-            <li>Sistemas de Flare e Vent</li>
+            <li data-i18n="training.t1">Medição de Vazão e Volumes de Petróleo</li>
+            <li data-i18n="training.t2">Medição de Vazão de Gás Natural</li>
+            <li data-i18n="training.t3">Medição de Apropriação de Produção e Teste de Poços</li>
+            <li data-i18n="training.t4">Computadores de Vazão e Medição Eletrônica</li>
+            <li data-i18n="training.t5">Incerteza de Medição Aplicada à Vazão</li>
+            <li data-i18n="training.t6">Inspeção Dimensional e Conformidade Metrológica</li>
+            <li data-i18n="training.t7">Qualidade do Gás Natural</li>
+            <li data-i18n="training.t8">Processamento de Gás Natural</li>
+            <li data-i18n="training.t9">Sistemas de Flare e Vent</li>
           </ul>
         </div>
       </section>
@@ -761,12 +784,10 @@
       <section>
         <div class="container">
           <div class="section-head">
-            <span class="section-number">05 / Posicionamento</span>
+            <span class="section-number" data-i18n="position.number">05 / Posicionamento</span>
             <div>
-              <h2>Problemas reais, análise técnica e soluções engenheiradas.</h2>
-              <p class="lead">
-                Todo treinamento e toda consultoria da MED&QUAL parte de problemas reais enfrentados em sistemas de medição e processamento industrial, transformando dados, documentação e registros operacionais em soluções rastreáveis e tecnicamente defensáveis.
-              </p>
+              <h2 data-i18n="position.title">Problemas reais, análise técnica e soluções engenheiradas.</h2>
+              <p class="lead" data-i18n="position.lead">Todo treinamento e toda consultoria da MED&QUAL parte de problemas reais enfrentados em sistemas de medição e processamento industrial, transformando dados, documentação e registros operacionais em soluções rastreáveis e tecnicamente defensáveis.</p>
             </div>
           </div>
         </div>
@@ -775,13 +796,11 @@
       <section id="contato" class="cta">
         <div class="container cta-box">
           <div>
-            <span class="eyebrow">Contato</span>
-            <h2>Precisa revisar, auditar ou defender tecnicamente um sistema de medição?</h2>
-            <p>
-              Envie sua demanda, documentação disponível e objetivo técnico. A MED&QUAL avalia o melhor formato de atendimento: parecer, estudo, auditoria, revisão de projeto, treinamento ou assessoria continuada.
-            </p>
+            <span class="eyebrow" data-i18n="contact.eyebrow">Contato</span>
+            <h2 data-i18n="contact.title">Precisa revisar, auditar ou defender tecnicamente um sistema de medição?</h2>
+            <p data-i18n="contact.text">Envie sua demanda, documentação disponível e objetivo técnico. A MED&QUAL avalia o melhor formato de atendimento: parecer, estudo, auditoria, revisão de projeto, treinamento ou assessoria continuada.</p>
           </div>
-          <a class="btn" href="mailto:contato@medequal.com.br">Solicitar avaliação</a>
+          <a class="btn" href="https://wa.me/5584998370385" target="_blank" rel="noopener noreferrer" data-i18n="contact.btn">Solicitar avaliação pelo WhatsApp</a>
         </div>
       </section>
     </main>
@@ -789,9 +808,207 @@
     <footer>
       <div class="container footer-row">
         <p>MED&QUAL · Medição e Qualidade</p>
-        <p>Consultoria técnica · Treinamentos · Conformidade regulatória</p>
+        <p data-i18n="footer.text">Consultoria técnica · Treinamentos · Conformidade regulatória</p>
       </div>
     </footer>
   </div>
+
+  <script>
+    const translations = {
+      pt: {
+        metaTitle: "MED&QUAL | Medição e Qualidade",
+        metaDescription: "Consultoria, assessoria e capacitação técnica especializada em sistemas de medição de vazão, metrologia aplicada, qualidade do gás, processamento e conformidade regulatória.",
+        "nav.about": "Sobre",
+        "nav.consulting": "Consultoria",
+        "nav.training": "Treinamentos",
+        "nav.contact": "Contato",
+        "hero.eyebrow": "Medição, qualidade e conformidade regulatória",
+        "hero.title": "Engenharia independente para sistemas de medição tecnicamente defensáveis.",
+        "hero.text": "Consultoria, assessoria e capacitação técnica especializada em medição de vazão de petróleo e gás natural, metrologia aplicada, qualidade do gás, processamento e segurança de processo.",
+        "hero.btn1": "Conhecer serviços",
+        "hero.btn2": "Ver treinamentos",
+        "hero.card": "Atuação fundamentada em rigor normativo, análise crítica e rastreabilidade metrológica para auditorias, fiscalizações, disputas técnicas e decisões de engenharia.",
+        "about.number": "01 / Apresentação",
+        "about.title": "Precisão técnica para decisões que precisam resistir à auditoria.",
+        "about.lead": "A MED&QUAL integra fundamentos físicos, prática operacional e requisitos regulatórios para entregar análises técnicas consistentes, rastreáveis e adequadas ao ambiente industrial de óleo e gás.",
+        "about.card1.tag": "Base técnica",
+        "about.card1.title": "Engenharia independente",
+        "about.card1.text": "Análises conduzidas com foco técnico, sem conflito operacional, comercial ou documental.",
+        "about.card2.tag": "Rastreabilidade",
+        "about.card2.title": "Resultado defensável",
+        "about.card2.text": "Relatórios e pareceres estruturados para sustentar auditorias, fiscalizações e disputas técnicas.",
+        "about.card3.tag": "Regulação",
+        "about.card3.title": "Conformidade ANP e INMETRO",
+        "about.card3.text": "Avaliações alinhadas aos requisitos regulatórios aplicáveis aos sistemas de medição.",
+        "method.number": "02 / Forma de atuação",
+        "method.title": "Consultoria técnica estruturada a partir de dados, registros e documentação.",
+        "method.lead": "Os serviços podem ser realizados como consultorias pontuais, estudos completos, revisões de projeto, auditorias documentais ou assessoria técnica continuada, com atuação predominantemente remota e rastreável.",
+        "method.step1.title": "Levantamento",
+        "method.step1.text": "Recebimento de dados, documentos, registros históricos e evidências do sistema avaliado.",
+        "method.step2.title": "Análise crítica",
+        "method.step2.text": "Avaliação técnica com base em metrologia aplicada, normas, requisitos regulatórios e prática operacional.",
+        "method.step3.title": "Diagnóstico",
+        "method.step3.text": "Identificação de inconsistências, impactos, riscos de medição e oportunidades de adequação.",
+        "method.step4.title": "Entrega",
+        "method.step4.text": "Emissão de recomendações, relatório ou parecer técnico com rastreabilidade e clareza decisória.",
+        "services.number": "03 / Consultoria técnica",
+        "services.title": "Serviços especializados para medição fiscal, transferência de custódia e apropriação.",
+        "services.lead": "As frentes de consultoria cobrem desde projeto e auditoria de sistemas de medição até incerteza, computadores de vazão, qualidade do gás, flare e suporte a disputas técnicas.",
+        "services.s1.title": "Projetos e revisões de sistemas de medição",
+        "services.s1.text": "Avaliação de arquiteturas, critérios de projeto, trechos de medição, arranjos instrumentais, tecnologias aplicáveis e recomendações de melhoria.",
+        "services.s2.title": "Auditoria técnica de sistemas de medição",
+        "services.s2.text": "Análise de históricos, relatórios eletrônicos, parâmetros configurados, eventos inválidos e consistência entre instrumentação, cálculo e registros.",
+        "services.s3.title": "Estudos de incerteza de medição",
+        "services.s3.text": "Modelagem do mensurando, fontes de incerteza, incerteza padrão e expandida, desempenho metrológico e impacto de desvios operacionais.",
+        "services.s4.title": "Análise dimensional e conformidade metrológica",
+        "services.s4.text": "Verificação crítica de certificados dimensionais, requisitos AGA, ISO, API e RTM, identificação de não conformidades e parecer dimensional.",
+        "services.s5.title": "Apropriação de produção e teste de poços",
+        "services.s5.text": "Revisão de metodologias, critérios de estabilização, representatividade, validação metrológica e suporte técnico junto à ANP.",
+        "services.s6.title": "Qualidade do gás natural",
+        "services.s6.text": "Avaliação de amostragem e cromatografia, validação de PCS, índice de Wobbe, compressibilidade e conformidade com requisitos regulatórios.",
+        "services.s7.title": "Processamento de gás natural",
+        "services.s7.text": "Diagnóstico de UPGNs e UTGs, desidratação, remoção de gases ácidos, compressão, eficiência energética e gargalos operacionais.",
+        "services.s8.title": "Sistemas de flare e vent",
+        "services.s8.text": "Revisão técnica de projetos, critérios API 521, ISO 23251 e API 537, riscos operacionais e recomendações de segurança de processo.",
+        "services.s9.title": "Computadores de vazão e medição eletrônica",
+        "services.s9.text": "Análise de algoritmos, parametrização, amostragem, médias, cut-off, integração, QTR, rastreabilidade e impactos volumétricos.",
+        "services.s10.title": "Falhas de medição e disputas técnicas",
+        "services.s10.text": "Investigação de falhas, indisponibilidade, impacto volumétrico e financeiro, divergências de volumes e suporte técnico contratual.",
+        "profile.eyebrow": "Responsável técnico",
+        "profile.title": "Experiência aplicada em medição, gás natural e conformidade regulatória.",
+        "profile.text": "Engenheiro especializado em medição de vazão de hidrocarbonetos, com mais de duas décadas de experiência em metrologia aplicada, instrumentação industrial, qualidade do gás natural, processamento e regulação técnica de sistemas de medição fiscal, transferência de custódia e apropriação de produção.",
+        "training.number": "04 / Treinamentos técnicos",
+        "training.title": "Capacitação para quem precisa entender como medir, por que medir e quais são os limites técnicos.",
+        "training.lead": "Treinamentos ao vivo, online e interativos, com discussão de casos reais, análise de problemas operacionais, material próprio e suporte técnico durante o curso.",
+        "training.t1": "Medição de Vazão e Volumes de Petróleo",
+        "training.t2": "Medição de Vazão de Gás Natural",
+        "training.t3": "Medição de Apropriação de Produção e Teste de Poços",
+        "training.t4": "Computadores de Vazão e Medição Eletrônica",
+        "training.t5": "Incerteza de Medição Aplicada à Vazão",
+        "training.t6": "Inspeção Dimensional e Conformidade Metrológica",
+        "training.t7": "Qualidade do Gás Natural",
+        "training.t8": "Processamento de Gás Natural",
+        "training.t9": "Sistemas de Flare e Vent",
+        "position.number": "05 / Posicionamento",
+        "position.title": "Problemas reais, análise técnica e soluções engenheiradas.",
+        "position.lead": "Todo treinamento e toda consultoria da MED&QUAL parte de problemas reais enfrentados em sistemas de medição e processamento industrial, transformando dados, documentação e registros operacionais em soluções rastreáveis e tecnicamente defensáveis.",
+        "contact.eyebrow": "Contato",
+        "contact.title": "Precisa revisar, auditar ou defender tecnicamente um sistema de medição?",
+        "contact.text": "Envie sua demanda, documentação disponível e objetivo técnico. A MED&QUAL avalia o melhor formato de atendimento: parecer, estudo, auditoria, revisão de projeto, treinamento ou assessoria continuada.",
+        "contact.btn": "Solicitar avaliação pelo WhatsApp",
+        "footer.text": "Consultoria técnica · Treinamentos · Conformidade regulatória"
+      },
+      en: {
+        metaTitle: "MED&QUAL | Measurement and Quality",
+        metaDescription: "Specialized consulting, advisory services and technical training for flow measurement systems, applied metrology, gas quality, processing and regulatory compliance.",
+        "nav.about": "About",
+        "nav.consulting": "Consulting",
+        "nav.training": "Training",
+        "nav.contact": "Contact",
+        "hero.eyebrow": "Measurement, quality and regulatory compliance",
+        "hero.title": "Independent engineering for technically defensible measurement systems.",
+        "hero.text": "Specialized consulting, advisory services and technical training in oil and natural gas flow measurement, applied metrology, gas quality, processing and process safety.",
+        "hero.btn1": "View services",
+        "hero.btn2": "View training",
+        "hero.card": "Work based on regulatory rigor, critical analysis and metrological traceability for audits, inspections, technical disputes and engineering decisions.",
+        "about.number": "01 / Overview",
+        "about.title": "Technical precision for decisions that must withstand audit scrutiny.",
+        "about.lead": "MED&QUAL combines physical fundamentals, operational practice and regulatory requirements to deliver consistent, traceable technical analyses suited to oil and gas industrial environments.",
+        "about.card1.tag": "Technical basis",
+        "about.card1.title": "Independent engineering",
+        "about.card1.text": "Analyses conducted with technical focus, free from operational, commercial or documentary conflict.",
+        "about.card2.tag": "Traceability",
+        "about.card2.title": "Defensible results",
+        "about.card2.text": "Reports and technical opinions structured to support audits, inspections and technical disputes.",
+        "about.card3.tag": "Regulation",
+        "about.card3.title": "ANP and INMETRO compliance",
+        "about.card3.text": "Assessments aligned with the regulatory requirements applicable to measurement systems.",
+        "method.number": "02 / Approach",
+        "method.title": "Technical consulting structured from data, records and documentation.",
+        "method.lead": "Services may be delivered as focused consulting, complete technical studies, project reviews, document audits or ongoing technical advisory support, predominantly through remote and traceable analysis.",
+        "method.step1.title": "Data collection",
+        "method.step1.text": "Receipt of data, documents, historical records and evidence from the system under evaluation.",
+        "method.step2.title": "Critical analysis",
+        "method.step2.text": "Technical assessment based on applied metrology, standards, regulatory requirements and operational practice.",
+        "method.step3.title": "Diagnosis",
+        "method.step3.text": "Identification of inconsistencies, impacts, measurement risks and opportunities for technical adjustment.",
+        "method.step4.title": "Delivery",
+        "method.step4.text": "Issuance of recommendations, reports or technical opinions with traceability and decision clarity.",
+        "services.number": "03 / Technical consulting",
+        "services.title": "Specialized services for fiscal measurement, custody transfer and production allocation.",
+        "services.lead": "Consulting areas cover system design and measurement audits, uncertainty, flow computers, gas quality, flare systems and support for technical disputes.",
+        "services.s1.title": "Measurement system design and reviews",
+        "services.s1.text": "Assessment of architectures, design criteria, meter runs, instrument arrangements, applicable technologies and improvement recommendations.",
+        "services.s2.title": "Technical audit of measurement systems",
+        "services.s2.text": "Analysis of historical files, electronic reports, configured parameters, invalid events and consistency between instrumentation, calculation and records.",
+        "services.s3.title": "Measurement uncertainty studies",
+        "services.s3.text": "Modeling of the measurand, uncertainty sources, standard and expanded uncertainty, metrological performance and the impact of operational deviations.",
+        "services.s4.title": "Dimensional analysis and metrological compliance",
+        "services.s4.text": "Critical review of dimensional certificates, AGA, ISO, API and RTM requirements, identification of nonconformities and dimensional technical opinions.",
+        "services.s5.title": "Production allocation and well testing",
+        "services.s5.text": "Review of methodologies, stabilization criteria, representativeness, metrological validation and technical support for ANP-related matters.",
+        "services.s6.title": "Natural gas quality",
+        "services.s6.text": "Assessment of sampling and chromatography, validation of HHV, Wobbe Index, compressibility and compliance with regulatory requirements.",
+        "services.s7.title": "Natural gas processing",
+        "services.s7.text": "Diagnosis of gas processing and treatment units, dehydration, acid gas removal, compression, energy efficiency and operational bottlenecks.",
+        "services.s8.title": "Flare and vent systems",
+        "services.s8.text": "Technical review of projects, API 521, ISO 23251 and API 537 criteria, operational risks and process safety recommendations.",
+        "services.s9.title": "Flow computers and electronic measurement",
+        "services.s9.text": "Analysis of algorithms, parameterization, sampling, averages, cut-off, integration, QTR, traceability and volumetric impacts.",
+        "services.s10.title": "Measurement failures and technical disputes",
+        "services.s10.text": "Investigation of failures, unavailability, volumetric and financial impact, volume discrepancies and contractual technical support.",
+        "profile.eyebrow": "Technical lead",
+        "profile.title": "Applied experience in measurement, natural gas and regulatory compliance.",
+        "profile.text": "Engineer specialized in hydrocarbon flow measurement, with more than two decades of experience in applied metrology, industrial instrumentation, natural gas quality, processing and technical regulation of fiscal measurement, custody transfer and production allocation systems.",
+        "training.number": "04 / Technical training",
+        "training.title": "Training for professionals who need to understand how to measure, why to measure and the technical limits involved.",
+        "training.lead": "Live, online and interactive training with real case discussions, operational problem analysis, proprietary material and technical support during the course.",
+        "training.t1": "Oil Flow and Volume Measurement",
+        "training.t2": "Natural Gas Flow Measurement",
+        "training.t3": "Production Allocation Measurement and Well Testing",
+        "training.t4": "Flow Computers and Electronic Measurement",
+        "training.t5": "Measurement Uncertainty Applied to Flow",
+        "training.t6": "Dimensional Inspection and Metrological Compliance",
+        "training.t7": "Natural Gas Quality",
+        "training.t8": "Natural Gas Processing",
+        "training.t9": "Flare and Vent Systems",
+        "position.number": "05 / Positioning",
+        "position.title": "Real problems, technical analysis and engineered solutions.",
+        "position.lead": "Every MED&QUAL training and consulting service starts from real problems found in measurement and industrial processing systems, transforming data, documentation and operational records into traceable and technically defensible solutions.",
+        "contact.eyebrow": "Contact",
+        "contact.title": "Do you need to review, audit or technically defend a measurement system?",
+        "contact.text": "Send your request, available documentation and technical objective. MED&QUAL will assess the best service format: technical opinion, study, audit, project review, training or ongoing advisory support.",
+        "contact.btn": "Request assessment via WhatsApp",
+        "footer.text": "Technical consulting · Training · Regulatory compliance"
+      }
+    };
+
+    function setLanguage(lang) {
+      const dictionary = translations[lang] || translations.pt;
+      document.documentElement.lang = lang === "en" ? "en-US" : "pt-BR";
+      document.title = dictionary.metaTitle;
+      const description = document.querySelector('meta[name="description"]');
+      if (description) description.setAttribute("content", dictionary.metaDescription);
+
+      document.querySelectorAll("[data-i18n]").forEach((element) => {
+        const key = element.getAttribute("data-i18n");
+        if (dictionary[key]) element.textContent = dictionary[key];
+      });
+
+      document.querySelectorAll(".lang-btn").forEach((button) => {
+        button.classList.toggle("active", button.getAttribute("data-lang") === lang);
+      });
+
+      localStorage.setItem("medqual-language", lang);
+    }
+
+    document.querySelectorAll(".lang-btn").forEach((button) => {
+      button.addEventListener("click", () => setLanguage(button.getAttribute("data-lang")));
+    });
+
+    const savedLanguage = localStorage.getItem("medqual-language");
+    const browserLanguage = navigator.language && navigator.language.toLowerCase().startsWith("en") ? "en" : "pt";
+    setLanguage(savedLanguage || browserLanguage);
+  </script>
 </body>
 </html>
