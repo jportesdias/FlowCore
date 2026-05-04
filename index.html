@@ -8,11 +8,11 @@
   <meta name="description"
     content="Domine a metrologia industrial e impulsione sua carreira com a FlowCore Solutions." />
 
-  <!-- Fonts: Outfit for sleek modern headings, Inter for high readability body -->
+  <!-- Fonts: Outfit for headings, Inter for body, Rajdhani for the first section -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap"
     rel="stylesheet" />
 
   <style>
@@ -269,6 +269,14 @@
       z-index: 10;
     }
 
+    .hero,
+    .hero .badge,
+    .hero .btn,
+    .hero .social-proof p,
+    .hero .logos span {
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+    }
+
     .badge {
       display: inline-flex;
       align-items: center;
@@ -297,9 +305,13 @@
     }
 
     .hero-title {
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
       font-size: clamp(2.5rem, 4.5vw, 4rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      scale: 1 1.14;
+      transform-origin: left center;
       margin-bottom: 24px;
       max-width: 900px;
       animation: fadeInUp 0.8s ease-out 0.2s forwards;
@@ -315,7 +327,9 @@
     }
 
     .hero-subtitle {
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
       font-size: clamp(1.1rem, 1.5vw, 1.25rem);
+      font-weight: 500;
       max-width: 550px;
       margin: 0 0 40px;
       color: var(--text-body);
@@ -940,6 +954,10 @@
         text-align: center;
         order: 2;
         /* Move text below visuals on mobile */
+      }
+
+      .hero-title {
+        transform-origin: center;
       }
 
       .hero-visuals {
