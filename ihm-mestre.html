@@ -565,10 +565,48 @@ function buildFaultPanel(token, p) {
     return `<button class="fbt ${on?'on':''}" onclick="sendFaultToSession('${token}','${f.k}',${!on})" title="${f.k}">${f.l}</button>`;
   }).join('');
 
+  // MOV controls — open/close valves remotely
+  const movDefs = [
+    { tag:'MOV-3101', l:'3101', sub:'T-01 in' },
+    { tag:'MOV-3201', l:'3201', sub:'T-02 in' },
+    { tag:'MOV-3301', l:'3301', sub:'T-03 in' },
+    { tag:'MOV-3401', l:'3401', sub:'Prover' },
+    { tag:'MOV-3402', l:'3402', sub:'Prov main' },
+  ];
+  const movBtns = movDefs.map(m => {
+    const key = 'mov' + m.tag.slice(4); // mov3101, mov3201, …
+    const open = !!p[key];
+    const cls = open ? 'on' : '';
+    const label = open ? '◉ ABERTA' : '○ fechada';
+    return `<button class="fbt ${cls}" style="font-size:8px;line-height:1.2;padding:4px 2px"
+      onclick="sendMOVToSession('${token}','${m.tag}',${!open})"
+      title="${m.tag} — ${m.sub}">
+      <div style="font-weight:900">${m.l}</div>
+      <div style="font-size:7px;opacity:.85">${label}</div>
+    </button>`;
+  }).join('');
+
+  // Scenario dropdown per session (replaces prompt())
+  const scenOpts = [
+    ['normal','Normal (reset)'],
+    ['highflow','Vazão Alta'],
+    ['lowflow','Vazão Baixa'],
+    ['highpres','Pressão Alta'],
+    ['lowpres','Pressão Baixa'],
+    ['kdrift1','Desvio K+'],
+    ['kdrift2','Desvio K−'],
+    ['detdelay','Atraso Detector'],
+    ['combined','Combinado (P↑+K+)'],
+  ].map(([v,l]) => `<option value="${v}">${l}</option>`).join('');
+
   return `
   <div class="bc-lbl" style="margin-bottom:5px">Falhas — clique para toggle</div>
   <div class="fault-grid">${btns}</div>
-  <div class="bc-lbl" style="margin-bottom:4px">FCV Manual</div>
+
+  <div class="bc-lbl" style="margin-top:8px;margin-bottom:5px">MOVs — abrir/fechar remotamente</div>
+  <div class="fault-grid">${movBtns}</div>
+
+  <div class="bc-lbl" style="margin-top:8px;margin-bottom:4px">FCV Manual</div>
   ${['01','02','03'].map(id => `
   <div class="fcv-mini-row">
     <span class="fcv-mini-lbl">FCV-${id==='01'?'3102':id==='02'?'3202':'3302'}</span>
@@ -579,6 +617,16 @@ function buildFaultPanel(token, p) {
       style="width:100%;accent-color:var(--pu2)">
     <span class="fcv-mini-val" id="fcv-vl-${token}-${id}">${Math.round(p['fcv'+id]||33)}%</span>
   </div>`).join('')}
+
+  <div class="bc-lbl" style="margin-top:8px;margin-bottom:4px">Cenário</div>
+  <div style="display:flex;gap:4px;margin-bottom:5px">
+    <select class="bc-select" id="scen-sel-${token}" style="flex:1;margin-bottom:0">
+      <option value="">— selecionar —</option>
+      ${scenOpts}
+    </select>
+    <button class="sc-btn act" style="padding:3px 8px" onclick="sendScenarioToSession('${token}')">▦</button>
+  </div>
+
   <div class="msg-row">
     <input class="msg-inp" type="text" id="msg-inp-${token}"
       placeholder="Mensagem para operador…" maxlength="100"
@@ -634,8 +682,14 @@ function sendFaultToSession(token, name, value) {
 }
 
 function sendScenarioToSession(token) {
-  const scen = prompt('Cenário para ' + token + ':\nnormal / highflow / lowflow / highpres / lowpres / kdrift1 / kdrift2 / detdelay / combined');
-  if (scen) sendCmd(token, { type:'SCENARIO', scenario: scen.trim() });
+  const sel = el('scen-sel-' + token);
+  const scen = sel ? sel.value : '';
+  if (!scen) {
+    log('Selecione um cenário para ' + token, 'warn');
+    return;
+  }
+  sendCmd(token, { type:'SCENARIO', scenario: scen });
+  if (sel) sel.value = '';
 }
 
 function sendResetToSession(token) {
@@ -645,6 +699,19 @@ function sendResetToSession(token) {
 
 function sendFCVToSession(token, id, pct) {
   sendCmd(token, { type:'FCVSET', fcv:{ id, pct:+pct } });
+}
+
+function sendMOVToSession(token, tag, open) {
+  sendCmd(token, { type:'MOVSET', mov:{ tag, open:!!open } });
+  // Optimistic UI update — atualiza o estado local e re-renderiza só o painel
+  if (_sessions[token]) {
+    const key = 'mov' + tag.slice(4);
+    _sessions[token][key] = !!open;
+    const fp = document.getElementById('fp-' + token);
+    if (fp && fp.classList.contains('on')) {
+      fp.innerHTML = buildFaultPanel(token, _sessions[token]);
+    }
+  }
 }
 
 function sendMsgToSession(token) {
