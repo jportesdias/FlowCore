@@ -1170,6 +1170,116 @@
       -webkit-backdrop-filter: blur(10px);
     }
 
+    /* TESTE: modal de captação para download do livro */
+    .lead-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(3, 10, 22, 0.72);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .lead-modal.is-open {
+      display: flex;
+    }
+
+    .lead-modal-card {
+      width: min(100%, 520px);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(244, 248, 252, 0.96));
+      border: 1px solid rgba(255, 255, 255, 0.68);
+      border-radius: 24px;
+      box-shadow: 0 32px 90px rgba(0, 0, 0, 0.34);
+      padding: 34px;
+      position: relative;
+    }
+
+    .lead-modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 50%;
+      cursor: pointer;
+      background: rgba(31, 63, 104, 0.08);
+      color: var(--accent-secondary);
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    .lead-modal-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 0.86rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-main);
+    }
+
+    .lead-modal-kicker::before {
+      content: '';
+      width: 30px;
+      height: 2px;
+      background: var(--accent-main);
+    }
+
+    .lead-modal-card h3 {
+      font-size: clamp(1.7rem, 4vw, 2.35rem);
+      line-height: 1;
+      margin-bottom: 12px;
+      color: var(--accent-secondary);
+    }
+
+    .lead-modal-card p {
+      color: var(--text-body);
+      margin-bottom: 22px;
+    }
+
+    .lead-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .lead-form input {
+      width: 100%;
+      height: 54px;
+      border: 1px solid rgba(31, 63, 104, 0.16);
+      border-radius: 14px;
+      padding: 0 16px;
+      font: inherit;
+      color: var(--text-heading);
+      background: #FFFFFF;
+      outline: none;
+    }
+
+    .lead-form input:focus {
+      border-color: rgba(229, 91, 19, 0.58);
+      box-shadow: 0 0 0 4px rgba(229, 91, 19, 0.10);
+    }
+
+    .lead-form-note {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .lead-form-message {
+      min-height: 22px;
+      font-size: 0.88rem;
+      color: var(--accent-main);
+    }
+
 
     /* --- AUTHOR SECTION --- */
     .author-section {
@@ -2432,10 +2542,10 @@
                   <li>Não há evolução sem precisão. Isso é Metrologia.</li>
                 </ul>
                 <div class="price-action">
-                  <div class="format">eBook / PDF (Acesso Imediato)</div>
+                  <div class="format">eBook / PDF gratuito mediante e-mail</div>
                 </div>
-                <a href="https://pay.kiwify.com.br/FbceEsd" target="_blank" class="btn btn-primary btn-buy">
-                  Comprar via Kiwify
+                <a href="#lead-nfcm" class="btn btn-primary btn-buy" data-lead-download>
+                  Baixar agora
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
@@ -2640,6 +2750,22 @@
     </div>
   </footer>
 
+  <!-- TESTE: captação de lead para download do Nunca Foi Certo Medir -->
+  <div class="lead-modal" id="lead-nfcm" aria-hidden="true">
+    <div class="lead-modal-card" role="dialog" aria-modal="true" aria-labelledby="lead-nfcm-title">
+      <button class="lead-modal-close" type="button" aria-label="Fechar" data-lead-close>x</button>
+      <div class="lead-modal-kicker">Download gratuito</div>
+      <h3 id="lead-nfcm-title">Baixar Nunca Foi Certo Medir</h3>
+      <p>Informe seu e-mail para liberar o download do material.</p>
+      <form class="lead-form" id="lead-nfcm-form">
+        <input type="email" id="lead-nfcm-email" name="email" placeholder="seu@email.com" required />
+        <button class="btn btn-primary" type="submit">Liberar download</button>
+        <div class="lead-form-note">Usaremos seu e-mail para enviar materiais técnicos da FlowCore. Você pode sair da lista quando quiser.</div>
+        <div class="lead-form-message" id="lead-nfcm-message" aria-live="polite"></div>
+      </form>
+    </div>
+  </div>
+
   <script>
     // Set Year
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -2675,6 +2801,70 @@
     document.querySelectorAll('.section-header, .bento-card, .product-card, .author-grid, .cta-box').forEach(el => {
       el.style.opacity = '0';
       observer.observe(el);
+    });
+
+    // TESTE: captação de e-mail antes de liberar download
+    const leadDownloadButton = document.querySelector('[data-lead-download]');
+    const leadModal = document.getElementById('lead-nfcm');
+    const leadForm = document.getElementById('lead-nfcm-form');
+    const leadEmail = document.getElementById('lead-nfcm-email');
+    const leadMessage = document.getElementById('lead-nfcm-message');
+    const leadCloseButtons = document.querySelectorAll('[data-lead-close]');
+    const leadDownloadFile = 'nunca-foi-certo-medir.pdf';
+    const leadSheetUrl = 'https://script.google.com/macros/s/AKfycbxuXY75KXKIe_Z7iQmK5nyKdk-d4OAyKX9MJBrIo4qbe3zzBJ3CzBV1fA7x2amAbd_icg/exec';
+
+    function openLeadModal() {
+      if (!leadModal) return;
+      leadModal.classList.add('is-open');
+      leadModal.setAttribute('aria-hidden', 'false');
+      setTimeout(() => leadEmail?.focus(), 80);
+    }
+
+    function closeLeadModal() {
+      if (!leadModal) return;
+      leadModal.classList.remove('is-open');
+      leadModal.setAttribute('aria-hidden', 'true');
+    }
+
+    leadDownloadButton?.addEventListener('click', (event) => {
+      event.preventDefault();
+      openLeadModal();
+    });
+
+    leadCloseButtons.forEach((button) => {
+      button.addEventListener('click', closeLeadModal);
+    });
+
+    leadModal?.addEventListener('click', (event) => {
+      if (event.target === leadModal) closeLeadModal();
+    });
+
+    leadForm?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const email = leadEmail.value.trim();
+      const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      if (!validEmail) {
+        leadMessage.textContent = 'Informe um e-mail válido para liberar o download.';
+        return;
+      }
+
+      const params = new URLSearchParams({
+        email,
+        origem: 'download_nunca_foi_certo_medir',
+        material: 'Nunca Foi Certo Medir',
+        data: new Date().toISOString()
+      });
+
+      fetch(`${leadSheetUrl}?${params.toString()}`, { mode: 'no-cors' })
+        .catch((error) => {
+          console.error('Erro ao registrar lead:', error);
+        });
+
+      leadMessage.textContent = 'Download liberado. O arquivo será aberto em seguida.';
+      window.setTimeout(() => {
+        window.location.href = leadDownloadFile;
+      }, 650);
     });
   </script>
 </body>
