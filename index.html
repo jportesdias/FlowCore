@@ -65,6 +65,9 @@
 
     html {
       scroll-behavior: smooth;
+      overflow-x: hidden;
+      overflow-x: clip;
+      max-width: 100%;
     }
 
     body {
@@ -73,7 +76,14 @@
       color: var(--text-body);
       line-height: 1.6;
       overflow-x: hidden;
+      overflow-x: clip;
+      max-width: 100%;
       -webkit-font-smoothing: antialiased;
+    }
+
+    main {
+      overflow-x: hidden;
+      overflow-x: clip;
     }
 
     .ambient-glow {
@@ -95,7 +105,8 @@
       height: 50vh;
       background: radial-gradient(circle, rgba(27, 100, 255, 0.05) 0%, transparent 70%);
       bottom: -20%;
-      right: -10%;
+      right: 0;
+      transform: none;
       z-index: -1;
       pointer-events: none;
     }
@@ -515,7 +526,7 @@
     .materials-section {
       position: relative;
       overflow: hidden;
-      padding-top: 0;
+      padding: 0;
       background: #EEF2F8;
     }
 
@@ -534,7 +545,7 @@
       width: 100%;
       left: auto;
       transform: none;
-      margin: 0 0 72px;
+      margin: 0;
       min-height: 620px;
       padding: 76px clamp(28px, 6vw, 76px);
       overflow: hidden;
@@ -665,9 +676,12 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 32px;
-      max-width: var(--max-width);
+      max-width: none;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 72px max(24px, calc((100% - var(--max-width)) / 2 + 24px));
+      background:
+        linear-gradient(135deg, rgba(3, 10, 22, 0.70) 0%, rgba(5, 17, 36, 0.48) 48%, rgba(238, 242, 248, 0.38) 100%),
+        url('pensamento.png') center / cover no-repeat;
     }
 
     /* TESTE: harmonização das famílias Livros e Soluções */
@@ -718,16 +732,83 @@
       line-height: 1.6;
     }
 
+    .products-grid > .catalog-heading h3 {
+      color: #FFFFFF;
+    }
+
+    .products-grid > .catalog-heading p {
+      color: rgba(255, 255, 255, 0.78);
+    }
+
     .books-card {
       background:
         linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(246, 249, 253, 0.98) 100%);
     }
 
     .solutions-heading {
-      margin-top: 46px;
+      margin-top: 0;
       padding-top: 48px;
       border-top: 1px solid rgba(31, 63, 104, 0.12);
     }
+
+    /* TESTE: background exclusivo para Soluções digitais */
+    .solutions-band {
+      position: relative;
+      width: 100%;
+      margin-top: 0;
+      padding: 72px 0;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(3, 10, 22, 0.72) 0%, rgba(5, 17, 36, 0.54) 48%, rgba(238, 242, 248, 0.56) 100%),
+        url('solutions.png') center / cover no-repeat;
+    }
+
+    .solutions-band-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px;
+      align-items: start;
+    }
+
+    .solutions-band .solutions-heading {
+      max-width: var(--max-width);
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .solutions-band .catalog-heading h3 {
+      color: #FFFFFF;
+    }
+
+    .solutions-band .catalog-heading p {
+      color: rgba(255, 255, 255, 0.76);
+    }
+
+    .solutions-band .solution-card {
+      width: min(100%, 520px);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .solutions-band .solution-card:nth-of-type(2) {
+      justify-self: end;
+    }
+
+    .solutions-band .solution-card:nth-of-type(3) {
+      justify-self: start;
+    }
+
+    @media (max-width: 920px) {
+      .solutions-band-inner {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* FIM TESTE */
 
     .solution-card {
       min-height: 100%;
@@ -1662,7 +1743,7 @@
       width: min(100%, 470px);
       min-height: 540px;
       padding: 38px 30px;
-      transform: translate(18px, -18px);
+      transform: translateY(-18px);
       color: #FFFFFF;
       background: rgba(8, 20, 42, 0.78);
       border: 1px solid rgba(255, 255, 255, 0.16);
@@ -1860,8 +1941,9 @@
     .academy-section {
       position: relative;
       overflow: hidden;
-      padding: 96px 0;
-      --academy-white-bg: url('../00_BRAND/capas/banner-academy.png');
+      min-height: 620px;
+      padding: 0;
+      --academy-white-bg: url('banner-academy.png');
       background:
         linear-gradient(135deg, #030A16 0%, #051124 31%, #0A1937 46%, #F3F7FC 46%, #FFFFFF 100%);
     }
@@ -1901,6 +1983,7 @@
       grid-template-columns: minmax(0, 46%) minmax(0, 54%);
       gap: clamp(36px, 6vw, 84px);
       align-items: center;
+      min-height: 620px;
     }
 
     .academy-brand {
@@ -1909,7 +1992,7 @@
       align-items: center;
       justify-content: center;
       padding: 0;
-      transform: translateX(-7%);
+      transform: none;
     }
 
     .academy-logo {
@@ -1922,7 +2005,7 @@
     .academy-content {
       max-width: 620px;
       justify-self: end;
-      transform: translateX(110px);
+      transform: none;
     }
 
     .academy-kicker {
@@ -1992,6 +2075,7 @@
 
     @media (max-width: 920px) {
       .academy-section {
+        min-height: auto;
         padding: 76px 0;
         --academy-white-bg: none;
         background: linear-gradient(180deg, #030A16 0%, #051124 43%, #FFFFFF 43%, #FFFFFF 100%);
@@ -2003,6 +2087,7 @@
 
       .academy-inner {
         grid-template-columns: 1fr;
+        min-height: auto;
       }
 
       .academy-content {
@@ -2134,7 +2219,7 @@
     <section class="academy-section" id="academy">
       <div class="container academy-inner">
         <div class="academy-brand">
-          <img src="../00_BRAND/logos/_current/logo-academy.png" alt="FlowCore Academy" class="academy-logo" />
+          <img src="logo-academy.png" alt="FlowCore Academy" class="academy-logo" />
         </div>
         <div class="academy-content">
           <div class="academy-kicker">Formação técnica FlowCore</div>
@@ -2143,11 +2228,6 @@
             A FlowCore Academy reúne cursos básicos, formações completas e treinamentos aplicados para quem trabalha em
             instalações industriais e precisa entender medição, operação, manutenção e diagnóstico com mais segurança.
           </p>
-          <div class="academy-pillars">
-            <div class="academy-pillar">Operação</div>
-            <div class="academy-pillar">Manutenção</div>
-            <div class="academy-pillar">Medição</div>
-          </div>
           <div class="academy-actions">
             <a href="cursos.html" class="btn btn-primary">Ver Cursos</a>
             <a href="#livros" class="btn btn-outline">Livros Oficiais</a>
@@ -2289,76 +2369,82 @@
             </div>
           </div>
 
-          <div class="catalog-heading solutions-heading">
-            <div>
-              <div class="catalog-label">Soluções digitais</div>
-              <h3>Ferramentas para praticar, controlar e evoluir.</h3>
-            </div>
-            <p>Ambientes digitais que levam o conhecimento para a rotina de operação, treinamento e gestão técnica.</p>
-          </div>
-
-          <!-- Product 4: Simulador de Prova -->
-          <div class="product-card solution-card">
-            <div class="product-tag">Treinamento & Simulação</div>
-
-            <div class="product-image-wrapper">
-              <img src="simulador.png" alt="Simulador de Prova com Compact Prover" class="product-image" style="box-shadow: none; max-width: 90%;" />
-            </div>
-
-            <div class="product-info">
-              <h3>Simulador de Prova</h3>
-              <p>Simulação realista de medição fiscal FPSO com Compact Prover. Treine a sequência de prova, interprete o fator do medidor e domine os critérios da API MPMS 4.x em ambiente controlado.</p>
-
-              <ul class="features-list">
-                <li>3 Tramos com FCVs e Prover Compacto</li>
-                <li>Critérios Fiscais e de Apropriação (REQ-CP)</li>
-                <li>Injeção de Falhas e Cenários pelo Instrutor</li>
-              </ul>
-            </div>
-
-            <div class="price-action">
-              <div class="format">Simulador Web Interativo</div>
-            </div>
-            <a href="ihm-metering.html" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-buy" style="background: linear-gradient(135deg, #1F3F68, #4ab8ff); color: white; box-shadow: 0 8px 24px rgba(74, 184, 255, 0.3);">
-              Acessar Simulador
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </a>
-          </div>
-
-          <!-- Product 3: Evergreen -->
-          <div class="product-card solution-card">
-            <div class="product-tag">Gestão & Tecnologia</div>
-
-            <div class="product-image-wrapper">
-              <img src="evergreen.png" alt="Evergreen Dashboard" class="product-image" style="box-shadow: none; max-width: 90%;" />
-            </div>
-
-            <div class="product-info">
-              <h3>Dashboard Evergreen</h3>
-              <p>O ecossistema digital completo para gestão de medição industrial. Elimine o papel e tenha controle total sobre a conformidade técnica em tempo real.</p>
-
-              <ul class="features-list">
-                <li>Handover Digital (Onshore/Offshore)</li>
-                <li>Monitoramento de Prazos e Calibrações</li>
-                <li>Gestão Inteligente de TAGs e Eventos</li>
-              </ul>
-            </div>
-
-            <div class="price-action">
-              <div class="format">Solução Corporativa SaaS</div>
-            </div>
-            <a href="https://flowcoresolutions.com.br/evergreen/" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-buy" style="background: linear-gradient(135deg, #10b981, #34d399); color: white; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);">
-              Acessar Evergreen
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </a>
-          </div>
-
         </div>
       </div>
+
+      <!-- TESTE: faixa com background para Soluções digitais -->
+      <div class="solutions-band">
+        <div class="solutions-band-inner">
+            <div class="catalog-heading solutions-heading">
+              <div>
+                <div class="catalog-label">Soluções digitais</div>
+                <h3>Ferramentas para praticar, controlar e evoluir.</h3>
+              </div>
+              <p>Ambientes digitais que levam o conhecimento para a rotina de operação, treinamento e gestão técnica.</p>
+            </div>
+
+            <!-- Product 4: Simulador de Prova -->
+            <div class="product-card solution-card">
+              <div class="product-tag">Treinamento & Simulação</div>
+
+              <div class="product-image-wrapper">
+                <img src="simulador.png" alt="Simulador de Prova com Compact Prover" class="product-image" style="box-shadow: none; max-width: 90%;" />
+              </div>
+
+              <div class="product-info">
+                <h3>Simulador de Prova</h3>
+                <p>Simulação realista de medição fiscal FPSO com Compact Prover. Treine a sequência de prova, interprete o fator do medidor e domine os critérios da API MPMS 4.x em ambiente controlado.</p>
+
+                <ul class="features-list">
+                  <li>3 Tramos com FCVs e Prover Compacto</li>
+                  <li>Critérios Fiscais e de Apropriação (REQ-CP)</li>
+                  <li>Injeção de Falhas e Cenários pelo Instrutor</li>
+                </ul>
+              </div>
+
+              <div class="price-action">
+                <div class="format">Simulador Web Interativo</div>
+              </div>
+              <a href="ihm-metering.html" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-buy" style="background: linear-gradient(135deg, #1F3F68, #4ab8ff); color: white; box-shadow: 0 8px 24px rgba(74, 184, 255, 0.3);">
+                Acessar Simulador
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+
+            <!-- Product 3: Evergreen -->
+            <div class="product-card solution-card">
+              <div class="product-tag">Gestão & Tecnologia</div>
+
+              <div class="product-image-wrapper">
+                <img src="evergreen.png" alt="Evergreen Dashboard" class="product-image" style="box-shadow: none; max-width: 90%;" />
+              </div>
+
+              <div class="product-info">
+                <h3>Dashboard Evergreen</h3>
+                <p>O ecossistema digital completo para gestão de medição industrial. Elimine o papel e tenha controle total sobre a conformidade técnica em tempo real.</p>
+
+                <ul class="features-list">
+                  <li>Handover Digital (Onshore/Offshore)</li>
+                  <li>Monitoramento de Prazos e Calibrações</li>
+                  <li>Gestão Inteligente de TAGs e Eventos</li>
+                </ul>
+              </div>
+
+              <div class="price-action">
+                <div class="format">Solução Corporativa SaaS</div>
+              </div>
+              <a href="https://flowcoresolutions.com.br/evergreen/" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-buy" style="background: linear-gradient(135deg, #10b981, #34d399); color: white; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);">
+                Acessar Evergreen
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+        </div>
+      </div>
+      <!-- FIM TESTE -->
     </section>
 
     <!-- TESTE: seção do autor removida visualmente -->
