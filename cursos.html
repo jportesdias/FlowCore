@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&family=Rajdhani:wght@600;700&display=swap"
     rel="stylesheet" />
 
   <style>
@@ -1232,6 +1232,57 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
     }
 
+    .hero-scroll-cue {
+      position: absolute;
+      left: 50%;
+      bottom: 28px;
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 13px;
+      border-radius: var(--radius-pill);
+      color: rgba(255, 255, 255, 0.72);
+      background: rgba(3, 10, 22, 0.34);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transform: translateX(-50%);
+    }
+
+    .hero-scroll-cue__dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-main);
+      box-shadow: 0 0 14px rgba(229, 91, 19, 0.78);
+    }
+
+    .hero-scroll-cue__arrow {
+      color: #ff8a45;
+      font-size: 1rem;
+      line-height: 1;
+      animation: scroll-cue-drop 1.8s ease-in-out infinite;
+    }
+
+    @keyframes scroll-cue-drop {
+      0%,
+      100% {
+        transform: translateY(-1px);
+        opacity: 0.72;
+      }
+
+      50% {
+        transform: translateY(3px);
+        opacity: 1;
+      }
+    }
+
     /* TESTE: cursos principais diretamente sobre as faixas de background */
     main>.highlight-section {
       padding: 86px 0 !important;
@@ -1374,6 +1425,192 @@
       color: rgba(255, 255, 255, 0.58) !important;
     }
 
+    /* REVERSAO AGENDA TURMAS: remover este bloco CSS e a secao HTML marcada abaixo para voltar ao layout anterior */
+    .agenda-open-classes {
+      position: relative;
+      z-index: 2;
+      margin-top: 0;
+      padding: 0 24px 54px;
+      background: transparent;
+    }
+
+    .agenda-open-classes__inner {
+      position: relative;
+      overflow: hidden;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.035)),
+        rgba(3, 10, 22, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 28px 84px rgba(0, 0, 0, 0.34);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .agenda-open-classes__inner::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 3px;
+      background: linear-gradient(90deg, rgba(229, 91, 19, 0.95), rgba(244, 138, 80, 0.28), transparent);
+    }
+
+    .agenda-open-classes__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 4px 6px 18px;
+    }
+
+    .agenda-open-classes__label {
+      display: block;
+      margin-bottom: 4px;
+      color: #ff8a45;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .agenda-open-classes h2 {
+      color: #fff;
+      font-size: clamp(1.2rem, 2vw, 1.55rem);
+      letter-spacing: 0;
+    }
+
+    .agenda-open-classes__note {
+      color: rgba(255, 255, 255, 0.58);
+      font-size: 0.92rem;
+      white-space: nowrap;
+    }
+
+    .agenda-open-classes__list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .agenda-open-classes__item {
+      position: relative;
+      overflow: hidden;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 18px;
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.055));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    }
+
+    .agenda-open-classes__item::after {
+      content: "";
+      position: absolute;
+      right: -42px;
+      top: -42px;
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      background: rgba(229, 91, 19, 0.10);
+      pointer-events: none;
+    }
+
+    .agenda-open-classes__item:hover {
+      transform: translateY(-3px);
+      border-color: rgba(244, 138, 80, 0.30);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.065));
+    }
+
+    .agenda-open-classes__topline {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .agenda-open-classes__date {
+      position: relative;
+      z-index: 1;
+      color: #ff8a45;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .agenda-open-classes__mode {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 5px 9px;
+      border-radius: var(--radius-pill);
+      background: rgba(31, 185, 99, 0.12);
+      border: 1px solid rgba(31, 185, 99, 0.20);
+      color: #67e59b;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .agenda-open-classes__title {
+      position: relative;
+      z-index: 1;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 0.98rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .agenda-open-classes__time {
+      position: relative;
+      z-index: 1;
+      margin-top: auto;
+      color: rgba(255, 255, 255, 0.62);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .agenda-open-classes__link {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: flex-start;
+      min-height: 36px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent-main), var(--accent-light));
+      border: 1px solid rgba(244, 138, 80, 0.72);
+      color: #fff;
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: 0 10px 24px rgba(229, 91, 19, 0.24);
+    }
+
+    .agenda-open-classes__link:hover {
+      background: linear-gradient(135deg, var(--accent-light), var(--accent-main));
+      border-color: rgba(255, 160, 95, 0.86);
+      color: #fff;
+      box-shadow: 0 14px 30px rgba(229, 91, 19, 0.34);
+    }
+
     /* RESPONSIVE */
     @media (max-width: 900px) {
       .course-card {
@@ -1477,6 +1714,13 @@
         height: 58px !important;
       }
 
+      .hero-scroll-cue {
+        bottom: 18px;
+        max-width: calc(100% - 32px);
+        white-space: nowrap;
+        font-size: 0.76rem;
+      }
+
       .highlight-box,
       .highlight-box[style] {
         grid-template-columns: 1fr !important;
@@ -1492,6 +1736,34 @@
       .stacked-cards-heading {
         grid-template-columns: 1fr !important;
         gap: 18px !important;
+      }
+
+      .agenda-open-classes {
+        margin-top: 0;
+        padding: 0 16px 28px;
+        background: transparent;
+      }
+
+      .agenda-open-classes__inner {
+        padding: 16px;
+      }
+
+      .agenda-open-classes__header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .agenda-open-classes__note {
+        white-space: normal;
+      }
+
+      .agenda-open-classes__list {
+        grid-template-columns: 1fr;
+      }
+
+      .agenda-open-classes__item {
+        min-height: auto;
       }
 
     .stacked-cards-container {
@@ -1544,10 +1816,60 @@
       <div class="container">
         <h1 class="hero-title">Treinamento feito por quem vivencia a realidade diariamente</h1>
       </div>
+      <a class="hero-scroll-cue" href="#agenda-turmas-title" aria-label="Rolar para agenda de turmas abertas">
+        <span class="hero-scroll-cue__dot"></span>
+        Agenda de turmas abaixo
+        <span class="hero-scroll-cue__arrow" aria-hidden="true">↓</span>
+      </a>
     </section>
 
     <!-- TESTE: faixa única dos cursos principais -->
     <section class="courses-main-band">
+    <!-- REVERSAO AGENDA TURMAS: remover esta secao e o bloco CSS correspondente para voltar ao layout anterior -->
+    <section class="agenda-open-classes" aria-labelledby="agenda-turmas-title">
+      <div class="agenda-open-classes__inner">
+        <div class="agenda-open-classes__header">
+          <div>
+            <span class="agenda-open-classes__label">Agenda</span>
+            <h2 id="agenda-turmas-title">Turmas abertas</h2>
+          </div>
+          <p class="agenda-open-classes__note">Inscrições abertas para as próximas turmas ao vivo.</p>
+        </div>
+
+        <div class="agenda-open-classes__list">
+          <article class="agenda-open-classes__item">
+            <div class="agenda-open-classes__topline">
+              <div class="agenda-open-classes__date">18 e 19/05</div>
+              <span class="agenda-open-classes__mode">Ao vivo</span>
+            </div>
+            <h3 class="agenda-open-classes__title">Curso Básico de Medidores de Vazão</h3>
+            <p class="agenda-open-classes__time">19h às 22h</p>
+            <a class="agenda-open-classes__link" href="https://forms.gle/vMhmtbXzaYAviDrb9" target="_blank">Inscrição ↗</a>
+          </article>
+
+          <article class="agenda-open-classes__item">
+            <div class="agenda-open-classes__topline">
+              <div class="agenda-open-classes__date">16, 18 e 20/06</div>
+              <span class="agenda-open-classes__mode">Ao vivo</span>
+            </div>
+            <h3 class="agenda-open-classes__title">Provadores Compactos & Simulador de Prova</h3>
+            <p class="agenda-open-classes__time">16 e 18/06: 18h às 22h<br />20/06: 08h30 às 12h30</p>
+            <a class="agenda-open-classes__link" href="https://wa.me/5521983710895" target="_blank">Inscrição ↗</a>
+          </article>
+
+          <article class="agenda-open-classes__item">
+            <div class="agenda-open-classes__topline">
+              <div class="agenda-open-classes__date">10 a 13/08</div>
+              <span class="agenda-open-classes__mode">Ao vivo</span>
+            </div>
+            <h3 class="agenda-open-classes__title">Medidores de Vazão: Operação e Manutenção</h3>
+            <p class="agenda-open-classes__time">18h30 às 22h</p>
+            <a class="agenda-open-classes__link" href="https://forms.gle/NqiuAFjc1sUkmME9A" target="_blank">Inscrição ↗</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
       <!-- CURSO OPERADORES -->
       <section class="highlight-section" id="contato" style="padding: 10px 0 80px;">
       <div class="container">
@@ -1664,20 +1986,25 @@
             <img src="provadores-compacto.png" alt="Curso Provadores Compactos" />
           </div>
           <div class="highlight-content">
-            <h2 class="highlight-title">Curso de Provadores Compactos</h2>
+            <h2 class="highlight-title">Curso de Provadores Compacto com Simulador de Prova</h2>
             <p class="highlight-sub">
               Do princípio de funcionamento aos critérios metrológicos de prova. Aprenda a conduzir, interpretar e validar provas com compact provers em sistemas fiscais e de apropriação.
             </p>
             <div class="highlight-date">
               <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-                <span style="font-weight:500;">Formato:</span>
+                <span style="font-weight:500;">Próxima turma:</span>
                 <div class="live-badge"><div class="live-dot"></div>On-line Ao Vivo</div>
               </div>
+              <ul style="list-style:none;margin-bottom:18px;color:var(--text-body);">
+                <li style="margin-bottom:4px;"><strong>16/06/2026</strong> <span style="font-size:0.9em;opacity:0.8;">terça-feira, 18h às 22h</span></li>
+                <li style="margin-bottom:4px;"><strong>18/06/2026</strong> <span style="font-size:0.9em;opacity:0.8;">quinta-feira, 18h às 22h</span></li>
+                <li style="margin-bottom:4px;"><strong>20/06/2026</strong> <span style="font-size:0.9em;opacity:0.8;">sábado, 08h30 às 12h30</span></li>
+              </ul>
               <p style="font-size:0.95rem;color:var(--text-body);margin-bottom:6px;">
                 <strong>Conteúdo:</strong> REQ-CP, cálculo de MF, repetibilidade fiscal e de apropriação, diagnóstico de falhas, relatório metrológico.
               </p>
               <p style="font-size:0.9rem;color:var(--accent-main);font-weight:600;margin-top:8px;">
-                Turma em formação. Vagas limitadas.
+                Turma aberta em junho. Vagas limitadas.
               </p>
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">
@@ -1699,7 +2026,10 @@
       <!-- TÉCNICO DE MEDIÇÃO 60H -->
       <section class="highlight-section" style="padding: 0 0 80px;">
       <div class="container">
-        <div class="highlight-box" style="grid-template-columns:1.2fr 1fr;">
+        <div class="highlight-box">
+          <div class="highlight-image-wrapper">
+            <img src="tecnico-de-medicao-60h.png" alt="Técnico de Medição 60h" />
+          </div>
           <div class="highlight-content">
             <h2 class="highlight-title">Técnico de Medição 60h</h2>
             <p class="highlight-sub">
@@ -1725,9 +2055,6 @@
                 Quero me inscrever ↗
               </a>
             </div>
-          </div>
-          <div class="highlight-image-wrapper">
-            <img src="tecnico-de-medicao-60h.png" alt="Técnico de Medição 60h" />
           </div>
         </div>
       </div>
