@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Treinamentos | FlowCore Solutions</title>
   <meta name="description"
-    content="Cursos prÃ¡ticos em medidores de vazÃ£o: turbina, deslocamento positivo, Coriolis, flare e ultrassÃ´nicos." />
+    content="Cursos práticos em medidores de vazão: turbina, deslocamento positivo, Coriolis, flare e ultrassônicos." />
 
   <!-- Fonts: Outfit and Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -384,7 +384,7 @@
       }
     }
 
-    /* TESTE: sofisticaÃ§Ã£o visual da pÃ¡gina de cursos */
+    /* TESTE: sofisticação visual da página de cursos */
     main {
       overflow-x: hidden;
       background:
@@ -843,7 +843,7 @@
       color: var(--text-muted);
     }
 
-    /* TESTE: override final da nova direÃ§Ã£o visual da pÃ¡gina de cursos */
+    /* TESTE: override final da nova direção visual da página de cursos */
     main {
       overflow-x: hidden !important;
       background:
@@ -981,12 +981,18 @@
       background: #071120 !important;
       border: 1px solid rgba(31, 63, 104, 0.12) !important;
       border-radius: 22px !important;
+      overflow: hidden !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
 
     .highlight-image-wrapper img {
+      width: 100% !important;
       height: 100% !important;
       min-height: 320px !important;
-      object-fit: cover !important;
+      object-fit: contain !important;
+      object-position: center !important;
     }
 
     .highlight-title {
@@ -1194,7 +1200,7 @@
       font-size: clamp(3.75rem, 7.4vw, 7.2rem) !important;
     }
 
-    /* TESTE: proporÃ§Ã£o refinada da primeira dobra */
+    /* TESTE: proporção refinada da primeira dobra */
     .hero-cursos {
       background:
         radial-gradient(circle at 84% 42%, rgba(229, 91, 19, 0.16), transparent 27%),
@@ -1230,6 +1236,16 @@
       box-shadow:
         0 28px 80px rgba(0, 0, 0, 0.42),
         inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    }
+
+    /* Logo Academy realinhada sobre o card direito (proporção refinada) */
+    .hero-cursos .container::before {
+      top: auto !important;
+      left: auto !important;
+      right: clamp(36px, 5vw, 96px) !important;
+      bottom: clamp(80px, 12vh, 160px) !important;
+      width: clamp(160px, 13vw, 200px) !important;
+      height: 56px !important;
     }
 
     .hero-scroll-cue {
@@ -1344,7 +1360,7 @@
       -webkit-backdrop-filter: blur(12px);
     }
 
-    /* TESTE: background Ãºnico para todos os cursos principais */
+    /* TESTE: background único para todos os cursos principais */
     .courses-main-band {
       position: relative;
       overflow: hidden;
@@ -1675,7 +1691,7 @@
         gap: 20px;
       }
 
-      /* TESTE: responsivo da nova pÃ¡gina de cursos */
+      /* TESTE: responsivo da nova página de cursos */
       .hero-cursos {
         min-height: auto !important;
         padding: 132px 0 64px !important;
@@ -1771,7 +1787,7 @@
     }
     }
 
-    /* TESTE: informaÃ§Ãµes legais no final da seÃ§Ã£o por tecnologia */
+    /* TESTE: informações legais no final da seção por tecnologia */
     .stacked-cards-legal {
       max-width: var(--max-width);
       margin: 56px auto 0;
@@ -1795,8 +1811,8 @@
 </head>
 
 <body>
-  <!-- TESTE: Ã­cone discreto para voltar Ã  home -->
-  <a class="home-back" href="index.html" aria-label="Voltar para a pÃ¡gina inicial">
+  <!-- TESTE: ícone discreto para voltar à home -->
+  <a class="home-back" href="index.html" aria-label="Voltar para a página inicial">
     <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 10.8 12 3l9 7.8" />
       <path d="M5.5 10.5V21h13V10.5" />
@@ -1819,11 +1835,11 @@
       <a class="hero-scroll-cue" href="#agenda-turmas-title" aria-label="Rolar para agenda de turmas abertas">
         <span class="hero-scroll-cue__dot"></span>
         Agenda de turmas abaixo
-        <span class="hero-scroll-cue__arrow" aria-hidden="true">â†“</span>
+        <span class="hero-scroll-cue__arrow" aria-hidden="true">↓</span>
       </a>
     </section>
 
-    <!-- TESTE: faixa Ãºnica dos cursos principais -->
+    <!-- TESTE: faixa única dos cursos principais -->
     <section class="courses-main-band">
     <!-- REVERSAO AGENDA TURMAS: remover esta secao e o bloco CSS correspondente para voltar ao layout anterior -->
     <section class="agenda-open-classes" aria-labelledby="agenda-turmas-title">
@@ -1833,7 +1849,7 @@
             <span class="agenda-open-classes__label">Agenda</span>
             <h2 id="agenda-turmas-title">Turmas abertas</h2>
           </div>
-          <p class="agenda-open-classes__note">InscriÃ§Ãµes abertas para as prÃ³ximas turmas ao vivo.</p>
+          <p class="agenda-open-classes__note">Inscrições abertas para as próximas turmas ao vivo.</p>
         </div>
 
         <div class="agenda-open-classes__list">
@@ -1843,8 +1859,8 @@
               <span class="agenda-open-classes__mode">Ao vivo</span>
             </div>
             <h3 class="agenda-open-classes__title">Provadores Compactos & Simulador de Prova</h3>
-            <p class="agenda-open-classes__time">16 e 18/06: 18h Ã s 22h<br />20/06: 08h30 Ã s 12h30</p>
-            <a class="agenda-open-classes__link" href="https://wa.me/5524998788760" target="_blank">InscriÃ§Ã£o â†—</a>
+            <p class="agenda-open-classes__time">16 e 18/06: 18h às 22h<br />20/06: 08h30 às 12h30</p>
+            <a class="agenda-open-classes__link" href="https://wa.me/5524998788760" target="_blank">Inscrição ↗</a>
           </article>
 
           <article class="agenda-open-classes__item">
@@ -1852,9 +1868,9 @@
               <div class="agenda-open-classes__date">10 a 13/08</div>
               <span class="agenda-open-classes__mode">Ao vivo</span>
             </div>
-            <h3 class="agenda-open-classes__title">Medidores de VazÃ£o: OperaÃ§Ã£o e ManutenÃ§Ã£o</h3>
-            <p class="agenda-open-classes__time">18h30 Ã s 22h</p>
-            <a class="agenda-open-classes__link" href="https://forms.gle/NqiuAFjc1sUkmME9A" target="_blank">InscriÃ§Ã£o â†—</a>
+            <h3 class="agenda-open-classes__title">Medidores de Vazão: Operação e Manutenção</h3>
+            <p class="agenda-open-classes__time">18h30 às 22h</p>
+            <a class="agenda-open-classes__link" href="https://wa.me/5524998788760" target="_blank">Inscrição ↗</a>
           </article>
         </div>
       </div>
@@ -1868,41 +1884,41 @@
             <img src="operadores-de-producao.png" alt="Curso para Operadores" />
           </div>
           <div class="highlight-content">
-            <h2 class="highlight-title">Curso bÃ¡sico de medidores de vazÃ£o para operadores de produÃ§Ã£o</h2>
+            <h2 class="highlight-title">Curso básico de medidores de vazão para operadores de produção</h2>
             <p class="highlight-sub">
-              Treinamento bÃ¡sico para operadores de produÃ§Ã£o e tambÃ©m para profissionais que atuam em instalaÃ§Ãµes industriais. Linguagem prÃ¡tica, foco em leitura, diagnÃ³stico inicial e tomada de decisÃ£o em campo. Ideal para quem precisa entender melhor os medidores no dia a dia.
+              Treinamento básico para operadores de produção e também para profissionais que atuam em instalações industriais. Linguagem prática, foco em leitura, diagnóstico inicial e tomada de decisão em campo. Ideal para quem precisa entender melhor os medidores no dia a dia.
             </p>
 
             <div class="highlight-date">
               <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 2px;">
-                <span style="font-weight: 500;">PrÃ³xima turma:</span>
+                <span style="font-weight: 500;">Próxima turma:</span>
                 <div class="live-badge">
                   <div class="live-dot"></div>On-line Ao Vivo
                 </div>
               </div>
               <div style="margin-bottom: 12px; font-size: 0.9em; color: var(--accent-main); font-weight: 600;">
-                <span style="color: var(--text-muted); font-weight: 400;">TransmissÃ£o oficial via</span> Plataforma Zoom
+                <span style="color: var(--text-muted); font-weight: 400;">Transmissão oficial via</span> Plataforma Zoom
               </div>
               <div style="margin-bottom: 12px; font-size: 1rem; color: var(--accent-main); font-weight: 700;">
                 Novas datas em breve
               </div>
               <div style="margin-bottom: 12px; font-size: 0.9em; color: var(--text-body);">
-                Deixe seu interesse registrado para ser avisado na abertura da prÃ³xima turma.
+                Deixe seu interesse registrado para ser avisado na abertura da próxima turma.
               </div>
-              FormulÃ¡rio oficial: <a href="https://forms.gle/vMhmtbXzaYAviDrb9" target="_blank"
+              Lista de interesse: <a href="https://wa.me/5524998788760" target="_blank"
                 style="color: var(--accent-main); font-weight: 600; text-decoration: underline;">Acesse aqui o
-                FormulÃ¡rio</a>
+                WhatsApp</a>
             </div>
 
             <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center;">
-              <a class="btn btn-primary" href="https://forms.gle/vMhmtbXzaYAviDrb9" target="_blank">
-                Preencher InscriÃ§Ã£o â†—
+              <a class="btn btn-primary" href="https://wa.me/5524998788760" target="_blank">
+                Entrar na lista de interesse ↗
               </a>
               <a href="https://chat.whatsapp.com/GToF2W9DZKYJWvOgciLt9k" target="_blank"
                 style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 0.95rem; color: #25D366; border: 1.5px solid #25D366; border-radius: var(--radius-pill); padding: 12px 22px; transition: all 0.3s ease;"
                 onmouseover="this.style.background='#25D366';this.style.color='#fff';"
                 onmouseout="this.style.background='transparent';this.style.color='#25D366';">
-                Grupo da Turma â†—
+                Grupo da Turma ↗
               </a>
             </div>
           </div>
@@ -1918,40 +1934,40 @@
             <img src="medidores-de-vazao.png" alt="Curso completo" />
           </div>
           <div class="highlight-content">
-            <h2 class="highlight-title">Curso completo de medidores com Ãªnfase em manutenÃ§Ã£o</h2>
+            <h2 class="highlight-title">Curso completo de medidores com ênfase em manutenção</h2>
             <p class="highlight-sub">
-              A <strong>soluÃ§Ã£o definitiva</strong>. Turma voltada para quem responde por sistemas de mediÃ§Ã£o e precisa
-              tomar decisÃµes seguras em campo, sem depender dos fabricantes.
+              A <strong>solução definitiva</strong>. Turma voltada para quem responde por sistemas de medição e precisa
+              tomar decisões seguras em campo, sem depender dos fabricantes.
             </p>
 
             <div class="highlight-date">
               <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 2px;">
-                <span style="font-weight: 500;">PrÃ³xima turma:</span>
+                <span style="font-weight: 500;">Próxima turma:</span>
                 <div class="live-badge">
                   <div class="live-dot"></div>On-line Ao Vivo
                 </div>
               </div>
               <div style="margin-bottom: 12px; font-size: 0.9em; color: var(--accent-main); font-weight: 600;">
-                <span style="color: var(--text-muted); font-weight: 400;">TransmissÃ£o oficial via</span> Plataforma Zoom
+                <span style="color: var(--text-muted); font-weight: 400;">Transmissão oficial via</span> Plataforma Zoom
               </div>
               <ul style="list-style: none; margin-bottom: 20px; color: var(--text-body);">
                 <li style="margin-bottom: 4px;"><strong>10/08/2026</strong> <span
                     style="font-size: 0.9em; opacity: 0.8;">- segunda-feira</span></li>
                 <li style="margin-bottom: 4px;"><strong>11/08/2026</strong> <span
-                    style="font-size: 0.9em; opacity: 0.8;">- terÃ§a-feira</span></li>
+                    style="font-size: 0.9em; opacity: 0.8;">- terça-feira</span></li>
                 <li style="margin-bottom: 4px;"><strong>12/08/2026</strong> <span
                     style="font-size: 0.9em; opacity: 0.8;">- quarta-feira</span></li>
                 <li style="margin-bottom: 4px;"><strong>13/08/2026</strong> <span
                     style="font-size: 0.9em; opacity: 0.8;">- quinta-feira</span></li>
               </ul>
-              FormulÃ¡rio oficial: <a href="https://forms.gle/NqiuAFjc1sUkmME9A" target="_blank"
+              Atendimento oficial: <a href="https://wa.me/5524998788760" target="_blank"
                 style="color: var(--accent-main); font-weight: 600; text-decoration: underline;">Acesse aqui o
-                FormulÃ¡rio</a>
+                WhatsApp</a>
             </div>
 
             <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center;">
-              <a class="btn btn-primary" href="https://forms.gle/NqiuAFjc1sUkmME9A" target="_blank">
-                Preencher InscriÃ§Ã£o â†—
+              <a class="btn btn-primary" href="https://wa.me/5524998788760" target="_blank">
+                Falar sobre inscrição ↗
               </a>
               <a href="Ementa_FlowCore_Medidores_Vazao.pdf" target="_blank"
                 style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 0.95rem; color: var(--accent-secondary); border: 1.5px solid var(--accent-secondary); border-radius: var(--radius-pill); padding: 12px 22px; transition: all 0.3s ease;"
@@ -1975,20 +1991,20 @@
           <div class="highlight-content">
             <h2 class="highlight-title">Curso de Provadores Compacto com Simulador de Prova</h2>
             <p class="highlight-sub">
-              Do princÃ­pio de funcionamento aos critÃ©rios metrolÃ³gicos de prova. Aprenda a conduzir, interpretar e validar provas com compact provers em sistemas fiscais e de apropriaÃ§Ã£o.
+              Do princípio de funcionamento aos critérios metrológicos de prova. Aprenda a conduzir, interpretar e validar provas com compact provers em sistemas fiscais e de apropriação.
             </p>
             <div class="highlight-date">
               <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-                <span style="font-weight:500;">PrÃ³xima turma:</span>
+                <span style="font-weight:500;">Próxima turma:</span>
                 <div class="live-badge"><div class="live-dot"></div>On-line Ao Vivo</div>
               </div>
               <ul style="list-style:none;margin-bottom:18px;color:var(--text-body);">
-                <li style="margin-bottom:4px;"><strong>16/06/2026</strong> <span style="font-size:0.9em;opacity:0.8;">terÃ§a-feira, 18h Ã s 22h</span></li>
-                <li style="margin-bottom:4px;"><strong>18/06/2026</strong> <span style="font-size:0.9em;opacity:0.8;">quinta-feira, 18h Ã s 22h</span></li>
-                <li style="margin-bottom:4px;"><strong>20/06/2026</strong> <span style="font-size:0.9em;opacity:0.8;">sÃ¡bado, 08h30 Ã s 12h30</span></li>
+                <li style="margin-bottom:4px;"><strong>16/06/2026</strong> <span style="font-size:0.9em;opacity:0.8;">terça-feira, 18h às 22h</span></li>
+                <li style="margin-bottom:4px;"><strong>18/06/2026</strong> <span style="font-size:0.9em;opacity:0.8;">quinta-feira, 18h às 22h</span></li>
+                <li style="margin-bottom:4px;"><strong>20/06/2026</strong> <span style="font-size:0.9em;opacity:0.8;">sábado, 08h30 às 12h30</span></li>
               </ul>
               <p style="font-size:0.95rem;color:var(--text-body);margin-bottom:6px;">
-                <strong>ConteÃºdo:</strong> REQ-CP, cÃ¡lculo de MF, repetibilidade fiscal e de apropriaÃ§Ã£o, diagnÃ³stico de falhas, relatÃ³rio metrolÃ³gico.
+                <strong>Conteúdo:</strong> REQ-CP, cálculo de MF, repetibilidade fiscal e de apropriação, diagnóstico de falhas, relatório metrológico.
               </p>
               <p style="font-size:0.9rem;color:var(--accent-main);font-weight:600;margin-top:8px;">
                 Turma aberta em junho. Vagas limitadas.
@@ -1996,7 +2012,7 @@
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">
               <a class="btn btn-primary" href="https://wa.me/5524998788760" target="_blank">
-                Quero me inscrever â†—
+                Quero me inscrever ↗
               </a>
               <a href="simulador-prover.html" target="_blank"
                 style="display:inline-flex;align-items:center;gap:8px;font-family:'Outfit',sans-serif;font-weight:600;font-size:0.95rem;color:var(--accent-secondary);border:1.5px solid var(--accent-secondary);border-radius:var(--radius-pill);padding:12px 22px;transition:all 0.3s ease;"
@@ -2010,17 +2026,17 @@
       </div>
       </section>
 
-      <!-- TÃ‰CNICO DE MEDIÃ‡ÃƒO 60H -->
+      <!-- TÉCNICO DE MEDIÇÃO 60H -->
       <section class="highlight-section" style="padding: 0 0 80px;">
       <div class="container">
         <div class="highlight-box">
           <div class="highlight-image-wrapper">
-            <img src="tecnico-de-medicao-60h.png" alt="TÃ©cnico de MediÃ§Ã£o 60h" />
+            <img src="tecnico-de-medicao-60h.png" alt="Técnico de Medição 60h" />
           </div>
           <div class="highlight-content">
-            <h2 class="highlight-title">TÃ©cnico de MediÃ§Ã£o 60h</h2>
+            <h2 class="highlight-title">Técnico de Medição 60h</h2>
             <p class="highlight-sub">
-              FormaÃ§Ã£o tÃ©cnica completa para quem quer atuar com seguranÃ§a em sistemas de mediÃ§Ã£o fiscal. 60 horas de conteÃºdo estruturado, do bÃ¡sico ao avanÃ§ado, com certificaÃ§Ã£o FlowCore.
+              Formação técnica completa para quem quer atuar com segurança em sistemas de medição fiscal. 60 horas de conteúdo estruturado, do básico ao avançado, com certificação FlowCore.
             </p>
             <div class="highlight-date">
               <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
@@ -2028,18 +2044,18 @@
                 <div class="live-badge"><div class="live-dot"></div>On-line Ao Vivo</div>
               </div>
               <p style="font-size:0.95rem;color:var(--text-body);margin-bottom:6px;">
-                <strong>Carga horÃ¡ria:</strong> 60 horas &nbsp;|&nbsp; <strong>CertificaÃ§Ã£o:</strong> FlowCore Academy
+                <strong>Carga horária:</strong> 60 horas &nbsp;|&nbsp; <strong>Certificação:</strong> FlowCore Academy
               </p>
               <p style="font-size:0.95rem;color:var(--text-body);margin-bottom:6px;">
-                <strong>MÃ³dulos:</strong> fundamentos, medidores dinÃ¢micos, metrologia, provas, relatÃ³rios e laudos.
+                <strong>Módulos:</strong> fundamentos, medidores dinâmicos, metrologia, provas, relatórios e laudos.
               </p>
               <p style="font-size:0.9rem;color:var(--accent-main);font-weight:600;margin-top:8px;">
-                Turma em formaÃ§Ã£o. Vagas limitadas.
+                Turma em formação. Vagas limitadas.
               </p>
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">
               <a class="btn btn-primary" href="https://wa.me/5524998788760" target="_blank">
-                Quero me inscrever â†—
+                Quero me inscrever ↗
               </a>
             </div>
           </div>
@@ -2058,20 +2074,20 @@
           <div class="highlight-content">
             <h2 class="highlight-title" style="color:#fff;">Mentoria Individual</h2>
             <p class="highlight-sub" style="color:rgba(255,255,255,.75);">
-              Acompanhamento direto com JÃºlio Dias para acelerar sua evoluÃ§Ã£o. DiagnÃ³stico da sua situaÃ§Ã£o atual, plano personalizado e sessÃµes focadas nos seus desafios reais de campo ou carreira.
+              Acompanhamento direto com Júlio Dias para acelerar sua evolução. Diagnóstico da sua situação atual, plano personalizado e sessões focadas nos seus desafios reais de campo ou carreira.
             </p>
             <div class="highlight-date"
               style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);">
               <p style="font-size:0.95rem;color:rgba(255,255,255,.8);margin-bottom:8px;">
-                <strong style="color:#F48A50;">Para quem Ã©:</strong> tÃ©cnicos e engenheiros que querem evoluÃ§Ã£o acelerada, resoluÃ§Ã£o de problemas especÃ­ficos ou transiÃ§Ã£o de carreira na Ã¡rea de mediÃ§Ã£o.
+                <strong style="color:#F48A50;">Para quem é:</strong> técnicos e engenheiros que querem evolução acelerada, resolução de problemas específicos ou transição de carreira na área de medição.
               </p>
               <p style="font-size:0.95rem;color:rgba(255,255,255,.8);">
-                <strong style="color:#F48A50;">Como funciona:</strong> encontros online 1:1, frequÃªncia combinada, material exclusivo e suporte entre sessÃµes.
+                <strong style="color:#F48A50;">Como funciona:</strong> encontros online 1:1, frequência combinada, material exclusivo e suporte entre sessões.
               </p>
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">
               <a class="btn btn-primary" href="https://wa.me/5524998788760" target="_blank">
-                Quero conhecer â†—
+                Quero conhecer ↗
               </a>
             </div>
           </div>
@@ -2082,14 +2098,14 @@
 
     <!-- STACKED CARDS LEQUE (FAN) -->
     <section class="stacked-cards-section">
-      <!-- TESTE: cabeÃ§alho tÃ©cnico para cursos por tecnologia -->
+      <!-- TESTE: cabeçalho técnico para cursos por tecnologia -->
       <div class="stacked-cards-heading">
         <div>
           <span>Por tecnologia</span>
-          <h2>Treinamentos tÃ©cnicos para cada tipo de medidor.</h2>
+          <h2>Treinamentos técnicos para cada tipo de medidor.</h2>
         </div>
         <p>
-          Trilhas objetivas para aprofundar leitura, diagnÃ³stico, instalaÃ§Ã£o, operaÃ§Ã£o e manutenÃ§Ã£o em sistemas de mediÃ§Ã£o industrial.
+          Trilhas objetivas para aprofundar leitura, diagnóstico, instalação, operação e manutenção em sistemas de medição industrial.
         </p>
       </div>
       <div class="container stacked-cards-container">
@@ -2099,13 +2115,13 @@
             <img src="turbina.png" alt="Turbina" />
           </div>
           <div class="course-info">
-            <span class="course-tag">Treinamento tÃ©cnico</span>
+            <span class="course-tag">Treinamento técnico</span>
             <h2 class="course-title">Medidores Tipo Turbina</h2>
             <p class="course-desc">
-              Fundamentos, instalaÃ§Ã£o, requisitos de escoamento, interpretaÃ§Ã£o de curva de calibraÃ§Ã£o, fatores K, e
-              manutenÃ§Ã£o em FPSOs e skids.
+              Fundamentos, instalação, requisitos de escoamento, interpretação de curva de calibração, fatores K, e
+              manutenção em FPSOs e skids.
             </p>
-            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informaÃ§Ãµes â†—</a>
+            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </div>
         </article>
 
@@ -2115,13 +2131,13 @@
             <img src="deslocamento-positivo.png" alt="Deslocamento Positivo" />
           </div>
           <div class="course-info">
-            <span class="course-tag">Aplicado Ã  operaÃ§Ã£o</span>
+            <span class="course-tag">Aplicado à operação</span>
             <h2 class="course-title">Tipo Deslocamento Positivo</h2>
             <p class="course-desc">
-              Conhecimento aplicado em PD: princÃ­pios, Ã³leo pesado, correÃ§Ãµes volumÃ©tricas e prÃ¡ticas de manutenÃ§Ã£o para
+              Conhecimento aplicado em PD: princípios, óleo pesado, correções volumétricas e práticas de manutenção para
               repetibilidade.
             </p>
-            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informaÃ§Ãµes â†—</a>
+            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </div>
         </article>
 
@@ -2131,13 +2147,13 @@
             <img src="coriolis.png" alt="Coriolis" />
           </div>
           <div class="course-info">
-            <span class="course-tag">MediÃ§Ã£o de massa</span>
+            <span class="course-tag">Medição de massa</span>
             <h2 class="course-title">Medidores Coriolis</h2>
             <p class="course-desc">
-              PrincÃ­pio de mediÃ§Ã£o de massa, efeitos de processo, diagnÃ³sticos bÃ¡sicos e rotina de verificaÃ§Ã£o para
-              confianÃ§a metrolÃ³gica.
+              Princípio de medição de massa, efeitos de processo, diagnósticos básicos e rotina de verificação para
+              confiança metrológica.
             </p>
-            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informaÃ§Ãµes â†—</a>
+            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </div>
         </article>
 
@@ -2148,51 +2164,51 @@
           </div>
           <div class="course-info">
             <span class="course-tag">Flare & queima</span>
-            <h2 class="course-title">UltrassÃ´nicos de Flare</h2>
+            <h2 class="course-title">Ultrassônicos de Flare</h2>
             <p class="course-desc">
-              Foco em flare lines: princÃ­pio, leitura de diagnÃ³sticos, alarmes, confiabilidade em baixas vazÃµes e
-              manutenÃ§Ã£o.
+              Foco em flare lines: princípio, leitura de diagnósticos, alarmes, confiabilidade em baixas vazões e
+              manutenção.
             </p>
-            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informaÃ§Ãµes â†—</a>
+            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </div>
         </article>
 
         <!-- CARD 5 -->
         <article class="course-card">
           <div class="course-image-wrapper">
-            <img src="ultrasonico.png" alt="UltrassÃ´nicos" />
+            <img src="ultrasonico.png" alt="Ultrassônicos" />
           </div>
           <div class="course-info">
             <span class="course-tag">Linha principal</span>
-            <h2 class="course-title">Medidores UltrassÃ´nicos</h2>
+            <h2 class="course-title">Medidores Ultrassônicos</h2>
             <p class="course-desc">
-              Conceitos de tempo de trÃ¢nsito, perfil de escoamento, SNR e interpretaÃ§Ã£o de telas para quem opera
+              Conceitos de tempo de trânsito, perfil de escoamento, SNR e interpretação de telas para quem opera
               sistemas por ultrassom.
             </p>
-            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informaÃ§Ãµes â†—</a>
+            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </div>
         </article>
 
         <!-- CARD 6 -->
         <article class="course-card">
           <div class="course-image-wrapper">
-            <img src="magnetico.png" alt="Medidor MagnÃ©tico" />
+            <img src="magnetico.png" alt="Medidor Magnético" />
           </div>
           <div class="course-info">
-            <span class="course-tag">InduÃ§Ã£o eletromagnÃ©tica</span>
-            <h2 class="course-title">Medidores MagnÃ©ticos</h2>
+            <span class="course-tag">Indução eletromagnética</span>
+            <h2 class="course-title">Medidores Magnéticos</h2>
             <p class="course-desc">
-              PrincÃ­pio de Faraday aplicado Ã  vazÃ£o, requisitos de condutividade, instalaÃ§Ã£o, configuraÃ§Ã£o e diagnÃ³stico de falhas em campo.
+              Princípio de Faraday aplicado à vazão, requisitos de condutividade, instalação, configuração e diagnóstico de falhas em campo.
             </p>
-            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informaÃ§Ãµes â†—</a>
+            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </div>
         </article>
 
       </div>
-      <!-- TESTE: rodapÃ© incorporado Ã  seÃ§Ã£o por tecnologia -->
+      <!-- TESTE: rodapé incorporado à seção por tecnologia -->
       <div class="stacked-cards-legal">
         <p>&copy; <span id="year"></span> FlowCore Solutions. Todos os direitos reservados.</p>
-        <p>Desenvolvido por quem vive a planta, nÃ£o sÃ³ o slide.</p>
+        <p>Desenvolvido por quem vive a planta, não só o slide.</p>
       </div>
     </section>
   </main>
