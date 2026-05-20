@@ -469,7 +469,7 @@
       horario: '19h às 20h'
     });
 
-    enviarLeadJsonp(params)
+    enviarLead(params)
       .then(function(result) {
         if (!result || result.ok !== true) {
           throw new Error((result && (result.error || result.msg)) || 'Falha ao registrar inscrição.');
@@ -514,6 +514,21 @@
       };
 
       document.body.appendChild(script);
+    });
+  }
+
+  function enviarLead(params) {
+    const jsonpParams = new URLSearchParams(params.toString());
+
+    return enviarLeadJsonp(jsonpParams).catch(function(jsonpError) {
+      return fetch(GAS_URL + '?' + params.toString(), { mode: 'no-cors' })
+        .then(function() {
+          return {
+            ok: true,
+            fallback: 'no-cors',
+            warning: jsonpError.message
+          };
+        });
     });
   }
 </script>
