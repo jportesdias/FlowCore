@@ -2144,6 +2144,201 @@
       }
     }
 
+    .consulting-section {
+      position: relative;
+      overflow: hidden;
+      min-height: 640px;
+      display: flex;
+      align-items: center;
+      padding: 96px 0;
+      background-image: url('consultoria.png');
+      background-size: cover;
+      background-position: center;
+      isolation: isolate;
+    }
+
+    .consulting-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(105deg, rgba(3, 10, 22, 0.95) 0%, rgba(5, 17, 36, 0.88) 48%, rgba(5, 17, 36, 0.46) 100%),
+        radial-gradient(circle at 20% 30%, rgba(229, 91, 19, 0.20), transparent 34%);
+      z-index: -2;
+    }
+
+    .consulting-section::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+      background-size: 52px 52px;
+      opacity: 0.34;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .consulting-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(360px, 0.55fr);
+      gap: clamp(36px, 6vw, 80px);
+      align-items: center;
+    }
+
+    .consulting-content {
+      max-width: 760px;
+    }
+
+    .consulting-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #F48A50;
+    }
+
+    .consulting-kicker::before {
+      content: '';
+      width: 38px;
+      height: 2px;
+      background: #F48A50;
+    }
+
+    .consulting-title {
+      max-width: 760px;
+      margin-bottom: 24px;
+      color: #FFFFFF;
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-size: clamp(3rem, 6vw, 5.65rem);
+      line-height: 0.92;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .consulting-title span {
+      display: block;
+      color: #F48A50;
+    }
+
+    .consulting-text {
+      max-width: 670px;
+      margin-bottom: 34px;
+      color: rgba(255, 255, 255, 0.80);
+      font-size: clamp(1.05rem, 1.35vw, 1.22rem);
+      line-height: 1.72;
+    }
+
+    .consulting-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .consulting-actions .btn-primary {
+      color: #FFFFFF;
+      box-shadow: 0 18px 42px rgba(229, 91, 19, 0.34);
+    }
+
+    .consulting-actions .btn-outline {
+      background: rgba(255, 255, 255, 0.10);
+      color: #FFFFFF;
+      border-color: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .consulting-actions .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.20);
+      border-color: rgba(255, 255, 255, 0.65);
+      color: #FFFFFF;
+    }
+
+    .consulting-panel {
+      width: 100%;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(6, 16, 32, 0.70);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
+    }
+
+    .consulting-panel-title {
+      margin-bottom: 18px;
+      color: #FFFFFF;
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-size: 1.55rem;
+      line-height: 1.15;
+      text-transform: uppercase;
+    }
+
+    .consulting-services {
+      display: grid;
+      gap: 12px;
+    }
+
+    .consulting-service {
+      padding: 16px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .consulting-service strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #FFFFFF;
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .consulting-service span {
+      display: block;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 0.94rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 920px) {
+      .consulting-section {
+        min-height: auto;
+        padding: 82px 0;
+      }
+
+      .consulting-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .consulting-panel {
+        max-width: 620px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .consulting-section {
+        padding: 68px 0;
+        background-position: center;
+      }
+
+      .consulting-title {
+        font-size: clamp(2.7rem, 15vw, 4rem);
+      }
+
+      .consulting-actions .btn {
+        width: 100%;
+      }
+    }
+
     .academy-section {
       position: relative;
       overflow: hidden;
@@ -2419,6 +2614,51 @@
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="consulting-section" id="consultoria">
+      <div class="container consulting-inner">
+        <div class="consulting-content">
+          <div class="consulting-kicker">Servi&ccedil;os t&eacute;cnicos FlowCore</div>
+          <h2 class="consulting-title">
+            Consultoria em medi&ccedil;&atilde;o
+            <span>defesas t&eacute;cnicas &amp; metrologia.</span>
+          </h2>
+          <p class="consulting-text">
+            Apoio especializado para empresas que precisam avaliar sistemas de medi&ccedil;&atilde;o, sustentar decis&otilde;es
+            t&eacute;cnicas, revisar evid&ecirc;ncias, responder questionamentos e estruturar argumentos com base metrol&oacute;gica
+            e operacional.
+          </p>
+          <div class="consulting-actions">
+            <a href="https://wa.me/5524998788760" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+              Solicitar an&aacute;lise t&eacute;cnica
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
+            <a href="cursos.html" class="btn btn-outline">Ver forma&ccedil;&otilde;es</a>
+          </div>
+        </div>
+
+        <aside class="consulting-panel" aria-label="Frentes de atua&ccedil;&atilde;o em consultoria">
+          <h3 class="consulting-panel-title">Atua&ccedil;&atilde;o aplicada</h3>
+          <div class="consulting-services">
+            <div class="consulting-service">
+              <strong>Medi&ccedil;&atilde;o industrial</strong>
+              <span>Diagn&oacute;stico de sistemas, instrumentos, rotinas de verifica&ccedil;&atilde;o e condi&ccedil;&otilde;es de opera&ccedil;&atilde;o.</span>
+            </div>
+            <div class="consulting-service">
+              <strong>Defesas t&eacute;cnicas</strong>
+              <span>Organiza&ccedil;&atilde;o de evid&ecirc;ncias, pareceres, contesta&ccedil;&otilde;es e suporte para decis&otilde;es cr&iacute;ticas.</span>
+            </div>
+            <div class="consulting-service">
+              <strong>Metrologia</strong>
+              <span>An&aacute;lise de incerteza, rastreabilidade, crit&eacute;rios de aceita&ccedil;&atilde;o e coer&ecirc;ncia documental.</span>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
 
@@ -2798,7 +3038,7 @@
     }, observerOptions);
 
     // Initial opacity 0 for staggered sections
-    document.querySelectorAll('.section-header, .bento-card, .product-card, .author-grid, .cta-box').forEach(el => {
+    document.querySelectorAll('.section-header, .bento-card, .product-card, .author-grid, .cta-box, .consulting-content, .consulting-panel').forEach(el => {
       el.style.opacity = '0';
       observer.observe(el);
     });
