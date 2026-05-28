@@ -228,7 +228,8 @@
     /* ── HERO ── */
     .hero {
       min-height: 100vh;
-      padding: calc(var(--nav-height) + 80px) 0 88px;
+      min-height: 100svh;
+      padding: 86px 0 44px;
       position: relative;
       overflow: hidden;
       background-image: url('wallpaper_flowcore.png');
@@ -252,17 +253,17 @@
 
     .hero-grid {
       display: grid;
-      grid-template-columns: minmax(0, 0.95fr) minmax(420px, 0.74fr);
-      gap: clamp(46px, 6vw, 92px);
+      grid-template-columns: minmax(0, 0.92fr) minmax(480px, 0.78fr);
+      gap: clamp(34px, 4.5vw, 64px);
       align-items: center;
-      min-height: calc(100vh - var(--nav-height) - 168px);
+      min-height: auto;
     }
 
     .hero-eyebrow {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
       flex-wrap: wrap;
     }
 
@@ -310,10 +311,10 @@
     }
 
     .hero-title {
-      font-size: clamp(3rem, 5.8vw, 5.45rem);
+      font-size: clamp(2.65rem, 4.8vw, 4.55rem);
       font-weight: 800;
       letter-spacing: 0;
-      margin-bottom: 24px;
+      margin-bottom: 18px;
       color: #FFFFFF;
       line-height: 0.94;
       text-transform: uppercase;
@@ -331,22 +332,22 @@
       font-size: clamp(1.08rem, 1.35vw, 1.24rem);
       color: rgba(255,255,255,0.82);
       max-width: 650px;
-      margin-bottom: 36px;
-      line-height: 1.7;
+      margin-bottom: 24px;
+      line-height: 1.58;
     }
 
     .hero-ctas {
       display: flex;
       gap: 14px;
       flex-wrap: wrap;
-      margin-bottom: 48px;
+      margin-bottom: 28px;
     }
 
     .hero-meta {
       display: flex;
       gap: 28px;
       flex-wrap: wrap;
-      padding-top: 32px;
+      padding-top: 22px;
       border-top: 1px solid rgba(255,255,255,0.15);
     }
 
@@ -385,19 +386,154 @@
       position: relative;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
+      align-self: center;
     }
 
-    .hero-video {
+    .hero-video-trigger {
+      position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: #05070b;
-      object-fit: cover;
       border-bottom: 1px solid rgba(255,255,255,0.12);
+      border: 0;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .hero-video-trigger img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0.82;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+
+    .hero-video-trigger:hover img {
+      transform: scale(1.04);
+      opacity: 0.96;
+    }
+
+    .hero-video-trigger::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(3, 10, 22, 0.12), rgba(3, 10, 22, 0.60)),
+        radial-gradient(circle at center, rgba(229,91,19,0.20), transparent 42%);
+      pointer-events: none;
+    }
+
+    .hero-video-play {
+      position: absolute;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--accent-main), var(--accent-light));
+      box-shadow: 0 20px 46px rgba(229, 91, 19, 0.42);
+    }
+
+    .hero-video-play svg {
+      width: 30px;
+      height: 30px;
+      margin-left: 4px;
+      fill: currentColor;
+    }
+
+    .hero-video-label {
+      position: absolute;
+      left: 18px;
+      bottom: 16px;
+      right: 18px;
+      color: rgba(255,255,255,0.88);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    .video-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: rgba(3, 10, 22, 0.82);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .video-modal.is-open {
+      display: flex;
+    }
+
+    .video-modal__dialog {
+      position: relative;
+      width: min(920px, calc(100vw - 40px));
+      aspect-ratio: 16 / 9;
+      background: #05070b;
+      border: 1px solid rgba(142, 190, 232, 0.22);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 34px 90px rgba(0, 0, 0, 0.56);
+    }
+
+    .video-modal__bar {
+      display: block;
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 2;
+      padding: 0;
+      background: transparent;
+    }
+
+    .video-modal__bar span {
+      display: none;
+    }
+
+    .video-modal__bar {
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: rgba(255,255,255,0.82);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .video-modal__close {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #ffffff;
+      background: rgba(3,10,22,0.62);
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .video-modal video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #000;
+      object-fit: cover;
     }
 
     .hero-card-body {
-      padding: 28px 32px 32px;
+      padding: 22px 28px 26px;
     }
 
     .hero-card-price-row {
@@ -414,7 +550,7 @@
 
     .price-main {
       font-family: 'Outfit', sans-serif;
-      font-size: 2rem;
+      font-size: 1.82rem;
       font-weight: 800;
       color: #FFFFFF;
     }
@@ -422,12 +558,12 @@
     .price-installment {
       font-size: 0.85rem;
       color: rgba(255,255,255,0.62);
-      margin-bottom: 20px;
+      margin-bottom: 14px;
     }
 
     .hero-card-cta {
       width: 100%;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: center;
     }
@@ -451,7 +587,7 @@
       background: rgba(229, 91, 19, 0.05);
       border: 1px solid rgba(229, 91, 19, 0.12);
       border-radius: var(--radius-md);
-      margin-top: 16px;
+      margin-top: 12px;
       font-size: 0.85rem;
       color: var(--accent-main);
       font-weight: 600;
@@ -1151,7 +1287,7 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 960px) {
       .hero-grid         { grid-template-columns: 1fr; gap: 40px; }
-      .hero-card         { max-width: 440px; margin: 0 auto; }
+      .hero-card         { width: min(100%, 620px); max-width: 620px; margin: 0 auto; }
       .audience-grid     { grid-template-columns: 1fr 1fr; }
       .curriculum-grid   { grid-template-columns: 1fr; }
       .curriculum-block.featured { grid-column: span 1; }
@@ -1169,7 +1305,7 @@
       .cta-box { padding: 48px 24px; }
       .detail-box { padding: 28px 20px; }
       .enroll-box { padding: 36px 24px; }
-      .hero { padding-top: calc(var(--nav-height) + 48px); }
+      .hero { padding-top: 88px; }
       .sim-metrics { grid-template-columns: 1fr; }
     }
   </style>
@@ -1250,10 +1386,13 @@
 
           <!-- Card lateral -->
           <div class="hero-card" id="inscricao">
-            <video class="hero-video" controls preload="metadata" poster="provadores-compacto.png">
-              <source src="simulador2_low.mp4" type="video/mp4" />
-              Seu navegador não suporta vídeo HTML5.
-            </video>
+            <button class="hero-video-trigger" type="button" data-open-video aria-label="Assistir demonstração do simulador">
+              <img src="provadores-compacto.png" alt="Demonstração do simulador de prova" />
+              <span class="hero-video-play" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </span>
+              <span class="hero-video-label">Assistir demonstração do simulador</span>
+            </button>
             <div class="hero-card-body">
               <div class="hero-card-price-row">
                 <span class="price-label">Investimento:</span>
@@ -1660,6 +1799,19 @@
 
   </main>
 
+  <div class="video-modal" id="videoModal" aria-hidden="true">
+    <div class="video-modal__dialog" role="dialog" aria-modal="true" aria-label="Demonstração do simulador">
+      <div class="video-modal__bar">
+        <span>Demonstração do simulador de prova</span>
+        <button class="video-modal__close" type="button" data-close-video aria-label="Fechar vídeo">×</button>
+      </div>
+      <video id="modalVideo" controls controlsList="nofullscreen nodownload" disablePictureInPicture preload="metadata" poster="provadores-compacto.png">
+        <source src="simulador2_low.mp4" type="video/mp4" />
+        Seu navegador não suporta vídeo HTML5.
+      </video>
+    </div>
+  </div>
+
   <!-- ── FOOTER ── -->
   <footer>
     <div class="container">
@@ -1685,7 +1837,37 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     window.addEventListener('scroll', () => {
-      document.getElementById('header').classList.toggle('scrolled', window.scrollY > 40);
+      const header = document.getElementById('header');
+      if (header) header.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    const videoModal = document.getElementById('videoModal');
+    const modalVideo = document.getElementById('modalVideo');
+    const openVideoButton = document.querySelector('[data-open-video]');
+    const closeVideoButton = document.querySelector('[data-close-video]');
+
+    function openVideoModal() {
+      videoModal.classList.add('is-open');
+      videoModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      modalVideo.currentTime = 0;
+      modalVideo.play().catch(() => {});
+    }
+
+    function closeVideoModal() {
+      modalVideo.pause();
+      videoModal.classList.remove('is-open');
+      videoModal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    openVideoButton?.addEventListener('click', openVideoModal);
+    closeVideoButton?.addEventListener('click', closeVideoModal);
+    videoModal?.addEventListener('click', (event) => {
+      if (event.target === videoModal) closeVideoModal();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && videoModal.classList.contains('is-open')) closeVideoModal();
     });
 
     const observer = new IntersectionObserver((entries) => {
