@@ -1836,14 +1836,58 @@
     }
 
     .hero-grid {
+      position: relative;
       /* TESTE: distribuição mais equilibrada da primeira dobra */
       grid-template-columns: minmax(0, 0.96fr) minmax(420px, 0.86fr);
       gap: clamp(44px, 6vw, 96px);
       min-height: calc(100vh - 196px);
     }
 
+    .hero-grid::before {
+      content: '';
+      position: absolute;
+      right: clamp(10px, 4vw, 58px);
+      bottom: 5%;
+      width: min(44vw, 640px);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(98, 217, 255, 0.46), rgba(244, 138, 80, 0.82), transparent);
+      box-shadow: 0 0 26px rgba(244, 138, 80, 0.36);
+      transform: rotate(-11deg);
+      pointer-events: none;
+    }
+
     .hero-content {
       max-width: 680px;
+    }
+
+    .hero-kicker {
+      position: relative;
+      top: -20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding: 9px 13px;
+      border: 1px solid rgba(244, 138, 80, 0.34);
+      background: rgba(229, 91, 19, 0.13);
+      color: #FFD6C0;
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      box-shadow: 0 16px 40px rgba(229, 91, 19, 0.16);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      animation: fadeInUp 0.8s ease-out 0.18s forwards;
+      opacity: 0;
+    }
+
+    .hero-kicker::before {
+      content: '';
+      width: 34px;
+      height: 2px;
+      background: linear-gradient(90deg, #F48A50, rgba(244, 138, 80, 0.12));
     }
 
     .hero .badge {
@@ -1857,17 +1901,19 @@
     }
 
     .hero-title {
-      font-size: clamp(3rem, 6.25vw, 5.95rem);
-      line-height: 0.92;
-      max-width: 700px;
-      margin-bottom: 28px;
+      font-size: clamp(3.2rem, 6.65vw, 6.35rem);
+      line-height: 0.88;
+      max-width: 720px;
+      margin-bottom: 30px;
       text-shadow: 0 24px 65px rgba(0, 0, 0, 0.46);
     }
 
     .hero .text-gradient {
+      display: inline-block;
       background: none;
-      color: #FFFFFF;
-      -webkit-text-fill-color: #FFFFFF;
+      color: #F48A50;
+      -webkit-text-fill-color: #F48A50;
+      text-shadow: 0 18px 54px rgba(229, 91, 19, 0.36);
     }
 
     .hero-subtitle {
@@ -1888,6 +1934,40 @@
       padding-inline: 18px;
       font-size: 0.94rem;
       white-space: nowrap;
+    }
+
+    .hero-service-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 650px;
+      margin-top: 28px;
+      animation: fadeInUp 0.8s ease-out 0.62s forwards;
+      opacity: 0;
+    }
+
+    .hero-service-pill {
+      min-height: 72px;
+      padding: 13px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.075);
+      color: rgba(255, 255, 255, 0.74);
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.18;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .hero-service-pill strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #FFFFFF;
+      font-size: 1.06rem;
+      letter-spacing: 0.03em;
     }
 
     .hero .btn-primary {
@@ -1937,6 +2017,7 @@
     }
 
     .hero-visuals {
+      position: relative;
       height: auto;
       min-height: 560px;
       align-items: stretch;
@@ -1944,22 +2025,65 @@
       padding-right: clamp(8px, 2vw, 32px);
     }
 
+    .hero-visuals::before {
+      content: '';
+      position: absolute;
+      right: clamp(-80px, -4vw, -24px);
+      top: 8%;
+      width: min(38vw, 520px);
+      height: min(38vw, 520px);
+      border: 1px solid rgba(98, 217, 255, 0.16);
+      border-radius: 50%;
+      box-shadow:
+        inset 0 0 0 18px rgba(98, 217, 255, 0.025),
+        inset 0 0 0 48px rgba(31, 63, 104, 0.12),
+        0 0 80px rgba(98, 217, 255, 0.08);
+      transform: rotate(-18deg);
+      pointer-events: none;
+    }
+
     .hero-command-panel {
+      position: relative;
       align-self: center;
-      width: min(100%, 470px);
-      min-height: 540px;
-      padding: 38px 30px;
-      transform: translateY(-18px);
+      width: min(100%, 500px);
+      min-height: 560px;
+      padding: 34px;
+      transform: translateY(-10px);
       color: #FFFFFF;
-      background: rgba(8, 20, 42, 0.78);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 18px;
-      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      background:
+        linear-gradient(145deg, rgba(11, 28, 57, 0.90), rgba(4, 12, 27, 0.78)),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
+      border: 1px solid rgba(142, 190, 232, 0.22);
+      border-radius: 22px;
+      box-shadow:
+        0 34px 90px rgba(0, 0, 0, 0.48),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       display: flex;
       flex-direction: column;
       justify-content: center;
+    }
+
+    .hero-command-panel::before {
+      content: '';
+      position: absolute;
+      inset: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      pointer-events: none;
+    }
+
+    .hero-command-panel::after {
+      content: '';
+      position: absolute;
+      right: -18px;
+      top: 18%;
+      width: 4px;
+      height: 210px;
+      background: linear-gradient(180deg, transparent, #F48A50, rgba(98, 217, 255, 0.58), transparent);
+      box-shadow: 0 0 28px rgba(244, 138, 80, 0.54);
+      pointer-events: none;
     }
 
     .panel-eyebrow {
@@ -2005,12 +2129,12 @@
 
     .panel-title {
       font-family: 'Rajdhani', 'Outfit', sans-serif;
-      font-size: clamp(2rem, 3.4vw, 2.65rem);
+      font-size: clamp(2.15rem, 3.6vw, 2.9rem);
       line-height: 0.94;
       color: #FFFFFF;
-      margin-bottom: 22px;
+      margin-bottom: 26px;
       text-transform: uppercase;
-      max-width: 360px;
+      max-width: 390px;
     }
 
     .panel-title::after {
@@ -2082,6 +2206,26 @@
       color: rgba(255, 255, 255, 0.76);
     }
 
+    .panel-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .panel-meta-grid span {
+      padding: 9px 10px;
+      border: 1px solid rgba(98, 217, 255, 0.14);
+      background: rgba(98, 217, 255, 0.055);
+      color: rgba(255, 255, 255, 0.72);
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
     .hero .social-proof {
       margin-top: 34px;
       padding-top: 24px;
@@ -2115,9 +2259,18 @@
         grid-template-columns: 1fr;
       }
 
+      .hero-service-strip {
+        grid-template-columns: 1fr;
+      }
+
       .hero-visuals {
         min-height: auto;
         padding-right: 0;
+      }
+
+      .hero-visuals::before,
+      .hero-grid::before {
+        display: none;
       }
 
       .hero-command-panel {
@@ -2141,6 +2294,10 @@
 
       .signal-row {
         grid-template-columns: 74px 1fr auto;
+      }
+
+      .panel-meta-grid {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -2549,6 +2706,7 @@
       <div class="container">
         <div class="hero-grid">
           <div class="hero-content">
+            <div class="hero-kicker">Engenharia aplicada à medição industrial</div>
             <h1 class="hero-title">
               Medição industrial<br />
               <span class="text-gradient">sem achismo.</span>
@@ -2573,6 +2731,21 @@
               <a href="autenticacao.html" class="btn btn-outline">
                 Valide Seu Certificado
               </a>
+            </div>
+
+            <div class="hero-service-strip" aria-label="Frentes FlowCore">
+              <div class="hero-service-pill">
+                <strong>Treinamentos</strong>
+                Campo, operação e diagnóstico
+              </div>
+              <div class="hero-service-pill">
+                <strong>Consultoria</strong>
+                Defesas técnicas e metrologia
+              </div>
+              <div class="hero-service-pill">
+                <strong>Materiais</strong>
+                Livros, e-books e ferramentas
+              </div>
             </div>
 
             <div class="social-proof">
@@ -2611,6 +2784,11 @@
               <p class="panel-note">
                 Conteúdo direto para quem mede, diagnostica, opera e toma decisão técnica em instalações industriais.
               </p>
+              <div class="panel-meta-grid" aria-label="Bases técnicas">
+                <span>Excel&ecirc;ncia</span>
+                <span>Simula&ccedil;&atilde;o</span>
+                <span>Pr&aacute;tico</span>
+              </div>
             </div>
           </div>
         </div>
