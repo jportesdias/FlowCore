@@ -87,6 +87,42 @@
       border-bottom: 1px solid rgba(31, 63, 104, 0.06);
     }
 
+    header:not(.scrolled) a {
+      color: rgba(255,255,255,0.86) !important;
+    }
+
+    .home-back {
+      position: fixed;
+      left: 24px;
+      top: 24px;
+      z-index: 1200;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(3, 10, 22, 0.42);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+      transition: all 0.3s ease;
+    }
+
+    .home-back:hover {
+      transform: translateX(-2px);
+      color: #fff;
+      border-color: rgba(244, 138, 80, 0.52);
+    }
+
+    .home-back svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+    }
+
     .nav-inner {
       width: 100%;
       display: flex;
@@ -129,6 +165,19 @@
       color: #fff;
     }
 
+    .hero .btn-outline {
+      color: #FFFFFF;
+      border-color: rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .hero .btn-outline:hover {
+      background: rgba(255,255,255,0.20);
+      border-color: rgba(255,255,255,0.66);
+    }
+
     .btn-whatsapp {
       background: #25D366;
       color: #fff;
@@ -160,6 +209,15 @@
       text-transform: uppercase;
     }
 
+    .hero .badge {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.18);
+      color: #FFFFFF;
+      box-shadow: 0 18px 55px rgba(0,0,0,0.24);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
     .badge-dot {
       width: 6px; height: 6px;
       background: var(--accent-main);
@@ -169,25 +227,35 @@
 
     /* ── HERO ── */
     .hero {
-      padding: calc(var(--nav-height) + 72px) 0 80px;
+      min-height: 100vh;
+      padding: calc(var(--nav-height) + 80px) 0 88px;
       position: relative;
       overflow: hidden;
+      background-image: url('wallpaper_flowcore.png');
+      background-size: cover;
+      background-position: center;
+      isolation: isolate;
     }
 
     .hero-bg {
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 60% at 60% -10%, rgba(229, 91, 19, 0.06) 0%, transparent 70%),
-        radial-gradient(ellipse 60% 50% at -10% 80%, rgba(31, 63, 104, 0.05) 0%, transparent 70%);
+        linear-gradient(105deg, rgba(3, 10, 22, 0.96) 0%, rgba(5, 17, 36, 0.86) 54%, rgba(5, 17, 36, 0.48) 100%),
+        radial-gradient(circle at 78% 36%, rgba(229, 91, 19, 0.24) 0%, rgba(229, 91, 19, 0.07) 26%, transparent 58%),
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: auto, auto, 56px 56px, 56px 56px;
       pointer-events: none;
+      z-index: -1;
     }
 
     .hero-grid {
       display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 56px;
+      grid-template-columns: minmax(0, 0.95fr) minmax(420px, 0.74fr);
+      gap: clamp(46px, 6vw, 92px);
       align-items: center;
+      min-height: calc(100vh - var(--nav-height) - 168px);
     }
 
     .hero-eyebrow {
@@ -204,9 +272,9 @@
       gap: 6px;
       padding: 5px 12px;
       border-radius: var(--radius-pill);
-      background: rgba(220, 38, 38, 0.08);
-      border: 1px solid rgba(220, 38, 38, 0.2);
-      color: #dc2626;
+      background: rgba(34, 197, 94, 0.11);
+      border: 1px solid rgba(34, 197, 94, 0.32);
+      color: #bbf7d0;
       font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 0.08em;
@@ -232,9 +300,9 @@
       gap: 6px;
       padding: 5px 12px;
       border-radius: var(--radius-pill);
-      background: rgba(229, 91, 19, 0.08);
-      border: 1px solid rgba(229, 91, 19, 0.25);
-      color: var(--accent-main);
+      background: rgba(229, 91, 19, 0.16);
+      border: 1px solid rgba(229, 91, 19, 0.36);
+      color: #ffd2b8;
       font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 0.08em;
@@ -242,25 +310,27 @@
     }
 
     .hero-title {
-      font-size: clamp(2.4rem, 4vw, 3.6rem);
+      font-size: clamp(3rem, 5.8vw, 5.45rem);
       font-weight: 800;
-      letter-spacing: -0.025em;
-      margin-bottom: 20px;
-      color: var(--text-pure);
+      letter-spacing: 0;
+      margin-bottom: 24px;
+      color: #FFFFFF;
+      line-height: 0.94;
+      text-transform: uppercase;
+      text-shadow: 0 24px 65px rgba(0, 0, 0, 0.46);
     }
 
     .text-gradient {
-      background: linear-gradient(110deg, var(--accent-secondary) 0%, var(--accent-main) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
+      background: none;
+      color: #F48A50;
+      -webkit-text-fill-color: #F48A50;
+      text-shadow: 0 18px 54px rgba(229, 91, 19, 0.36);
     }
 
     .hero-desc {
-      font-size: 1.1rem;
-      color: var(--text-body);
-      max-width: 560px;
+      font-size: clamp(1.08rem, 1.35vw, 1.24rem);
+      color: rgba(255,255,255,0.82);
+      max-width: 650px;
       margin-bottom: 36px;
       line-height: 1.7;
     }
@@ -277,7 +347,7 @@
       gap: 28px;
       flex-wrap: wrap;
       padding-top: 32px;
-      border-top: 1px solid var(--glass-border);
+      border-top: 1px solid rgba(255,255,255,0.15);
     }
 
     .meta-item {
@@ -291,30 +361,39 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: var(--text-muted);
+      color: rgba(255,255,255,0.50);
     }
 
     .meta-value {
       font-family: 'Outfit', sans-serif;
       font-size: 1rem;
       font-weight: 700;
-      color: var(--text-heading);
+      color: rgba(255,255,255,0.88);
     }
 
     /* ── HERO CARD ── */
     .hero-card {
-      background: var(--bg-card);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(145deg, rgba(11, 28, 57, 0.92), rgba(4, 12, 27, 0.82)),
+        linear-gradient(180deg, rgba(255,255,255,0.08), transparent);
+      border: 1px solid rgba(142, 190, 232, 0.22);
+      border-radius: 22px;
       overflow: hidden;
-      box-shadow: 0 24px 56px rgba(31, 63, 104, 0.1);
+      box-shadow:
+        0 34px 90px rgba(0, 0, 0, 0.48),
+        inset 0 1px 0 rgba(255,255,255,0.10);
       position: relative;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
 
-    .hero-card-img {
+    .hero-video {
       width: 100%;
+      aspect-ratio: 16 / 9;
       display: block;
       background: #05070b;
+      object-fit: cover;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
     }
 
     .hero-card-body {
@@ -330,19 +409,19 @@
 
     .price-label {
       font-size: 0.85rem;
-      color: var(--text-muted);
+      color: rgba(255,255,255,0.62);
     }
 
     .price-main {
       font-family: 'Outfit', sans-serif;
       font-size: 2rem;
       font-weight: 800;
-      color: var(--accent-secondary);
+      color: #FFFFFF;
     }
 
     .price-installment {
       font-size: 0.85rem;
-      color: var(--text-muted);
+      color: rgba(255,255,255,0.62);
       margin-bottom: 20px;
     }
 
@@ -361,7 +440,7 @@
     .hero-card-note {
       text-align: center;
       font-size: 0.82rem;
-      color: var(--text-muted);
+      color: rgba(255,255,255,0.62);
     }
 
     .hero-card-spots {
@@ -1099,17 +1178,13 @@
 <body>
 
   <!-- ── HEADER ── -->
-  <header id="header">
-    <div class="container nav-inner">
-      <a href="index.html">
-        <img src="Flow core solutions Color.png" alt="FlowCore Solutions" style="height: 44px; width: auto; display: block;" />
-      </a>
-      <div style="display: flex; gap: 24px; align-items: center;">
-        <a href="cursos.html" style="font-size: 0.9rem; font-weight: 500; color: var(--text-body);">Todos os cursos</a>
-        <a href="#inscricao" class="btn btn-primary btn-sm">Inscrever-me agora</a>
-      </div>
-    </div>
-  </header>
+  <a class="home-back" href="index.html" aria-label="Voltar para a página inicial">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 10.8 12 3l9 7.8" />
+      <path d="M5.5 10.5V21h13V10.5" />
+      <path d="M9.5 21v-6h5v6" />
+    </svg>
+  </a>
 
   <main>
 
@@ -1175,11 +1250,10 @@
 
           <!-- Card lateral -->
           <div class="hero-card" id="inscricao">
-            <img
-              src="provadores-compacto.png"
-              alt="Compact Prover O&M com Simulador de Prova"
-              class="hero-card-img"
-            />
+            <video class="hero-video" controls preload="metadata" poster="provadores-compacto.png">
+              <source src="simulador2_low.mp4" type="video/mp4" />
+              Seu navegador não suporta vídeo HTML5.
+            </video>
             <div class="hero-card-body">
               <div class="hero-card-price-row">
                 <span class="price-label">Investimento:</span>
