@@ -14,6 +14,13 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap"
     rel="stylesheet" />
+  <link rel="preload" as="image" href="wallpaper_flowcore.png" fetchpriority="high" />
+  <link rel="preload" as="image" href="consultoria.png" />
+  <link rel="preload" as="image" href="banner-academy.png" />
+  <link rel="preload" as="image" href="biblioteca.png" />
+  <link rel="preload" as="image" href="pensamento.png" />
+  <link rel="preload" as="image" href="solutions.png" />
+  <link rel="preload" as="image" href="ultima-sessao.png" />
 
   <style>
     :root {
@@ -527,7 +534,7 @@
       position: relative;
       overflow: hidden;
       padding: 0;
-      background: #EEF2F8;
+      background: #030A16;
     }
 
     .materials-section > .container {
@@ -553,6 +560,7 @@
       background:
         linear-gradient(90deg, rgba(3, 10, 22, 0.82) 0%, rgba(5, 17, 36, 0.58) 44%, rgba(238, 242, 248, 0.28) 100%),
         url('biblioteca.png') center / cover no-repeat;
+      background-color: #030A16;
       border-bottom: 1px solid rgba(31, 63, 104, 0.10);
       box-shadow: none;
       display: flex;
@@ -653,6 +661,7 @@
         background:
           linear-gradient(180deg, rgba(3, 10, 22, 0.82) 0%, rgba(5, 17, 36, 0.62) 100%),
           url('biblioteca.png') center / cover no-repeat;
+        background-color: #030A16;
       }
 
       .materials-aside {
@@ -682,6 +691,7 @@
       background:
         linear-gradient(135deg, rgba(3, 10, 22, 0.70) 0%, rgba(5, 17, 36, 0.48) 48%, rgba(238, 242, 248, 0.38) 100%),
         url('pensamento.png') center / cover no-repeat;
+      background-color: #030A16;
     }
 
     /* TESTE: harmonização das famílias Livros e Soluções */
@@ -759,8 +769,9 @@
       padding: 72px 0;
       overflow: hidden;
       background:
-        linear-gradient(135deg, rgba(3, 10, 22, 0.72) 0%, rgba(5, 17, 36, 0.54) 48%, rgba(238, 242, 248, 0.56) 100%),
+        linear-gradient(135deg, rgba(3, 10, 22, 0.82) 0%, rgba(5, 17, 36, 0.68) 48%, rgba(31, 63, 104, 0.42) 100%),
         url('solutions.png') center / cover no-repeat;
+      background-color: #030A16;
     }
 
     .solutions-band-inner {
@@ -1353,6 +1364,7 @@
     .cta-final {
       padding: 120px 0;
       position: relative;
+      background-color: #030A16;
       background-image: url('wallpaper_flowcore.png');
       background-size: cover;
       background-position: center center;
@@ -1436,6 +1448,7 @@
       background:
         linear-gradient(180deg, rgba(3, 10, 22, 0.06), rgba(3, 10, 22, 0.18)),
         url('ultima-sessao.png') center / cover no-repeat;
+      background-color: #030A16;
     }
 
     .final-card-content {
@@ -2308,6 +2321,7 @@
       display: flex;
       align-items: center;
       padding: 96px 0;
+      background-color: #030A16;
       background-image: url('consultoria.png');
       background-size: cover;
       background-position: center;
@@ -2504,6 +2518,7 @@
       --academy-white-bg: url('banner-academy.png');
       background:
         linear-gradient(135deg, #030A16 0%, #051124 31%, #0A1937 46%, #F3F7FC 46%, #FFFFFF 100%);
+      background-color: #030A16;
     }
 
     .academy-section::before {
@@ -2512,9 +2527,11 @@
       inset: 0;
       pointer-events: none;
       background:
+        linear-gradient(180deg, transparent calc(100% - 96px), #030A16 100%),
         linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-      background-size: 48px 48px;
+      background-size: 100% 100%, 48px 48px, 48px 48px;
+      background-repeat: no-repeat, repeat, repeat;
       opacity: 0.55;
       z-index: 0;
     }
@@ -2637,6 +2654,7 @@
         padding: 76px 0;
         --academy-white-bg: none;
         background: linear-gradient(180deg, #030A16 0%, #051124 43%, #FFFFFF 43%, #FFFFFF 100%);
+        background-color: #030A16;
       }
 
       .academy-section::after {
