@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual de Operação — Estação IHM de Medição Fiscal · FlowCore</title>
+<style>
+:root{
+  --or:#E55B13; --bl:#1F3F68; --bg:#080d14; --pn:#0f1824;
+  --bd:#1e3a5f; --tx:#c8d8f0; --mu:#5a7a9a; --gr:#00c97a;
+  --rd:#e03030; --yl:#ffd600; --cy:#4ab8ff; --pu:#cc88ff;
+  --sbw:280px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-serif;
+  font-size:14px;line-height:1.7;}
+#app{display:flex;min-height:100vh;}
+#sidebar{width:var(--sbw);background:#060c14;border-right:1px solid var(--bd);
+  position:fixed;top:0;left:0;height:100vh;overflow-y:auto;flex-shrink:0;z-index:100;}
+#content{margin-left:var(--sbw);flex:1;max-width:980px;padding:0 48px 90px 48px;}
+.sb-logo{padding:20px 16px 10px;border-bottom:2px solid var(--or);}
+.sb-logo .lg{font-size:18px;font-weight:900;color:#fff;letter-spacing:1px;}
+.sb-logo .sub{font-size:10px;color:#6a8aaa;margin-top:2px;}
+.sb-part{padding:10px 16px 4px;font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1.5px;color:var(--or);margin-top:6px;}
+.sb-item{display:block;padding:5px 16px 5px 24px;font-size:11px;color:var(--mu);
+  text-decoration:none;border-left:2px solid transparent;transition:all .15s;line-height:1.4;}
+.sb-item:hover{color:var(--tx);border-left-color:var(--bd);}
+.sb-item.l2{padding-left:34px;font-size:10px;}
+h1.page-title{font-size:27px;font-weight:900;color:#fff;margin:44px 0 6px;
+  border-bottom:2px solid var(--or);padding-bottom:10px;letter-spacing:.5px;}
+h1.page-title .tag{font-size:12px;font-weight:400;color:var(--or);
+  background:#180800;border:1px solid var(--or);padding:2px 8px;border-radius:3px;margin-left:10px;vertical-align:middle;}
+h2.sec{font-size:18px;font-weight:700;color:var(--cy);margin:42px 0 12px;
+  padding-bottom:6px;border-bottom:1px solid var(--bd);}
+h3.sub{font-size:14px;font-weight:700;color:#fff;margin:26px 0 8px;}
+h4{font-size:12px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin:20px 0 6px;}
+p{margin-bottom:12px;color:var(--tx);}
+p.lead{font-size:15px;color:#a0c0e0;line-height:1.8;}
+ul,ol{margin:10px 0 14px 24px;}
+li{margin-bottom:6px;}
+b{color:#fff;}
+.info,.warn,.tip,.req{border-left:3px solid;padding:10px 14px;border-radius:0 4px 4px 0;margin:14px 0;font-size:13px;}
+.info{background:#040f1e;border-color:var(--cy);color:#a0d0f0;}
+.warn{background:#1a0e00;border-color:var(--yl);color:#f0d080;}
+.tip{background:#001a0a;border-color:var(--gr);color:#80e0a0;}
+.req{background:#0a0020;border-color:var(--pu);color:#d0b0f0;}
+.info b,.warn b,.tip b,.req b{display:block;margin-bottom:4px;font-size:11px;text-transform:uppercase;letter-spacing:.8px;opacity:.85;}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:12px;}
+th{background:#0b1220;color:var(--mu);padding:7px 12px;text-align:left;border:1px solid var(--bd);font-size:10px;text-transform:uppercase;letter-spacing:.5px;}
+td{padding:6px 12px;border:1px solid #162030;vertical-align:top;}
+tr:nth-child(even) td{background:#080e18;}
+td.ok{color:var(--gr);font-weight:700;}
+td.fail{color:var(--rd);font-weight:700;}
+td code{background:#0b1220;padding:1px 5px;border-radius:2px;font-family:'Courier New',monospace;font-size:11px;color:var(--cy);}
+code{background:#0b1220;padding:1px 6px;border-radius:3px;font-family:'Courier New',monospace;font-size:12px;color:var(--cy);}
+.btn-ref{background:#2a0c00;color:var(--or);border:1px solid var(--or);padding:1px 7px;border-radius:3px;font-size:11px;font-weight:700;white-space:nowrap;}
+.badge{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700;vertical-align:middle;}
+.badge-gr{background:#001a0a;color:var(--gr);border:1px solid var(--gr);}
+.badge-rd{background:#1a0000;color:var(--rd);border:1px solid var(--rd);}
+.badge-yl{background:#1a1200;color:var(--yl);border:1px solid var(--yl);}
+.steps{counter-reset:step;margin:14px 0;}
+.step{counter-increment:step;display:flex;gap:14px;margin-bottom:12px;align-items:flex-start;}
+.step::before{content:counter(step);background:var(--or);color:#fff;font-size:11px;font-weight:900;
+  width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body{flex:1;}
+.formula{background:#050e18;border:1px solid #1a3050;border-radius:4px;padding:12px 16px;margin:14px 0;text-align:center;}
+.formula .fm{font-size:16px;color:var(--cy);font-family:'Courier New',monospace;letter-spacing:.5px;}
+.formula .fd{font-size:11px;color:var(--mu);margin-top:6px;}
+.part-divider{background:linear-gradient(90deg,var(--or),transparent);height:2px;margin:50px 0 0;border-radius:2px;}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:#060c14;}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
+@media print{ #sidebar{display:none;} #content{margin-left:0;max-width:100%;padding:0 10px;} h1.page-title{margin-top:24px;} }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ═══ SIDEBAR ═══ -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <div class="lg">⬡ FlowCore</div>
+    <div class="sub">Manual de Operação — Estação IHM</div>
+  </div>
+
+  <div class="sb-part">A Estação</div>
+  <a class="sb-item" href="#intro">1. O que é a estação</a>
+  <a class="sb-item" href="#tela">2. A tela</a>
+  <a class="sb-item l2" href="#cabecalho">→ Cabeçalho e status</a>
+  <a class="sb-item l2" href="#pid">→ Diagrama P&amp;ID</a>
+  <a class="sb-item l2" href="#abas">→ Abas</a>
+  <a class="sb-item" href="#aquecimento">3. Aquecimento</a>
+
+  <div class="sb-part">Componentes</div>
+  <a class="sb-item" href="#tramos">4. Os três tramos</a>
+  <a class="sb-item" href="#prover">5. O Compact Prover</a>
+  <a class="sb-item" href="#valvulas">6. As válvulas</a>
+  <a class="sb-item" href="#instrumentos">7. Os instrumentos</a>
+
+  <div class="sb-part">Lógica Operacional</div>
+  <a class="sb-item" href="#vazao">8. Como a vazão funciona</a>
+  <a class="sb-item" href="#fcv3401">9. FCV-3401 (série + curva)</a>
+  <a class="sb-item" href="#interlock">10. Intertravamento</a>
+  <a class="sb-item" href="#pressao">11. Pressão do prover e dreno</a>
+
+  <div class="sb-part">Operação da Prova</div>
+  <a class="sb-item" href="#procedimento">12. Procedimento passo a passo</a>
+  <a class="sb-item" href="#modo">13. Modo e critérios</a>
+  <a class="sb-item" href="#corridas">14. Corridas e resultado</a>
+
+  <div class="sb-part">Cenários por Tramo</div>
+  <a class="sb-item" href="#t1">15. Tramo 1 — Ultrassônico</a>
+  <a class="sb-item" href="#t2">16. Tramo 2 — Turbina Master</a>
+  <a class="sb-item" href="#t3">17. Tramo 3 — Coriolis</a>
+
+  <div class="sb-part">Abas Auxiliares</div>
+  <a class="sb-item" href="#masterrun">18. Master Run</a>
+  <a class="sb-item" href="#certificacao">19. Certificação</a>
+  <a class="sb-item" href="#alarmes">20. Alarmes</a>
+  <a class="sb-item" href="#relatorio">21. Relatório e Trend</a>
+
+  <div class="sb-part">Segurança</div>
+  <a class="sb-item" href="#esd">22. ESD, trips e recuperação</a>
+  <a class="sb-item" href="#mestre">23. Estação Mestre</a>
+
+  <div class="sb-part">Referência</div>
+  <a class="sb-item" href="#sequencia">Sequência rápida</a>
+  <a class="sb-item" href="#glossario">Glossário</a>
+</nav>
+
+<main id="content">
+
+<!-- ════════ 1. INTRO ════════ -->
+<h1 class="page-title" id="intro">Estação IHM de Medição Fiscal <span class="tag">1923-FCAS-30</span></h1>
+
+<p class="lead">
+  Esta estação reproduz a IHM de um <b>Skid de Medição Fiscal de offloading de óleo cru (FPSO)</b>
+  com <b>três tramos em paralelo</b> — cada um com uma tecnologia de medidor diferente — e um
+  <b>Compact Prover</b> (provador compacto) para calibração em campo, conforme a filosofia da
+  API MPMS 4.x / 13.2. O objetivo é treinar operadores e inspetores na operação real do skid:
+  alinhamento, controle de vazão, prova de medidores, certificação e resposta a falhas.
+</p>
+
+<div class="info">
+  <b>Como usar este manual</b>
+  Leia as Partes 1–3 (a estação e a lógica) antes de operar. Depois siga a Parte 4 (procedimento de
+  prova) e consulte os cenários de cada tramo (Parte 5). As caixas coloridas significam:
+  <span class="badge badge-gr">DICA</span> boa prática ·
+  <span class="badge badge-yl">ATENÇÃO</span> risco/erro comum ·
+  <span class="badge badge-rd">REQUISITO</span> condição obrigatória.
+</div>
+
+<h2 class="sec">Arquitetura do skid</h2>
+<p>O fluido entra pela <b>Linha de Entrada (1923-FL-001)</b>, distribui-se pelos três tramos em
+paralelo, e os tramos descarregam na <b>Linha de Saída (1923-FL-002)</b>. O Compact Prover é um
+laço lateral conectado à linha de saída pelas válvulas <code>MOV-3401</code> (entrada) e
+<code>MOV-3402</code> (saída), com a <code>FCV-3401</code> controlando a vazão que circula por ele.</p>
+
+<div class="formula">
+  <div class="fm">Entrada → [ Tramo 01 ‖ Tramo 02 ‖ Tramo 03 ] → Saída → Prover</div>
+  <div class="fd">Vazão total do header ≈ 5.400 m³/h · três tramos compartilham essa vazão</div>
+</div>
+
+<div class="part-divider"></div>
+
+<!-- ════════ 2. A TELA ════════ -->
+<h1 class="page-title" id="tela">A tela do operador</h1>
+
+<h2 class="sec" id="cabecalho">Cabeçalho e barra de status</h2>
+<p>No topo ficam a identificação do skid, a <b>sessão do aluno</b> (token), o indicador de
+<b>estabilidade</b>, o <b>relógio</b> da sessão, o botão <span class="btn-ref">PAUSAR</span> e o acesso à
+<span class="btn-ref">MESTRE</span> (estação do instrutor). A revisão do simulador aparece ao lado do título
+(ex.: <code>Rev. 08</code>) — útil para confirmar que você está na versão mais recente após recarregar.</p>
+<p>Logo abaixo, a barra de status mostra em tempo real: <b>T e P de entrada</b>, <b>Q TOTAL</b> do header,
+o estado de cada tramo (<code>T-01</code>/<code>T-02</code>/<code>T-03</code> com vazão e % de abertura),
+a fase da <b>PROVA</b> e a contagem de <b>ALARMES</b>.</p>
+
+<h2 class="sec" id="pid">Diagrama P&amp;ID (aba Visão Geral)</h2>
+<p>É o coração da operação. Mostra os três tramos, o prover, todas as válvulas e instrumentos.
+Elementos <b>clicáveis</b>:</p>
+<ul>
+  <li>Símbolos de <b>válvula</b> (MOV) — clique para abrir/fechar.</li>
+  <li>Símbolos de <b>FCV</b> — clique para abrir o controle de abertura (%).</li>
+  <li>O <b>medidor Coriolis</b> (Tramo 3) — clique para configurar o <i>damping</i>.</li>
+  <li>O <b>Compact Prover</b> — clique para configurar parâmetros (sampling, estabilização, passes).</li>
+  <li>O botão <span class="btn-ref">OPEN / CLOSE DRAIN</span> abaixo do prover — abre/fecha o dreno.</li>
+</ul>
+<div class="info"><b>Código de cores</b>
+Linha <span style="color:var(--cy)">azul tracejada</span> = com fluxo · linha cinza = estática ·
+válvula verde = aberta · válvula vermelha = fechada · amarelo = em transição.</div>
+
+<h2 class="sec" id="abas">As abas</h2>
+<table>
+<thead><tr><th>Aba</th><th>Função</th></tr></thead>
+<tbody>
+<tr><td><b>Visão Geral</b></td><td>P&amp;ID, controle das válvulas/FCVs, painel de pressão/temperatura/vazão.</td></tr>
+<tr><td><b>Prova</b></td><td>Sequência de prova do tramo alinhado: condições, corridas, MF e critério.</td></tr>
+<tr><td><b>Alarmes</b></td><td>Lista de alarmes ativos/históricos com severidade.</td></tr>
+<tr><td><b>Relatório</b></td><td>Relatório da última prova (MF, repetibilidade, veredito).</td></tr>
+<tr><td><b>Trend</b></td><td>Gráficos de tendência de P, T e vazão.</td></tr>
+<tr><td><b>Master Run</b></td><td>Calibração do ultrassônico contra a Turbina Master (importação de dados).</td></tr>
+<tr><td><b>Certificação</b></td><td>Avaliação final: 4 certificados independentes + relatório do aluno.</td></tr>
+</tbody>
+</table>
+
+<!-- ════════ 3. AQUECIMENTO ════════ -->
+<h1 class="page-title" id="aquecimento">Aquecimento (partida)</h1>
+<p>Ao iniciar a sessão o sistema está em <b>aquecimento</b>: temperatura e pressão sobem gradualmente
+até a condição operacional (≈ 65 °C, ≈ 750 kPa). As temperaturas têm <b>inércia térmica</b> (sobem
+devagar e de forma suave, não “tremem”). Enquanto o aquecimento está ativo:</p>
+<ul>
+  <li>A vazão dos tramos permanece zerada.</li>
+  <li>A prova fica <b>bloqueada</b>.</li>
+</ul>
+<div class="warn"><b>Atenção</b>
+Aguarde o fim do aquecimento (status <b>ESTÁVEL</b> no cabeçalho) antes de operar. Iniciar a prova
+durante o aquecimento é bloqueado.</div>
+
+<div class="part-divider"></div>
+
+<!-- ════════ 4. OS TRÊS TRAMOS ════════ -->
+<h1 class="page-title" id="tramos">Os três tramos de medição</h1>
+<p>Cada tramo usa uma tecnologia diferente — isso é proposital, para o aluno conhecer as
+particularidades de cada medidor. Os três compartilham a vazão do header.</p>
+<table>
+<thead><tr><th>Tramo</th><th>Medidor</th><th>FT</th><th>MOV entrada</th><th>FCV controle</th></tr></thead>
+<tbody>
+<tr><td><b>T-01</b></td><td>Ultrassônico</td><td><code>FT-3101</code></td><td><code>MOV-3101</code></td><td><code>FCV-3102</code></td></tr>
+<tr><td><b>T-02</b></td><td>Turbina (Master)</td><td><code>FT-3201</code></td><td><code>MOV-3201</code></td><td><code>FCV-3202</code></td></tr>
+<tr><td><b>T-03</b></td><td>Coriolis</td><td><code>FT-3301</code></td><td><code>MOV-3301</code></td><td><code>FCV-3302</code></td></tr>
+</tbody>
+</table>
+<p>Cada tramo tem a mesma estrutura física: <b>entrada → MOV de bloqueio → medidor (FT) → FCV de
+controle → saída</b>. A <b>MOV</b> isola o tramo; a <b>FCV</b> regula a vazão.</p>
+
+<!-- ════════ 5. O PROVER ════════ -->
+<h1 class="page-title" id="prover">O Compact Prover <span class="tag">1923-CPA-01</span></h1>
+<p>O provador compacto é a referência volumétrica usada para calibrar os medidores em campo
+(determinar o <b>Fator do Medidor — MF</b>). Ele forma um laço lateral conectado à linha de saída:</p>
+<div class="formula">
+  <div class="fm">Saída → MOV-3401 → [ PROVER ] → MOV-3402 → FCV-3401 → retorno</div>
+  <div class="fd">PT-3401 e TT-3401 medem a pressão e a temperatura no provador</div>
+</div>
+<ul>
+  <li><b>MOV-3401</b> — válvula de <b>entrada</b> do prover (conecta o laço à linha).</li>
+  <li><b>MOV-3402</b> — válvula de <b>saída</b> do prover.</li>
+  <li><b>FCV-3401</b> — válvula de <b>controle de vazão</b> do laço do prover (ver §9).</li>
+  <li><b>OPEN/CLOSE DRAIN</b> — dreno do provador, abaixo do equipamento (ver §11).</li>
+</ul>
+
+<!-- ════════ 6. VÁLVULAS ════════ -->
+<h1 class="page-title" id="valvulas">As válvulas</h1>
+<table>
+<thead><tr><th>Válvula</th><th>Tipo</th><th>Papel</th></tr></thead>
+<tbody>
+<tr><td><code>MOV-3101/3201/3301</code></td><td>Bloqueio (entrada do tramo)</td><td>Isola cada tramo. <b>Sem ela aberta, não há vazão no FT daquele tramo.</b></td></tr>
+<tr><td><code>FCV-3102/3202/3302</code></td><td>Controle (do tramo)</td><td>Regula a vazão de cada tramo (% de abertura).</td></tr>
+<tr><td><code>MOV-3401</code></td><td>Bloqueio (entrada do prover)</td><td>Conecta o laço do prover à linha.</td></tr>
+<tr><td><code>MOV-3402</code></td><td>Bloqueio (saída do prover)</td><td>Fecha o laço do prover.</td></tr>
+<tr><td><code>FCV-3401</code></td><td>Controle (laço do prover)</td><td>Modula a vazão que passa pelo prover, em série (ver §9).</td></tr>
+<tr><td><span class="btn-ref">OPEN/CLOSE DRAIN</span></td><td>Dreno</td><td>Alivia a pressão aprisionada no prover (ver §11).</td></tr>
+</tbody>
+</table>
+
+<!-- ════════ 7. INSTRUMENTOS ════════ -->
+<h1 class="page-title" id="instrumentos">Os instrumentos</h1>
+<ul>
+  <li><b>PT-3001 / PT-3002 / PT-3401</b> — pressão na entrada, na saída e no provador.</li>
+  <li><b>TT-3001 / TT-3002 / TT-3401</b> — temperatura na entrada, saída e provador (com inércia térmica realista).</li>
+  <li><b>FT-3101 / FT-3201 / FT-3301</b> — vazão de cada tramo.</li>
+  <li><b>FC-3001</b> — vazão total do header.</li>
+  <li><b>Q Disponível</b> — vazão que sobra na linha, “fora dos tramos”.</li>
+</ul>
+
+<div class="part-divider"></div>
+
+<!-- ════════ 8. COMO A VAZÃO FUNCIONA ════════ -->
+<h1 class="page-title" id="vazao">Como a vazão funciona</h1>
+<p class="lead">Esta é a lógica central da estação. Para haver vazão indicada em um medidor
+<code>FT-3X01</code>, o <b>caminho físico precisa estar completo</b>.</p>
+
+<div class="req"><b>Requisito — caminho de vazão</b>
+A vazão só aparece no FT do tramo quando:
+<ol style="margin-top:6px">
+  <li>a <b>MOV de entrada</b> do tramo (<code>MOV-3X01</code>) está <b>aberta</b>; <b>e</b></li>
+  <li>o <b>laço do prover</b> está engatado (<code>MOV-3401</code> <b>e</b> <code>MOV-3402</code> abertas); <b>e</b></li>
+  <li>a <b>FCV do tramo</b> (<code>FCV-3X02</code>) está aberta; <b>e</b></li>
+  <li>a <b>FCV-3401</b> está aberta.</li>
+</ol>
+Faltando qualquer uma, o <code>FT-3X01</code> indica <b>0</b>.</p></div>
+
+<div class="tip"><b>Por quê?</b>
+O fluido só circula através do provador. Sem a MOV de entrada não entra fluido; sem o laço do prover
+(MOV-3401/3402) não há por onde circular. Por isso “fechar a MOV-3101” zera o FT-3101 — é fisicamente
+correto.</div>
+
+<h3 class="sub">A vazão base do tramo</h3>
+<div class="formula">
+  <div class="fm">vazão base = (FCV-3X02 % ÷ 100) × vazão do header</div>
+  <div class="fd">ex.: FCV-3102 a 25% → ≈ 0,25 × 5.400 ≈ 1.350 m³/h</div>
+</div>
+<p>Essa base ainda é modulada pela <b>FCV-3401</b> (próxima seção), que está em série.</p>
+
+<!-- ════════ 9. FCV-3401 ════════ -->
+<h1 class="page-title" id="fcv3401">FCV-3401 — válvula em série + curva de campo</h1>
+<p>A <b>FCV-3401</b> (controle do laço do prover) está <b>em série</b> com a FCV do tramo. Duas
+válvulas em série modulam o fluxo: a vazão real no medidor é o produto das duas. A FCV-3401 simula a
+<b>curva de uma válvula de campo grande</b>:</p>
+
+<div class="formula">
+  <div class="fm">0–80% de abertura → 0–98% da vazão · 80–100% → os últimos 2%</div>
+  <div class="fd">a maior parte da vazão acontece nos primeiros 80% do curso (curva “front-loaded”)</div>
+</div>
+
+<p>Exemplo com a vazão base de 1.352 m³/h (FCV-3102 a 25%):</p>
+<table>
+<thead><tr><th>FCV-3401</th><th>Fração da curva</th><th>Vazão real no FT</th></tr></thead>
+<tbody>
+<tr><td>100%</td><td>100%</td><td>≈ 1.352 m³/h</td></tr>
+<tr><td>80%</td><td>98%</td><td>≈ 1.325 m³/h</td></tr>
+<tr><td>50%</td><td>61,25%</td><td>≈ 828 m³/h</td></tr>
+<tr><td>0%</td><td>0%</td><td>0</td></tr>
+</tbody>
+</table>
+<div class="warn"><b>Atenção</b>
+A FCV-3401 a 50% <b>não</b> dá 50% da vazão, e sim ≈ 61%, por causa da curva (98% nos primeiros 80%).
+Para circular a vazão cheia da base, abra a FCV-3401 para ~80–100%.</div>
+<p>O rótulo da FCV-3401 mostra a vazão resultante no prover em tempo real.</p>
+
+<!-- ════════ 10. INTERTRAVAMENTO ════════ -->
+<h1 class="page-title" id="interlock">Intertravamento (um tramo por vez)</h1>
+<p>O provador só prova <b>um medidor de cada vez</b>. O botão <span class="btn-ref">ALINHAR AO PROVER</span>
+(Tramo 01 / 02 / 03) <b>designa</b> o tramo da prova e ativa o intertravamento.</p>
+
+<div class="req"><b>Regras do intertravamento</b>
+<ul style="margin-top:6px">
+  <li>Enquanto um tramo está <b>alinhado</b>, os outros <b>não podem ser alinhados</b>.</li>
+  <li>Os tramos não-alinhados ficam <b>totalmente cinzas/inertes</b>: válvula, FCV e botão desabilitados, sem vazão.</li>
+  <li>Para trocar de tramo: <b>clique no tramo alinhado</b> (botão ●) para <b>desalinhar</b>, depois alinhe outro.</li>
+  <li>Não é possível desalinhar com prova em andamento — aborte antes.</li>
+</ul></div>
+
+<div class="tip"><b>Importante</b>
+O botão de alinhamento <b>não</b> é condição para o medidor ler vazão — com as válvulas abertas o FT já
+indica. O alinhamento serve para <b>escolher o tramo da prova</b> e travar os demais.</div>
+
+<!-- ════════ 11. PRESSÃO E DRENO ════════ -->
+<h1 class="page-title" id="pressao">Pressão do prover e dreno</h1>
+<p>O <b>PT-3401</b> mede a pressão dentro do provador. A lógica reproduz um <b>volume isolado</b>:</p>
+<div class="steps">
+  <div class="step"><div class="step-body"><b>Pressurização:</b> com o prover alinhado e as válvulas abertas, o PT-3401 sobe até a pressão operacional (~750 kPa).</div></div>
+  <div class="step"><div class="step-body"><b>Aprisionamento:</b> ao fechar as três válvulas do prover (<code>MOV-3401</code>, <code>MOV-3402</code>, <code>FCV-3401</code>), o trecho vira um volume isolado — a pressão <b>fica aprisionada</b> no PT-3401 e <b>não cai sozinha</b>.</div></div>
+  <div class="step"><div class="step-body"><b>Alívio:</b> a pressão só começa a cair quando o operador clica em <span class="btn-ref">OPEN/CLOSE DRAIN</span>. O dreno reduz a pressão gradualmente até ~0.</div></div>
+</div>
+<div class="warn"><b>Atenção</b>
+Fechar as válvulas <b>não</b> alivia a pressão — isso é proposital (reproduz o risco real de pressão
+aprisionada). A única forma de aliviar é o dreno. O dreno não pode ser aberto com prova em andamento.</div>
+
+<div class="part-divider"></div>
+
+<!-- ════════ 12. PROCEDIMENTO ════════ -->
+<h1 class="page-title" id="procedimento">Procedimento de prova — passo a passo</h1>
+<div class="steps">
+  <div class="step"><div class="step-body">Aguarde o <b>aquecimento</b> terminar (status ESTÁVEL).</div></div>
+  <div class="step"><div class="step-body">Abra a <b>MOV de entrada</b> do tramo (ex.: <code>MOV-3101</code>).</div></div>
+  <div class="step"><div class="step-body">Ajuste a <b>FCV do tramo</b> (ex.: <code>FCV-3102</code>) para a vazão desejada.</div></div>
+  <div class="step"><div class="step-body">Clique em <span class="btn-ref">ALINHAR AO PROVER</span> no tramo → confirme. Os outros tramos ficam cinzas.</div></div>
+  <div class="step"><div class="step-body">Abra <code>MOV-3401</code> e <code>MOV-3402</code> (engata o laço do prover).</div></div>
+  <div class="step"><div class="step-body">Abra a <code>FCV-3401</code> (~80–100% para a vazão cheia). O <b>FT</b> passa a indicar a vazão modulada.</div></div>
+  <div class="step"><div class="step-body">Confira na aba <b>Prova</b> as condições (T, P, vazão dentro de faixa).</div></div>
+  <div class="step"><div class="step-body">Clique em <span class="btn-ref">INICIAR</span>. Acompanhe as corridas e o resultado.</div></div>
+</div>
+<div class="tip"><b>Dica</b>
+A aba <b>Prova</b> bloqueia o início se faltar caminho de vazão (entrada fechada, vazão insuficiente) e
+explica o que falta.</div>
+
+<!-- ════════ 13. MODO E CRITÉRIOS ════════ -->
+<h1 class="page-title" id="modo">Modo de aplicação e critérios</h1>
+<p>Na aba Prova você escolhe o <b>modo de aplicação</b>, que define a tolerância de repetibilidade
+(ΔMF entre corridas):</p>
+<table>
+<thead><tr><th>Contexto</th><th>Critério (ΔMF)</th></tr></thead>
+<tbody>
+<tr><td>Modo <b>Fiscal / Custódia</b></td><td><code>≤ 0,05%</code></td></tr>
+<tr><td>Modo <b>Apropriação</b></td><td><code>≤ 0,40%</code></td></tr>
+<tr><td>Tramo 2 (Turbina Master) — critério próprio</td><td><code>≤ 0,02%</code> (mais rigoroso)</td></tr>
+<tr><td>Tramo 3 (Coriolis)</td><td><code>≤ 0,40%</code></td></tr>
+</tbody>
+</table>
+<div class="formula">
+  <div class="fm">MF = V<sub>ref</sub> ÷ V<sub>medido</sub></div>
+  <div class="fd">repetibilidade = ΔMF = (MF<sub>máx</sub> − MF<sub>mín</sub>) entre as corridas válidas</div>
+</div>
+
+<!-- ════════ 14. CORRIDAS ════════ -->
+<h1 class="page-title" id="corridas">Corridas e resultado</h1>
+<p>A prova executa uma série de <b>corridas</b> (passagens do pistão pelo provador). Cada corrida
+gera um MF. Uma corrida é <b>inválida</b> quando: a vazão sai da faixa (±10% da referência), há pulso
+perdido, chatter severo ou bolha de gás.</p>
+<ul>
+  <li>São necessárias <b>5 corridas válidas</b> para fechar a prova.</li>
+  <li><b>Aprovado</b> se a dispersão ΔMF das corridas usadas ficar <b>dentro do critério</b>.</li>
+  <li>A regra de <b>±10%</b> de vazão entre corridas é mandatória (estabilidade da vazão durante a prova).</li>
+</ul>
+<div class="info"><b>Onde ver</b>
+A tabela de corridas, o MF de cada uma, a repetibilidade acumulada e o veredito ficam na aba <b>Prova</b>;
+o resumo final, na aba <b>Relatório</b>.</div>
+
+<div class="part-divider"></div>
+
+<!-- ════════ 15. TRAMO 1 ════════ -->
+<h1 class="page-title" id="t1">Tramo 1 — Ultrassônico</h1>
+<p>É o tramo de referência para a <b>prova padrão</b> com o Compact Prover. Use-o para aprender o
+fluxo básico: alinhar, abrir o laço, modular a FCV-3401, iniciar a prova e ler o resultado.</p>
+<ul>
+  <li>Critério selecionável: <b>Fiscal (0,05%)</b> ou <b>Apropriação (0,4%)</b>.</li>
+  <li>Sujeito aos <b>trips</b> do sistema (vazão baixa, sobrepressão, temperatura) — ver §22.</li>
+</ul>
+
+<!-- ════════ 16. TRAMO 2 ════════ -->
+<h1 class="page-title" id="t2">Tramo 2 — Turbina Master</h1>
+<p>A turbina é tratada como <b>medidor master</b> (padrão de transferência). Este tramo ensina um
+cenário completo de manutenção e calibração:</p>
+<ul>
+  <li><b>Pontos de calibração:</b> o aluno define e captura pontos de vazão; calcula o <b>K-factor</b>
+      e a <b>repetibilidade</b> (tolerância de ±5% no cálculo, pois a abertura real da válvula não é exata).</li>
+  <li><b>Falha de fidelidade de pulsos:</b> no 1º alinhamento surgem alarmes de fidelidade — sinal de
+      problema no pré-amplificador.</li>
+  <li><b>Isolamento / LOTO:</b> desalinhar → fechar <code>MOV-3201</code> → abrir o <b>Certificado de
+      Isolamento</b> (token de autorização) → trocar o <b>preamp</b> → retornar.</li>
+  <li><b>CV-Tramo 2:</b> exibe a frequência e os sinais <b>Input 1 / Input 2</b>; a falha do preamp
+      (degradação) parte de 100% e é resolvida pela troca.</li>
+  <li><b>Critério:</b> o correto para a Turbina Master é <code>0,02%</code> (mais rigoroso que o fiscal).</li>
+</ul>
+<div class="req"><b>Sequência do isolamento</b>
+Desalinhar o Tramo 2 → fechar a MOV-3201 → botão de isolamento (certificado + token) → troca do preamp →
+reabrir a MOV-3201 → realinhar → provar com critério 0,02%.</div>
+
+<!-- ════════ 17. TRAMO 3 ════════ -->
+<h1 class="page-title" id="t3">Tramo 3 — Coriolis</h1>
+<p>O medidor Coriolis tem parâmetros próprios que <b>precisam ser ajustados</b> — os valores default
+<b>não aprovam</b> a prova (é didático: o aluno precisa configurar conscientemente).</p>
+<ul>
+  <li><b>Damping:</b> clique no medidor Coriolis no P&amp;ID para ajustar (damping = 0 nos defaults).</li>
+  <li><b>Parâmetros do provador</b> (clique no prover): <b>sampling</b> (5–10 s), <b>estabilização</b>
+      (3–7 s), <b>passes</b> (&gt; 3).</li>
+  <li><b>Permissivos:</b> a prova só aprova com todos os permissivos atendidos.</li>
+  <li><b>Critério:</b> <code>0,4%</code>.</li>
+</ul>
+<div class="tip"><b>Dica</b>
+A prova do Coriolis sempre executa (para fins didáticos), mas só é <b>aprovada</b> quando os parâmetros e
+permissivos estão corretos — leia os avisos antes de iniciar.</div>
+
+<div class="part-divider"></div>
+
+<!-- ════════ 18. MASTER RUN ════════ -->
+<h1 class="page-title" id="masterrun">Master Run — calibração do ultrassônico</h1>
+<p>Cenário de calibração do <b>medidor ultrassônico contra a Turbina Master</b>, com <b>importação
+manual de dados</b> do certificado da turbina. <b>Dois campos vêm propositalmente errados</b> (erro de
+transcrição) — o aluno deve conferir e corrigir antes de provar.</p>
+<div class="steps">
+  <div class="step"><div class="step-body">Importar os dados da Turbina Master para o CV da Master Run.</div></div>
+  <div class="step"><div class="step-body"><b>Conferir cada campo</b> contra o certificado — corrigir os dois campos errados (meter factor e K-factor).</div></div>
+  <div class="step"><div class="step-body">Alinhar o ultrassônico e provar. Critério: erro entre corridas <code>≤ 0,05%</code>.</div></div>
+</div>
+<div class="warn"><b>Lição</b>
+Dados importados/remotos devem <b>sempre</b> ser conferidos antes da prova. Se os campos errados não
+forem corrigidos, a calibração reprova.</div>
+
+<!-- ════════ 19. CERTIFICAÇÃO ════════ -->
+<h1 class="page-title" id="certificacao">Certificação — avaliação final</h1>
+<p>A aba <b>Certificação</b> consolida a avaliação. São <b>4 certificados independentes</b>:
+Tramo 1, Tramo 2, Tramo 3 e Master Meter.</p>
+<div class="req"><b>Por ponto (corrida) de cada módulo, o aluno registra:</b>
+<ul style="margin-top:6px">
+  <li><b>3 vazões distintas</b> (pode capturar a vazão atual do tramo com o botão ⊕Q);</li>
+  <li><b>Repetibilidade</b> e <b>K-factor médio</b> — capturados da última prova aprovada (botão ⊕R) ou digitados.</li>
+</ul></div>
+<ul>
+  <li>O indicador por ponto: <span class="badge badge-rd">✗</span> faltam vazões ·
+      <span class="badge badge-yl">◐</span> falta repe/K ·
+      <span class="badge badge-gr">✓</span> completo.</li>
+  <li><b>Validação é manual</b> — o aluno/instrutor decide (não há aprovação automática).</li>
+  <li>O <b>relatório do aluno</b> (imprimível) traz a identificação, o status por módulo e a tabela
+      detalhada de pontos (vazões · repetibilidade · K-factor médio).</li>
+</ul>
+
+<!-- ════════ 20. ALARMES ════════ -->
+<h1 class="page-title" id="alarmes">Alarmes</h1>
+<p>A aba Alarmes lista os eventos por severidade (alta/média/baixa). Alarmes comuns: vazão fora de
+faixa, sobrepressão PT-3401, vazão baixa na linha, temperatura fora de faixa, falhas de fidelidade de
+pulsos (Tramo 2), bloqueios de prova. O contador no cabeçalho mostra os ativos.</p>
+
+<!-- ════════ 21. RELATÓRIO E TREND ════════ -->
+<h1 class="page-title" id="relatorio">Relatório e Trend</h1>
+<ul>
+  <li><b>Relatório:</b> resumo da última prova — tramo, MF final, repetibilidade (ΔMF), limite do
+      critério e veredito.</li>
+  <li><b>Trend:</b> gráficos de tendência de pressão (entrada/saída/prover), temperatura e da vazão
+      “fora dos tramos” (Q disponível).</li>
+</ul>
+
+<div class="part-divider"></div>
+
+<!-- ════════ 22. ESD ════════ -->
+<h1 class="page-title" id="esd">ESD, trips e recuperação</h1>
+<p>O sistema vai a <b>shutdown (ESD)</b> em condições inseguras. As principais:</p>
+<table>
+<thead><tr><th>Condição</th><th>Gatilho</th></tr></thead>
+<tbody>
+<tr><td>Vazão muito baixa na linha</td><td>Q disponível ≤ 300 m³/h (tramos abertos demais drenam o header)</td></tr>
+<tr><td>Sobrepressão no prover</td><td>PT-3401 atinge 1.500 kPa (ex.: laço sem alívio — MOV-3402 fechada com fluxo)</td></tr>
+<tr><td>Temperatura/pressão fora dos limites</td><td>fora da faixa segura de operação</td></tr>
+</tbody>
+</table>
+<div class="info"><b>Recuperação</b>
+Após um ESD você pode <b>Retomar</b> (volta ao estado anterior ao trip) ou <b>Reiniciar</b> (reinicia a
+sessão). A retomada preserva o estado dos módulos.</div>
+<div class="tip"><b>Como evitar o trip de vazão baixa</b>
+Não abra os três tramos a 100% ao mesmo tempo — a soma esgota o header. Mantenha o somatório das FCVs
+coerente com a vazão disponível.</div>
+
+<!-- ════════ 23. MESTRE ════════ -->
+<h1 class="page-title" id="mestre">Estação Mestre (instrutor)</h1>
+<p>A estação <b>Mestre</b> (botão MESTRE no cabeçalho) é o painel do instrutor. Permite, em tempo real:</p>
+<ul>
+  <li><b>Monitorar as sessões</b> dos alunos (3 por linha): pressão, temperatura, vazão e abertura de válvula.</li>
+  <li><b>Comandar remotamente</b> as FCVs das sessões.</li>
+  <li><b>Injetar falhas</b> e cenários (ex.: degradação do preamp do Tramo 2, vazão instável).</li>
+  <li><b>Enviar mensagens</b> a um aluno ou em broadcast.</li>
+  <li><b>Reconectar</b> manualmente (botão ⟳) e reconexão automática dos dois lados.</li>
+</ul>
+<div class="info"><b>Conexão</b>
+A comunicação usa Supabase Realtime (presença aluno→mestre + comandos mestre→aluno). Há reconexão
+automática e um buffer offline para o instrutor ver a situação ao reconectar.</div>
+
+<div class="part-divider"></div>
+
+<!-- ════════ REFERÊNCIA ════════ -->
+<h1 class="page-title" id="sequencia">Referência rápida — sequência de prova</h1>
+<div class="formula">
+  <div class="fm">MOV-3X01 → FCV-3X02 → ALINHAR → MOV-3401 → MOV-3402 → FCV-3401 → INICIAR</div>
+  <div class="fd">despressurizar depois: fechar as 3 válvulas do prover → OPEN/CLOSE DRAIN</div>
+</div>
+
+<h1 class="page-title" id="glossario">Glossário</h1>
+<table>
+<thead><tr><th>Termo</th><th>Significado</th></tr></thead>
+<tbody>
+<tr><td><b>MF</b> (Meter Factor)</td><td>Fator do medidor = volume de referência ÷ volume medido.</td></tr>
+<tr><td><b>K-factor</b></td><td>Pulsos por unidade de volume do medidor (p/m³).</td></tr>
+<tr><td><b>Repetibilidade (ΔMF)</b></td><td>Dispersão do MF entre corridas — quanto menor, melhor.</td></tr>
+<tr><td><b>Corrida</b></td><td>Uma passagem de prova (deslocamento do pistão no provador).</td></tr>
+<tr><td><b>Alinhar</b></td><td>Designar o tramo conectado ao prover para a prova (ativa o intertravamento).</td></tr>
+<tr><td><b>Aprisionamento</b></td><td>Pressão presa em volume isolado (3 válvulas do prover fechadas).</td></tr>
+<tr><td><b>Fiscal / Apropriação</b></td><td>Modos de aplicação com critérios de repetibilidade diferentes (0,05% / 0,4%).</td></tr>
+<tr><td><b>ESD</b></td><td>Emergency Shutdown — parada de emergência por condição insegura.</td></tr>
+</tbody>
+</table>
+
+<p style="margin-top:40px;font-size:11px;color:var(--mu);border-top:1px solid var(--bd);padding-top:14px">
+  FlowCore Solutions — Manual de Operação da Estação IHM de Medição Fiscal (1923-FCAS-30 · Compact Prover 1923-CPA-01).
+  Documento didático para treinamento. Confira a revisão do simulador no cabeçalho da IHM.
+</p>
+
+</main>
+</div>
+
+<script>
+// Destaca o item da sidebar conforme a seção visível
+const links = [...document.querySelectorAll('.sb-item')];
+const map = links.filter(a => a.getAttribute('href')?.startsWith('#'))
+  .map(a => ({ a, el: document.getElementById(a.getAttribute('href').slice(1)) }))
+  .filter(x => x.el);
+function onScroll(){
+  let cur = null;
+  for (const m of map){ if (m.el.getBoundingClientRect().top <= 120) cur = m; }
+  links.forEach(a => a.style.color = '');
+  if (cur){ cur.a.style.color = 'var(--cy)'; cur.a.style.borderLeftColor = 'var(--cy)'; }
+}
+document.addEventListener('scroll', onScroll, { passive:true });
+onScroll();
+</script>
+</body>
+</html>
