@@ -89,11 +89,16 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
   margin-bottom:10px;padding:0 2px;}
 .grid-header h2{font-size:11px;font-weight:700;color:var(--pu);text-transform:uppercase;
   letter-spacing:1px;}
-.ghost{color:var(--mu);font-size:12px;text-align:center;padding:40px 0;}
+.ghost{color:var(--mu);font-size:12px;text-align:center;padding:40px 0;grid-column:1/-1;}
+
+/* Grid de sessões: 3 colunas (3 alunos por linha) */
+#sessions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:start;}
+@media (max-width:1100px){ #sessions-grid{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:720px){ #sessions-grid{grid-template-columns:1fr;} }
 
 /* Session card */
 .scard{background:var(--pn);border:1px solid var(--bd);border-radius:6px;
-  margin-bottom:10px;overflow:hidden;transition:border-color .2s;}
+  overflow:hidden;transition:border-color .2s;}
 .scard:hover{border-color:var(--pu2);}
 .scard.selected{border-color:var(--pu);box-shadow:0 0 0 1px var(--pu);}
 .sc-head{display:flex;align-items:center;gap:10px;padding:8px 12px;
@@ -106,6 +111,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .sc-dot.ok{background:var(--gr);box-shadow:0 0 4px var(--gr);}
 .sc-dot.warn{background:var(--yl);box-shadow:0 0 4px var(--yl);}
 .sc-dot.alm{background:var(--rd);animation:blink 1s ease-in-out infinite;}
+.sc-dot.off{background:#555;box-shadow:none;}
+.scard.offline{opacity:.55;border-style:dashed;}
 
 .sc-body{padding:10px 12px;}
 
@@ -127,6 +134,12 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .sc-faults{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px;min-height:18px;}
 .sc-fault-tag{font-size:8px;padding:1px 5px;border-radius:2px;background:#280000;
   color:var(--rd);border:1px solid #500000;font-weight:700;text-transform:uppercase;}
+/* ESD history badge */
+.sc-esd-badge{font-size:8px;padding:1px 6px;border-radius:2px;font-weight:700;
+  text-transform:uppercase;margin-left:auto;}
+.sc-esd-badge.esd{background:#280000;color:#ff8888;border:1px solid #aa2222;}
+.sc-esd-badge.resumed{background:#002810;color:#88ff88;border:1px solid #225522;}
+.sc-esd-badge.restarted{background:#001828;color:#88ccff;border:1px solid #225588;}
 
 /* Control row */
 .sc-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;}
@@ -217,6 +230,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
   </div>
   <div class="hright">
     <span id="conn-badge" class="conn-badge wait">⏳ Conectando…</span>
+    <button id="reconnect-btn" onclick="reconnectMestre()" title="Forçar reconexão ao Supabase Realtime"
+      style="font-size:10px;padding:3px 10px;border:1px solid var(--pu2);background:#1a0e30;color:#cc88ff;border-radius:3px;cursor:pointer;font-weight:700">⟳ Reconectar</button>
     <span id="hclock" class="hclock">00:00:00</span>
   </div>
 </div>
@@ -368,16 +383,44 @@ el('auth-pwd').focus();
 let _sb      = null;
 let _channel = null;
 let _sessions = {};  // token → presence payload
+let _msgSeq  = 0;    // contador de mensagens (entrega via presença, à prova de queda)
+let _lastMsg = null; // última mensagem { id, target, text, ts } publicada na presença
 
 function initMestre() {
-  log('Conectando ao Supabase…', 'info');
+  if (!ensureClient()) return;
+  connectChannel();
+}
+
+// Garante o cliente Supabase (createClient). Retorna false se o SDK não carregou.
+function ensureClient() {
+  if (_sb) return true;
+  log('Inicializando Supabase…', 'info');
+  if (typeof supabase === 'undefined' || !supabase.createClient) {
+    el('conn-badge').className = 'conn-badge err';
+    el('conn-badge').textContent = '✗ SDK não carregado';
+    log('SDK Supabase não carregado — verifique a internet/CDN e clique em ⟳ Reconectar.', 'err');
+    return false;
+  }
   try {
     _sb = supabase.createClient(SB_URL, SB_KEY);
+    return true;
   } catch(e) {
     el('conn-badge').className = 'conn-badge err';
     el('conn-badge').textContent = '✗ Erro SDK';
     log('Erro ao inicializar Supabase: ' + e.message, 'err');
-    return;
+    return false;
+  }
+}
+
+// (Re)assina o canal Realtime. Limpa o canal anterior antes, p/ evitar duplicidade.
+function connectChannel() {
+  el('conn-badge').className = 'conn-badge wait';
+  el('conn-badge').textContent = '⏳ Conectando…';
+  log('Conectando ao canal ' + SB_CHANNEL + '…', 'info');
+
+  if (_channel) {
+    try { _sb.removeChannel(_channel); } catch(_) {}
+    _channel = null;
   }
 
   _channel = _sb.channel(SB_CHANNEL, {
@@ -386,8 +429,7 @@ function initMestre() {
 
   _channel
     .on('presence', { event: 'sync' }, () => {
-      const state = _channel.presenceState();
-      handlePresenceSync(state);
+      handlePresenceSync(_channel.presenceState());
     })
     .on('presence', { event: 'join' }, ({ key, newPresences }) => {
       if (key === 'mestre') return;
@@ -395,9 +437,13 @@ function initMestre() {
     })
     .on('presence', { event: 'leave' }, ({ key }) => {
       if (key === 'mestre') return;
-      log(`Sessão saiu: ${key}`, 'warn');
-      delete _sessions[key];
+      if (_sessions[key]) _sessions[key]._offline = true;   // buffer: mantém o último estado
+      log(`Sessão OFFLINE (último estado mantido): ${key}`, 'warn');
+      el('sess-n').textContent = Object.values(_sessions).filter(p=>!p._offline).length;
       renderGrid();
+    })
+    .on('broadcast', { event: 'T2_AUTH_REQ' }, ({ payload }) => {
+      handleT2AuthRequest(payload);
     })
     .subscribe(status => {
       if (status === 'SUBSCRIBED') {
@@ -405,28 +451,73 @@ function initMestre() {
         el('conn-badge').textContent = '● Online';
         log('Conectado ao canal ' + SB_CHANNEL, 'ok');
         el('ghost-msg') && (el('ghost-msg').textContent = 'Nenhuma sessão ativa. Aguardando operadores…');
-        // Track own mestre presence
-        _channel.track({ role:'mestre', ts: Date.now() });
-      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        trackMestre();
+      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
         el('conn-badge').className = 'conn-badge err';
-        el('conn-badge').textContent = '✗ Desconectado';
-        log('Canal desconectado: ' + status, 'err');
+        el('conn-badge').textContent = '✗ Reconectando…';
+        log('Canal: ' + status + ' — tentando reconectar automaticamente…', 'err');
+        scheduleReconnectMestre();
       }
     });
 }
 
-function handlePresenceSync(state) {
+// Força a reconexão (botão ⟳ Reconectar)
+function reconnectMestre() {
+  log('Reconexão manual solicitada…', 'warn');
   _sessions = {};
+  renderGrid();
+  if (!ensureClient()) return;
+  connectChannel();
+}
+
+// ── Reconexão AUTOMÁTICA do Mestre ──
+let _mestreReconnectTimer = null;
+function scheduleReconnectMestre() {
+  if (_mestreReconnectTimer) return;
+  _mestreReconnectTimer = setTimeout(() => { _mestreReconnectTimer = null; if (_sb) connectChannel(); }, 3000);
+}
+function mestreConnWatchdog() {
+  if (!_sb || !_channel) return;
+  const st = _channel.state;   // 'joined' | 'joining' | 'closed' | 'errored' | 'leaving'
+  if (st !== 'joined' && st !== 'joining') {
+    el('conn-badge').className = 'conn-badge wait';
+    el('conn-badge').textContent = '⏳ Reconectando…';
+    scheduleReconnectMestre();
+  }
+}
+setInterval(mestreConnWatchdog, 12000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) mestreConnWatchdog(); });
+
+// Re-render periódico só quando há sessão OFFLINE (atualiza a idade "Xs atrás" no buffer;
+// não recria os cards online à toa, p/ não atrapalhar o arraste das FCVs)
+setInterval(() => { if (Object.values(_sessions).some(p => p._offline)) renderGrid(); }, 4000);
+
+// Remove uma sessão offline do buffer (botão ✕ no card)
+function dismissSession(token) {
+  delete _sessions[token];
+  if (typeof _expanded === 'object') delete _expanded[token];
+  el('sess-n').textContent = Object.values(_sessions).filter(p => !p._offline).length;
+  renderGrid();
+}
+
+function handlePresenceSync(state) {
+  const live = new Set();
   for (const key in state) {
     if (key === 'mestre') continue;
     const arr = state[key];
     if (arr && arr.length) {
       const p = arr[arr.length - 1]; // latest payload
-      _sessions[key] = p;
+      p._offline = false;
+      _sessions[key] = p;            // atualiza o buffer com o estado ATUAL
+      live.add(key);
     }
   }
+  // Mantém em BUFFER (offline) as sessões que sumiram — preserva o último estado conhecido
+  for (const key in _sessions) {
+    if (!live.has(key)) _sessions[key]._offline = true;
+  }
   renderGrid();
-  el('sess-n').textContent = Object.keys(_sessions).length;
+  el('sess-n').textContent = live.size;   // conta só as sessões ONLINE
   el('last-update').textContent = 'Atualizado: ' + ts();
 }
 
@@ -440,9 +531,12 @@ function renderGrid() {
   const tokens = Object.keys(_sessions);
 
   if (!tokens.length) {
-    grid.innerHTML = '<div class="ghost">Nenhuma sessão ativa. Aguardando operadores…</div>';
+    grid.innerHTML = '<div class="ghost" id="ghost-msg">Nenhuma sessão ativa. Aguardando operadores…</div>';
     return;
   }
+
+  // Há sessões → remove o aviso "ghost" (estava fixo dentro do grid e nunca era retirado)
+  const ghost = el('ghost-msg'); if (ghost) ghost.remove();
 
   // Remove cards for sessions that left
   Array.from(grid.querySelectorAll('.scard')).forEach(card => {
@@ -454,10 +548,10 @@ function renderGrid() {
     let card = grid.querySelector(`.scard[data-token="${token}"]`);
     if (!card) {
       card = document.createElement('div');
-      card.className = 'scard';
       card.dataset.token = token;
       grid.appendChild(card);
     }
+    card.className = 'scard' + (p._offline ? ' offline' : '');
     card.innerHTML = buildCardHTML(token, p);
     // Restore expanded state
     if (_expanded[token]) {
@@ -470,11 +564,24 @@ function renderGrid() {
 function buildCardHTML(token, p) {
   const faults = p.faults || [];
   const alarms = p.alarms || 0;
-  const dotClass = alarms > 0 ? 'alm' : (p.warmup ? 'warn' : 'ok');
-  const dotTitle = alarms > 0 ? `${alarms} alarme(s) ativo(s)` : (p.warmup ? 'Aquecimento' : 'Operando');
+  const offline = !!p._offline;
+  const dotClass = offline ? 'off' : (alarms > 0 ? 'alm' : (p.warmup ? 'warn' : 'ok'));
+  const dotTitle = offline ? 'OFFLINE — sem conexão (último estado em buffer)'
+                 : alarms > 0 ? `${alarms} alarme(s) ativo(s)` : (p.warmup ? 'Aquecimento' : 'Operando');
 
-  const ago = p.ts ? Math.round((Date.now() - p.ts)/1000) : '?';
-  const agoStr = ago < 60 ? `${ago}s atrás` : `${Math.floor(ago/60)}m atrás`;
+  const lastEsd = p.lastEsd || null;
+  const esdBadge = lastEsd ? (() => {
+    const cls = lastEsd.type === 'ESD' ? 'esd' : lastEsd.type === 'RESUMED' ? 'resumed' : 'restarted';
+    const lbl = lastEsd.type === 'ESD' ? '⛔ ESD' : lastEsd.type === 'RESUMED' ? '⟳ Retomada' : '↺ Reinício';
+    const d = new Date(lastEsd.ts);
+    const hm = d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+    return `<span class="sc-esd-badge ${cls}" title="${lastEsd.reason || lastEsd.type}">${lbl} ${hm}</span>`;
+  })() : '';
+
+  const agoNum = p.ts ? Math.round((Date.now() - p.ts)/1000) : null;
+  const agoStr = agoNum==null ? '?' : (agoNum < 60 ? `${agoNum}s atrás` : `${Math.floor(agoNum/60)}m atrás`);
+  const stale = !offline && agoNum!=null && agoNum > 12;   // online mas sem atualizar há >12s
+  const timeCol = offline ? '#e03030' : (stale ? '#ffd600' : 'var(--mu)');
 
   const faultsBadges = faults.length
     ? faults.map(f => `<span class="sc-fault-tag">${f}</span>`).join('')
@@ -484,12 +591,46 @@ function buildCardHTML(token, p) {
     ? `T-${p.provingTrain} · ${(p.proverPhase||'?').toUpperCase()}`
     : '—';
 
+  // ── Estado do Tramo 2 (Turbina Master) — fluxo didático isolado ──
+  const t2Step = p.t2Step || 'idle';
+  const t2Labels = {
+    idle:'—', first_aligned:'1º alinhamento', fault_active:'⛔ Falha de pulsos',
+    unaligned:'desalinhado', mov_closed:'MOV-3201 fechada',
+    isol_pending:'⏳ aguarda isolamento', isolated:'🔒 isolada',
+    preamp_pending:'⏳ aguarda preamp', preamp_done:'preamp trocado',
+    deisol_pending:'⏳ aguarda remoção', operational:'operacional', done:'✅ concluído',
+  };
+  const t2AuthPend = p.t2AuthReq ? `<span style="color:#ffd600">⚗ Token ${p.t2AuthReq.token} (${p.t2AuthReq.type})</span>` : '';
+  const t2Info = (t2Step !== 'idle') ? `
+    <div style="display:flex;gap:6px;align-items:center;font-size:9px;margin-bottom:6px;
+      padding:3px 6px;border:1px solid #1e3a5f;border-radius:3px;background:#04141f">
+      <span style="color:var(--cy);font-weight:700;text-transform:uppercase">T2</span>
+      <span style="color:${p.t2PulseFault?'var(--rd)':'var(--mu)'}">${t2Labels[t2Step]||t2Step}</span>
+      <span style="color:${p.t2CritOk?'var(--gr)':'var(--yl)'};font-family:'Courier New',monospace">ΔMF ${(p.t2Criterion!=null?p.t2Criterion:0.05)}%</span>
+      ${p.t2AlarmCount ? `<span style="color:var(--rd)">⚠ ${p.t2AlarmCount}</span>` : ''}
+      <span style="margin-left:auto">${t2AuthPend}</span>
+    </div>` : '';
+
+  // ── Estado do Tramo 3 (Coriolis) — parâmetros + resultado ──
+  const t3Active = (p.provingTrain === '03') || !!p.t3Result ||
+    (p.t3Damping!=null && (p.t3Damping!==5 || p.t3Sampling!==30 || p.t3Estab!==30 || p.t3Passes!==1));
+  const t3Info = t3Active ? `
+    <div style="display:flex;gap:6px;align-items:center;font-size:9px;margin-bottom:6px;
+      padding:3px 6px;border:1px solid #1e3a5f;border-radius:3px;background:#04141f">
+      <span style="color:var(--cy);font-weight:700;text-transform:uppercase">T3</span>
+      <span style="color:var(--mu);font-family:'Courier New',monospace">D${p.t3Damping}·S${p.t3Sampling}·E${p.t3Estab}·P${p.t3Passes}</span>
+      ${p.t3Error!=null ? `<span style="color:${p.t3Error<=0.4?'var(--gr)':'var(--rd)'};font-family:'Courier New',monospace">err ${p.t3Error}%</span>` : ''}
+      ${p.t3Result ? `<span style="margin-left:auto;color:${p.t3Result==='pass'?'var(--gr)':'var(--rd)'}">${p.t3Result==='pass'?'✅ aprovada':'✕ reprovada'}</span>` : ''}
+    </div>` : '';
+
   return `
   <div class="sc-head" onclick="toggleCard('${token}')">
     <div class="sc-dot ${dotClass}" title="${dotTitle}"></div>
     <span class="sc-token">${token}</span>
     <span class="sc-operator">${p.operator || '?'}</span>
-    <span class="sc-time">${agoStr}</span>
+    ${offline ? '<span style="font-size:8px;font-weight:700;color:#e03030;border:1px solid #e03030;border-radius:3px;padding:1px 5px">OFFLINE</span>' : ''}
+    <span class="sc-time" style="color:${timeCol}">${offline ? '⚠ ' : ''}${agoStr}</span>
+    ${offline ? `<button onclick="event.stopPropagation();dismissSession('${token}')" title="Remover sessão offline do buffer" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:12px;padding:0 2px">✕</button>` : ''}
   </div>
   <div class="sc-body">
     <div class="sc-readings">
@@ -523,7 +664,22 @@ function buildCardHTML(token, p) {
         <div class="tq">${fmt0(p.q03||0)} <span style="font-size:8px;color:var(--mu)">m³/h</span></div>
       </div>
     </div>
+    <!-- FCV remoto — comando direto da abertura de cada tramo -->
+    <div style="margin-bottom:7px;border:1px solid #2a1a40;border-radius:4px;padding:4px 6px;background:#0a0618">
+      <div style="font-size:8px;color:#9a88cc;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">FCV remoto — abertura (%)</div>
+      ${['01','02','03'].map(id=>`
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+          <span style="font-size:8px;color:var(--mu);width:46px;flex-shrink:0">FCV-3${id}02</span>
+          <input type="range" min="0" max="100" step="1" value="${Math.round(p['fcv'+id]||0)}"
+            oninput="el('cvv-${token}-${id}').textContent=this.value+'%'"
+            onchange="sendFCVToSession('${token}','${id}',this.value)"
+            style="flex:1;accent-color:var(--pu2);height:14px">
+          <span id="cvv-${token}-${id}" style="font-size:8px;color:var(--cy);width:30px;text-align:right;flex-shrink:0">${Math.round(p['fcv'+id]||0)}%</span>
+        </div>`).join('')}
+    </div>
     <div class="sc-faults">${faultsBadges}</div>
+    ${t2Info}
+    ${t3Info}
     <div style="display:flex;gap:5px;margin-bottom:6px;align-items:center;">
       <span style="font-size:9px;color:var(--mu)">Prova:</span>
       <span style="font-size:10px;color:${p.provingTrain?'var(--gr)':'var(--mu)'};font-family:'Courier New',monospace">${provStr}</span>
@@ -531,6 +687,7 @@ function buildCardHTML(token, p) {
         ${alarms ? `⚠ ${alarms} alarme${alarms>1?'s':''}` : ''}
         ${p.warmup ? '▲ aquecimento' : ''}
       </span>
+      ${esdBadge}
     </div>
     <div class="sc-controls">
       <button class="sc-btn act" onclick="toggleFaultPanel('${token}')">⚗ Falhas</button>
@@ -618,6 +775,17 @@ function buildFaultPanel(token, p) {
     <span class="fcv-mini-val" id="fcv-vl-${token}-${id}">${Math.round(p['fcv'+id]||33)}%</span>
   </div>`).join('')}
 
+  <div class="bc-lbl" style="margin-top:8px;margin-bottom:4px">Falha Preamp T2 — Input 2 ${p.t2PreampReplaced?'· <span style="color:var(--cy)">SUBSTITUÍDO</span>':''}</div>
+  <div class="fcv-mini-row">
+    <span class="fcv-mini-lbl">Preamp</span>
+    <input type="range" id="pre-sl-${token}" min="0" max="100" step="5"
+      value="${Math.round(p.t2PreampFail||0)}"
+      oninput="el('pre-vl-${token}').textContent=this.value+'%'"
+      onchange="sendPreampToSession('${token}',this.value)"
+      style="width:100%;accent-color:#cc88ff" ${p.t2PreampReplaced?'disabled':''}>
+    <span class="fcv-mini-val" id="pre-vl-${token}">${Math.round(p.t2PreampFail||0)}%</span>
+  </div>
+
   <div class="bc-lbl" style="margin-top:8px;margin-bottom:4px">Cenário</div>
   <div style="display:flex;gap:4px;margin-bottom:5px">
     <select class="bc-select" id="scen-sel-${token}" style="flex:1;margin-bottom:0">
@@ -664,6 +832,47 @@ async function sendCmd(target, payload) {
   }
 }
 
+// ═══════════════════════════════════════════════════
+//  TRAMO 2 — AUTORIZAÇÃO (fluxo de manutenção isolado)
+// ═══════════════════════════════════════════════════
+function handleT2AuthRequest(payload) {
+  const old = document.getElementById('t2-auth-panel');
+  if (old) old.remove();
+
+  const panel = document.createElement('div');
+  panel.id = 't2-auth-panel';
+  panel.style.cssText = 'position:fixed;bottom:16px;left:16px;background:#0d0820;'+
+    'border:2px solid #9955ee;border-radius:8px;padding:16px;min-width:340px;'+
+    'z-index:9000;font-family:"Segoe UI",sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.6)';
+  panel.innerHTML =
+    '<div style="font-size:11px;font-weight:700;color:#cc88ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">'+
+      '⚗ AUTORIZAÇÃO SOLICITADA — TRAMO 2</div>'+
+    '<div style="font-size:12px;color:#e0d8f8;margin-bottom:4px"><b>Ação:</b> '+ payload.label +'</div>'+
+    '<div style="font-size:12px;color:#e0d8f8;margin-bottom:4px"><b>Operador:</b> '+ (payload.operator||'?') +
+      ' · <span style="font-family:Courier New,monospace;color:#4ab8ff">'+ payload.token +'</span></div>'+
+    '<div style="font-size:12px;color:#e0d8f8;margin-bottom:12px"><b>Token informado:</b> '+
+      '<span style="font-family:Courier New,monospace;font-size:16px;color:#ffd600;letter-spacing:3px">'+ payload.authToken +'</span></div>'+
+    '<div style="display:flex;gap:8px">'+
+      '<button onclick="t2MestreApprove(\''+payload.token+'\',\''+payload.authType+'\',\''+payload.authToken+'\')" '+
+        'style="flex:1;padding:9px;background:#003a15;color:#00c97a;border:1px solid #00c97a;border-radius:4px;cursor:pointer;font-weight:700">✓ AUTORIZAR</button>'+
+      '<button onclick="t2MestreReject(\''+payload.token+'\',\''+payload.authType+'\',\''+payload.authToken+'\')" '+
+        'style="flex:1;padding:9px;background:#380000;color:#ff8888;border:1px solid #aa2222;border-radius:4px;cursor:pointer;font-weight:700">✕ RECUSAR</button>'+
+    '</div>';
+  document.body.appendChild(panel);
+  log('[TRAMO 2] '+ payload.label +' — Op: '+ (payload.operator||'?') +' · Token: '+ payload.authToken, 'warn');
+}
+
+async function t2MestreApprove(target, authType, authToken) {
+  await sendCmd(target, { type:'T2_AUTH', authType, authToken, approved:true });
+  log('[TRAMO 2] AUTORIZADO: '+ authType +' — '+ authToken, 'ok');
+  const p = document.getElementById('t2-auth-panel'); if (p) p.remove();
+}
+async function t2MestreReject(target, authType, authToken) {
+  await sendCmd(target, { type:'T2_AUTH', authType, authToken, approved:false });
+  log('[TRAMO 2] RECUSADO: '+ authType +' — '+ authToken, 'err');
+  const p = document.getElementById('t2-auth-panel'); if (p) p.remove();
+}
+
 // Per-session
 function sendFaultToSession(token, name, value) {
   sendCmd(token, { type:'FAULT', fault:{ name, value } });
@@ -701,6 +910,11 @@ function sendFCVToSession(token, id, pct) {
   sendCmd(token, { type:'FCVSET', fcv:{ id, pct:+pct } });
 }
 
+function sendPreampToSession(token, val) {
+  sendCmd(token, { type:'T2_PREAMP', value:+val });
+  if (_sessions[token]) _sessions[token].t2PreampFail = +val;  // UI otimista
+}
+
 function sendMOVToSession(token, tag, open) {
   sendCmd(token, { type:'MOVSET', mov:{ tag, open:!!open } });
   // Optimistic UI update — atualiza o estado local e re-renderiza só o painel
@@ -714,11 +928,24 @@ function sendMOVToSession(token, tag, open) {
   }
 }
 
+// Atualiza a presença do Mestre (inclui a última mensagem, p/ entrega à prova de queda)
+function trackMestre() {
+  if (_channel) { try { _channel.track({ role:'mestre', ts: Date.now(), lastMsg: _lastMsg }); } catch(_) {} }
+}
+// Envia mensagem por DOIS caminhos: broadcast (imediato) + presença (sobrevive a quedas)
+function pushMessage(target, text) {
+  _msgSeq++;
+  _lastMsg = { id:_msgSeq, target, text, ts:Date.now() };
+  sendCmd(target, { type:'MESSAGE', text });   // broadcast imediato
+  trackMestre();                                // fallback via presença (re-sincroniza)
+  log(`📣 Mensagem → [${target}]: "${text}"`, 'ok');
+}
+
 function sendMsgToSession(token) {
   const inp = el('msg-inp-' + token);
   const text = (inp?.value || '').trim();
   if (!text) return;
-  sendCmd(token, { type:'MESSAGE', text });
+  pushMessage(token, text);
   if (inp) inp.value = '';
 }
 
@@ -747,7 +974,7 @@ function broadcastReset() {
 function broadcastMessage() {
   const text = (el('bc-msg-text').value || '').trim();
   if (!text) return;
-  sendCmd('*', { type:'MESSAGE', text });
+  pushMessage('*', text);
   el('bc-msg-text').value = '';
 }
 </script>
