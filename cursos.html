@@ -1071,8 +1071,57 @@
       line-height: 1.62 !important;
     }
 
+    .course-info {
+      display: flex !important;
+      flex: 1 1 auto !important;
+      flex-direction: column !important;
+    }
+
+    .course-commerce {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px 16px;
+      align-items: center;
+      margin: auto 0 18px;
+      padding: 14px 16px;
+      border: 1px solid rgba(31, 63, 104, 0.10);
+      border-radius: 16px;
+      background: rgba(31, 63, 104, 0.055);
+    }
+
+    .course-price-label {
+      color: rgba(31, 63, 104, 0.62);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+
+    .course-price-value {
+      color: #16243a;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.42rem;
+      font-weight: 800;
+      line-height: 1;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .course-platform {
+      grid-column: 1 / -1;
+      color: #5c6b7d;
+      font-size: 0.86rem;
+      font-weight: 650;
+      line-height: 1.35;
+    }
+
+    .course-platform strong {
+      color: var(--accent-secondary);
+    }
+
     .btn-whatsapp {
-      margin-top: auto !important;
+      margin-top: 0 !important;
       background: linear-gradient(135deg, #1f8f4f, #32d07e) !important;
     }
 
@@ -1855,11 +1904,11 @@
         <div class="agenda-open-classes__list">
           <article class="agenda-open-classes__item">
             <div class="agenda-open-classes__topline">
-              <div class="agenda-open-classes__date">16, 18 e 20/06</div>
+              <div class="agenda-open-classes__date">05 a 08/10</div>
               <span class="agenda-open-classes__mode">Ao vivo</span>
             </div>
             <h3 class="agenda-open-classes__title">Provadores Compactos & Simulador de Prova</h3>
-            <p class="agenda-open-classes__time">16 e 18/06: 18h às 22h<br />20/06: 08h30 às 12h30</p>
+            <p class="agenda-open-classes__time">05 a 08/10: 19h às 22h</p>
             <a class="agenda-open-classes__link" href="https://wa.me/5524998788760" target="_blank">Inscrição ↗</a>
           </article>
 
@@ -1894,9 +1943,10 @@
                 <div class="live-badge"><div class="live-dot"></div>On-line Ao Vivo</div>
               </div>
               <ul style="list-style:none;margin-bottom:18px;color:var(--text-body);">
-                <li style="margin-bottom:4px;"><strong>16/06/2026</strong> <span style="font-size:0.9em;opacity:0.8;">terça-feira, 18h às 22h</span></li>
-                <li style="margin-bottom:4px;"><strong>18/06/2026</strong> <span style="font-size:0.9em;opacity:0.8;">quinta-feira, 18h às 22h</span></li>
-                <li style="margin-bottom:4px;"><strong>20/06/2026</strong> <span style="font-size:0.9em;opacity:0.8;">sábado, 08h30 às 12h30</span></li>
+                <li style="margin-bottom:4px;"><strong>05/10/2026</strong> <span style="font-size:0.9em;opacity:0.8;">segunda-feira, 19h às 22h</span></li>
+                <li style="margin-bottom:4px;"><strong>06/10/2026</strong> <span style="font-size:0.9em;opacity:0.8;">terça-feira, 19h às 22h</span></li>
+                <li style="margin-bottom:4px;"><strong>07/10/2026</strong> <span style="font-size:0.9em;opacity:0.8;">quarta-feira, 19h às 22h</span></li>
+                <li style="margin-bottom:4px;"><strong>08/10/2026</strong> <span style="font-size:0.9em;opacity:0.8;">quinta-feira, 19h às 22h</span></li>
               </ul>
               <p style="font-size:0.95rem;color:var(--text-body);margin-bottom:6px;">
                 <strong>Conteúdo:</strong> REQ-CP, cálculo de MF, repetibilidade fiscal e de apropriação, diagnóstico de falhas, relatório metrológico.
@@ -2106,6 +2156,7 @@
         </div>
         <p>
           Trilhas objetivas para aprofundar leitura, diagnóstico, instalação, operação e manutenção em sistemas de medição industrial.
+          Acesso às aulas pela plataforma Kiwify.
         </p>
       </div>
       <div class="container stacked-cards-container">
@@ -2121,6 +2172,11 @@
               Fundamentos, instalação, requisitos de escoamento, interpretação de curva de calibração, fatores K, e
               manutenção em FPSOs e skids.
             </p>
+            <div class="course-commerce">
+              <span class="course-price-label">Investimento</span>
+              <strong class="course-price-value">R$ 97,00</strong>
+              <span class="course-platform">Acesso às aulas pela <strong>plataforma Kiwify</strong>.</span>
+            </div>
             <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </div>
         </article>
@@ -2137,6 +2193,11 @@
               Conhecimento aplicado em PD: princípios, óleo pesado, correções volumétricas e práticas de manutenção para
               repetibilidade.
             </p>
+            <div class="course-commerce">
+              <span class="course-price-label">Investimento</span>
+              <strong class="course-price-value">R$ 97,00</strong>
+              <span class="course-platform">Acesso às aulas pela <strong>plataforma Kiwify</strong>.</span>
+            </div>
             <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </div>
         </article>
@@ -2153,6 +2214,11 @@
               Princípio de medição de massa, efeitos de processo, diagnósticos básicos e rotina de verificação para
               confiança metrológica.
             </p>
+            <div class="course-commerce">
+              <span class="course-price-label">Investimento</span>
+              <strong class="course-price-value">R$ 97,00</strong>
+              <span class="course-platform">Acesso às aulas pela <strong>plataforma Kiwify</strong>.</span>
+            </div>
             <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </div>
         </article>
@@ -2169,6 +2235,11 @@
               Foco em flare lines: princípio, leitura de diagnósticos, alarmes, confiabilidade em baixas vazões e
               manutenção.
             </p>
+            <div class="course-commerce">
+              <span class="course-price-label">Investimento</span>
+              <strong class="course-price-value">R$ 149,90</strong>
+              <span class="course-platform">Acesso às aulas pela <strong>plataforma Kiwify</strong>.</span>
+            </div>
             <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </div>
         </article>
@@ -2185,6 +2256,11 @@
               Conceitos de tempo de trânsito, perfil de escoamento, SNR e interpretação de telas para quem opera
               sistemas por ultrassom.
             </p>
+            <div class="course-commerce">
+              <span class="course-price-label">Investimento</span>
+              <strong class="course-price-value">R$ 149,90</strong>
+              <span class="course-platform">Acesso às aulas pela <strong>plataforma Kiwify</strong>.</span>
+            </div>
             <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </div>
         </article>
@@ -2200,6 +2276,11 @@
             <p class="course-desc">
               Princípio de Faraday aplicado à vazão, requisitos de condutividade, instalação, configuração e diagnóstico de falhas em campo.
             </p>
+            <div class="course-commerce">
+              <span class="course-price-label">Investimento</span>
+              <strong class="course-price-value">R$ 79,90</strong>
+              <span class="course-platform">Acesso às aulas pela <strong>plataforma Kiwify</strong>.</span>
+            </div>
             <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </div>
         </article>
