@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Compact Prover O&amp;M com Simulador de Prova — FlowCore Academy</title>
   <meta name="description"
-    content="Curso on-line ao vivo com simulador de prova real. Aprenda a operar e manter um Compact Prover, executar provas de medidores e interpretar resultados com confiança. 16, 18 e 20 de junho de 2026." />
+    content="Curso on-line ao vivo com simulador de prova real. Aprenda a operar e manter um Compact Prover, executar provas de medidores e interpretar resultados com confiança. 05 a 08 de outubro de 2026." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -533,7 +533,7 @@
     }
 
     .hero-card-body {
-      padding: 22px 28px 26px;
+      padding: 34px 32px 32px;
     }
 
     .hero-card-price-row {
@@ -696,6 +696,173 @@
       background: var(--accent-main);
       flex-shrink: 0;
       box-shadow: 0 0 8px rgba(229,91,19,0.6);
+    }
+
+    /* ── EDITORIAL HOOK ── */
+    .article-hook {
+      background: #fff;
+      min-height: 100svh;
+      padding: 124px 0 88px;
+      border-bottom: 1px solid rgba(31, 63, 104, 0.08);
+      display: flex;
+      align-items: center;
+    }
+
+    .article-hook-grid {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .article-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      color: var(--accent-main);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .article-kicker::before {
+      content: '';
+      width: 32px;
+      height: 2px;
+      background: var(--accent-main);
+      border-radius: 999px;
+    }
+
+    .article-title {
+      max-width: 760px;
+      margin-bottom: 28px;
+      font-size: clamp(2.1rem, 4.4vw, 4rem);
+      color: var(--text-heading);
+      letter-spacing: 0;
+    }
+
+    .article-body {
+      max-width: 760px;
+      font-size: 1.05rem;
+      color: var(--text-body);
+    }
+
+    .article-body p + p {
+      margin-top: 18px;
+    }
+
+    .article-body strong {
+      color: var(--text-heading);
+      font-weight: 800;
+    }
+
+    /* ── SIMULATOR VIDEO INTRO ── */
+    .simulator-intro {
+      min-height: 100svh;
+      padding: 100px 0;
+      display: flex;
+      align-items: center;
+      background:
+        linear-gradient(180deg, #ffffff 0%, #f3f6fa 100%);
+      border-bottom: 1px solid rgba(31, 63, 104, 0.08);
+    }
+
+    .simulator-intro-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .simulator-intro .badge {
+      margin-bottom: 20px;
+    }
+
+    .simulator-intro h2 {
+      max-width: 860px;
+      margin: 0 auto 18px;
+      font-size: clamp(2.35rem, 5vw, 4.4rem);
+      color: var(--text-heading);
+      letter-spacing: 0;
+    }
+
+    .simulator-intro p {
+      max-width: 720px;
+      margin: 0 auto 36px;
+      font-size: 1.12rem;
+      color: var(--text-body);
+      line-height: 1.75;
+    }
+
+    .simulator-video-card {
+      position: relative;
+      width: min(100%, 920px);
+      aspect-ratio: 16 / 9;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 0;
+      border-radius: 24px;
+      background: #05070b;
+      cursor: pointer;
+      box-shadow: 0 34px 90px rgba(31, 63, 104, 0.22);
+    }
+
+    .simulator-video-card img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      opacity: 0.84;
+      transition: transform 0.42s ease, opacity 0.42s ease;
+    }
+
+    .simulator-video-card:hover img {
+      transform: scale(1.035);
+      opacity: 0.98;
+    }
+
+    .simulator-video-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(3, 10, 22, 0.06), rgba(3, 10, 22, 0.66)),
+        radial-gradient(circle at center, rgba(229,91,19,0.22), transparent 44%);
+      pointer-events: none;
+    }
+
+    .simulator-video-play {
+      position: absolute;
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent-main), var(--accent-light));
+      box-shadow: 0 20px 46px rgba(229, 91, 19, 0.44);
+    }
+
+    .simulator-video-play svg {
+      width: 34px;
+      height: 34px;
+      margin-left: 5px;
+      fill: currentColor;
+    }
+
+    .simulator-video-label {
+      position: absolute;
+      left: 26px;
+      right: 26px;
+      bottom: 24px;
+      color: rgba(255,255,255,0.92);
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      font-weight: 700;
+      text-align: center;
     }
 
     .sim-screen {
@@ -1298,6 +1465,7 @@
       .hero-ctas         { flex-direction: column; align-items: flex-start; }
       .hero-ctas .btn    { width: 100%; justify-content: center; }
       .sim-highlight     { grid-template-columns: 1fr; padding: 40px 32px; }
+      .article-hook-grid { max-width: 820px; }
     }
 
     @media (max-width: 640px) {
@@ -1307,6 +1475,11 @@
       .enroll-box { padding: 36px 24px; }
       .hero { padding-top: 88px; }
       .sim-metrics { grid-template-columns: 1fr; }
+      .article-hook { padding: 96px 0 64px; align-items: flex-start; }
+      .article-body { font-size: 1rem; }
+      .simulator-intro { padding: 72px 0; align-items: flex-start; }
+      .simulator-video-play { width: 68px; height: 68px; }
+      .simulator-video-play svg { width: 28px; height: 28px; }
     }
   </style>
 </head>
@@ -1324,7 +1497,71 @@
 
   <main>
 
+    <!-- ── ARTIGO / ANZOL ── -->
+    <section class="article-hook" id="artigo">
+      <div class="container">
+        <div class="article-hook-grid">
+          <article>
+            <div class="article-kicker">Antes de iniciar a prova</div>
+            <h2 class="article-title">O erro que mais reprova uma calibração contra provador</h2>
+            <div class="article-body">
+              <p>Quando uma calibração contra provador reprova, muita gente olha primeiro para a fórmula, para o certificado do provador ou para o fator do medidor.</p>
+
+              <p>Mas, na prática, um dos erros que mais reprova uma calibração é iniciar a prova sem garantir estabilidade operacional e fidelidade de sinal.</p>
+
+              <p><strong>O provador não perdoa instabilidade.</strong></p>
+
+              <p>Se a vazão oscila, se a temperatura ainda está variando, se a pressão não estabilizou, se há ar, vibração, pulsos degradados ou configuração inadequada do medidor, o resultado aparece rapidamente: corridas inconsistentes, baixa repetibilidade e um meter factor que não fecha.</p>
+
+              <p>E esse é o ponto que separa uma simples execução de uma calibração bem conduzida.</p>
+
+              <p>Calibrar contra provador não é apenas “dar start” em uma sequência automática. É observar o comportamento do sistema antes, durante e depois da prova. É entender se o volume deslocado pelo provador está sendo comparado com um sinal confiável do medidor. É perceber se a repetibilidade ruim vem do medidor, do processo, da instrumentação, da configuração ou da própria condição operacional.</p>
+
+              <p>Em provadores compactos, esse cuidado é ainda mais crítico. Como o volume é menor, qualquer instabilidade ganha peso. A fidelidade dos pulsos, o tempo de resposta do medidor, a configuração de damping, o tempo de amostragem e a qualidade do sinal passam a ter impacto direto no resultado.</p>
+
+              <p>Muitas reprovações não acontecem porque o medidor é ruim.</p>
+
+              <p>Acontecem porque a prova foi iniciada antes do sistema estar pronto.</p>
+
+              <p>Por isso, antes de confiar no número final, o profissional precisa confiar no comportamento do sistema. Uma calibração bem-sucedida começa muito antes da primeira corrida. Começa na preparação, na estabilização, na análise crítica dos sinais e na capacidade de perceber quando o processo ainda não está pronto para ser provado.</p>
+
+              <p>No fim, o erro que mais reprova uma calibração contra provador não é apenas técnico.</p>
+
+              <p>É acreditar que o provador valida qualquer condição.</p>
+
+              <p><strong>Não valida. Ele revela tudo.</strong></p>
+            </div>
+          </article>
+
+
+        </div>
+      </div>
+    </section>
+
     <!-- ── HERO ── -->
+    <!-- ── INTRODUÇÃO DO SIMULADOR ── -->
+    <section class="simulator-intro" id="simulador-video">
+      <div class="container">
+        <div class="simulator-intro-inner">
+          <div class="badge">Conheça o simulador</div>
+          <h2>Veja em 3 minutos como a prova acontece na prática.</h2>
+          <p>
+            Antes de falar de turma, preço ou inscrição, veja o ambiente onde o aluno aprende:
+            uma IHM de prova com compact prover, estabilidade operacional, runs, repetibilidade,
+            meter factor e decisão metrológica em tempo real.
+          </p>
+
+          <button class="simulator-video-card" type="button" data-open-video aria-label="Conheça o nosso simulador de prova em um vídeo de 3 minutos">
+            <img src="provadores-compacto.png" alt="Simulador de prova com compact prover" />
+            <span class="simulator-video-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </span>
+            <span class="simulator-video-label">Conheça o nosso simulador de prova em um breve vídeo de 3 minutos</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
     <section class="hero">
       <div class="hero-bg"></div>
       <div class="container">
@@ -1367,11 +1604,11 @@
             <div class="hero-meta">
               <div class="meta-item">
                 <span class="meta-label">Datas</span>
-                <span class="meta-value">16, 18 e 20 de junho · 2026</span>
+                <span class="meta-value">05 a 08 de outubro · 2026</span>
               </div>
               <div class="meta-item">
                 <span class="meta-label">Horários</span>
-                <span class="meta-value">19h–22h (seg/qua) · 8h30–12h30 (sáb)</span>
+                <span class="meta-value">19h–22h (seg a qui)</span>
               </div>
               <div class="meta-item">
                 <span class="meta-label">Formato</span>
@@ -1379,29 +1616,22 @@
               </div>
               <div class="meta-item">
                 <span class="meta-label">Carga horária</span>
-                <span class="meta-value">10 horas</span>
+                <span class="meta-value">12 horas</span>
               </div>
             </div>
           </div>
 
           <!-- Card lateral -->
           <div class="hero-card" id="inscricao">
-            <button class="hero-video-trigger" type="button" data-open-video aria-label="Assistir demonstração do simulador">
-              <img src="provadores-compacto.png" alt="Demonstração do simulador de prova" />
-              <span class="hero-video-play" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </span>
-              <span class="hero-video-label">Assistir demonstração do simulador</span>
-            </button>
             <div class="hero-card-body">
               <div class="hero-card-price-row">
                 <span class="price-label">Investimento:</span>
-                <span class="price-main">R$ 450</span>
+                <span class="price-main">R$ 490</span>
               </div>
-              <p class="price-installment">ou 3x de R$ 180 sem juros</p>
+              <p class="price-installment">ou 3x de R$ 200 sem juros</p>
 
               <div class="hero-card-cta">
-                <a href="https://forms.gle/FnCn7w2nNkvG9hSP8" target="_blank" class="btn btn-primary btn-lg">
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSclInBi6-cVGPcvJhOWSv-MOZ3xsY6Sr9WHeuIh3FFw7_GTSQ/viewform" target="_blank" class="btn btn-primary btn-lg">
                   Preencher Inscrição ↗
                 </a>
               </div>
@@ -1415,7 +1645,7 @@
 
               <div class="hero-card-spots">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                Turma com vagas limitadas — 16 a 20 de junho
+                Turma com vagas limitadas — 05 a 08 de outubro
               </div>
 
               <p class="hero-card-note" style="margin-top: 14px;">
@@ -1647,7 +1877,7 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
               </div>
               <div class="detail-info">
-                <strong>Segunda (16/06) e quarta (18/06) — das 19h às 22h</strong>
+                <strong>Segunda (05/10) e terça (06/10) — das 19h às 22h</strong>
                 <span>Aulas teóricas e primeiras sessões no simulador</span>
               </div>
             </div>
@@ -1657,8 +1887,8 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
               </div>
               <div class="detail-info">
-                <strong>Sábado (20/06) — das 8h30 às 12h30</strong>
-                <span>Sessão intensiva no simulador + revisão de falhas + encerramento</span>
+                <strong>Quarta (07/10) e quinta (08/10) — das 19h às 22h</strong>
+                <span>Sessões intensivas no simulador + revisão de falhas + encerramento</span>
               </div>
             </div>
 
@@ -1667,8 +1897,8 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
               </div>
               <div class="detail-info">
-                <strong>10 horas totais de carga horária</strong>
-                <span>6h nas aulas noturnas + 4h na sessão de sábado</span>
+                <strong>12 horas totais de carga horária</strong>
+                <span>4 noites de 3h no Zoom ao vivo</span>
               </div>
             </div>
 
@@ -1708,12 +1938,12 @@
             <p>A inscrição é feita via formulário oficial. Após o envio, você receberá o link de acesso ao grupo da turma e todas as instruções por WhatsApp.</p>
 
             <div class="enroll-price">
-              <div class="enroll-price-main">R$ 450,00</div>
-              <div class="enroll-price-sub">à vista · ou 3x de R$ 180 sem juros</div>
+              <div class="enroll-price-main">R$ 490,00</div>
+              <div class="enroll-price-sub">à vista · ou 3x de R$ 200 sem juros</div>
             </div>
 
             <div class="enroll-actions">
-              <a href="https://forms.gle/FnCn7w2nNkvG9hSP8" target="_blank" class="btn btn-primary btn-lg">
+              <a href="https://docs.google.com/forms/d/e/1FAIpQLSclInBi6-cVGPcvJhOWSv-MOZ3xsY6Sr9WHeuIh3FFw7_GTSQ/viewform" target="_blank" class="btn btn-primary btn-lg">
                 Preencher Formulário de Inscrição ↗
               </a>
               <a href="https://wa.me/5524998788760" target="_blank" class="btn btn-whatsapp btn-md">
@@ -1781,12 +2011,12 @@
       <div class="container">
         <div class="cta-box">
           <div class="section-eyebrow" style="margin-bottom: 20px;">
-            <div class="badge">Próxima turma: 16, 18 e 20 de junho</div>
+            <div class="badge">Próxima turma: 05 a 08 de outubro</div>
           </div>
           <h2>Saia do curso sabendo provar.</h2>
           <p>Não apenas entender o conceito — mas executar uma prova, interpretar os critérios e tomar decisão com segurança técnica.</p>
           <div class="cta-btns">
-            <a href="https://forms.gle/FnCn7w2nNkvG9hSP8" target="_blank" class="btn btn-primary btn-lg">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSclInBi6-cVGPcvJhOWSv-MOZ3xsY6Sr9WHeuIh3FFw7_GTSQ/viewform" target="_blank" class="btn btn-primary btn-lg">
               Quero minha vaga ↗
             </a>
             <a href="https://wa.me/5524998788760" target="_blank" class="btn btn-whatsapp btn-lg">
@@ -1843,7 +2073,7 @@
 
     const videoModal = document.getElementById('videoModal');
     const modalVideo = document.getElementById('modalVideo');
-    const openVideoButton = document.querySelector('[data-open-video]');
+    const openVideoButtons = document.querySelectorAll('[data-open-video]');
     const closeVideoButton = document.querySelector('[data-close-video]');
 
     function openVideoModal() {
@@ -1861,7 +2091,9 @@
       document.body.style.overflow = '';
     }
 
-    openVideoButton?.addEventListener('click', openVideoModal);
+    openVideoButtons.forEach((button) => {
+      button.addEventListener('click', openVideoModal);
+    });
     closeVideoButton?.addEventListener('click', closeVideoModal);
     videoModal?.addEventListener('click', (event) => {
       if (event.target === videoModal) closeVideoModal();
