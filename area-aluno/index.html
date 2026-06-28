@@ -3,54 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Área do Aluno | FlowCore Academy</title>
-  <meta name="description" content="Protótipo visual da área logada do aluno FlowCore Academy." />
-  <link rel="stylesheet" href="styles.css" />
+  <title>Background Portal do Aluno | FlowCore Academy</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        linear-gradient(90deg, rgba(3, 8, 18, 0.1), rgba(3, 8, 18, 0)),
+        url("assets/background.png") center center / cover no-repeat fixed,
+        #050810;
+      font-family: "Calibri Light", Calibri, Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .preview-frame {
+      position: fixed;
+      inset: 20px;
+      border: 1px solid rgba(184, 150, 86, 0.32);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar" aria-label="Navegação principal">
-      <a class="brand" href="#dashboard" aria-label="FlowCore Academy">
-        <img src="../logo-academy.png" alt="FlowCore Academy" />
-      </a>
-      <nav class="nav-stack">
-        <a href="#dashboard" data-nav="dashboard"><span>Meus Cursos</span></a>
-        <a href="#biblioteca" data-nav="biblioteca"><span>Biblioteca FlowCore</span></a>
-        <a href="#financeiro" data-nav="financeiro"><span>Financeiro</span></a>
-        <a href="#comprar" data-nav="comprar"><span>Comprar cursos</span></a>
-        <a href="#perfil" data-nav="perfil"><span>Perfil</span></a>
-        <a href="#vazio" data-nav="vazio"><span>Estado vazio</span></a>
-      </nav>
-      <button class="ghost-button" type="button" id="logoutButton">Sair</button>
-    </aside>
-
-    <main class="main-stage" id="app" tabindex="-1"></main>
-  </div>
-
-  <template id="loginTemplate">
-    <section class="login-screen">
-      <div class="login-panel">
-        <img class="login-logo" src="../logo-academy.png" alt="FlowCore Academy" />
-        <p class="eyebrow">Área restrita</p>
-        <h1>Acesso do aluno</h1>
-        <p class="muted">Entrada liberada manualmente pela FlowCore Academy.</p>
-        <form class="login-form" id="loginForm">
-          <label>
-            E-mail
-            <input type="email" name="email" value="aluno@flowcoresolutions.com.br" autocomplete="email" required />
-          </label>
-          <label>
-            Senha
-            <input type="password" name="password" value="flowcore" autocomplete="current-password" required />
-          </label>
-          <button class="primary-button" type="submit">Entrar</button>
-        </form>
-        <a class="text-link" href="#" aria-label="Recuperar senha">Esqueci minha senha</a>
-      </div>
-    </section>
-  </template>
-
-  <script src="mock-data.js"></script>
-  <script src="app.js"></script>
+  <div class="preview-frame" aria-hidden="true"></div>
 </body>
 </html>
