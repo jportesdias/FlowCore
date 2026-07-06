@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Área do Aluno | FlowCore Academy</title>
+  <meta name="description" content="Protótipo visual da área logada do aluno FlowCore Academy." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <a class="brand" href="#dashboard" aria-label="FlowCore Academy">
+        <img src="../logo-academy.png" alt="FlowCore Academy" />
+      </a>
+      <nav class="nav-stack">
+        <a href="#dashboard" data-nav="dashboard"><span>Meus Cursos</span></a>
+        <a href="#video-institucional" data-nav="video-institucional"><span>V&iacute;deo institucional</span></a>
+        <a href="#biblioteca" data-nav="biblioteca"><span>Biblioteca FlowCore</span></a>
+        <a href="#especialista" data-nav="especialista"><span>Meu Especialista</span></a>
+        <a href="#financeiro" data-nav="financeiro"><span>Financeiro</span></a>
+        <a href="#comprar" data-nav="comprar"><span>Comprar cursos</span></a>
+        <a href="#perfil" data-nav="perfil"><span>Perfil</span></a>
+        <a href="#creditos" data-nav="creditos"><span>Meus Créditos</span></a>
+      </nav>
+      <button class="ghost-button" type="button" id="logoutButton">Sair</button>
+    </aside>
+
+    <main class="main-stage" id="app" tabindex="-1"></main>
+  </div>
+
+  <template id="loginTemplate">
+    <section class="login-screen">
+      <div class="login-panel">
+        <img class="login-logo" src="../logo-academy.png" alt="FlowCore Academy" />
+        <p class="eyebrow">Área restrita</p>
+        <h1>Acesso do aluno</h1>
+        <p class="muted">Digite seu e-mail para receber o c&oacute;digo de acesso.</p>
+        <form class="login-form" id="loginForm" data-step="email">
+          <label>
+            E-mail
+            <input type="email" name="email" autocomplete="email" required />
+          </label>
+          <button class="primary-button" type="submit">Enviar c&oacute;digo</button>
+        </form>
+        <form class="login-form" id="otpForm" style="display:none;">
+          <fieldset class="otp-fieldset">
+            <legend>C&oacute;digo de 6 d&iacute;gitos</legend>
+            <div class="otp-boxes" aria-label="C&oacute;digo de 6 d&iacute;gitos">
+              <input class="otp-box" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="1" pattern="[0-9]" aria-label="D&iacute;gito 1" />
+              <input class="otp-box" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="D&iacute;gito 2" />
+              <input class="otp-box" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="D&iacute;gito 3" />
+              <input class="otp-box" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="D&iacute;gito 4" />
+              <input class="otp-box" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="D&iacute;gito 5" />
+              <input class="otp-box" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="D&iacute;gito 6" />
+            </div>
+            <input id="otpToken" type="hidden" name="token" required />
+          </fieldset>
+          <button class="primary-button" type="submit">Acessar plataforma</button>
+          <button class="text-link" type="button" id="changeEmailButton">Trocar e-mail</button>
+        </form>
+        <div id="loginStatus" class="login-status" style="display:none;"></div>
+      </div>
+    </section>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="mock-celso-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

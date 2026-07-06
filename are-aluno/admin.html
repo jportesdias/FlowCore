@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Area do Aluno | FlowCore Academy</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      background: #eef2f6;
+    }
+
+    .admin-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+    }
+
+    .admin-sidebar {
+      padding: 24px;
+      background: #061020;
+      color: #fff;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .admin-sidebar img {
+      width: 180px;
+      margin-bottom: 32px;
+    }
+
+    .admin-sidebar h1 {
+      margin: 0 0 8px;
+      color: #fff;
+      font-size: 24px;
+    }
+
+    .admin-sidebar p {
+      margin: 0;
+      color: rgba(255,255,255,0.68);
+      font-size: 14px;
+    }
+
+    .admin-main {
+      padding: 28px;
+      overflow: auto;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .admin-header h2 {
+      margin: 0 0 6px;
+      font-size: 30px;
+    }
+
+    .admin-header p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .admin-panel {
+      background: #fff;
+      border: 1px solid rgba(31, 63, 104, 0.1);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 18px 46px rgba(31, 63, 104, 0.06);
+    }
+
+    .admin-panel h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .admin-form {
+      display: grid;
+      gap: 10px;
+    }
+
+    .admin-form input,
+    .admin-form select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid rgba(31, 63, 104, 0.14);
+      border-radius: 8px;
+      padding: 0 12px;
+      font: inherit;
+    }
+
+    .student-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .student-row {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid rgba(31, 63, 104, 0.1);
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+
+    .student-row.is-active {
+      border-color: rgba(229, 91, 19, 0.5);
+      background: #fff7ed;
+    }
+
+    .student-row button {
+      justify-self: start;
+    }
+
+    .student-row strong,
+    .access-card strong {
+      color: var(--text-heading);
+    }
+
+    .student-row span,
+    .access-card span {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .access-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .access-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid rgba(31, 63, 104, 0.1);
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+
+    .access-card.is-granted {
+      background: #ecfdf5;
+      border-color: rgba(22, 101, 52, 0.22);
+    }
+
+    .admin-note {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #fff7ed;
+      color: #9a3412;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 900px) {
+      .admin-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <img src="../logo-academy.png" alt="FlowCore Academy" />
+      <h1>Estação Admin</h1>
+      <p>Liberação manual de cursos para alunos da FlowCore Academy.</p>
+    </aside>
+
+    <main class="admin-main">
+      <section class="admin-header">
+        <div>
+          <p class="eyebrow">Operação manual</p>
+          <h2>Alunos e acessos</h2>
+          <p>Cadastre o aluno, selecione o curso e libere o acesso sem tocar em SQL.</p>
+        </div>
+        <a class="secondary-button" href="index_.html">Ver área do aluno</a>
+      </section>
+
+      <section class="admin-grid">
+        <div class="admin-panel">
+          <h3>Novo aluno</h3>
+          <form id="studentForm" class="admin-form">
+            <input name="name" placeholder="Nome do aluno" required />
+            <input name="email" type="email" placeholder="E-mail" required />
+            <button class="primary-button" type="submit">Cadastrar aluno</button>
+          </form>
+
+          <div class="admin-note">
+            Protótipo operacional em localStorage. A próxima etapa liga estes botões ao Supabase.
+          </div>
+
+          <h3 style="margin-top:18px;">Alunos</h3>
+          <div id="studentList" class="student-list"></div>
+        </div>
+
+        <div class="admin-panel">
+          <h3 id="accessTitle">Acessos do aluno</h3>
+          <div id="accessGrid" class="access-grid"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

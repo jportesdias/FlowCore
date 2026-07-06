@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Background Portal do Aluno | FlowCore Academy</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        linear-gradient(90deg, rgba(3, 8, 18, 0.1), rgba(3, 8, 18, 0)),
+        url("assets/background.png") center center / cover no-repeat fixed,
+        #050810;
+      font-family: "Calibri Light", Calibri, Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .preview-frame {
+      position: fixed;
+      inset: 20px;
+      border: 1px solid rgba(184, 150, 86, 0.32);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-frame" aria-hidden="true"></div>
+</body>
+</html>
