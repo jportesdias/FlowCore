@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Supabase | FlowCore Academy</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { background: #eef2f6; }
+    .admin-shell { min-height: 100vh; display: grid; grid-template-columns: 280px minmax(0, 1fr); }
+    .admin-sidebar { padding: 24px; background: #061020; color: #fff; border-right: 1px solid rgba(255,255,255,0.1); }
+    .admin-sidebar img { width: 180px; margin-bottom: 32px; }
+    .admin-sidebar h1 { margin: 0 0 8px; color: #fff; font-size: 24px; }
+    .admin-sidebar p { margin: 0; color: rgba(255,255,255,0.68); font-size: 14px; }
+    .admin-main { padding: 28px; overflow: auto; }
+    .admin-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 20px; }
+    .admin-header-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .admin-header h2 { margin: 0 0 6px; font-size: 30px; }
+    .admin-header p { margin: 0; color: var(--text-muted); }
+    .admin-grid { display: grid; grid-template-columns: minmax(320px, 420px) minmax(0, 1fr); gap: 16px; align-items: start; }
+    .admin-panel { background: #fff; border: 1px solid rgba(31, 63, 104, 0.1); border-radius: 8px; padding: 16px; box-shadow: 0 18px 46px rgba(31, 63, 104, 0.06); }
+    .admin-panel h3 { margin: 0 0 12px; font-size: 18px; }
+    .admin-form { display: grid; gap: 10px; }
+    .admin-form input, .crm-import-box input { width: 100%; min-height: 42px; border: 1px solid rgba(31, 63, 104, 0.14); border-radius: 8px; padding: 0 12px; font: inherit; }
+    .crm-import-box { display: grid; gap: 10px; margin-bottom: 18px; padding: 14px; border: 1px solid rgba(31, 63, 104, 0.1); border-radius: 8px; background: linear-gradient(135deg, #f8fafc, #fff); }
+    .crm-import-box.is-highlighted { border-color: rgba(229, 91, 19, 0.42); box-shadow: 0 0 0 4px rgba(229, 91, 19, 0.08); }
+    .crm-import-box h3 { margin-bottom: 2px; }
+    .crm-import-box p, .crm-status { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.45; }
+    .crm-results { display: grid; gap: 8px; max-height: 330px; overflow: auto; }
+    .crm-result-card { display: grid; gap: 8px; padding: 10px; border: 1px solid rgba(31, 63, 104, 0.1); border-radius: 8px; background: #fff; }
+    .crm-result-card button { justify-self: start; }
+    .crm-result-meta { color: var(--text-muted); font-size: 12px; line-height: 1.45; }
+    .crm-file-fallback { display: none; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .crm-file-fallback.is-visible { display: flex; }
+    .crm-file-fallback input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; pointer-events: none; }
+    .crm-file-fallback label { min-height: 36px; display: inline-flex; align-items: center; padding: 0 12px; border: 1px solid rgba(31, 63, 104, 0.14); border-radius: 8px; background: #fff; color: var(--text-heading); font-size: 13px; font-weight: 700; cursor: pointer; }
+    .crm-file-fallback span { color: var(--text-muted); font-size: 12px; }
+    .admin-check { display: flex; align-items: center; gap: 8px; min-height: 38px; color: var(--text-muted); font-size: 14px; }
+    .admin-check input { width: 16px; min-height: 16px; height: 16px; padding: 0; }
+    .student-list { display: grid; gap: 10px; margin-top: 12px; }
+    .student-row { display: grid; gap: 8px; padding: 12px; border: 1px solid rgba(31, 63, 104, 0.1); border-radius: 8px; background: #f8fafc; }
+    .student-row.is-active { border-color: rgba(229, 91, 19, 0.5); background: #fff7ed; }
+    .student-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .student-actions button { justify-self: start; min-height: 36px; padding: 0 12px; }
+    .danger-button { border: 1px solid rgba(185, 28, 28, 0.28); color: #991b1b; background: #fff; }
+    .danger-button:hover { background: #fef2f2; }
+    .student-row strong, .access-card strong { color: var(--text-heading); }
+    .student-row span, .access-card span { color: var(--text-muted); font-size: 13px; }
+    .access-grid { display: grid; gap: 12px; }
+    .access-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 14px; border: 1px solid rgba(31, 63, 104, 0.1); border-radius: 8px; background: #f8fafc; }
+    .access-card.is-granted { background: #ecfdf5; border-color: rgba(22, 101, 52, 0.22); }
+    .admin-note, .admin-status { margin-top: 14px; padding: 12px; border-radius: 8px; background: #fff7ed; color: #9a3412; font-size: 13px; line-height: 1.5; }
+    .admin-status { margin: 0 0 14px; background: #ecfdf5; color: #166534; }
+    .admin-status.is-error, .admin-note.is-error { background: #fef2f2; color: #991b1b; }
+    .admin-modal-backdrop { position: fixed; inset: 0; z-index: 80; display: none; place-items: center; padding: 24px; background: rgba(6, 16, 32, 0.72); backdrop-filter: blur(5px); }
+    .admin-modal-backdrop.is-visible { display: grid; }
+    .admin-modal { width: min(520px, 100%); display: grid; gap: 16px; padding: 18px; border-radius: 8px; background: #fff; box-shadow: 0 28px 80px rgba(6, 16, 32, 0.3); }
+    .admin-modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+    .admin-modal-header h3 { margin: 0 0 4px; }
+    .admin-modal-header p { margin: 0; color: var(--text-muted); font-size: 13px; }
+    .admin-modal-close { min-height: 36px; padding: 0 12px; border: 1px solid rgba(31, 63, 104, 0.14); border-radius: 8px; background: #fff; color: var(--text-heading); font-weight: 700; cursor: pointer; }
+    .admin-modal-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    .admin-login { display: none; min-height: 100vh; place-items: center; padding: 24px; background: linear-gradient(90deg, rgba(3, 8, 18, 0.76), rgba(3, 8, 18, 0.3)), url("assets/background.png") center center / cover no-repeat fixed, #050810; }
+    .admin-login.is-visible { display: grid; }
+    .admin-login-card { width: min(420px, 100%); padding: 26px; border: 1px solid rgba(255,255,255,0.16); border-radius: 8px; background: rgba(255,255,255,0.94); box-shadow: 0 22px 70px rgba(0,0,0,0.28); }
+    .admin-login-card img { width: 190px; margin-bottom: 20px; }
+    .admin-login-card h1 { margin: 0 0 8px; font-size: 26px; }
+    .admin-login-card p { margin: 0 0 18px; color: var(--text-muted); }
+    @media (max-width: 900px) {
+      .admin-shell { grid-template-columns: 1fr; }
+      .admin-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <section id="adminLogin" class="admin-login">
+    <div class="admin-login-card">
+      <img src="../logo-academy.png" alt="FlowCore Academy" />
+      <h1>Estação Admin</h1>
+      <p>Entre com o usuário administrador cadastrado no Supabase.</p>
+      <form id="adminLoginForm" class="admin-form">
+        <input name="email" type="email" value="flowcore.academy@gmail.com" autocomplete="email" required />
+        <input name="password" type="password" placeholder="Senha" autocomplete="current-password" required />
+        <button class="primary-button" type="submit">Entrar</button>
+      </form>
+      <div id="adminLoginStatus" class="admin-note" style="display:none;"></div>
+    </div>
+  </section>
+
+  <div id="adminShell" class="admin-shell" style="display:none;">
+    <aside class="admin-sidebar">
+      <img src="../logo-academy.png" alt="FlowCore Academy" />
+      <h1>Estação Admin</h1>
+      <p>Liberação manual de cursos para alunos da FlowCore Academy.</p>
+    </aside>
+
+    <main class="admin-main">
+      <section class="admin-header">
+        <div>
+          <p class="eyebrow">Operação manual</p>
+          <h2>Alunos e acessos</h2>
+          <p>Cadastre o aluno, selecione o curso e libere o acesso sem tocar em SQL.</p>
+        </div>
+        <div class="admin-header-actions">
+          <button id="crmOpenButton" class="primary-button" type="button">Importar do CRM</button>
+          <a class="secondary-button" href="index_.html">Ver área do aluno</a>
+          <button id="adminLogoutButton" class="secondary-button" type="button">Sair</button>
+        </div>
+      </section>
+
+      <div id="adminStatus" class="admin-status" style="display:none;"></div>
+
+      <section class="admin-grid">
+        <div class="admin-panel">
+          <div id="crmImportBox" class="crm-import-box">
+            <h3>Criar aluno a partir do CRM</h3>
+            <p>Busque por nome, e-mail, telefone ou interesse. Ao criar, o aluno entra no Supabase e fica selecionado para liberar cursos.</p>
+            <input id="crmSearch" type="search" placeholder="Buscar contato no CRM" autocomplete="off" />
+            <div id="crmFileFallback" class="crm-file-fallback">
+              <label for="crmFileInput">Carregar CRM manualmente</label>
+              <input id="crmFileInput" type="file" accept=".json,application/json" />
+              <span>Use apenas se o carregamento automático falhar.</span>
+            </div>
+            <p id="crmStatus" class="crm-status">Carregando contatos do CRM...</p>
+            <div id="crmResults" class="crm-results"></div>
+          </div>
+
+          <h3>Novo aluno</h3>
+          <form id="studentForm" class="admin-form">
+            <input name="name" placeholder="Nome do aluno" required />
+            <input name="email" type="email" placeholder="E-mail" required />
+            <input name="subscription_start_date" type="date" required />
+            <label class="admin-check">
+              <input name="subscription_active" type="checkbox" checked />
+              <span>Assinatura ativa</span>
+            </label>
+            <button class="primary-button" type="submit">Criar aluno</button>
+          </form>
+
+          <div class="admin-note">
+            Criar aluno gera o login no Supabase, mas não libera nenhum curso automaticamente. A liberação continua pelos botões de acesso.
+          </div>
+
+          <h3 style="margin-top:18px;">Alunos</h3>
+          <input id="studentSearch" type="search" placeholder="Buscar por nome, e-mail ou ID" autocomplete="off" />
+          <div id="studentList" class="student-list"></div>
+        </div>
+
+        <div class="admin-panel">
+          <h3 id="accessTitle">Acessos do aluno</h3>
+          <div id="accessGrid" class="access-grid"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="editStudentModal" class="admin-modal-backdrop" aria-hidden="true">
+    <section class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="editStudentTitle">
+      <div class="admin-modal-header">
+        <div>
+          <h3 id="editStudentTitle">Editar aluno</h3>
+          <p>Atualize os dados principais do cadastro.</p>
+        </div>
+        <button class="admin-modal-close" type="button" data-close-edit-modal>Fechar</button>
+      </div>
+      <form id="editStudentForm" class="admin-form">
+        <input name="student_id" type="hidden" />
+        <input name="name" placeholder="Nome do aluno" required />
+        <input name="email" type="email" placeholder="E-mail" required />
+        <input name="subscription_start_date" type="date" required />
+        <label class="admin-check">
+          <input name="subscription_active" type="checkbox" />
+          <span>Assinatura ativa</span>
+        </label>
+        <div class="admin-modal-actions">
+          <button class="secondary-button" type="button" data-close-edit-modal>Cancelar</button>
+          <button class="primary-button" type="submit">Salvar alterações</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin-supabase.js"></script>
+</body>
+</html>
