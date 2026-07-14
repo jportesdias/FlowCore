@@ -2401,6 +2401,211 @@
         padding-top: 90px !important;
       }
     }
+
+    .academy-testimonials {
+      position: relative;
+      overflow: hidden;
+      padding: 108px 24px 118px;
+      background: linear-gradient(180deg, #f1f5f9 0%, #fffaf2 100%);
+    }
+
+    .academy-testimonials__inner {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .academy-testimonials__header {
+      display: grid;
+      grid-template-columns: minmax(0, 0.84fr) minmax(320px, 0.56fr);
+      gap: 48px;
+      align-items: end;
+      margin-bottom: 42px;
+    }
+
+    .academy-testimonials__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      color: #c44d12;
+      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .academy-testimonials__eyebrow::before {
+      content: "";
+      width: 42px;
+      height: 1px;
+      background: linear-gradient(90deg, #c44d12, rgba(196, 77, 18, 0));
+    }
+
+    .academy-testimonials h2 {
+      max-width: 720px;
+      color: #111827;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(3rem, 5vw, 5rem);
+      font-weight: 600;
+      line-height: 0.98;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .academy-testimonials__intro {
+      color: #5c6673;
+      font-size: 1rem;
+      line-height: 1.78;
+    }
+
+    .academy-testimonials__grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.98fr) minmax(0, 1.02fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .academy-testimonials__side {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .academy-testimonials__side .testimonial-card:first-child {
+      grid-column: 1 / -1;
+    }
+
+    .testimonial-card {
+      position: relative;
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      padding: 28px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(17, 24, 39, 0.10);
+      box-shadow: 0 24px 70px rgba(17, 24, 39, 0.10);
+    }
+
+    .testimonial-card::before {
+      content: "“";
+      position: absolute;
+      top: 8px;
+      right: 22px;
+      color: rgba(196, 77, 18, 0.14);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 6rem;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .testimonial-card--featured {
+      min-height: 430px;
+      background: #111827;
+      border-color: #111827;
+      box-shadow: 0 30px 80px rgba(17, 24, 39, 0.24);
+    }
+
+    .testimonial-card--featured::before {
+      color: rgba(255, 247, 237, 0.14);
+    }
+
+    .testimonial-card__text {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 28px;
+      color: #3f4a5a;
+      font-size: 0.96rem;
+      line-height: 1.68;
+    }
+
+    .testimonial-card--featured .testimonial-card__text {
+      max-width: 640px;
+      color: rgba(255, 247, 237, 0.82);
+      font-size: 1.04rem;
+      line-height: 1.72;
+    }
+
+    .testimonial-card__person {
+      position: relative;
+      z-index: 1;
+      margin-top: auto;
+      padding-top: 22px;
+      border-top: 1px solid rgba(17, 24, 39, 0.10);
+    }
+
+    .testimonial-card--featured .testimonial-card__person {
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .testimonial-card__name {
+      display: block;
+      color: #111827;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .testimonial-card__role {
+      display: block;
+      margin-top: 6px;
+      color: #6b7280;
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    .testimonial-card--featured .testimonial-card__name {
+      color: #fff7ed;
+    }
+
+    .testimonial-card--featured .testimonial-card__role {
+      color: rgba(255, 247, 237, 0.58);
+    }
+
+    @media (max-width: 1040px) {
+      .academy-testimonials__grid {
+        grid-template-columns: 1fr;
+      }
+
+      .testimonial-card--featured {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .academy-testimonials {
+        padding: 104px 18px 86px;
+      }
+
+      .academy-testimonials__header {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .academy-testimonials h2 {
+        font-size: 3.1rem;
+      }
+
+      .academy-testimonials__grid {
+        grid-template-columns: 1fr;
+      }
+
+      .academy-testimonials__side {
+        grid-template-columns: 1fr;
+      }
+
+      .academy-testimonials__side .testimonial-card:first-child {
+        grid-column: auto;
+      }
+
+      .testimonial-card,
+      .testimonial-card--featured {
+        grid-column: auto;
+        min-height: auto;
+      }
+    }
   </style>
 </head>
 
@@ -2485,6 +2690,64 @@
             <span class="academy-hub__index">04</span>
             <strong>Experiência premium</strong>
             <span>Da inscrição ao certificado, uma jornada mais simples, profissional e preparada para acompanhar sua evolução.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="academy-testimonials" aria-labelledby="academy-testimonials-title">
+      <div class="academy-testimonials__inner">
+        <div class="academy-testimonials__header">
+          <div>
+            <span class="academy-testimonials__eyebrow">Depoimentos de alunos</span>
+            <h2 id="academy-testimonials-title">Quem passa pela Academy sente a diferença na prática.</h2>
+          </div>
+          <p class="academy-testimonials__intro">
+            Profissionais de medição, metrologia, automação e operação destacam a combinação entre conteúdo técnico, vivência de campo e aplicação prática.
+          </p>
+        </div>
+
+        <div class="academy-testimonials__grid">
+          <article class="testimonial-card testimonial-card--featured">
+            <p class="testimonial-card__text">
+              A organização consolidou sua vantagem competitiva no mercado por meio de dois pilares: cursos técnicos de alta qualidade com excelente custo-benefício e uma abordagem prática fundamentada em ampla experiência de mercado. Estes pilares destacam o melhor da FlowCore Academy.
+            </p>
+            <div class="testimonial-card__person">
+              <strong class="testimonial-card__name">Lidiane Cons</strong>
+              <span class="testimonial-card__role">Gestora da Qualidade e Metrologia</span>
+            </div>
+          </article>
+
+          <div class="academy-testimonials__side">
+            <article class="testimonial-card">
+              <p class="testimonial-card__text">
+                Gostei bastante da forma como o conteúdo foi passado e da contribuição da sua experiência em campo. Normalmente quando encontramos cursos na área de vazão, muitos se limitam a apresentar o princípio de funcionamento dos medidores.
+              </p>
+              <div class="testimonial-card__person">
+                <strong class="testimonial-card__name">Carlos Magno</strong>
+                <span class="testimonial-card__role">Técnico de Medição</span>
+              </div>
+            </article>
+
+            <article class="testimonial-card">
+              <p class="testimonial-card__text">
+                Desenvolvimento de atividades com foco em simuladores com situações reais.
+              </p>
+              <div class="testimonial-card__person">
+                <strong class="testimonial-card__name">Lucas de Oliveira</strong>
+                <span class="testimonial-card__role">Técnico de Medição</span>
+              </div>
+            </article>
+
+            <article class="testimonial-card">
+              <p class="testimonial-card__text">
+                O treinamento foi de alta qualidade, material e conhecimento do instrutor. Talvez abordar um pouco mais quando um medidor de vazão trabalha como padrão, para o pessoal que é mais novo na área ter uma noção maior de um medidor ser aplicado em situações diferentes.
+              </p>
+              <div class="testimonial-card__person">
+                <strong class="testimonial-card__name">Celso Graciano</strong>
+                <span class="testimonial-card__role">Engenheiro Sênior Especialista em Automação</span>
+              </div>
+            </article>
           </div>
         </div>
       </div>
