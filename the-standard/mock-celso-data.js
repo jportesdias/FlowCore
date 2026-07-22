@@ -61,7 +61,7 @@ const MOCK = {
       }
     ]
   },
-  catalogoCursos: [
+  catalogoCursosLegacy: [
     {
       id: "medidores-vazao",
       titulo: "Medidores de Vazão",
@@ -109,6 +109,118 @@ const MOCK = {
       descricao: "Aplicação prática de computadores de vazão, configuração, operação e interpretação de dados.",
       valor: 650,
       status: "Disponível",
+      cta: "Comprar",
+      url: "https://wa.me/5524998788760"
+    }
+  ],
+  catalogoCursos: [
+    {
+      id: "medidores-turbina",
+      titulo: "Medidores Tipo Turbina",
+      capa: "assets/turbina.png",
+      descricao: "Fundamentos, instalacao, requisitos de escoamento, interpretacao de curva de calibracao, fatores K, e manutencao em FPSOs e skids.",
+      valor: 97,
+      status: "Disponivel",
+      cta: "Comprar",
+      url: "https://wa.me/5524998788760"
+    },
+    {
+      id: "deslocamento-positivo",
+      titulo: "Tipo Deslocamento Positivo",
+      capa: "assets/deslocamento-positivo.png",
+      descricao: "Conhecimento aplicado em PD: principios, oleo pesado, correcoes volumetricas e praticas de manutencao para repetibilidade.",
+      valor: 97,
+      status: "Disponivel",
+      cta: "Comprar",
+      url: "https://wa.me/5524998788760"
+    },
+    {
+      id: "medidores-coriolis",
+      titulo: "Medidores Coriolis",
+      capa: "assets/coriolis.png",
+      descricao: "Principio de medicao de massa, efeitos de processo, diagnosticos basicos e rotina de verificacao para confianca metrologica.",
+      valor: 97,
+      status: "Disponivel",
+      cta: "Comprar",
+      url: "https://wa.me/5524998788760"
+    },
+    {
+      id: "ultrassonicos-flare",
+      titulo: "Ultrassonicos de Flare",
+      capa: "assets/flare.png",
+      descricao: "Foco em flare lines: principio, leitura de diagnosticos, alarmes, confiabilidade em baixas vazoes e manutencao.",
+      valor: 149.90,
+      status: "Disponivel",
+      cta: "Comprar",
+      url: "https://wa.me/5524998788760"
+    },
+    {
+      id: "medidores-ultrassonicos",
+      titulo: "Medidores Ultrassonicos",
+      capa: "assets/ultrasonico.png",
+      descricao: "Conceitos de tempo de transito, perfil de escoamento, SNR e interpretacao de telas para quem opera sistemas por ultrassom.",
+      valor: 149.90,
+      status: "Disponivel",
+      cta: "Comprar",
+      url: "https://wa.me/5524998788760"
+    },
+    {
+      id: "medidores-magneticos",
+      titulo: "Medidores Magneticos",
+      capa: "assets/magnetico.png",
+      descricao: "Principio de Faraday aplicado a vazao, requisitos de condutividade, instalacao, configuracao e diagnostico de falhas em campo.",
+      valor: 79.90,
+      status: "Disponivel",
+      cta: "Comprar",
+      url: "https://wa.me/5524998788760"
+    },
+    {
+      id: "medidores-vazao",
+      titulo: "Medidores de Vazao",
+      capa: "assets/capa-medidores.png",
+      descricao: "Fundamentos, operacao e leitura critica de medidores de vazao para rotina industrial.",
+      valor: 550,
+      status: "Disponivel",
+      cta: "Comprar",
+      url: "https://wa.me/5524998788760"
+    },
+    {
+      id: "provadores-compactos",
+      titulo: "Provadores Compacto",
+      capa: "assets/capa-provadores.png",
+      descricao: "Conceitos e pratica aplicada para operacao, prova e interpretacao de resultados com provadores compactos.",
+      valor: 600,
+      status: "Disponivel",
+      cta: "Comprar",
+      url: "https://wa.me/5524998788760"
+    },
+    {
+      id: "ia-dominio-tecnico",
+      titulo: "IA para Dominio Tecnico",
+      capa: "assets/IA-domnio.png",
+      descricao: "Uso pratico de IA para acelerar estudo, consulta tecnica e dominio de documentacao industrial.",
+      valor: 97,
+      status: "Disponivel",
+      cta: "Comprar",
+      url: "https://wa.me/5524998788760"
+    },
+    {
+      id: "placa-orificio",
+      titulo: "Curso de Medidores por Placa de Orificio",
+      capa: "assets/spoiler-breve.png",
+      descricao: "Curso dedicado a medicao por placa de orificio. Produto em preparacao.",
+      valor: null,
+      status: "Em breve",
+      cta: "Em breve",
+      url: "#"
+    },
+    {
+      id: "computadores-vazao",
+      titulo: "Curso de Computadores de Vazao",
+      capa: "assets/computador-vazao2.png",
+      descricao: "Aplicacao pratica de computadores de vazao, configuracao, operacao e interpretacao de dados.",
+      valor: 650,
+      status: "Disponivel",
       cta: "Comprar",
       url: "https://wa.me/5524998788760"
     }
