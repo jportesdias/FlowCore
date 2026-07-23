@@ -1686,6 +1686,69 @@
       box-shadow: 0 14px 30px rgba(229, 91, 19, 0.34);
     }
 
+    /* Agenda editorial premium */
+    .agenda-open-classes { padding: 18px 24px 86px; }
+
+    .agenda-open-classes__inner {
+      padding: clamp(28px, 4.5vw, 58px);
+      border-radius: 34px;
+      background: radial-gradient(circle at 92% 8%, rgba(28,112,210,.18), transparent 34%), radial-gradient(circle at 8% 92%, rgba(229,91,19,.12), transparent 32%), linear-gradient(145deg, rgba(10,25,48,.98), rgba(2,9,21,.99));
+      border-color: rgba(160,197,239,.16);
+      box-shadow: 0 42px 110px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    .agenda-open-classes__inner::before {
+      inset: 0;
+      height: auto;
+      background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 44px 44px;
+      -webkit-mask-image: linear-gradient(to bottom, #000, transparent 72%);
+      mask-image: linear-gradient(to bottom, #000, transparent 72%);
+      pointer-events: none;
+    }
+
+    .agenda-open-classes__header {
+      position: relative;
+      z-index: 1;
+      align-items: flex-end;
+      gap: 32px;
+      margin-bottom: 34px;
+      padding: 0 0 26px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .agenda-open-classes__label { margin-bottom: 9px; color: #f49a63; font-size: .66rem; font-weight: 600; letter-spacing: .28em; }
+    .agenda-open-classes h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem,5vw,4.4rem); font-weight: 600; line-height: .9; letter-spacing: -.035em; }
+    .agenda-open-classes__note { max-width: 350px; color: rgba(224,235,248,.58); font-size: .84rem; font-weight: 300; line-height: 1.7; text-align: right; white-space: normal; }
+    .agenda-open-classes__list { position: relative; z-index: 1; gap: 14px; }
+
+    .agenda-open-classes__item {
+      min-height: 244px;
+      gap: 14px;
+      padding: 26px 28px 24px;
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.025));
+      border-color: rgba(255,255,255,.095);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+      transition: transform .35s ease, border-color .35s ease, background .35s ease, box-shadow .35s ease;
+    }
+
+    .agenda-open-classes__item::after { left: 0; right: auto; top: 24px; bottom: 24px; width: 2px; height: auto; border-radius: 0; background: linear-gradient(to bottom, transparent, #237fe5, transparent); }
+    .agenda-open-classes__item:nth-child(1)::after, .agenda-open-classes__item:nth-child(3)::after { background: linear-gradient(to bottom, transparent, #f47d35, transparent); }
+    .agenda-open-classes__item:last-child { grid-column: 1 / -1; min-height: 208px; padding-right: clamp(28px,18vw,230px); background: linear-gradient(120deg, rgba(21,78,142,.22), rgba(255,255,255,.025) 58%); }
+    .agenda-open-classes__item:hover { transform: translateY(-5px); border-color: rgba(127,182,240,.25); background: linear-gradient(145deg, rgba(255,255,255,.105), rgba(255,255,255,.035)); box-shadow: 0 24px 48px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.06); }
+
+    .agenda-open-classes__date { display: flex; flex-direction: column; color: #fff; line-height: 1; }
+    .agenda-open-classes__month { margin-bottom: 7px; color: #6eb4ff; font-size: .63rem; font-weight: 600; letter-spacing: .25em; text-transform: uppercase; }
+    .agenda-open-classes__item:nth-child(1) .agenda-open-classes__month, .agenda-open-classes__item:nth-child(3) .agenda-open-classes__month { color: #f69459; }
+    .agenda-open-classes__day { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.9rem,3vw,2.5rem); font-weight: 600; letter-spacing: -.025em; }
+
+    .agenda-open-classes__mode { min-height: 25px; padding: 5px 10px; background: rgba(255,255,255,.045); border-color: rgba(255,255,255,.1); color: rgba(223,235,249,.7); font-size: .57rem; font-weight: 600; letter-spacing: .14em; }
+    .agenda-open-classes__title { max-width: 470px; color: rgba(255,255,255,.94); font-family: 'Cormorant Garamond', serif; font-size: clamp(1.38rem,2.2vw,1.76rem); font-weight: 600; line-height: 1.08; }
+    .agenda-open-classes__time { color: rgba(218,230,244,.53); font-size: .78rem; font-weight: 300; line-height: 1.55; }
+    .agenda-open-classes__link { min-height: 31px; padding: 5px 0 3px; border: 0; border-bottom: 1px solid rgba(244,148,89,.65); border-radius: 0; background: transparent; color: #f5a06c; font-family: 'Inter', sans-serif; font-size: .66rem; font-weight: 600; letter-spacing: .13em; box-shadow: none; }
+    .agenda-open-classes__link:hover { background: transparent; border-color: #ffb181; color: #ffb181; box-shadow: none; }
+
     /* RESPONSIVE */
     @media (max-width: 900px) {
       .course-card {
@@ -1831,6 +1894,7 @@
 
       .agenda-open-classes__note {
         white-space: normal;
+        text-align: left;
       }
 
       .agenda-open-classes__list {
@@ -1839,6 +1903,14 @@
 
       .agenda-open-classes__item {
         min-height: auto;
+      }
+
+      .agenda-open-classes__item:last-child {
+        padding-right: 18px;
+      }
+
+      .agenda-open-classes__day {
+        font-size: 2rem;
       }
 
     .stacked-cards-container {
@@ -2760,31 +2832,61 @@
       <div class="agenda-open-classes__inner">
         <div class="agenda-open-classes__header">
           <div>
-            <span class="agenda-open-classes__label">Agenda</span>
-            <h2 id="agenda-turmas-title">Turmas abertas</h2>
+            <span class="agenda-open-classes__label">FlowCore Academy · 2026</span>
+            <h2 id="agenda-turmas-title">Próximas imersões</h2>
           </div>
-          <p class="agenda-open-classes__note">Inscrições abertas para as próximas turmas ao vivo.</p>
+          <p class="agenda-open-classes__note">Uma agenda desenhada para profissionais que querem dominar a medição, da instrumentação ao processamento.</p>
         </div>
 
         <div class="agenda-open-classes__list">
           <article class="agenda-open-classes__item">
             <div class="agenda-open-classes__topline">
-              <div class="agenda-open-classes__date">05 a 08/10</div>
+              <div class="agenda-open-classes__date"><span class="agenda-open-classes__month">Agosto</span><span class="agenda-open-classes__day">10—13</span></div>
               <span class="agenda-open-classes__mode">Ao vivo</span>
             </div>
-            <h3 class="agenda-open-classes__title">Provadores Compactos & Simulador de Prova</h3>
-            <p class="agenda-open-classes__time">05 a 08/10: 19h às 22h</p>
+            <h3 class="agenda-open-classes__title">Medidores de Vazão: Operação e Manutenção</h3>
+            <p class="agenda-open-classes__time">Formação aplicada para operação, diagnóstico e manutenção.</p>
+            <a class="agenda-open-classes__link" href="https://forms.gle/aUCPjLM9NR1mcokX8" target="_blank">Inscrição ↗</a>
+          </article>
+
+          <article class="agenda-open-classes__item">
+            <div class="agenda-open-classes__topline">
+              <div class="agenda-open-classes__date"><span class="agenda-open-classes__month">Outubro</span><span class="agenda-open-classes__day">05—08</span></div>
+              <span class="agenda-open-classes__mode">Ao vivo</span>
+            </div>
+            <h3 class="agenda-open-classes__title">Provadores Compactos & Simulação de Prova Offshore</h3>
+            <p class="agenda-open-classes__time">Treinamento prático com simulador de prova.</p>
             <a class="agenda-open-classes__link" href="https://docs.google.com/forms/d/e/1FAIpQLSclInBi6-cVGPcvJhOWSv-MOZ3xsY6Sr9WHeuIh3FFw7_GTSQ/viewform" target="_blank">Inscrição ↗</a>
           </article>
 
           <article class="agenda-open-classes__item">
             <div class="agenda-open-classes__topline">
-              <div class="agenda-open-classes__date">10 a 13/08</div>
+              <div class="agenda-open-classes__date"><span class="agenda-open-classes__month">Novembro</span><span class="agenda-open-classes__day">02—05</span></div>
               <span class="agenda-open-classes__mode">Ao vivo</span>
             </div>
-            <h3 class="agenda-open-classes__title">Medidores de Vazão: Operação e Manutenção</h3>
-            <p class="agenda-open-classes__time">18h30 às 22h</p>
-            <a class="agenda-open-classes__link" href="https://forms.gle/aUCPjLM9NR1mcokX8" target="_blank">Inscrição ↗</a>
+            <h3 class="agenda-open-classes__title">Medição de Gás: Placa de Orifício e Flare</h3>
+            <p class="agenda-open-classes__time">Medição aplicada a sistemas de gás e ultrassônicos de flare.</p>
+            <a class="agenda-open-classes__link" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
+          </article>
+
+          <article class="agenda-open-classes__item">
+            <div class="agenda-open-classes__topline">
+              <div class="agenda-open-classes__date"><span class="agenda-open-classes__month">Novembro</span><span class="agenda-open-classes__day">09—12 · 16—17</span></div>
+              <span class="agenda-open-classes__mode">Especializado</span>
+            </div>
+            <h3 class="agenda-open-classes__title">Processamento de Gás</h3>
+            <p class="agenda-open-classes__time">Treinamento especializado em processamento de gás.</p>
+            <a class="agenda-open-classes__link" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
+          </article>
+
+          <article class="agenda-open-classes__item">
+            <div class="agenda-open-classes__topline">
+              <div class="agenda-open-classes__date"><span class="agenda-open-classes__month">Novembro — Dezembro</span><span class="agenda-open-classes__day">30/11—03/12</span></div>
+              <span class="agenda-open-classes__mode">Ao vivo</span>
+            </div>
+            <h3 class="agenda-open-classes__title">Computadores de Vazão: O&amp;M</h3>
+            <p class="agenda-open-classes__time">Operação e manutenção de computadores de vazão.</p>
+            <a class="agenda-open-classes__link" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
           </article>
         </div>
       </div>
@@ -2989,7 +3091,7 @@
           <div class="highlight-content">
             <h2 class="highlight-title" style="color:#fff;">Mentoria Individual</h2>
             <p class="highlight-sub" style="color:rgba(255,255,255,.75);">
-              Acompanhamento direto com Júlio Dias para acelerar sua evolução. Diagnóstico da sua situação atual, plano personalizado e sessões focadas nos seus desafios reais de campo ou carreira.
+              Uma jornada personalizada para acelerar sua evolução profissional. Começamos com um diagnóstico do momento atual e construímos um plano objetivo, com sessões focadas nos seus desafios reais de campo ou de carreira.
             </p>
             <div class="highlight-date"
               style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);">
@@ -3011,156 +3113,9 @@
       </section>
     </section>
 
-    <!-- STACKED CARDS LEQUE (FAN) -->
-    <section class="stacked-cards-section">
-      <!-- TESTE: cabeçalho técnico para cursos por tecnologia -->
-      <div class="stacked-cards-heading">
-        <div>
-          <span>Por tecnologia</span>
-          <h2>Treinamentos técnicos para cada tipo de medidor.</h2>
-        </div>
-        <p>
-          Trilhas objetivas para aprofundar leitura, diagnóstico, instalação, operação e manutenção em sistemas de medição industrial.
-          Acesso às aulas pela plataforma Kiwify.
-        </p>
-      </div>
-      <div class="container stacked-cards-container">
-        <!-- CARD 1 -->
-        <article class="course-card">
-          <div class="course-image-wrapper">
-            <img src="turbina.png" alt="Turbina" />
-          </div>
-          <div class="course-info">
-            <span class="course-tag">Treinamento técnico</span>
-            <h2 class="course-title">Medidores Tipo Turbina</h2>
-            <p class="course-desc">
-              Fundamentos, instalação, requisitos de escoamento, interpretação de curva de calibração, fatores K, e
-              manutenção em FPSOs e skids.
-            </p>
-            <div class="course-commerce">
-              <span class="course-price-label">Investimento</span>
-              <strong class="course-price-value">R$ 97,00</strong>
-              <span class="course-platform">Acesso às aulas pela <strong>plataforma Kiwify</strong>.</span>
-            </div>
-            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
-          </div>
-        </article>
-
-        <!-- CARD 2 -->
-        <article class="course-card">
-          <div class="course-image-wrapper">
-            <img src="deslocamento-positivo.png" alt="Deslocamento Positivo" />
-          </div>
-          <div class="course-info">
-            <span class="course-tag">Aplicado à operação</span>
-            <h2 class="course-title">Tipo Deslocamento Positivo</h2>
-            <p class="course-desc">
-              Conhecimento aplicado em PD: princípios, óleo pesado, correções volumétricas e práticas de manutenção para
-              repetibilidade.
-            </p>
-            <div class="course-commerce">
-              <span class="course-price-label">Investimento</span>
-              <strong class="course-price-value">R$ 97,00</strong>
-              <span class="course-platform">Acesso às aulas pela <strong>plataforma Kiwify</strong>.</span>
-            </div>
-            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
-          </div>
-        </article>
-
-        <!-- CARD 3 -->
-        <article class="course-card">
-          <div class="course-image-wrapper">
-            <img src="coriolis.png" alt="Coriolis" />
-          </div>
-          <div class="course-info">
-            <span class="course-tag">Medição de massa</span>
-            <h2 class="course-title">Medidores Coriolis</h2>
-            <p class="course-desc">
-              Princípio de medição de massa, efeitos de processo, diagnósticos básicos e rotina de verificação para
-              confiança metrológica.
-            </p>
-            <div class="course-commerce">
-              <span class="course-price-label">Investimento</span>
-              <strong class="course-price-value">R$ 97,00</strong>
-              <span class="course-platform">Acesso às aulas pela <strong>plataforma Kiwify</strong>.</span>
-            </div>
-            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
-          </div>
-        </article>
-
-        <!-- CARD 4 -->
-        <article class="course-card">
-          <div class="course-image-wrapper">
-            <img src="flare.png" alt="Flare" />
-          </div>
-          <div class="course-info">
-            <span class="course-tag">Flare & queima</span>
-            <h2 class="course-title">Ultrassônicos de Flare</h2>
-            <p class="course-desc">
-              Foco em flare lines: princípio, leitura de diagnósticos, alarmes, confiabilidade em baixas vazões e
-              manutenção.
-            </p>
-            <div class="course-commerce">
-              <span class="course-price-label">Investimento</span>
-              <strong class="course-price-value">R$ 149,90</strong>
-              <span class="course-platform">Acesso às aulas pela <strong>plataforma Kiwify</strong>.</span>
-            </div>
-            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
-          </div>
-        </article>
-
-        <!-- CARD 5 -->
-        <article class="course-card">
-          <div class="course-image-wrapper">
-            <img src="ultrasonico.png" alt="Ultrassônicos" />
-          </div>
-          <div class="course-info">
-            <span class="course-tag">Linha principal</span>
-            <h2 class="course-title">Medidores Ultrassônicos</h2>
-            <p class="course-desc">
-              Conceitos de tempo de trânsito, perfil de escoamento, SNR e interpretação de telas para quem opera
-              sistemas por ultrassom.
-            </p>
-            <div class="course-commerce">
-              <span class="course-price-label">Investimento</span>
-              <strong class="course-price-value">R$ 149,90</strong>
-              <span class="course-platform">Acesso às aulas pela <strong>plataforma Kiwify</strong>.</span>
-            </div>
-            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
-          </div>
-        </article>
-
-        <!-- CARD 6 -->
-        <article class="course-card">
-          <div class="course-image-wrapper">
-            <img src="magnetico.png" alt="Medidor Magnético" />
-          </div>
-          <div class="course-info">
-            <span class="course-tag">Indução eletromagnética</span>
-            <h2 class="course-title">Medidores Magnéticos</h2>
-            <p class="course-desc">
-              Princípio de Faraday aplicado à vazão, requisitos de condutividade, instalação, configuração e diagnóstico de falhas em campo.
-            </p>
-            <div class="course-commerce">
-              <span class="course-price-label">Investimento</span>
-              <strong class="course-price-value">R$ 79,90</strong>
-              <span class="course-platform">Acesso às aulas pela <strong>plataforma Kiwify</strong>.</span>
-            </div>
-            <a class="btn-whatsapp" href="https://wa.me/5524998788760" target="_blank">Mais informações ↗</a>
-          </div>
-        </article>
-
-      </div>
-      <!-- TESTE: rodapé incorporado à seção por tecnologia -->
-      <div class="stacked-cards-legal">
-        <p>&copy; <span id="year"></span> FlowCore Solutions. Todos os direitos reservados.</p>
-        <p>Desenvolvido por quem vive a planta, não só o slide.</p>
-      </div>
-    </section>
   </main>
 
   <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
     window.addEventListener('scroll', () => {
       const header = document.getElementById('header');
       if (!header) return;
