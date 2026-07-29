@@ -1,5 +1,7 @@
 const publicCheckoutEndpoint =
   "https://aygqljoobkjccipsqebi.supabase.co/functions/v1/create-pagarme-public-membership-checkout";
+const publicSupabaseKey =
+  typeof FLOWCORE_SUPABASE_ANON_KEY !== "undefined" ? FLOWCORE_SUPABASE_ANON_KEY : "";
 
 const checkoutButtons = [...document.querySelectorAll("[data-checkout-plan]")];
 const checkoutFeedback = document.querySelector("#checkoutFeedback");
@@ -20,10 +22,16 @@ checkoutButtons.forEach((button) => {
     button.textContent = "Abrindo checkout...";
 
     try {
+      if (!publicSupabaseKey) {
+        throw new Error("A configuração pública do checkout não foi carregada.");
+      }
+
       const response = await fetch(publicCheckoutEndpoint, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          apikey: publicSupabaseKey,
+          Authorization: `Bearer ${publicSupabaseKey}`
         },
         body: JSON.stringify({ planCode })
       });
