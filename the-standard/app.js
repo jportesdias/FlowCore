@@ -9,6 +9,41 @@ const institutionalVideoUrl = "https://player-vz-b9ef5310-065.tv.pandavideo.com.
 const materialCompletionPrefix = "flowcore-material-completion";
 let pendingOtpEmail = "";
 
+const defaultMembershipPlans = [
+  {
+    code: "mensal",
+    name: "Plano Mensal",
+    description: "Acesso aos cursos incluídos no plano e IA proprietária com 10 utilizações por ciclo mensal.",
+    billing_mode: "recurring",
+    amount: 69.90,
+    currency: "BRL",
+    interval_name: "month",
+    interval_count: 1,
+    access_days: 31,
+    initial_credits: 0,
+    max_installments: 1,
+    access_tag_id: "pratileira",
+    status: "active",
+    sort_order: 10
+  },
+  {
+    code: "anual",
+    name: "Plano Anual",
+    description: "Acesso por 12 meses, IA ilimitada, um novo curso gravado por mês e 3 créditos para cursos ao vivo.",
+    billing_mode: "one_time",
+    amount: 649.90,
+    currency: "BRL",
+    interval_name: null,
+    interval_count: null,
+    access_days: 365,
+    initial_credits: 3,
+    max_installments: 12,
+    access_tag_id: "pratileira",
+    status: "active",
+    sort_order: 20
+  }
+];
+
 let state = {
   isAuthenticated: false,
   aluno: null,
@@ -22,6 +57,10 @@ let state = {
   biblioteca: MOCK.biblioteca,
   financeiro: { lancamentos: [] },
   catalogoCursos: MOCK.catalogoCursos,
+  membershipPlans: defaultMembershipPlans,
+  membershipOrders: [],
+  creditBalance: 0,
+  membershipSelection: "",
   cart: {
     items: [],
     status: "",
@@ -318,7 +357,10 @@ async function loadStudentState() {
     }))
   };
 
-  await loadCommerceCatalog();
+  await Promise.all([
+    loadCommerceCatalog(),
+    loadMembershipState(student.id)
+  ]);
 }
 
 async function loadCommerceCatalog() {
@@ -361,6 +403,40 @@ async function loadCommerceCatalog() {
     });
   } catch (error) {
     console.warn("Catalogo comercial indisponivel; usando fallback local.", error);
+  }
+}
+
+async function loadMembershipState(studentId) {
+  try {
+    const [plansResult, ordersResult, creditsResult] = await Promise.all([
+      client
+        .from("commerce_membership_plans")
+        .select("code,name,description,billing_mode,amount,currency,interval_name,interval_count,access_days,initial_credits,max_installments,access_tag_id,status,sort_order")
+        .eq("status", "active")
+        .order("sort_order", { ascending: true }),
+      client
+        .from("membership_orders")
+        .select("id,plan_code,status,amount,currency,starts_at,valid_until,gateway_status,created_at")
+        .eq("student_id", studentId)
+        .order("created_at", { ascending: false }),
+      client
+        .from("student_credit_ledger")
+        .select("amount")
+        .eq("student_id", studentId)
+    ]);
+
+    state.membershipPlans = plansResult.error || !plansResult.data?.length
+      ? defaultMembershipPlans
+      : plansResult.data;
+    state.membershipOrders = ordersResult.error ? [] : ordersResult.data || [];
+    state.creditBalance = creditsResult.error
+      ? 0
+      : (creditsResult.data || []).reduce((total, entry) => total + Number(entry.amount || 0), 0);
+  } catch (error) {
+    console.warn("Planos de acesso indisponiveis.", error);
+    state.membershipPlans = defaultMembershipPlans;
+    state.membershipOrders = [];
+    state.creditBalance = 0;
   }
 }
 
@@ -446,7 +522,7 @@ function renderRoute() {
   if (view === "curso" && id) renderCourse(id);
   else if (view === "biblioteca") renderLibrary();
   else if (view === "video-institucional") renderInstitutionalVideoCleanPage();
-  else if (view === "especialista") renderUnderConstruction("FlowCore Specialist");
+  else if (view === "especialista") renderSpecialistV2();
   else if (view === "flowcore-tools") renderFlowCoreTools(id);
   else if (view === "financeiro") renderUnderConstruction("Financeiro");
   else if (view === "comprar") renderStore();
@@ -983,7 +1059,7 @@ function renderCredits() {
       <article class="credit-card highlight">
         <span>Créditos conquistados</span>
         <strong>${summary.credits}</strong>
-        <p>1 crédito a cada 4 meses com assinatura ativa.</p>
+        <p>Créditos disponíveis para participar dos cursos da grade ao vivo.</p>
       </article>
 
       <article class="credit-card">
@@ -1000,7 +1076,7 @@ function renderCredits() {
         ${renderLevelStep("Prata", "5 treinamentos feitos", summary.level === "Prata")}
         ${renderLevelStep("Ouro", "Mais de 5 treinamentos feitos", summary.level === "Ouro")}
       </div>
-      <p>Os créditos continuam sendo acumulados automaticamente a cada ciclo de 4 meses enquanto a assinatura estiver ativa.</p>
+      <p>O Plano Anual concede 3 créditos após a confirmação do pagamento. Uso e ajustes ficam registrados no histórico da plataforma.</p>
     </section>
   `;
 }
@@ -2316,6 +2392,14 @@ function renderSpecialistV2() {
   const courseNames = cursos.length
     ? cursos.map(curso => curso.titulo).join(", ")
     : "Nenhum curso liberado";
+  const activeMembership =
+    state.membershipOrders.find(order => order.plan_code === "anual" && ["active", "paid"].includes(order.status)) ||
+    state.membershipOrders.find(order => order.plan_code === "mensal" && ["active", "paid"].includes(order.status));
+  const aiPlanLabel = activeMembership?.plan_code === "anual"
+    ? "Plano Anual · uso ilimitado"
+    : activeMembership?.plan_code === "mensal"
+      ? "Plano Mensal · 10 utilizações por ciclo"
+      : "Disponível nos Planos Mensal e Anual";
 
   app.innerHTML = `
     <section class="page-header">
@@ -2330,6 +2414,7 @@ function renderSpecialistV2() {
           <span class="type-chip">Contexto ativo</span>
           <h2>Cursos considerados</h2>
           <p>${escapeHtml(courseNames)}</p>
+          <p><strong>${escapeHtml(aiPlanLabel)}</strong></p>
         </div>
         <div class="specialist-suggestions">
           <button type="button" data-specialist-question="Explique o conceito principal da aula em linguagem simples.">Explicar conceito</button>
@@ -2377,9 +2462,15 @@ function renderSpecialistV2() {
 
     try {
       const result = await askFlowCoreSpecialist(question);
+      const usageMessage = result.aiUsage?.unlimited
+        ? "IA ilimitada no Plano Anual."
+        : Number.isFinite(Number(result.aiUsage?.remaining))
+          ? `${Number(result.aiUsage.remaining)} de ${Number(result.aiUsage.limit || 10)} utilizações disponíveis neste ciclo.`
+          : "";
       answer.innerHTML = `
         <strong>FlowCore Specialist</strong>
         <p>${formatAssistantText(result.answer || "Não recebi uma resposta da IA.")}</p>
+        ${usageMessage ? `<small>${escapeHtml(usageMessage)}</small>` : ""}
       `;
     } catch (error) {
       answer.classList.add("is-error");
@@ -2537,36 +2628,61 @@ function renderStore() {
     }))
     .filter(item => item.course);
   const total = cartItems.reduce((sum, item) => sum + Number(item.course.valor || 0) * item.quantity, 0);
+  const selectedPlan = state.membershipPlans.find(plan => plan.code === state.membershipSelection);
 
   app.innerHTML = `
     <section class="page-header">
       <p class="eyebrow">FlowCore Academy</p>
-      <h1>Comprar cursos</h1>
-      <p>Escolha seus treinamentos e conclua a compra com segurança por cartão de crédito ou Pix.</p>
+      <h1>Planos e cursos</h1>
+      <p>Escolha um plano de formação ou compre treinamentos individualmente com checkout seguro Pagar.me.</p>
     </section>
+    ${state.membershipPlans.length
+      ? `<section class="membership-section" aria-labelledby="membershipTitle">
+           <div class="section-heading">
+             <div>
+               <p class="eyebrow">Formação continuada</p>
+               <h2 id="membershipTitle">Escolha seu plano</h2>
+             </div>
+             <p>Os cursos incluídos em cada plano são liberados após a confirmação do pagamento.</p>
+           </div>
+           <div class="membership-plan-grid">
+             ${state.membershipPlans.map(renderMembershipPlanCard).join("")}
+           </div>
+         </section>`
+      : ""}
     <section class="commerce-shell">
-      <div class="catalog-grid" aria-label="Catálogo de novos cursos">
-        ${catalog.map(curso => renderCommerceCatalogCard(curso, currentIds.has(curso.id))).join("")}
+      <div>
+        <div class="section-heading compact">
+          <div>
+            <p class="eyebrow">Compra avulsa</p>
+            <h2>Cursos individuais</h2>
+          </div>
+        </div>
+        <div class="catalog-grid" aria-label="Catálogo de novos cursos">
+          ${catalog.map(curso => renderCommerceCatalogCard(curso, currentIds.has(curso.id))).join("")}
+        </div>
       </div>
       <aside class="checkout-panel" aria-label="Resumo da compra">
-        <div>
-          <p class="eyebrow">Checkout seguro</p>
-          <h2>Seu carrinho</h2>
-        </div>
-        ${cartItems.length
-          ? `<div class="cart-items">${cartItems.map(renderCartItem).join("")}</div>
-             <div class="checkout-total"><span>Total</span><strong>${formatCurrency(total)}</strong></div>
-             <form class="checkout-form" id="checkoutForm">
-               <label>CPF ou CNPJ
-                 <input name="document" inputmode="numeric" autocomplete="off" required minlength="11" placeholder="Somente números" />
-               </label>
-               <label>Telefone com DDD
-                 <input name="phone" type="tel" inputmode="tel" autocomplete="tel" required minlength="10" placeholder="(24) 99999-9999" />
-               </label>
-               <p class="manual-note">Pagamento disponível por cartão de crédito ou Pix.</p>
-               <button class="primary-button" type="submit" ${state.cart.status ? "disabled" : ""}>Ir para o pagamento</button>
-             </form>`
-          : `<p>Seu carrinho está vazio. Escolha um curso para continuar.</p>`}
+        ${selectedPlan
+          ? renderMembershipCheckout(selectedPlan)
+          : `<div>
+               <p class="eyebrow">Checkout seguro</p>
+               <h2>Seu carrinho</h2>
+             </div>
+             ${cartItems.length
+               ? `<div class="cart-items">${cartItems.map(renderCartItem).join("")}</div>
+                  <div class="checkout-total"><span>Total</span><strong>${formatCurrency(total)}</strong></div>
+                  <form class="checkout-form" id="checkoutForm">
+                    <label>CPF ou CNPJ
+                      <input name="document" inputmode="numeric" autocomplete="off" required minlength="11" placeholder="Somente números" />
+                    </label>
+                    <label>Telefone com DDD
+                      <input name="phone" type="tel" inputmode="tel" autocomplete="tel" required minlength="10" placeholder="(24) 99999-9999" />
+                    </label>
+                    <p class="manual-note">Pagamento disponível por cartão de crédito ou Pix.</p>
+                    <button class="primary-button" type="submit" ${state.cart.status ? "disabled" : ""}>Ir para o pagamento</button>
+                  </form>`
+               : `<p>Seu carrinho está vazio. Escolha um plano ou curso para continuar.</p>`}`}
         ${state.cart.status ? `<p class="checkout-status" role="status">${escapeHtml(state.cart.status)}</p>` : ""}
         ${state.cart.error ? `<p class="checkout-status is-error" role="alert">${escapeHtml(state.cart.error)}</p>` : ""}
       </aside>
@@ -2574,6 +2690,72 @@ function renderStore() {
   `;
 
   bindStoreActions();
+}
+
+function renderMembershipPlanCard(plan) {
+  const recurring = plan.billing_mode === "recurring";
+  const activeOrder = state.membershipOrders.find(order =>
+    order.plan_code === plan.code &&
+    ["active", "paid"].includes(order.status) &&
+    (!order.valid_until || order.valid_until >= new Date().toISOString().slice(0, 10))
+  );
+  const detail = recurring
+    ? "Cobrança mensal automática no cartão"
+    : `Compra única em até ${Number(plan.max_installments || 12)}x sem juros`;
+
+  return `
+    <article class="membership-plan-card ${plan.code === "anual" ? "is-featured" : ""}">
+      ${plan.code === "anual" ? `<span class="membership-badge">Melhor condição</span>` : ""}
+      <p class="eyebrow">${recurring ? "Assinatura" : "Compra anual"}</p>
+      <h3>${escapeHtml(plan.name)}</h3>
+      <p>${escapeHtml(plan.description)}</p>
+      <div class="membership-price">
+        <strong>${formatCurrency(Number(plan.amount || 0))}</strong>
+        <span>${recurring ? "/mês" : "/ano"}</span>
+      </div>
+      <ul>
+        <li>Acesso aos cursos incluídos no plano</li>
+        <li>${recurring ? "IA proprietária: 10 utilizações por ciclo mensal" : "IA proprietária ilimitada"}</li>
+        ${plan.code === "anual"
+          ? `<li>Um novo curso gravado liberado a cada mês</li>`
+          : ""}
+        ${Number(plan.initial_credits || 0) > 0
+          ? `<li>${Number(plan.initial_credits)} créditos para cursos ao vivo</li>`
+          : ""}
+        <li>${escapeHtml(detail)}</li>
+      </ul>
+      ${activeOrder
+        ? `<span class="membership-active">Plano vigente até ${formatDate(activeOrder.valid_until)}</span>`
+        : `<button class="primary-button" type="button" data-membership-select="${escapeAttribute(plan.code)}">Escolher ${escapeHtml(plan.name)}</button>`}
+    </article>
+  `;
+}
+
+function renderMembershipCheckout(plan) {
+  const recurring = plan.billing_mode === "recurring";
+  return `
+    <div>
+      <p class="eyebrow">${recurring ? "Assinatura mensal" : "Compra anual"}</p>
+      <h2>${escapeHtml(plan.name)}</h2>
+    </div>
+    <div class="selected-membership-summary">
+      <strong>${formatCurrency(Number(plan.amount || 0))}</strong>
+      <span>${recurring ? "cobrado mensalmente" : `em até ${Number(plan.max_installments || 12)}x sem juros`}</span>
+    </div>
+    <form class="checkout-form" id="membershipCheckoutForm" data-plan-code="${escapeAttribute(plan.code)}">
+      <label>CPF ou CNPJ
+        <input name="document" inputmode="numeric" autocomplete="off" required minlength="11" placeholder="Somente números" />
+      </label>
+      <label>Telefone com DDD
+        <input name="phone" type="tel" inputmode="tel" autocomplete="tel" required minlength="10" placeholder="(24) 99999-9999" />
+      </label>
+      <p class="manual-note">${recurring
+        ? "A assinatura recorrente é paga por cartão de crédito."
+        : "Pagamento por cartão de crédito ou Pix. Parcelamento sem juros disponível no cartão."}</p>
+      <button class="primary-button" type="submit" ${state.cart.status ? "disabled" : ""}>Ir para o pagamento</button>
+      <button class="text-link" type="button" data-membership-cancel>Voltar ao carrinho</button>
+    </form>
+  `;
 }
 
 function renderCommerceCatalogCard(curso, hasAccess = false) {
@@ -2631,6 +2813,23 @@ function bindStoreActions() {
   });
 
   document.querySelector("#checkoutForm")?.addEventListener("submit", createPagarmeCheckout);
+  document.querySelector("#membershipCheckoutForm")?.addEventListener("submit", createPagarmeMembershipCheckout);
+
+  document.querySelectorAll("[data-membership-select]").forEach(button => {
+    button.addEventListener("click", () => {
+      state.membershipSelection = button.dataset.membershipSelect || "";
+      state.cart.status = "";
+      state.cart.error = "";
+      renderStore();
+    });
+  });
+
+  document.querySelector("[data-membership-cancel]")?.addEventListener("click", () => {
+    state.membershipSelection = "";
+    state.cart.status = "";
+    state.cart.error = "";
+    renderStore();
+  });
 }
 
 function addOfferToCart(offerId) {
@@ -2693,6 +2892,52 @@ async function createPagarmeCheckout(event) {
   } catch (error) {
     state.cart.status = "";
     state.cart.error = error.message || "Erro ao iniciar checkout.";
+    renderStore();
+  }
+}
+
+async function createPagarmeMembershipCheckout(event) {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const planCode = String(form.dataset.planCode || "");
+  const formData = Object.fromEntries(new FormData(form).entries());
+  state.cart.status = "Criando checkout seguro...";
+  state.cart.error = "";
+  renderStore();
+
+  try {
+    const { data: sessionData } = await client.auth.getSession();
+    const token = sessionData.session?.access_token;
+    if (!token) throw new Error("Sessao expirada. Entre novamente.");
+
+    const response = await fetch(`${FLOWCORE_SUPABASE_URL}/functions/v1/create-pagarme-membership-checkout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        planCode,
+        customer: {
+          document: String(formData.document || "").replace(/\D/g, ""),
+          phone: String(formData.phone || "").replace(/\D/g, "")
+        },
+        successUrl: `${window.location.origin}${window.location.pathname}#creditos`,
+        cancelUrl: `${window.location.origin}${window.location.pathname}#comprar`
+      })
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error || "Nao foi possivel criar o checkout do plano.");
+    if (!payload.paymentUrl) throw new Error("O Pagar.me nao retornou a URL de pagamento.");
+
+    state.cart.status = "Checkout criado. Redirecionando para pagamento...";
+    state.cart.error = "";
+    window.location.href = payload.paymentUrl;
+  } catch (error) {
+    state.cart.status = "";
+    state.cart.error = error.message || "Erro ao iniciar checkout do plano.";
     renderStore();
   }
 }
@@ -2769,7 +3014,11 @@ function getCreditSummary() {
   const completedTrainings = state.cursos.filter(curso => Number(curso.progresso || 0) >= 100).length;
   const startDate = getSubscriptionStartDate();
   const active = hasActiveSubscription();
-  const credits = active && startDate ? Math.floor(monthsBetween(startDate, new Date()) / 4) : 0;
+  const credits = Number.isFinite(Number(state.creditBalance))
+    ? Number(state.creditBalance)
+    : active && startDate
+      ? Math.floor(monthsBetween(startDate, new Date()) / 4)
+      : 0;
 
   return {
     active,
