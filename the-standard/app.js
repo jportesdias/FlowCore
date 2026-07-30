@@ -111,6 +111,11 @@ async function boot() {
     return;
   }
 
+  const requestedPlan = new URLSearchParams(window.location.search).get("plano");
+  if (["mensal", "anual"].includes(requestedPlan)) {
+    state.membershipSelection = requestedPlan;
+  }
+
   const { data } = await client.auth.getSession();
   if (data.session) await openStudentSession();
   else renderLogin();
@@ -2457,7 +2462,7 @@ function renderSpecialistV2() {
 
     answer.style.display = "block";
     answer.classList.remove("is-error");
-    answer.innerHTML = `<strong>FlowCore Specialist</strong><p>Consultando a IA com o contexto dos seus cursos...</p>`;
+    answer.innerHTML = `<strong>FlowCore Specialist</strong><p>FlowCore Specialist metrificando e diminuindo as incertezas...</p>`;
     if (submitButton) submitButton.disabled = true;
 
     try {
