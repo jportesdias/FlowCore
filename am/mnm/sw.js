@@ -1,5 +1,19 @@
-const CACHE = 'mnm-voice-v4';
-const FILES = ['./', './index.html', './styles.css', './compact-records.css', './app.js', './manifest.webmanifest', './assets/logo-mnm.png', './assets/app-icon.png'];
+const CACHE = 'mnm-voice-v7';
+const FILES = [
+  './',
+  './index.html',
+  './styles.css',
+  './compact-records.css',
+  './app.js',
+  './manifest.webmanifest',
+  './assets/logo-mnm.png',
+  './assets/favicon-32.png',
+  './assets/apple-touch-icon.png',
+  './assets/icon-192.png',
+  './assets/icon-512.png',
+  './assets/icon-maskable-192.png',
+  './assets/icon-maskable-512.png'
+];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)));
   self.skipWaiting();
