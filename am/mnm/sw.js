@@ -1,5 +1,5 @@
-const CACHE = 'mnm-voice-v3';
-const FILES = ['./', './index.html', './styles.css', './compact-records.css', './app.js', './manifest.webmanifest', './assets/logo-mnm.png'];
+const CACHE = 'mnm-voice-v4';
+const FILES = ['./', './index.html', './styles.css', './compact-records.css', './app.js', './manifest.webmanifest', './assets/logo-mnm.png', './assets/app-icon.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)));
   self.skipWaiting();
