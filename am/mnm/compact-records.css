@@ -1,0 +1,23 @@
+.content.stack {
+  align-content: start;
+  grid-auto-rows: max-content;
+}
+
+.content.stack > * {
+  align-self: start;
+}
+
+.record-row {
+  width: 100%;
+  padding-left: 12%;
+}
+
+.record-card {
+  width: clamp(260px, 72%, 340px);
+  padding: 13px 14px;
+}
+
+@media (max-width: 360px) {
+  .record-row { padding-left: 6%; }
+  .record-card { width: min(82%, 290px); }
+}
