@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Responda à pesquisa FlowCore Academy e garanta condições exclusivas nos treinamentos, além de 7% de desconto em qualquer treinamento em 2027.">
+  <title>Sua participação vale dinheiro | FlowCore Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --navy:#09253f; --navy-2:#103b60; --orange:#ef6b22; --orange-2:#ff8a3d; --cream:#f6f2eb; --ink:#13283a; --muted:#637486; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    html { background:var(--navy); }
+    body { min-height:100vh; font-family:Manrope,Arial,sans-serif; color:white; background:radial-gradient(circle at 8% 8%,rgba(69,135,178,.35),transparent 29%),radial-gradient(circle at 92% 92%,rgba(239,107,34,.18),transparent 32%),linear-gradient(135deg,#071c30 0%,#0c3151 58%,#09253f 100%); overflow-x:hidden; }
+    body:before { content:""; position:fixed; inset:0; opacity:.055; pointer-events:none; background-image:linear-gradient(rgba(255,255,255,.8) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.8) 1px,transparent 1px); background-size:48px 48px; mask-image:linear-gradient(to bottom,black,transparent 85%); }
+    .page { position:relative; min-height:100vh; max-width:1480px; margin:auto; padding:clamp(22px,3vh,38px) clamp(22px,4vw,68px); display:grid; grid-template-rows:auto 1fr auto; gap:clamp(18px,2.5vh,28px); }
+    header { display:flex; align-items:center; justify-content:space-between; gap:24px; }
+    .logo { width:clamp(440px,36vw,620px); height:128px; object-fit:contain; object-position:left center; filter:drop-shadow(0 8px 18px rgba(0,0,0,.2)); }
+    .year-benefit { display:flex; align-items:center; gap:12px; padding:9px 16px 9px 10px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.08); border-radius:999px; backdrop-filter:blur(12px); font-size:clamp(.75rem,1vw,.9rem); }
+    .year-benefit strong { display:grid; place-items:center; width:42px; height:42px; border-radius:50%; background:var(--orange); font-family:Manrope,sans-serif; font-size:1.05rem; box-shadow:0 7px 18px rgba(239,107,34,.35); }
+    .year-benefit span { max-width:240px; line-height:1.25; }
+    main { display:grid; grid-template-columns:minmax(290px,.78fr) minmax(640px,1.5fr); align-items:center; gap:clamp(28px,4vw,72px); }
+    .intro { align-self:center; }
+    .eyebrow { display:inline-flex; align-items:center; gap:9px; margin-bottom:16px; color:#ffb27e; text-transform:uppercase; letter-spacing:.16em; font-size:.72rem; font-weight:800; }
+    .eyebrow:before { content:""; width:28px; height:2px; background:var(--orange); }
+    h1 { max-width:600px; font-family:'DM Serif Display',Georgia,serif; font-weight:400; font-size:clamp(3rem,4.7vw,5.45rem); line-height:.9; letter-spacing:-.025em; text-wrap:balance; }
+    h1 em { display:block; color:var(--orange-2); font-style:normal; }
+    .lead { max-width:500px; margin:20px 0 23px; color:#cad8e3; font-size:clamp(.96rem,1.15vw,1.1rem); line-height:1.55; }
+    .survey-button { display:inline-flex; align-items:center; justify-content:center; gap:12px; min-height:54px; padding:0 24px; color:white; background:linear-gradient(135deg,var(--orange),var(--orange-2)); border-radius:12px; font-family:Manrope,sans-serif; font-weight:700; box-shadow:0 14px 35px rgba(239,107,34,.3); transition:.2s ease; }
+    .survey-button:hover { transform:translateY(-2px); box-shadow:0 18px 40px rgba(239,107,34,.42); }
+    .survey-button:after { content:"→"; font-size:1.35rem; }
+    .micro { margin-top:10px; color:#99adbd; font-size:.75rem; }
+    .offers { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .card { overflow:hidden; display:grid; grid-template-rows:auto 1fr; color:var(--ink); background:var(--cream); border-radius:20px; box-shadow:0 22px 65px rgba(0,0,0,.28); transition:.25s ease; }
+    .card:hover { transform:translateY(-4px); box-shadow:0 28px 72px rgba(0,0,0,.35); }
+    .visual { position:relative; aspect-ratio:1 / 1; overflow:hidden; background:linear-gradient(145deg,#102f49,#071d30); }
+    .visual img { width:100%; height:100%; padding:8px; object-fit:contain; object-position:center; opacity:.92; transition:.4s ease; }
+    .card:hover .visual img { transform:scale(1.035); }
+    .visual:after { content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(7,26,42,.82),transparent 72%); }
+    .tag { position:absolute; z-index:2; left:16px; bottom:14px; padding:6px 10px; color:white; background:rgba(7,26,42,.72); border:1px solid rgba(255,255,255,.22); border-radius:999px; backdrop-filter:blur(8px); font-size:.7rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+    .card-body { padding:16px 18px 18px; display:flex; flex-direction:column; }
+    .date { color:var(--orange); text-transform:uppercase; font-size:.72rem; font-weight:800; letter-spacing:.1em; }
+    h2 { min-height:58px; margin:6px 0 8px; font-family:'DM Serif Display',Georgia,serif; font-weight:400; font-size:clamp(1.32rem,1.65vw,1.6rem); line-height:1.03; letter-spacing:-.01em; }
+    .schedule { min-height:34px; color:var(--muted); font-size:.78rem; line-height:1.35; }
+    .price { display:flex; align-items:end; gap:7px; margin:11px 0 3px; font-family:Manrope,sans-serif; }
+    .price strong { color:var(--navy-2); font-size:2rem; line-height:.9; letter-spacing:-.04em; }
+    .price span { color:var(--muted); font-size:.75rem; }
+    .installments { color:var(--muted); font-size:.78rem; }
+    .exclusive { display:flex; align-items:center; gap:7px; margin:9px 0 10px; color:#b3420c; font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.035em; }
+    .exclusive:before { content:""; width:7px; height:7px; flex:0 0 auto; border-radius:50%; background:var(--orange); box-shadow:0 0 0 4px rgba(239,107,34,.14); }
+    .card-link { margin-top:auto; display:flex; justify-content:space-between; align-items:center; padding:11px 14px; border-radius:10px; color:white; background:var(--navy); font-family:Manrope,sans-serif; font-size:.82rem; font-weight:700; transition:.2s ease; }
+    .card-link:hover { background:var(--orange); }
+    .card-link span { font-size:1.15rem; }
+    footer { display:flex; align-items:center; justify-content:space-between; gap:20px; color:#91a7b8; font-size:.7rem; letter-spacing:.03em; }
+    footer strong { color:#cbd7e0; }
+    a { text-decoration:none; }
+    a:focus-visible { outline:3px solid #ffd0b1; outline-offset:4px; }
+    @media (max-width:1060px) { body { overflow:auto; } .page { min-height:auto; } main { grid-template-columns:1fr; } .intro { text-align:center; } .eyebrow { justify-content:center; } h1,.lead { margin-left:auto; margin-right:auto; } .offers { max-width:760px; width:100%; margin:auto; } }
+    @media (max-width:660px) { .page { padding:18px 15px 24px; } header { align-items:center; flex-wrap:wrap; } .year-benefit { max-width:220px; padding:7px 10px 7px 7px; margin-left:auto; } .year-benefit strong { width:36px; height:36px; } .logo { width:min(350px,100%); height:104px; } h1 { font-size:3rem; } .lead { margin:15px auto 18px; } .offers { grid-template-columns:1fr; } h2 { min-height:0; } footer { flex-direction:column; text-align:center; } }
+    @media (max-height:840px) and (min-width:1061px) { .page { padding-top:14px; padding-bottom:12px; gap:10px; } .logo { width:480px; height:96px; } .year-benefit strong { width:36px; height:36px; } .offers { gap:13px; } .card-body { padding:12px 16px 14px; } h2 { min-height:48px; font-size:1.22rem; margin:4px 0 6px; } .schedule { min-height:30px; } .price { margin-top:7px; } .exclusive { margin:6px 0 8px; } .card-link { padding:9px 12px; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <img class="logo" src="logo-academy_alpha.png" alt="FlowCore Academy">
+      <div class="year-benefit"><strong>7%</strong><span>de desconto em <b>qualquer treinamento em 2027</b></span></div>
+    </header>
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Pesquisa FlowCore Academy</p>
+        <h1 id="page-title">Sua participação <em>vale dinheiro.</em></h1>
+        <p class="lead">Conte o que você espera dos nossos próximos treinamentos e libere condições que preparamos exclusivamente para quem participa.</p>
+        <a class="survey-button" href="https://forms.gle/Z7MfAYUH6qNm6gZd8" target="_blank" rel="noopener">Responder à pesquisa</a>
+        <p class="micro">Leva poucos minutos. Sua opinião direciona nossa agenda.</p>
+      </section>
+      <section class="offers" aria-label="Ofertas exclusivas de treinamento">
+        <article class="card">
+          <div class="visual"><img src="medidores-de-vazao.png" alt="Instrumentação para medição de vazão"><span class="tag">Ao vivo e on-line</span></div>
+          <div class="card-body">
+            <p class="date">10 a 13 de agosto</p>
+            <h2>Medidores de Vazão &amp; Operação</h2>
+            <p class="schedule">Duas opções de horário<br><strong>15h às 18h</strong> ou <strong>19h às 22h</strong></p>
+            <p class="price"><strong>R$ 410</strong><span>no Pix</span></p>
+            <p class="installments">ou R$ 500 em 3x sem juros</p>
+            <p class="exclusive">Preço exclusivo somente neste link</p>
+            <a class="card-link" href="https://forms.gle/pxDf6qyX7LKKpENB7" target="_blank" rel="noopener">Quero esta condição <span>→</span></a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="visual"><img src="provadores-compacto.png" alt="Provador compacto em ambiente industrial"><span class="tag">Prática com simulação</span></div>
+          <div class="card-body">
+            <p class="date">02 a 08 de outubro</p>
+            <h2>Provadores Compactos &amp; Simulação de Calibração Offshore</h2>
+            <p class="schedule">Treinamento técnico aplicado<br><strong>com simulação de calibração</strong></p>
+            <p class="price"><strong>R$ 490</strong><span>no Pix</span></p>
+            <p class="installments">ou R$ 600 em 3x sem juros</p>
+            <p class="exclusive">Preço exclusivo somente neste link</p>
+            <a class="card-link" href="https://forms.gle/MfiPSj6ZrfeWdN72A" target="_blank" rel="noopener">Quero esta condição <span>→</span></a>
+          </div>
+        </article>
+      </section>
+    </main>
+    <footer><span><strong>FlowCore Academy</strong> · Conhecimento aplicado à medição</span><span>Condições especiais vinculadas aos formulários desta página.</span></footer>
+  </div>
+</body>
+</html>
