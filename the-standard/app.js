@@ -101,6 +101,14 @@ const supplementalMaterialsByCourse = {
       titulo: "Exercícios de Cálculo",
       descricao: "Lista de exercícios de cálculo para prática do curso de Provadores Compacto.",
       url: "https://drive.google.com/file/d/11t6bbrvsbaCLO1oElwBClw8sXBLXX8BX/view?usp=drive_link"
+    },
+    {
+      id: "provadores-ihm-metering",
+      tipo: "simulador",
+      formato: "web",
+      titulo: "IHM Metering",
+      descricao: "Interface de simulação para a prática do curso de Provadores Compacto.",
+      url: "https://flowcoresolutions.com.br/ihm-metering.html"
     }
   ]
 };
