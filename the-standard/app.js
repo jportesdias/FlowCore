@@ -790,8 +790,8 @@ function renderCourseVideoStation(curso, videos) {
           ${activeVideo?.url && activeVideo.url !== "#" ? renderCourseVideoFrame(activeVideo) : `
             <div class="video-placeholder compact">
               <span>Player</span>
-              <strong>Fonte do vídeo pendente</strong>
-              <small>O backend definirá a URL segura do vídeo.</small>
+              <strong>Em breve</strong>
+              <small>Esta aula será liberada em breve.</small>
             </div>
           `}
         </div>
@@ -849,7 +849,7 @@ function bindCoursePlaylist(curso) {
       if (frame) {
         frame.innerHTML = video.url && video.url !== "#"
           ? renderCourseVideoFrame(video)
-          : `<div class="video-placeholder compact"><span>Player</span><strong>Fonte do vídeo pendente</strong><small>O backend definirá a URL segura do vídeo.</small></div>`;
+          : `<div class="video-placeholder compact"><span>Player</span><strong>Em breve</strong><small>Esta aula será liberada em breve.</small></div>`;
       }
       if (title) title.textContent = video.titulo;
       if (description) description.textContent = video.descricao || video.duracao || "Aula técnica da trilha.";

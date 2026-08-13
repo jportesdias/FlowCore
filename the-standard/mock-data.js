@@ -2,9 +2,9 @@
 // SUPABASE: manter o formato de resposta abaixo para evitar refatoracao estrutural do frontend.
 const MOCK = {
   aluno: {
-    id: "stu_celso_graciano",
-    nome: "Celso Graciano de Almeida Junior",
-    email: "celsoalmeidajunior@gmail.com"
+    id: "stu_demo",
+    nome: "Aluno FlowCore",
+    email: "aluno@exemplo.com"
   },
   // SUPABASE: espelha futura consulta em library_collections + library_items por plano/acesso do aluno.
   biblioteca: {
@@ -185,7 +185,11 @@ const MOCK = {
       materiais: [
         { id: "m8", tipo: "documento", formato: "pdf", titulo: "Apostila completa, 5 módulos", url: "#" },
         { id: "m9", tipo: "documento", formato: "pdf", titulo: "Ementa do curso", url: "#" },
-        { id: "m10", tipo: "video", titulo: "Aula introdutória", url: "#", duracao: "15:05" },
+        { id: "medidores-aula-1", tipo: "video", titulo: "Aula 1", descricao: "Fundamentos dos medidores de vazão, princípios de medição e aplicações na rotina operacional.", url: "https://player-vz-b9ef5310-065.tv.pandavideo.com.br/embed/?v=54c5db39-f085-4621-abdb-9ec4aff1bae5", duracao: "Vídeo liberado" },
+        { id: "medidores-aula-2-parte-1", tipo: "video", titulo: "Aula 2 - Parte 1", descricao: "Em breve", url: "#", duracao: "Em breve" },
+        { id: "medidores-aula-2-parte-2", tipo: "video", titulo: "Aula 2 - Parte 2", descricao: "Em breve", url: "#", duracao: "Em breve" },
+        { id: "medidores-aula-3", tipo: "video", titulo: "Aula 3", descricao: "Em breve", url: "#", duracao: "Em breve" },
+        { id: "medidores-aula-4", tipo: "video", titulo: "Aula 4", descricao: "Em breve", url: "#", duracao: "Em breve" },
         { id: "m11", tipo: "certificado", formato: "pdf", titulo: "Certificado de conclusão", url: "../relatorio-certificacao-exemplo.html", emitido: true }
       ]
     }
