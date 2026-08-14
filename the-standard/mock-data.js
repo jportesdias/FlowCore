@@ -186,9 +186,8 @@ const MOCK = {
         { id: "m8", tipo: "documento", formato: "pdf", titulo: "Apostila completa, 5 módulos", url: "#" },
         { id: "m9", tipo: "documento", formato: "pdf", titulo: "Ementa do curso", url: "#" },
         { id: "medidores-aula-1", tipo: "video", titulo: "Aula 1", descricao: "Fundamentos dos medidores de vazão, princípios de medição e aplicações na rotina operacional.", url: "https://player-vz-b9ef5310-065.tv.pandavideo.com.br/embed/?v=54c5db39-f085-4621-abdb-9ec4aff1bae5", duracao: "Vídeo liberado" },
-        { id: "medidores-aula-2-parte-1", tipo: "video", titulo: "Aula 2 - Parte 1", descricao: "Em breve", url: "#", duracao: "Em breve" },
-        { id: "medidores-aula-2-parte-2", tipo: "video", titulo: "Aula 2 - Parte 2", descricao: "Em breve", url: "#", duracao: "Em breve" },
-        { id: "medidores-aula-3", tipo: "video", titulo: "Aula 3", descricao: "Em breve", url: "#", duracao: "Em breve" },
+        { id: "medidores-aula-2-parte-1", tipo: "video", titulo: "Aula 2", descricao: "Continuação do curso de medidores de vazão com foco em manutenção e operação.", url: "https://player-vz-b9ef5310-065.tv.pandavideo.com.br/embed/?v=2025c745-9e3f-47dd-a710-076c1d0583de", duracao: "Vídeo liberado" },
+        { id: "medidores-aula-3", tipo: "video", titulo: "Aula 3", descricao: "Aplicações práticas de medidores de vazão em manutenção e operação.", url: "https://player-vz-b9ef5310-065.tv.pandavideo.com.br/embed/?v=597f3e44-c8a6-44f9-a3b8-064704be6687", duracao: "Vídeo liberado" },
         { id: "medidores-aula-4", tipo: "video", titulo: "Aula 4", descricao: "Em breve", url: "#", duracao: "Em breve" },
         { id: "m11", tipo: "certificado", formato: "pdf", titulo: "Certificado de conclusão", url: "../relatorio-certificacao-exemplo.html", emitido: true }
       ]
