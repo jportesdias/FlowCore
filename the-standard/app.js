@@ -269,10 +269,19 @@ async function openStudentSession() {
     await loadStudentState();
     state.isAuthenticated = true;
     sidebar.classList.remove("is-hidden");
-    window.location.hash = window.location.hash || "#dashboard";
+    const accessExpired = getPlatformAccessState().expired;
+    updatePlatformAccessNavigation(accessExpired);
+    if (accessExpired) {
+      state.cursos = [];
+      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}#comprar`);
+    } else {
+      window.location.hash = window.location.hash || "#dashboard";
+    }
     renderRoute();
-    const renewalOfferShown = showRenewalOfferOnce();
-    if (!renewalOfferShown) showInstitutionalVideoWelcomeOnce();
+    if (!accessExpired) {
+      const renewalOfferShown = showRenewalOfferOnce();
+      if (!renewalOfferShown) showInstitutionalVideoWelcomeOnce();
+    }
   } catch (error) {
     await client.auth.signOut();
     state.isAuthenticated = false;
@@ -536,6 +545,12 @@ function renderRoute() {
 
   const hash = window.location.hash.replace("#", "") || "dashboard";
   const [view, id] = hash.split("/");
+  if (getPlatformAccessState().expired && view !== "comprar") {
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}#comprar`);
+    updateActiveNav("comprar");
+    renderStore();
+    return;
+  }
   updateActiveNav(view);
 
   if (view === "curso" && id) renderCourse(id);
@@ -550,6 +565,51 @@ function renderRoute() {
   else if (view === "vazio") renderEmptyState();
   else renderDashboard();
 
+}
+
+function getPlatformAccessState() {
+  const orders = Array.isArray(state.membershipOrders) ? state.membershipOrders : [];
+  const accessStatuses = new Set(["active", "paid", "expired", "canceled", "cancelled", "inactive"]);
+  const activeOrder = orders.find(order =>
+    ["active", "paid"].includes(String(order.status || "").toLowerCase()) &&
+    (!order.valid_until || daysUntilDate(order.valid_until) >= 0)
+  );
+
+  if (activeOrder) return { expired: false, order: activeOrder, validUntil: activeOrder.valid_until || "" };
+
+  const expiredOrders = orders
+    .filter(order => accessStatuses.has(String(order.status || "").toLowerCase()))
+    .filter(order => order.valid_until && daysUntilDate(order.valid_until) < 0)
+    .sort((a, b) => String(b.valid_until).localeCompare(String(a.valid_until)));
+
+  if (expiredOrders.length) {
+    return { expired: true, order: expiredOrders[0], validUntil: expiredOrders[0].valid_until };
+  }
+
+  // Compatibilidade com acessos antigos, anteriores à tabela membership_orders.
+  if (!orders.length) {
+    const legacyAccesses = (state.financeiro?.lancamentos || [])
+      .filter(item => ["paid", "active", "pago", "approved"].includes(String(item.status || "").toLowerCase()))
+      .filter(item => item.validade_ate)
+      .sort((a, b) => String(b.validade_ate).localeCompare(String(a.validade_ate)));
+    const activeLegacyAccess = legacyAccesses.find(item => daysUntilDate(item.validade_ate) >= 0);
+    if (activeLegacyAccess) {
+      return { expired: false, order: null, validUntil: activeLegacyAccess.validade_ate, legacy: true };
+    }
+    if (legacyAccesses.length && daysUntilDate(legacyAccesses[0].validade_ate) < 0) {
+      return { expired: true, order: null, validUntil: legacyAccesses[0].validade_ate, legacy: true };
+    }
+  }
+
+  return { expired: false, order: null, validUntil: "" };
+}
+
+function updatePlatformAccessNavigation(accessExpired = getPlatformAccessState().expired) {
+  sidebar.classList.toggle("is-expired-access", accessExpired);
+  const brand = sidebar.querySelector(".brand");
+  if (brand) brand.href = accessExpired ? "#comprar" : "#dashboard";
+  const plansLabel = sidebar.querySelector('[data-nav="comprar"] span');
+  if (plansLabel) plansLabel.textContent = accessExpired ? "Contratação de planos" : "Planos e cursos";
 }
 
 function updateActiveNav(view) {
@@ -2638,6 +2698,12 @@ function renderCatalogCard(curso, hasAccess = false) {
 }
 
 function renderStore() {
+  const platformAccess = getPlatformAccessState();
+  if (platformAccess.expired) {
+    renderExpiredMembershipStore(platformAccess);
+    return;
+  }
+
   const currentIds = new Set(state.cursos.map(curso => curso.id));
   const catalog = state.catalogoCursos;
   const cartItems = state.cart.items
@@ -2711,6 +2777,42 @@ function renderStore() {
   bindStoreActions();
 }
 
+function renderExpiredMembershipStore(platformAccess) {
+  const selectedPlan = state.membershipPlans.find(plan => plan.code === state.membershipSelection);
+  const expirationLabel = platformAccess.validUntil ? formatDate(platformAccess.validUntil) : "data encerrada";
+
+  app.innerHTML = `
+    <section class="expired-access-banner" role="status">
+      <span class="expired-access-chip">Validade vencida</span>
+      <h1>Seu acesso venceu em ${escapeHtml(expirationLabel)}</h1>
+      <p>Você continua com acesso à plataforma para contratar um novo plano. Os cursos e os demais recursos ficam disponíveis novamente após a confirmação do pagamento.</p>
+    </section>
+    <section class="membership-section" aria-labelledby="expiredMembershipTitle">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Renove seu acesso</p>
+          <h2 id="expiredMembershipTitle">Escolha um plano para continuar</h2>
+        </div>
+        <p>A liberação é automática após a confirmação do pagamento.</p>
+      </div>
+      <div class="membership-plan-grid">
+        ${state.membershipPlans.map(renderMembershipPlanCard).join("")}
+      </div>
+    </section>
+    ${selectedPlan
+      ? `<section class="expired-membership-checkout">
+           <aside class="checkout-panel" aria-label="Finalizar renovação">
+             ${renderMembershipCheckout(selectedPlan)}
+             ${state.cart.status ? `<p class="checkout-status" role="status">${escapeHtml(state.cart.status)}</p>` : ""}
+             ${state.cart.error ? `<p class="checkout-status is-error" role="alert">${escapeHtml(state.cart.error)}</p>` : ""}
+           </aside>
+         </section>`
+      : ""}
+  `;
+
+  bindStoreActions();
+}
+
 function renderMembershipPlanCard(plan) {
   const recurring = plan.billing_mode === "recurring";
   const activeOrder = state.membershipOrders.find(order =>
@@ -2772,7 +2874,7 @@ function renderMembershipCheckout(plan) {
         ? "A assinatura recorrente é paga por cartão de crédito."
         : "Pagamento por cartão de crédito ou Pix. Parcelamento sem juros disponível no cartão."}</p>
       <button class="primary-button" type="submit" ${state.cart.status ? "disabled" : ""}>Ir para o pagamento</button>
-      <button class="text-link" type="button" data-membership-cancel>Voltar ao carrinho</button>
+      <button class="text-link" type="button" data-membership-cancel>${getPlatformAccessState().expired ? "Escolher outro plano" : "Voltar ao carrinho"}</button>
     </form>
   `;
 }
