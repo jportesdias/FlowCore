@@ -1735,7 +1735,7 @@
 
     .agenda-open-classes__item::after { left: 0; right: auto; top: 24px; bottom: 24px; width: 2px; height: auto; border-radius: 0; background: linear-gradient(to bottom, transparent, #237fe5, transparent); }
     .agenda-open-classes__item:nth-child(1)::after, .agenda-open-classes__item:nth-child(3)::after { background: linear-gradient(to bottom, transparent, #f47d35, transparent); }
-    .agenda-open-classes__item:last-child { grid-column: 1 / -1; min-height: 208px; padding-right: clamp(28px,18vw,230px); background: linear-gradient(120deg, rgba(21,78,142,.22), rgba(255,255,255,.025) 58%); }
+    .agenda-open-classes__item:last-child { min-height: 208px; background: linear-gradient(120deg, rgba(21,78,142,.22), rgba(255,255,255,.025) 58%); }
     .agenda-open-classes__item:hover { transform: translateY(-5px); border-color: rgba(127,182,240,.25); background: linear-gradient(145deg, rgba(255,255,255,.105), rgba(255,255,255,.035)); box-shadow: 0 24px 48px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.06); }
 
     .agenda-open-classes__date { display: flex; flex-direction: column; color: #fff; line-height: 1; }
@@ -2678,6 +2678,171 @@
         min-height: auto;
       }
     }
+
+    /* --- THE STANDARD: plataforma de aprendizagem --- */
+    .the-standard-feature {
+      position: relative;
+      padding: clamp(72px, 9vw, 124px) 24px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 78% 28%, rgba(229, 91, 19, .16), transparent 34%),
+        linear-gradient(180deg, #061020 0%, #08162a 100%);
+    }
+
+    .the-standard-feature::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: .18;
+      background-image: linear-gradient(rgba(93, 156, 230, .12) 1px, transparent 1px), linear-gradient(90deg, rgba(93, 156, 230, .12) 1px, transparent 1px);
+      background-size: 58px 58px;
+      mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
+      pointer-events: none;
+    }
+
+    .the-standard-feature__inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(480px, 1.25fr);
+      gap: clamp(44px, 7vw, 96px);
+      align-items: center;
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    .the-standard-feature__brand {
+      width: min(100%, 430px);
+      margin-bottom: 30px;
+      filter: brightness(0) invert(1);
+      opacity: .96;
+    }
+
+    .the-standard-feature__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      color: #f5a06c;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+    }
+
+    .the-standard-feature__eyebrow::before {
+      content: '';
+      width: 34px;
+      height: 1px;
+      background: #e55b13;
+    }
+
+    .the-standard-feature h2 {
+      max-width: 610px;
+      margin-bottom: 22px;
+      color: #fff;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.8rem, 5vw, 5.2rem);
+      font-weight: 600;
+      line-height: .94;
+      letter-spacing: -.035em;
+    }
+
+    .the-standard-feature__copy > p {
+      max-width: 610px;
+      color: rgba(224, 235, 248, .68);
+      font-size: clamp(.98rem, 1.3vw, 1.08rem);
+      font-weight: 300;
+      line-height: 1.75;
+    }
+
+    .the-standard-feature__benefits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 30px 0 34px;
+      list-style: none;
+    }
+
+    .the-standard-feature__benefits li {
+      padding: 9px 14px;
+      border: 1px solid rgba(121, 173, 233, .18);
+      border-radius: 100px;
+      background: rgba(255, 255, 255, .045);
+      color: rgba(235, 243, 252, .82);
+      font-size: .76rem;
+      letter-spacing: .03em;
+    }
+
+    .the-standard-feature__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .the-standard-feature__login {
+      min-height: 50px;
+      padding: 13px 24px;
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 100px;
+      color: rgba(255, 255, 255, .85);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+    }
+
+    .the-standard-feature__login:hover {
+      border-color: rgba(255, 255, 255, .5);
+      background: rgba(255, 255, 255, .07);
+      color: #fff;
+    }
+
+    .the-standard-feature__visual {
+      position: relative;
+    }
+
+    .the-standard-feature__visual::before {
+      content: '';
+      position: absolute;
+      inset: 12% -5% -10% 10%;
+      border-radius: 50%;
+      background: rgba(31, 116, 218, .28);
+      filter: blur(70px);
+    }
+
+    .the-standard-feature__visual img {
+      position: relative;
+      display: block;
+      width: 100%;
+      border: 1px solid rgba(129, 178, 235, .2);
+      border-radius: 18px;
+      box-shadow: 0 38px 90px rgba(0, 0, 0, .48);
+    }
+
+    @media (max-width: 960px) {
+      .the-standard-feature__inner {
+        grid-template-columns: 1fr;
+      }
+
+      .the-standard-feature__visual {
+        max-width: 780px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .the-standard-feature {
+        padding-inline: 20px;
+      }
+
+      .the-standard-feature__brand {
+        width: min(100%, 320px);
+      }
+
+      .the-standard-feature__actions .btn,
+      .the-standard-feature__login {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 
@@ -2767,6 +2932,31 @@
       </div>
     </section>
 
+    <section class="the-standard-feature" aria-labelledby="the-standard-title">
+      <div class="the-standard-feature__inner">
+        <div class="the-standard-feature__copy">
+          <span class="the-standard-feature__eyebrow">Plataforma exclusiva FlowCore Academy</span>
+          <img class="the-standard-feature__brand" src="the-standard/logo-the-standard.png" alt="The Standard by FlowCore Academy" />
+          <h2 id="the-standard-title">Seu desenvolvimento técnico continua além da aula.</h2>
+          <p>
+            The Standard é o ambiente digital da FlowCore Academy: uma experiência organizada para acessar cursos, acompanhar sua evolução e consultar materiais técnicos em um só lugar.
+          </p>
+          <ul class="the-standard-feature__benefits" aria-label="Recursos da plataforma">
+            <li>Cursos e trilhas técnicas</li>
+            <li>Materiais exclusivos</li>
+            <li>Progresso centralizado</li>
+          </ul>
+          <div class="the-standard-feature__actions">
+            <a class="btn btn-primary" href="the-standard/venda.html">Conhecer a plataforma ↗</a>
+            <a class="the-standard-feature__login" href="the-standard/index.html">Já sou aluno</a>
+          </div>
+        </div>
+        <div class="the-standard-feature__visual">
+          <img src="the-standard/assets/background.png" alt="Portal do aluno The Standard da FlowCore Academy" />
+        </div>
+      </div>
+    </section>
+
     <section class="academy-testimonials" aria-labelledby="academy-testimonials-title">
       <div class="academy-testimonials__inner">
         <div class="academy-testimonials__header">
@@ -2839,16 +3029,6 @@
         </div>
 
         <div class="agenda-open-classes__list">
-          <article class="agenda-open-classes__item">
-            <div class="agenda-open-classes__topline">
-              <div class="agenda-open-classes__date"><span class="agenda-open-classes__month">Agosto</span><span class="agenda-open-classes__day">10—13</span></div>
-              <span class="agenda-open-classes__mode">Ao vivo</span>
-            </div>
-            <h3 class="agenda-open-classes__title">Medidores de Vazão: Operação e Manutenção</h3>
-            <p class="agenda-open-classes__time">Formação aplicada para operação, diagnóstico e manutenção.</p>
-            <a class="agenda-open-classes__link" href="https://forms.gle/aUCPjLM9NR1mcokX8" target="_blank">Inscrição ↗</a>
-          </article>
-
           <article class="agenda-open-classes__item">
             <div class="agenda-open-classes__topline">
               <div class="agenda-open-classes__date"><span class="agenda-open-classes__month">Outubro</span><span class="agenda-open-classes__day">05—08</span></div>
@@ -2981,61 +3161,6 @@
                 onmouseover="this.style.background='#25D366';this.style.color='#fff';"
                 onmouseout="this.style.background='transparent';this.style.color='#25D366';">
                 Grupo da Turma ↗
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      </section>
-
-      <!-- HIGHLIGHT SECTION (Destaque principal movido para baixo) -->
-      <section class="highlight-section" style="padding: 0 0 80px;">
-      <div class="container">
-        <div class="highlight-box">
-          <div class="highlight-image-wrapper">
-            <img src="medidores-de-vazao.png" alt="Curso completo" />
-          </div>
-          <div class="highlight-content">
-            <h2 class="highlight-title">Curso completo de medidores com ênfase em manutenção</h2>
-            <p class="highlight-sub">
-              A <strong>solução definitiva</strong>. Turma voltada para quem responde por sistemas de medição e precisa
-              tomar decisões seguras em campo, sem depender dos fabricantes.
-            </p>
-
-            <div class="highlight-date">
-              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 2px;">
-                <span style="font-weight: 500;">Próxima turma:</span>
-                <div class="live-badge">
-                  <div class="live-dot"></div>On-line Ao Vivo
-                </div>
-              </div>
-              <div style="margin-bottom: 12px; font-size: 0.9em; color: var(--accent-main); font-weight: 600;">
-                <span style="color: var(--text-muted); font-weight: 400;">Transmissão oficial via</span> Plataforma Zoom
-              </div>
-              <ul style="list-style: none; margin-bottom: 20px; color: var(--text-body);">
-                <li style="margin-bottom: 4px;"><strong>10/08/2026</strong> <span
-                    style="font-size: 0.9em; opacity: 0.8;">- segunda-feira</span></li>
-                <li style="margin-bottom: 4px;"><strong>11/08/2026</strong> <span
-                    style="font-size: 0.9em; opacity: 0.8;">- terça-feira</span></li>
-                <li style="margin-bottom: 4px;"><strong>12/08/2026</strong> <span
-                    style="font-size: 0.9em; opacity: 0.8;">- quarta-feira</span></li>
-                <li style="margin-bottom: 4px;"><strong>13/08/2026</strong> <span
-                    style="font-size: 0.9em; opacity: 0.8;">- quinta-feira</span></li>
-              </ul>
-              Atendimento oficial: <a href="https://wa.me/5524998788760" target="_blank"
-                style="color: var(--accent-main); font-weight: 600; text-decoration: underline;">Acesse aqui o
-                WhatsApp</a>
-            </div>
-
-            <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center;">
-              <a class="btn btn-primary" href="https://wa.me/5524998788760" target="_blank">
-                Falar sobre inscrição ↗
-              </a>
-              <a href="Ementa_FlowCore_Medidores_Vazao.pdf" target="_blank"
-                style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 0.95rem; color: var(--accent-secondary); border: 1.5px solid var(--accent-secondary); border-radius: var(--radius-pill); padding: 12px 22px; transition: all 0.3s ease;"
-                onmouseover="this.style.background='var(--accent-secondary)';this.style.color='#fff';"
-                onmouseout="this.style.background='transparent';this.style.color='var(--accent-secondary)';">
-                Ver Ementa Completa
               </a>
             </div>
           </div>
