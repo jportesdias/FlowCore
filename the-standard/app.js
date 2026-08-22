@@ -6,6 +6,8 @@ const client = window.supabase?.createClient(FLOWCORE_SUPABASE_URL, FLOWCORE_SUP
 });
 const institutionalVideoSeenPrefix = "flowcore-institutional-video-seen";
 const institutionalVideoUrl = "https://player-vz-b9ef5310-065.tv.pandavideo.com.br/embed/?v=66c1df47-f33e-42bd-978d-b38c0e60b7eb";
+const renewalOfferSeenPrefix = "flowcore-renewal-offer-seen";
+const renewalOfferPaymentUrl = "https://payment-link-v3.pagar.me/pl_jQXmpP2VJad94ant5eUqGO0vlo1yG843";
 const materialCompletionPrefix = "flowcore-material-completion";
 let pendingOtpEmail = "";
 
@@ -130,6 +132,9 @@ async function boot() {
 
   window.addEventListener("hashchange", renderRoute);
   logoutButton.addEventListener("click", async () => {
+    if (state.aluno?.id) {
+      sessionStorage.removeItem(`${renewalOfferSeenPrefix}:${state.aluno.id}`);
+    }
     await client.auth.signOut();
     state.isAuthenticated = false;
     state.aluno = null;
@@ -266,7 +271,8 @@ async function openStudentSession() {
     sidebar.classList.remove("is-hidden");
     window.location.hash = window.location.hash || "#dashboard";
     renderRoute();
-    showInstitutionalVideoWelcomeOnce();
+    const renewalOfferShown = showRenewalOfferOnce();
+    if (!renewalOfferShown) showInstitutionalVideoWelcomeOnce();
   } catch (error) {
     await client.auth.signOut();
     state.isAuthenticated = false;
@@ -3158,6 +3164,98 @@ function showInstitutionalVideoWelcomeOnce() {
     document.removeEventListener("keydown", closeOnEscape);
   });
   document.body.appendChild(modal);
+}
+
+function showRenewalOfferOnce() {
+  if (!state.aluno?.id) return false;
+
+  const expiringAccess = getExpiringPlatformAccess(3);
+  if (!expiringAccess) return false;
+
+  const storageKey = `${renewalOfferSeenPrefix}:${state.aluno.id}`;
+  if (sessionStorage.getItem(storageKey)) return false;
+  sessionStorage.setItem(storageKey, new Date().toISOString());
+
+  const daysRemaining = daysUntilDate(expiringAccess.validUntil);
+  const deadlineMessage = daysRemaining === 0
+    ? "Seu acesso vence hoje."
+    : `Seu acesso vence em ${daysRemaining} dia${daysRemaining === 1 ? "" : "s"}.`;
+
+  const modal = document.createElement("div");
+  modal.className = "renewal-offer-backdrop";
+  modal.innerHTML = `
+    <section class="renewal-offer-modal" role="dialog" aria-modal="true" aria-labelledby="renewalOfferTitle" aria-describedby="renewalOfferDescription">
+      <button class="renewal-offer-close" type="button" aria-label="Fechar oferta">&times;</button>
+      <span class="renewal-offer-kicker">Condição especial para ex-aluno</span>
+      <h2 id="renewalOfferTitle">Continue com acesso à plataforma</h2>
+      <p class="renewal-offer-deadline">${deadlineMessage}</p>
+      <p id="renewalOfferDescription">Renove agora e mantenha seu acesso aos conteúdos da FlowCore Academy por mais 3 meses.</p>
+      <div class="renewal-offer-price">
+        <span>3 meses de acesso por</span>
+        <strong>R$ 119,90</strong>
+        <small>Pagamento em até 12x no cartão</small>
+      </div>
+      <a class="primary-button renewal-offer-cta" href="${renewalOfferPaymentUrl}" target="_blank" rel="noopener noreferrer">Garantir mais 3 meses</a>
+      <button class="renewal-offer-later" type="button">Agora não</button>
+    </section>
+  `;
+
+  const closeModal = () => {
+    modal.remove();
+    document.removeEventListener("keydown", closeOnEscape);
+  };
+  const closeOnEscape = event => {
+    if (event.key === "Escape") closeModal();
+  };
+
+  modal.querySelector(".renewal-offer-close").addEventListener("click", closeModal);
+  modal.querySelector(".renewal-offer-later").addEventListener("click", closeModal);
+  modal.addEventListener("click", event => {
+    if (event.target === modal) closeModal();
+  });
+  document.addEventListener("keydown", closeOnEscape);
+  document.body.appendChild(modal);
+  modal.querySelector(".renewal-offer-cta")?.focus();
+  return true;
+}
+
+function getExpiringPlatformAccess(days) {
+  const membershipExpirationDates = state.membershipOrders
+    .filter(order => ["active", "paid"].includes(order.status))
+    .map(order => order.valid_until)
+    .filter(Boolean)
+    .filter(value => daysUntilDate(value) >= 0)
+    .sort();
+
+  if (membershipExpirationDates.length) {
+    const membershipValidUntil = membershipExpirationDates[membershipExpirationDates.length - 1];
+    return daysUntilDate(membershipValidUntil) <= days
+      ? { validUntil: membershipValidUntil, source: "membership" }
+      : null;
+  }
+
+  const courseExpirationDates = state.cursos
+    .map(course => course.validade_ate)
+    .filter(Boolean)
+    .filter(value => daysUntilDate(value) >= 0);
+
+  if (!courseExpirationDates.length) return null;
+
+  courseExpirationDates.sort();
+  const platformValidUntil = courseExpirationDates[courseExpirationDates.length - 1];
+  return daysUntilDate(platformValidUntil) <= days
+    ? { validUntil: platformValidUntil, source: "course_access" }
+    : null;
+}
+
+function daysUntilDate(value) {
+  const match = String(value || "").slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return Number.POSITIVE_INFINITY;
+
+  const today = new Date();
+  const currentDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const targetDay = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return Math.round((targetDay.getTime() - currentDay.getTime()) / 86400000);
 }
 
 function formatCurrency(value) {

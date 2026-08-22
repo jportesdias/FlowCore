@@ -818,6 +818,97 @@ input:focus {
   color: #7A5A15;
 }
 
+.renewal-offer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(7, 17, 33, 0.78);
+  backdrop-filter: blur(7px);
+}
+
+.renewal-offer-modal {
+  position: relative;
+  width: min(520px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 38px 32px 28px;
+  overflow: hidden;
+  border: 1px solid rgba(224, 213, 190, 0.82);
+  border-radius: 12px;
+  background: linear-gradient(145deg, #ffffff 0%, #fffaf2 100%);
+  color: var(--navy);
+  text-align: center;
+  box-shadow: 0 30px 90px rgba(7, 17, 33, 0.38);
+}
+
+.renewal-offer-modal::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5px;
+  background: linear-gradient(90deg, var(--gold), #e55b13);
+}
+
+.renewal-offer-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(7, 17, 33, 0.06);
+  color: var(--navy);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.renewal-offer-kicker {
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(229, 91, 19, 0.1);
+  color: #a8400d;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.renewal-offer-modal h2 {
+  max-width: 410px;
+  margin: 0;
+  font-size: clamp(1.65rem, 5vw, 2.2rem);
+  line-height: 1.08;
+}
+
+.renewal-offer-modal p { margin: 0; line-height: 1.55; }
+.renewal-offer-deadline { color: #c2410c; font-weight: 800; }
+
+.renewal-offer-price {
+  width: 100%;
+  display: grid;
+  gap: 3px;
+  padding: 18px;
+  border: 1px solid rgba(229, 91, 19, 0.18);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.renewal-offer-price span,
+.renewal-offer-price small { color: var(--text-muted); }
+.renewal-offer-price strong { color: #a8400d; font-size: 2rem; line-height: 1.15; }
+.renewal-offer-cta { width: 100%; min-height: 48px; }
+.renewal-offer-later { border: 0; background: transparent; color: var(--text-muted); text-decoration: underline; cursor: pointer; }
+
+@media (max-width: 540px) {
+  .renewal-offer-modal { padding: 36px 20px 24px; }
+}
+
 .course-video-modal-frame {
   position: relative;
   width: 100%;
