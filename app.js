@@ -3169,14 +3169,14 @@ function showInstitutionalVideoWelcomeOnce() {
 function showRenewalOfferOnce() {
   if (!state.aluno?.id) return false;
 
-  const membership = getExpiringMembershipOrder(3);
-  if (!membership) return false;
+  const expiringAccess = getExpiringPlatformAccess(3);
+  if (!expiringAccess) return false;
 
   const storageKey = `${renewalOfferSeenPrefix}:${state.aluno.id}`;
   if (sessionStorage.getItem(storageKey)) return false;
   sessionStorage.setItem(storageKey, new Date().toISOString());
 
-  const daysRemaining = daysUntilDate(membership.valid_until);
+  const daysRemaining = daysUntilDate(expiringAccess.validUntil);
   const deadlineMessage = daysRemaining === 0
     ? "Seu acesso vence hoje."
     : `Seu acesso vence em ${daysRemaining} dia${daysRemaining === 1 ? "" : "s"}.`;
@@ -3219,12 +3219,33 @@ function showRenewalOfferOnce() {
   return true;
 }
 
-function getExpiringMembershipOrder(days) {
-  return state.membershipOrders.find(order =>
-    ["active", "paid"].includes(order.status) &&
-    daysUntilDate(order.valid_until) >= 0 &&
-    daysUntilDate(order.valid_until) <= days
-  ) || null;
+function getExpiringPlatformAccess(days) {
+  const membershipExpirationDates = state.membershipOrders
+    .filter(order => ["active", "paid"].includes(order.status))
+    .map(order => order.valid_until)
+    .filter(Boolean)
+    .filter(value => daysUntilDate(value) >= 0)
+    .sort();
+
+  if (membershipExpirationDates.length) {
+    const membershipValidUntil = membershipExpirationDates[membershipExpirationDates.length - 1];
+    return daysUntilDate(membershipValidUntil) <= days
+      ? { validUntil: membershipValidUntil, source: "membership" }
+      : null;
+  }
+
+  const courseExpirationDates = state.cursos
+    .map(course => course.validade_ate)
+    .filter(Boolean)
+    .filter(value => daysUntilDate(value) >= 0);
+
+  if (!courseExpirationDates.length) return null;
+
+  courseExpirationDates.sort();
+  const platformValidUntil = courseExpirationDates[courseExpirationDates.length - 1];
+  return daysUntilDate(platformValidUntil) <= days
+    ? { validUntil: platformValidUntil, source: "course_access" }
+    : null;
 }
 
 function daysUntilDate(value) {
