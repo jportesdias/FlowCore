@@ -132,6 +132,9 @@ async function boot() {
 
   window.addEventListener("hashchange", renderRoute);
   logoutButton.addEventListener("click", async () => {
+    if (state.aluno?.id) {
+      sessionStorage.removeItem(`${renewalOfferSeenPrefix}:${state.aluno.id}`);
+    }
     await client.auth.signOut();
     state.isAuthenticated = false;
     state.aluno = null;
