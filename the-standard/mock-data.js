@@ -191,6 +191,40 @@ const MOCK = {
         { id: "medidores-aula-4", tipo: "video", titulo: "Aula 4", descricao: "Aplicações práticas de medidores de vazão com ênfase em manutenção e operação.", url: "https://player-vz-b9ef5310-065.tv.pandavideo.com.br/embed/?v=79c22cb6-96e9-4ab8-85f5-27818a8ae5a2", duracao: "Vídeo liberado" },
         { id: "m11", tipo: "certificado", formato: "pdf", titulo: "Certificado de conclusão", url: "../relatorio-certificacao-exemplo.html", emitido: true }
       ]
+    },
+    {
+      id: "ia-dominio-tecnico",
+      titulo: "IA para Domínio Técnico",
+      capa: "assets/IA-domnio.png",
+      descricao: "Uso prático do NotebookLM para transformar fontes técnicas em conhecimento confiável, rastreável e aplicável.",
+      liberado_em: "",
+      progresso: 0,
+      materiais: [
+        { id: "ia-dominio-aula-01", tipo: "video", titulo: "Aula 1 - O que é uma LLM", descricao: "Entenda o conceito de Large Language Model e como esse tipo de IA processa e gera linguagem.", url: "https://player-vz-b9ef5310-065.tv.pandavideo.com.br/embed/?v=9dc24d40-32f1-49af-a6a7-95771127c297", duracao: "Vídeo liberado" },
+        { id: "ia-dominio-aula-02", tipo: "video", titulo: "Aula 2 - Diferença entre uma LLM tradicional e o NotebookLM", descricao: "Compare uma LLM de uso geral com a abordagem orientada por fontes do NotebookLM.", url: "https://player-vz-b9ef5310-065.tv.pandavideo.com.br/embed/?v=79f8116d-adc6-434c-9c1d-7f02972b762c", duracao: "Vídeo liberado" },
+        { id: "ia-dominio-aula-03", tipo: "video", titulo: "Aula 3 - O que é Grounding e por que as fontes importam", descricao: "Veja como o grounding conecta respostas às fontes e reduz informações sem sustentação.", url: "https://player-vz-b9ef5310-065.tv.pandavideo.com.br/embed/?v=c5cc7419-3466-4b5c-a727-ae70e8b23abf", duracao: "Vídeo liberado" },
+        { id: "ia-dominio-aula-04", tipo: "video", titulo: "Aula 4 - Conhecendo a interface do NotebookLM", descricao: "Explore as principais áreas, comandos e recursos da interface.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-05", tipo: "video", titulo: "Aula 5 - Criando seu primeiro Notebook", descricao: "Crie e configure um notebook para iniciar sua base de conhecimento.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-06", tipo: "video", titulo: "Aula 6 - Adicionando e organizando fontes", descricao: "Adicione documentos e estruture as fontes para facilitar consultas e análises.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-07", tipo: "video", titulo: "Aula 7 - Conversando com seus documentos", descricao: "Use o chat para consultar, resumir e explorar o conteúdo das fontes.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-08", tipo: "video", titulo: "Aula 8 - Como fazer boas perguntas no NotebookLM", descricao: "Aprenda a formular perguntas claras, específicas e orientadas ao resultado esperado.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-09", tipo: "video", titulo: "Aula 9 - Trabalhando com citações e rastreabilidade", descricao: "Valide respostas por meio de citações e rastreie cada informação até a fonte.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-10", tipo: "video", titulo: "Aula 10 - Cruzando informações de múltiplas fontes", descricao: "Combine documentos para identificar relações, convergências e divergências.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-11", tipo: "video", titulo: "Aula 11 - Conhecendo o Studio", descricao: "Conheça o espaço de criação de artefatos do NotebookLM.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-12", tipo: "video", titulo: "Aula 12 - Criando resumos, briefings, FAQs e guias de estudo", descricao: "Transforme as fontes em materiais estruturados para consulta, comunicação e aprendizagem.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-13", tipo: "video", titulo: "Aula 13 - Criando mapas mentais", descricao: "Organize conceitos e relações em uma representação visual do conhecimento.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-14", tipo: "video", titulo: "Aula 14 - Criando Audio Overviews", descricao: "Gere conversas em áudio para revisar e explorar o conteúdo das fontes.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-15", tipo: "video", titulo: "Aula 15 - Criando Video Overviews", descricao: "Converta o conhecimento das fontes em uma apresentação explicativa em vídeo.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-16", tipo: "video", titulo: "Aula 16 - Criando Flashcards e Quizzes", descricao: "Crie recursos de revisão e avaliação para reforçar o aprendizado.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-17", tipo: "video", titulo: "Aula 17 - Criando infográficos e apresentações", descricao: "Produza materiais visuais para sintetizar e comunicar informações técnicas.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-18", tipo: "video", titulo: "Aula 18 - Encontrando novas fontes com Discover Sources", descricao: "Amplie o notebook encontrando fontes relevantes para o tema estudado.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-19", tipo: "video", titulo: "Aula 19 - Utilizando o Deep Research", descricao: "Aprofunde pesquisas e organize descobertas com apoio do Deep Research.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-20", tipo: "video", titulo: "Aula 20 - Estruturando um Notebook para uso profissional", descricao: "Planeje fontes, nomenclatura e objetivos para manter notebooks profissionais e reutilizáveis.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-21", tipo: "video", titulo: "Aula 21 - Analisando documentos e comparando informações", descricao: "Extraia pontos-chave e compare requisitos, dados e versões de documentos.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-22", tipo: "video", titulo: "Aula 22 - Criando treinamentos e materiais de estudo", descricao: "Monte trilhas, explicações e exercícios a partir de uma base documental confiável.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-23", tipo: "video", titulo: "Aula 23 - Boas práticas e erros que devem ser evitados", descricao: "Reconheça limites, riscos e hábitos que melhoram a qualidade do trabalho com o NotebookLM.", url: "#", duracao: "Em breve" },
+        { id: "ia-dominio-aula-24", tipo: "video", titulo: "Aula 24 - Workflow completo: da fonte ao conhecimento", descricao: "Aplique o fluxo completo para selecionar fontes, analisar conteúdo e gerar conhecimento utilizável.", url: "#", duracao: "Em breve" }
+      ]
     }
   ]
 };
