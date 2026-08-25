@@ -430,7 +430,7 @@
     gap: clamp(64px, 9vw, 128px);
     align-items: center;
     width: min(1180px, calc(100% - 64px));
-    padding: 132px 0 72px;
+    padding: 202px 0 72px;
   }
 
   .brand {
@@ -438,7 +438,7 @@
     left: max(32px, calc((100vw - 1180px) / 2));
   }
 
-  .brand img { width: 176px; }
+  .brand img { width: clamp(280px, 27vw, 410px); }
 
   .content {
     max-width: 680px;
@@ -628,11 +628,11 @@
       grid-template-columns: 1fr;
       gap: 52px;
       width: min(680px, calc(100% - 40px));
-      padding: 112px 0 48px;
+      padding: 158px 0 48px;
     }
 
     .brand { top: 26px; left: 20px; }
-    .brand img { width: 156px; }
+    .brand img { width: min(72vw, 320px); }
     .topics { display: block; }
   }
 
@@ -648,8 +648,8 @@
 </style>
 </head>
 <body>
-  <a class="brand" href="index.html" aria-label="FlowCore Solutions">
-    <img src="Flow core solutions Color.png" alt="FlowCore Solutions">
+  <a class="brand" href="index.html" aria-label="FlowCore Academy">
+    <img src="logo-academy.png" alt="FlowCore Academy">
   </a>
 
   <main class="page">
