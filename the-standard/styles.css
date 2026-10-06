@@ -221,7 +221,7 @@ textarea {
   justify-items: end;
   padding: 24px clamp(24px, 7vw, 118px) 24px 24px;
   background:
-    linear-gradient(90deg, rgba(244, 247, 250, 0.02), rgba(255, 255, 255, 0.12) 44%, rgba(255, 255, 255, 0.22) 100%),
+    linear-gradient(90deg, rgba(3, 18, 39, 0.04), rgba(5, 42, 85, 0.08) 48%, rgba(4, 25, 53, 0.18) 100%),
     var(--login-wallpaper) center top / cover no-repeat,
     #F4F7FA;
 }
@@ -231,28 +231,49 @@ textarea {
   position: fixed;
   inset: 24px;
   pointer-events: none;
-  border: 1px solid rgba(184, 150, 86, 0.26);
-  border-radius: 8px;
+  border: 1px solid rgba(113, 183, 255, 0.2);
+  border-radius: 12px;
 }
 
 .login-panel {
   position: relative;
   width: min(100%, 454px);
   padding: 38px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 8px;
-  box-shadow: none;
-  backdrop-filter: none;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(9, 35, 69, 0.58), rgba(2, 18, 39, 0.46)),
+    rgba(3, 22, 47, 0.34);
+  border: 1px solid rgba(125, 192, 255, 0.34);
+  border-radius: 14px;
+  box-shadow:
+    0 24px 64px rgba(1, 17, 37, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px) saturate(125%);
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+}
+
+.login-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(24, 119, 255, 0.2), transparent 42%),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.06), transparent 38%);
+}
+
+.login-panel > * {
+  position: relative;
+  z-index: 1;
 }
 
 .login-logo {
-  width: 102px;
+  width: 152px;
   max-width: 100%;
   display: block;
   margin: 4px auto 0;
-  filter: grayscale(1);
-  opacity: 0.58;
+  filter: none;
+  opacity: 0.84;
 }
 
 .login-logo-small {
@@ -268,7 +289,22 @@ textarea {
 }
 
 .login-panel .eyebrow {
-  color: var(--logo-orange-light);
+  color: #6eb6ff;
+  letter-spacing: 0.12em;
+}
+
+.login-panel h1 {
+  max-width: 330px;
+  color: #f5f9ff;
+  font-family: "Calibri Light", Calibri, Arial, sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 300;
+  letter-spacing: -0.025em;
+}
+
+.login-panel .muted {
+  max-width: 340px;
+  color: rgba(225, 239, 255, 0.76);
 }
 
 h1,
@@ -320,7 +356,7 @@ p {
 
 .otp-fieldset legend {
   margin-bottom: 8px;
-  color: var(--ink);
+  color: rgba(235, 245, 255, 0.9);
 }
 
 .otp-boxes {
@@ -338,22 +374,24 @@ p {
   text-align: center;
   font-size: 1.35rem;
   font-weight: 800;
-  color: var(--cobalt-deep);
+  color: #ffffff;
 }
 
 .login-status {
   margin: 0 0 14px;
   padding: 12px;
   border-radius: 8px;
-  background: #ecfdf5;
-  color: #166534;
+  border: 1px solid rgba(123, 232, 183, 0.26);
+  background: rgba(8, 83, 64, 0.42);
+  color: #b9f6d8;
   font-size: 14px;
   line-height: 1.45;
 }
 
 .login-status.is-error {
-  background: #fef2f2;
-  color: #991b1b;
+  border-color: rgba(255, 147, 147, 0.3);
+  background: rgba(111, 20, 35, 0.48);
+  color: #ffd1d6;
 }
 
 label {
@@ -380,8 +418,41 @@ input:focus {
 }
 
 .login-panel input:focus {
-  border-color: var(--logo-orange-light);
-  box-shadow: 0 0 0 3px rgba(255, 138, 28, 0.18);
+  border-color: #50a4ff;
+  box-shadow: 0 0 0 3px rgba(35, 132, 255, 0.2);
+}
+
+.login-panel label {
+  color: rgba(238, 246, 255, 0.9);
+}
+
+.login-panel input {
+  color: #ffffff;
+  background: rgba(1, 16, 35, 0.32);
+  border-color: rgba(126, 190, 255, 0.38);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.login-panel input:-webkit-autofill,
+.login-panel input:-webkit-autofill:hover,
+.login-panel input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff;
+  box-shadow: 0 0 0 1000px rgba(4, 28, 58, 0.94) inset;
+}
+
+.login-panel .primary-button {
+  border-color: rgba(119, 184, 255, 0.48);
+  background: linear-gradient(100deg, #075bdb, #1479ff);
+  box-shadow: 0 12px 28px rgba(0, 83, 214, 0.32);
+}
+
+.login-panel .primary-button:hover {
+  background: linear-gradient(100deg, #0865ed, #2a87ff);
+  box-shadow: 0 16px 34px rgba(0, 83, 214, 0.42);
+}
+
+.login-panel .text-link {
+  color: #75bbff;
 }
 
 .primary-button {
@@ -739,7 +810,7 @@ input:focus {
 
 .cockpit-metrics {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 22px;
 }
@@ -2640,7 +2711,7 @@ dd {
     justify-items: center;
     padding: 24px;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.26)),
+      linear-gradient(180deg, rgba(3, 18, 39, 0.04), rgba(4, 25, 53, 0.14)),
       var(--login-wallpaper) center top / cover no-repeat,
       #F4F7FA;
   }

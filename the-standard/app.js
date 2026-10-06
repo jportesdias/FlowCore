@@ -444,7 +444,7 @@ async function loadMembershipState(studentId) {
         .order("sort_order", { ascending: true }),
       client
         .from("membership_orders")
-        .select("id,plan_code,status,amount,currency,starts_at,valid_until,gateway_status,created_at")
+        .select("id,plan_code,status,amount,currency,starts_at,valid_until,gateway,gateway_status,created_at")
         .eq("student_id", studentId)
         .order("created_at", { ascending: false }),
       client
@@ -569,10 +569,17 @@ function renderRoute() {
 
 function getPlatformAccessState() {
   const orders = Array.isArray(state.membershipOrders) ? state.membershipOrders : [];
+  const adminOrder = orders.filter(order => order.gateway === "manual")
+    .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))[0];
+  if (adminOrder) {
+    const valid = ["active", "paid"].includes(adminOrder.status) &&
+      adminOrder.valid_until && daysUntilDate(adminOrder.valid_until) >= 0;
+    return { expired: !valid, order: adminOrder, validUntil: adminOrder.valid_until || "" };
+  }
   const accessStatuses = new Set(["active", "paid", "expired", "canceled", "cancelled", "inactive"]);
   const activeOrder = orders.find(order =>
     ["active", "paid"].includes(String(order.status || "").toLowerCase()) &&
-    (!order.valid_until || daysUntilDate(order.valid_until) >= 0)
+    (order.valid_until && daysUntilDate(order.valid_until) >= 0)
   );
 
   if (activeOrder) return { expired: false, order: activeOrder, validUntil: activeOrder.valid_until || "" };
@@ -632,6 +639,13 @@ function renderDashboard() {
   const cursos = getAccessibleCourses();
   const completedCount = cursos.filter(curso => Number(curso.progresso || 0) >= 100).length;
   const nextCourse = cursos.find(curso => Number(curso.progresso || 0) < 100) || cursos[0];
+  const platformAccess = getPlatformAccessState();
+  const remainingDays = platformAccess.validUntil ? daysUntilDate(platformAccess.validUntil) : null;
+  const accessDaysLabel = Number.isFinite(remainingDays) ? String(Math.max(0, remainingDays)) : "—";
+  const accessValidityLabel = !platformAccess.validUntil ? "Validade não definida" : platformAccess.expired
+    ? `Acesso encerrado · ${formatDate(platformAccess.validUntil)}`
+    : remainingDays === 0 ? "Seu acesso vence hoje"
+    : `Válido até ${formatDate(platformAccess.validUntil)}`;
   app.innerHTML = `
     <section class="academy-cockpit">
       <div>
@@ -666,6 +680,7 @@ function renderDashboard() {
     </section>
 
     <section class="cockpit-metrics" aria-label="Indicadores da formação">
+      <article><span>Dias restantes na plataforma</span><strong>${accessDaysLabel}</strong><p>${escapeHtml(accessValidityLabel)}</p></article>
       <article><span>Trilhas liberadas</span><strong>${cursos.length}</strong><p>Conteúdo com acesso ativo</p></article>
       <article><span>Certificação</span><strong>${completedCount}</strong><p>Trilhas com progresso completo</p></article>
       <article><span>Próxima ação</span><strong>${nextCourse ? `${nextCourse.progresso}%` : "0%"}</strong><p>${nextCourse ? escapeHtml(nextCourse.titulo) : "Sem trilha ativa"}</p></article>
@@ -2471,14 +2486,7 @@ function renderSpecialistV2() {
   const courseNames = cursos.length
     ? cursos.map(curso => curso.titulo).join(", ")
     : "Nenhum curso liberado";
-  const activeMembership =
-    state.membershipOrders.find(order => order.plan_code === "anual" && ["active", "paid"].includes(order.status)) ||
-    state.membershipOrders.find(order => order.plan_code === "mensal" && ["active", "paid"].includes(order.status));
-  const aiPlanLabel = activeMembership?.plan_code === "anual"
-    ? "Plano Anual · uso ilimitado"
-    : activeMembership?.plan_code === "mensal"
-      ? "Plano Mensal · 10 utilizações por ciclo"
-      : "Disponível nos Planos Mensal e Anual";
+  const aiPlanLabel = "Acesso completo à IA durante a validade da plataforma";
 
   app.innerHTML = `
     <section class="page-header">
@@ -2542,10 +2550,8 @@ function renderSpecialistV2() {
     try {
       const result = await askFlowCoreSpecialist(question);
       const usageMessage = result.aiUsage?.unlimited
-        ? "IA ilimitada no Plano Anual."
-        : Number.isFinite(Number(result.aiUsage?.remaining))
-          ? `${Number(result.aiUsage.remaining)} de ${Number(result.aiUsage.limit || 10)} utilizações disponíveis neste ciclo.`
-          : "";
+        ? "IA com uso ilimitado durante a validade do seu acesso."
+        : "";
       answer.innerHTML = `
         <strong>FlowCore Specialist</strong>
         <p>${formatAssistantText(result.answer || "Não recebi uma resposta da IA.")}</p>
