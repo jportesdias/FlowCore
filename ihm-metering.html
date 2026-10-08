@@ -6,7 +6,7 @@
 <title>IHM – Metering Skid 1923-FCAS-30 | FlowCore Solutions</title>
 <style>
 :root{
-  --or:#E55B13; --bl:#1F3F68; --bg:#080d14; --pn:#0f1824;
+  --or:#E55B13; --bl:#1F3F68; --bg:#161616; --pn:#202020;
   --bd:#1e3a5f; --tx:#ffffff; --mu:#7a9ab8; --gr:#00c97a;
   --rd:#e03030; --yl:#ffd600; --cy:#4ab8ff; --pu:#cc88ff;
 }
@@ -25,6 +25,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .htitle .t1{font-size:13px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:2px;}
 .htitle .t2{font-size:10px;color:#9ab8d8;}
 .hright{display:flex;align-items:center;gap:10px;}
+.overhide-btn{font-size:9px;padding:3px 7px;border:1px solid #4a2330;color:#ff9a9a;background:#16060a;border-radius:3px;cursor:pointer;text-transform:uppercase;font-weight:800;letter-spacing:.6px;}
+.overhide-btn.on{border-color:var(--yl);color:var(--yl);background:#2a1500;box-shadow:0 0 10px rgba(255,214,0,.18);}
 .hclock{font-family:'Courier New',monospace;font-size:14px;color:var(--cy);
   background:rgba(0,0,0,.35);padding:2px 8px;border-radius:3px;}
 .wbadge{font-size:10px;padding:2px 8px;border-radius:3px;font-weight:700;display:none;}
@@ -32,7 +34,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .wbadge.ok{display:inline-block;background:#002510;color:var(--gr);border:1px solid var(--gr);}
 
 /* ─── STATUSBAR ─── */
-#sbar{background:#0b1220;border-bottom:1px solid var(--bd);padding:3px 14px;
+#sbar{background:#1b1b1b;border-bottom:1px solid var(--bd);padding:3px 14px;
   display:flex;gap:18px;align-items:center;flex-shrink:0;font-size:12px;flex-wrap:wrap;}
 .si{display:flex;align-items:center;gap:5px;}
 .si .lbl{color:var(--mu);font-size:11px;text-transform:uppercase;letter-spacing:.4px;}
@@ -41,12 +43,12 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .ssep{color:var(--bd);}
 .train-pill{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;
   border:1px solid;}
-.train-pill.idle{background:#0d1520;color:var(--mu);border-color:var(--bd);}
+.train-pill.idle{background:#1d1d1d;color:var(--mu);border-color:var(--bd);}
 .train-pill.active{background:#002a50;color:var(--cy);border-color:var(--cy);}
 .train-pill.proving{background:#002a10;color:var(--gr);border-color:var(--gr);}
 
 /* ─── TABS ─── */
-#tabs{background:#0b1220;border-bottom:1px solid var(--bd);display:flex;flex-shrink:0;}
+#tabs{background:#1b1b1b;border-bottom:1px solid var(--bd);display:flex;flex-shrink:0;}
 .tbt{padding:7px 18px;border:none;background:transparent;color:var(--mu);
   font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
   cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;position:relative;}
@@ -63,12 +65,12 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .tpane.on{display:flex;}
 
 /* ─── P&ID TAB ─── */
-#pid-wrap{flex:1;overflow:auto;background:#060b11;display:flex;
+#pid-wrap{flex:1;overflow:auto;background:#141414;display:flex;
   align-items:flex-start;justify-content:flex-start;padding:6px;gap:6px;}
 #pid-svg{flex:1;min-width:0;max-width:1440px;height:auto;display:block;}
 
 /* ─── PAINEL DE INSTRUMENTOS ─── */
-#instr-panel{flex-shrink:0;width:162px;background:#04090f;
+#instr-panel{flex-shrink:0;width:162px;background:#121212;
   border:1px solid #1e3a5f;border-radius:5px;padding:8px 0;
   font-family:'Courier New',monospace;font-size:11px;align-self:flex-start;
   position:sticky;top:0;}
@@ -84,10 +86,10 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .ip-sep{height:4px;}
 #pid-ctrl{background:var(--pn);border-top:1px solid var(--bd);padding:6px 14px;
   display:flex;gap:10px;align-items:center;flex-wrap:wrap;flex-shrink:0;}
-.cg{display:flex;align-items:center;gap:6px;background:#0b1220;
+.cg{display:flex;align-items:center;gap:6px;background:#1b1b1b;
   border:1px solid var(--bd);padding:3px 10px;border-radius:4px;}
 .cg label{font-size:10px;color:var(--mu);text-transform:uppercase;}
-.fcv-inp{width:46px;background:#0b1820;border:1px solid var(--bd);border-radius:3px;
+.fcv-inp{width:46px;background:#1f1f1f;border:1px solid var(--bd);border-radius:3px;
   color:#fff;font-family:'Courier New',monospace;font-size:12px;font-weight:700;
   padding:3px 5px;text-align:right;-moz-appearance:textfield;}
 .fcv-inp::-webkit-inner-spin-button,.fcv-inp::-webkit-outer-spin-button{-webkit-appearance:none;}
@@ -97,18 +99,29 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 
 /* ─── PROVA TAB ─── */
 #prova-wrap{flex:1;display:grid;grid-template-columns:310px 1fr;overflow:hidden;}
-#pv-left{border-right:1px solid var(--bd);padding:10px;overflow-y:auto;background:#0a0f18;}
-#pv-right{padding:10px;overflow-y:auto;}
+#pv-left{border-right:1px solid var(--bd);padding:10px;overflow-y:auto;background:#181818;}
+#pv-right{padding:8px 10px;overflow-y:auto;min-width:0;}
+#pv-right .rtbl th{padding:3px 5px;font-size:9px;}
+#pv-right .rtbl td{padding:3px 5px;font-size:10px;}
+#pv-right .run-badge{font-size:9px;padding:1px 4px;}
+.proof-record{border:1px solid var(--bd);border-radius:4px;padding:6px 8px;margin-bottom:7px;background:var(--pn);}
+.proof-record-title{display:flex;justify-content:space-between;gap:8px;color:var(--cy);font-size:10px;font-weight:700;margin-bottom:5px;}
+.proof-record-summary{font-size:10px;color:var(--mu);margin-top:5px;}
+.proof-record-empty{color:var(--mu);font-size:10px;padding:12px 0;}
+#pv-right .sec{margin-top:6px;margin-bottom:5px;}
+#pv-range-box{gap:10px!important;padding:4px 0!important;margin-top:2px!important;}
+@media(max-height:780px){#pv-right .rtbl td{padding:2px 4px;} .proof-record{padding:4px 6px;margin-bottom:5px;}}
+
 .sec{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--or);
   border-bottom:1px solid var(--bd);padding-bottom:3px;margin-bottom:8px;margin-top:12px;}
 .sec:first-child{margin-top:0;}
 .igrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px;}
-.icard{background:#0b1220;border:1px solid var(--bd);border-radius:4px;padding:5px 9px;}
+.icard{background:#1b1b1b;border:1px solid var(--bd);border-radius:4px;padding:5px 9px;}
 .icard .lbl{font-size:10px;color:var(--mu);text-transform:uppercase;}
 .icard .val{font-size:16px;font-family:'Courier New',monospace;font-weight:700;color:var(--cy);}
 .icard .unt{font-size:10px;color:var(--mu);}
 .rtbl{width:100%;border-collapse:collapse;font-size:12px;}
-.rtbl th{background:#0b1220;color:var(--mu);padding:4px 7px;text-align:center;
+.rtbl th{background:#1b1b1b;color:var(--mu);padding:4px 7px;text-align:center;
   border:1px solid var(--bd);font-size:10px;text-transform:uppercase;}
 .rtbl td{padding:4px 7px;border:1px solid #162030;text-align:center;
   font-family:'Courier New',monospace;font-size:11px;color:#fff;}
@@ -121,14 +134,14 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .run-badge.ok{background:#001f0e;color:var(--gr);border:1px solid var(--gr);}
 .run-badge.fail{background:#200000;color:var(--rd);border:1px solid var(--rd);}
 .run-badge.inv{background:#1a1200;color:var(--yl);border:1px solid var(--yl);}
-.run-badge.pend{background:#0a0f18;color:var(--mu);border:1px solid var(--bd);}
+.run-badge.pend{background:#181818;color:var(--mu);border:1px solid var(--bd);}
 .run-badge.cur{background:#001828;color:var(--cy);border:1px solid var(--cy);}
 .rsbanner{padding:8px;border-radius:4px;font-weight:700;text-align:center;
   font-size:13px;margin-top:8px;display:none;}
 .rsbanner.on{display:block;}
 .rsbanner.pass{background:#001f0e;color:var(--gr);border:1px solid var(--gr);}
 .rsbanner.fail{background:#200000;color:var(--rd);border:1px solid var(--rd);}
-.pbar{height:7px;background:#162030;border-radius:4px;overflow:hidden;margin:4px 0;}
+.pbar{height:7px;background:#282828;border-radius:4px;overflow:hidden;margin:4px 0;}
 .pfill{height:100%;background:var(--or);border-radius:4px;transition:width .1s;}
 
 /* ─── ALARMES TAB ─── */
@@ -155,7 +168,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .rrow:last-child{border-bottom:none;}
 .rkey{color:var(--mu);}
 .rval{font-family:'Courier New',monospace;font-weight:600;color:#fff;}
-.score-box{text-align:center;padding:16px;background:#050e18;
+.score-box{text-align:center;padding:16px;background:#161616;
   border:2px solid var(--or);border-radius:6px;margin-bottom:12px;}
 .score-val{font-size:48px;font-weight:900;color:var(--or);}
 .score-lbl{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;}
@@ -184,7 +197,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
   margin-bottom:14px;padding-bottom:7px;border-bottom:1px solid var(--bd);}
 .mrow{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
 .mlbl{font-size:10px;color:var(--mu);width:120px;flex-shrink:0;}
-.minp{flex:1;background:#0b1220;border:1px solid var(--bd);color:var(--tx);
+.minp{flex:1;background:#1b1b1b;border:1px solid var(--bd);color:var(--tx);
   padding:5px 9px;border-radius:3px;font-size:12px;}
 .minp:focus{outline:none;border-color:var(--or);}
 .mfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;}
@@ -198,22 +211,22 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
   border-bottom:2px solid transparent;transition:all .15s;}
 .ktab.on{color:var(--or);border-bottom-color:var(--or);}
 .ktbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;}
-.ktbl th{background:#0b1220;color:var(--mu);padding:5px 8px;text-align:center;
+.ktbl th{background:#1b1b1b;color:var(--mu);padding:5px 8px;text-align:center;
   border:1px solid var(--bd);font-size:10px;text-transform:uppercase;letter-spacing:.5px;}
 .ktbl td{padding:3px 4px;border:1px solid #162030;}
-.ktbl td.pnum{text-align:center;color:var(--mu);font-size:10px;background:#080e18;}
-.kinp{width:100%;background:#0b1820;border:1px solid #1e3a5f;border-radius:3px;
+.ktbl td.pnum{text-align:center;color:var(--mu);font-size:10px;background:#171717;}
+.kinp{width:100%;background:#1f1f1f;border:1px solid #1e3a5f;border-radius:3px;
   color:#fff;font-family:'Courier New',monospace;font-size:12px;
   padding:4px 6px;text-align:right;}
 .kinp:focus{outline:none;border-color:var(--or);}
 .kfreq{color:var(--cy);font-family:'Courier New',monospace;font-size:11px;
   text-align:right;padding-right:8px;}
-.kinfo{font-size:9px;color:var(--mu);background:#050d18;border:1px solid var(--bd);
+.kinfo{font-size:9px;color:var(--mu);background:#161616;border:1px solid var(--bd);
   border-radius:3px;padding:5px 10px;margin-bottom:10px;line-height:1.7;}
 .kinfo b{color:var(--cy);}
 
 /* ─── MESTRE PANEL ─── */
-#mpanel{position:fixed;bottom:0;right:0;width:310px;background:#06040e;
+#mpanel{position:fixed;bottom:0;right:0;width:310px;background:#0f0f0f;
   border:1px solid #6633aa;border-radius:6px 0 0 0;padding:10px;
   z-index:500;display:none;}
 #mpanel.on{display:block;}
@@ -274,7 +287,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
   letter-spacing:1.5px;margin-bottom:18px;}
 .join-field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;text-align:left;}
 .join-field label{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;}
-.join-field input{background:#0b1220;border:1px solid var(--bd);color:var(--tx);
+.join-field input{background:#1b1b1b;border:1px solid var(--bd);color:var(--tx);
   padding:8px 11px;border-radius:4px;font-size:13px;width:100%;}
 .join-field input:focus{outline:none;border-color:var(--or);}
 .join-token-row{display:flex;justify-content:center;align-items:center;gap:8px;
@@ -300,8 +313,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .blink{animation:blink 1s ease-in-out infinite;}
 
 /* ─── TREND TAB ─── */
-#trend-wrap{flex:1;overflow-y:auto;background:#060b11;padding:12px 16px;display:flex;flex-direction:column;gap:12px;}
-.trend-chart-box{background:#04090f;border:1px solid #1e3050;border-radius:5px;padding:10px 12px;}
+#trend-wrap{flex:1;overflow-y:auto;background:#141414;padding:12px 16px;display:flex;flex-direction:column;gap:12px;}
+.trend-chart-box{background:#121212;border:1px solid #1e3050;border-radius:5px;padding:10px 12px;}
 .trend-chart-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--or);margin-bottom:6px;display:flex;align-items:center;gap:16px;}
 .trend-legend{display:flex;gap:12px;margin-left:auto;}
 .trend-leg-item{display:flex;align-items:center;gap:4px;font-size:9px;color:#8aabcc;font-family:'Courier New',monospace;}
@@ -310,18 +323,18 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 
 /* ─── SCROLL ─── */
 ::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:#080d14;}
+::-webkit-scrollbar-track{background:#161616;}
 ::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
 
 /* ─── TRAMO 2 ─── */
 #t2-panel .sec{color:var(--cy);border-color:var(--cy);}
-#t2-status{font-size:10px;font-weight:700;padding:4px 8px;background:#04141f;
+#t2-status{font-size:10px;font-weight:700;padding:4px 8px;background:#1b1b1b;
   border:1px solid #1e3a5f;border-radius:3px;margin-bottom:8px;}
 .t2-cal-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;}
 .t2-cal-tbl th{color:var(--mu);font-size:9px;text-transform:uppercase;padding:2px 4px;text-align:left;}
 .t2-cal-tbl td{padding:2px 4px;}
 .t2-isol-check{display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;
-  padding:6px 8px;border:1px solid #1e3a5f;border-radius:3px;background:#0b1220;}
+  padding:6px 8px;border:1px solid #1e3a5f;border-radius:3px;background:#1b1b1b;}
 .t2-isol-check:hover{border-color:#6633aa;}
 .t2-isol-check input{width:16px;height:16px;cursor:pointer;}
 #t2-mov3201-badge{background:#200050;border:1px solid #8844dd;border-radius:3px;
@@ -330,9 +343,9 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 .btn-t2-isol:hover:not(:disabled){background:#3a0088;}
 
 /* ─── MASTER RUN ─── */
-.mr-meter{background:#0a1420;border:1px solid #1e3a5f;border-radius:6px;padding:10px 16px;
+.mr-meter{background:#1c1c1c;border:1px solid #1e3a5f;border-radius:6px;padding:10px 16px;
   text-align:center;min-width:150px;transition:all .2s;}
-.mr-meter.mr-lit{border-color:#4ab8ff;box-shadow:0 0 10px rgba(74,184,255,.25);background:#08161f;}
+.mr-meter.mr-lit{border-color:#4ab8ff;box-shadow:0 0 10px rgba(74,184,255,.25);background:#1d1d1d;}
 .mr-meter-ic{font-size:22px;color:#3a5a7a;font-family:'Courier New',monospace;line-height:1;}
 .mr-meter.mr-lit .mr-meter-ic{color:#4ab8ff;}
 .mr-meter-t{font-size:10px;font-weight:700;color:#cfe0f0;margin-top:4px;letter-spacing:.5px;}
@@ -403,6 +416,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
       ⏭
     </button>
     <span id="hclock" class="hclock">00:00:00</span>
+    <button id="overhide-btn" class="overhide-btn" onclick="toggleOverhide()" title="Inibir shutdowns por sobrepressão">overhide</button>
     <button id="pause-btn" class="btn" onclick="toggleSimPause()"
       style="font-size:13px;padding:6px 20px;border:1px solid var(--yl);color:var(--yl);background:var(--bl);">
       ⏸ Pausar
@@ -584,7 +598,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
           <button id="mode-aprop" class="btn bbl bsm" style="flex:1"
             onclick="setAppMode('apropriacao')">📊 Apropriação</button>
         </div>
-        <div id="pv-mode-info" style="font-size:9px;background:#0a0f18;border:1px solid var(--bd);
+        <div id="pv-mode-info" style="font-size:9px;background:#181818;border:1px solid var(--bd);
           border-radius:3px;padding:4px 8px;margin-bottom:8px;color:var(--mu)">
           Repetitividade: ΔMF ≤ <b id="pv-mode-lim" style="color:var(--cy)">0,0005</b>
           &nbsp;|&nbsp; Corridas: até <b style="color:var(--cy)">6</b>,
@@ -630,7 +644,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
               <td style="text-align:center;white-space:nowrap"><button class="btn bbl bsm" style="padding:2px 5px;font-size:10px" onclick="t2CalCapture(2)" title="Capturar vazão real atual do Tramo 2">⊕</button> <span id="t2-cal-ref-2" style="font-size:9px;color:var(--mu)">—</span></td></tr>
           </table>
           <button class="btn bbl bsm" onclick="t2SaveCalPoints()" style="width:100%;margin-bottom:5px">✓ Definir Pontos</button>
-          <div id="t2-flow-permissive" style="font-size:9px;line-height:1.5;margin-bottom:10px;padding:5px 7px;border:1px solid var(--bd);border-radius:3px;color:var(--mu);background:#07111d">
+          <div id="t2-flow-permissive" style="font-size:9px;line-height:1.5;margin-bottom:10px;padding:5px 7px;border:1px solid var(--bd);border-radius:3px;color:var(--mu);background:#191919">
             Permissivo de vazão: defina os três pontos de Q.
           </div>
 
@@ -651,7 +665,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
         <!-- ══ TRAMO 3 — CORIOLIS (painel didático isolado) ══ -->
         <div id="t3-panel" style="display:none">
           <div class="sec" style="color:var(--cy);border-color:var(--cy)">Tramo 3 — Coriolis</div>
-          <div id="t3-status" style="font-size:10px;font-weight:700;padding:4px 8px;background:#04141f;border:1px solid #1e3a5f;border-radius:3px;margin-bottom:8px">Aguardando alinhamento ao prover</div>
+          <div id="t3-status" style="font-size:10px;font-weight:700;padding:4px 8px;background:#1b1b1b;border:1px solid #1e3a5f;border-radius:3px;margin-bottom:8px">Aguardando alinhamento ao prover</div>
 
           <div style="font-size:9px;color:var(--mu);margin-bottom:6px">
             Critério: <b style="color:var(--cy)">0,4%</b> entre corridas válidas (apropriação).
@@ -673,7 +687,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
           <div class="sec">Permissivos de Aprovação</div>
           <div id="t3-permissives" style="display:flex;flex-direction:column;gap:2px;margin-bottom:8px"></div>
 
-          <div style="display:flex;justify-content:space-between;font-size:10px;background:#050e18;border:1px solid var(--bd);border-radius:3px;padding:5px 8px;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:10px;background:#161616;border:1px solid var(--bd);border-radius:3px;padding:5px 8px;margin-bottom:8px">
             <span style="color:var(--mu)">Erro última prova (ΔMF):</span>
             <b id="t3-last-error" style="font-family:'Courier New',monospace;color:var(--mu)">—</b>
           </div>
@@ -723,10 +737,10 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 
         <div class="sec" style="margin-top:10px">Resultado</div>
         <div class="rsbanner" id="rs-banner">—</div>
-        <div id="pv-stats-box" style="display:none;background:#050e18;border:1px solid var(--bd);
+        <div id="pv-stats-box" style="display:none;background:#161616;border:1px solid var(--bd);
           border-radius:3px;padding:6px 9px;margin-top:6px;font-size:10px;">
           <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-            <span style="color:var(--mu)">ΔMF (Range)</span>
+            <span id="pv-delta-lbl" style="color:var(--mu)">ΔMF (Range)</span>
             <span id="pv-delta-mf" style="font-family:'Courier New',monospace;color:var(--cy)">—</span>
           </div>
           <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
@@ -741,6 +755,10 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
             <span style="color:var(--mu)">Corridas válidas</span>
             <span id="pv-valid-disp" style="font-family:'Courier New',monospace;color:var(--cy)">—</span>
           </div>
+          <div id="pv-discard-row" style="display:none;justify-content:space-between;margin-bottom:3px;">
+            <span style="color:var(--mu)">Descartes (máx. 1)</span>
+            <span id="pv-discard-disp" style="font-family:'Courier New',monospace;color:var(--yl)">—</span>
+          </div>
           <div id="pv-presume-warn" style="display:none;margin-top:4px;padding:3px 6px;
             background:#200000;border:1px solid var(--rd);border-radius:2px;
             font-size:9px;color:var(--rd);font-weight:700;">
@@ -753,7 +771,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
       </div>
 
       <div id="pv-right">
-        <div class="sec">Corridas — Detalhe</div>
+        <div class="proof-record">
+        <div class="proof-record-title"><span>PROVA ATUAL — Corridas</span><span id="proof-current-meta">Aguardando prova</span></div>
         <table class="rtbl">
           <thead>
             <tr>
@@ -766,12 +785,16 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
         <!-- Acumulado range (REQ-CP-012) -->
         <div id="pv-range-box" style="display:flex;gap:16px;padding:6px 4px;
           font-size:10px;margin-top:4px;flex-wrap:wrap;">
-          <span style="color:var(--mu)">ΔMF acumulado: <b id="pv-range-acc" style="font-family:'Courier New',monospace;color:var(--cy)">—</b></span>
+          <span style="color:var(--mu)"><span id="pv-range-lbl">ΔMF acumulado</span>: <b id="pv-range-acc" style="font-family:'Courier New',monospace;color:var(--cy)">—</b></span>
           <span style="color:var(--mu)">Válidas: <b id="pv-valid-acc" style="font-family:'Courier New',monospace;color:var(--gr)">0</b> / 5 necessárias</span>
           <span style="color:var(--mu)">Faltam: <b id="pv-remain-acc" style="font-family:'Courier New',monospace;color:var(--yl)">5</b> corridas válidas</span>
         </div>
-        <div class="sec" style="margin-top:12px">MF Histórico (últimas provas)</div>
-        <div id="mf-hist" style="font-size:11px;color:var(--mu)">Nenhuma prova concluída.</div>
+        <div id="proof-current-summary" class="proof-record-summary"></div>
+        </div>
+        <div id="proof-consultation-history"></div>
+        <details><summary style="font-size:10px;color:var(--mu);cursor:pointer">MF Histórico por tramo</summary>
+        <div class="sec" style="margin-top:6px">MF Histórico (últimas provas)</div>
+        <div id="mf-hist" style="font-size:11px;color:var(--mu)">Nenhuma prova concluída.</div></details>
       </div>
     </div>
   </div>
@@ -864,10 +887,10 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 
   <!-- ── TAB: Master Run (calibração ultrassônico × turbina master) ── -->
   <div id="tab-masterrun" class="tpane">
-    <div style="flex:1;overflow-y:auto;padding:12px 16px;background:#060b11">
+    <div style="flex:1;overflow-y:auto;padding:12px 16px;background:#141414">
 
       <!-- P&ID do tramo de calibração (Master Meter Run) -->
-      <div style="background:#04090f;border:1px solid #1e3050;border-radius:6px;padding:6px 8px;margin-bottom:14px;overflow-x:auto">
+      <div style="background:#121212;border:1px solid #1e3050;border-radius:6px;padding:6px 8px;margin-bottom:14px;overflow-x:auto">
         <div style="font-size:9px;color:var(--or);font-weight:700;letter-spacing:1px;margin-bottom:2px">P&ID — TRAMO DE CALIBRAÇÃO (MASTER METER RUN) · 1923-FCAS-CAL</div>
         <svg id="mr-pid" viewBox="0 0 1080 360" style="width:100%;min-width:740px;height:auto;display:block"></svg>
       </div>
@@ -892,13 +915,13 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
         <div>
           <div class="sec" style="color:var(--cy)">📋 Certificado de Calibração — Turbina Master</div>
           <div style="font-size:9px;color:var(--mu);margin-bottom:6px">Referência oficial. Use para conferir os dados importados no CV.</div>
-          <div id="mr-cert" style="background:#04141f;border:1px solid #1e3a5f;border-radius:4px;padding:8px 10px;margin-bottom:12px">
+          <div id="mr-cert" style="background:#1b1b1b;border:1px solid #1e3a5f;border-radius:4px;padding:8px 10px;margin-bottom:12px">
             <div style="font-size:10px;color:var(--mu)">Disponível após a importação.</div>
           </div>
 
           <div class="sec">Calibração</div>
-          <div id="mr-status" style="font-size:11px;font-weight:700;padding:5px 8px;background:#04141f;border:1px solid #1e3a5f;border-radius:3px;margin-bottom:8px">Importe os dados da Turbina Master para começar</div>
-          <div style="display:flex;justify-content:space-between;font-size:10px;background:#050e18;border:1px solid var(--bd);border-radius:3px;padding:5px 8px;margin-bottom:10px">
+          <div id="mr-status" style="font-size:11px;font-weight:700;padding:5px 8px;background:#1b1b1b;border:1px solid #1e3a5f;border-radius:3px;margin-bottom:8px">Importe os dados da Turbina Master para começar</div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;background:#161616;border:1px solid var(--bd);border-radius:3px;padding:5px 8px;margin-bottom:10px">
             <span style="color:var(--mu)">Erro entre corridas (critério ≤ 0,05%):</span>
             <b id="mr-result" style="font-family:'Courier New',monospace;color:var(--mu)">—</b>
           </div>
@@ -921,7 +944,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 
   <!-- ── TAB: Certificação (avaliação final + relatório do aluno) ── -->
   <div id="tab-certificacao" class="tpane">
-    <div style="flex:1;overflow-y:auto;padding:12px 16px;background:#060b11">
+    <div style="flex:1;overflow-y:auto;padding:12px 16px;background:#141414">
 
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:4px;flex-wrap:wrap">
         <span style="font-size:13px;font-weight:700;color:var(--or);text-transform:uppercase;letter-spacing:1px">Avaliação Final — Certificação</span>
@@ -1002,7 +1025,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
     <div style="text-align:center;margin:14px 0 18px">
       <span style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:1px">Abertura atual</span><br>
       <span id="fcv3401-cur" style="font-size:32px;font-family:'Courier New',monospace;color:var(--or);font-weight:700">0%</span>
-      <div style="margin:8px auto 0;width:180px;height:6px;background:#0b1820;border-radius:3px;border:1px solid #1e3050">
+      <div style="margin:8px auto 0;width:180px;height:6px;background:#1f1f1f;border-radius:3px;border:1px solid #1e3050">
         <div id="fcv3401-bar" style="height:100%;width:0%;background:var(--or);border-radius:3px;transition:width .3s"></div>
       </div>
     </div>
@@ -1027,7 +1050,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
     <div style="text-align:center;margin:14px 0 18px">
       <span style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:1px">Abertura atual</span><br>
       <span id="fcvtrain-cur" style="font-size:32px;font-family:'Courier New',monospace;color:var(--cy);font-weight:700">0%</span>
-      <div style="margin:8px auto 0;width:180px;height:6px;background:#0b1820;border-radius:3px;border:1px solid #1e3050">
+      <div style="margin:8px auto 0;width:180px;height:6px;background:#1f1f1f;border-radius:3px;border:1px solid #1e3050">
         <div id="fcvtrain-bar" style="height:100%;width:0%;background:var(--cy);border-radius:3px;transition:width .3s"></div>
       </div>
     </div>
@@ -1081,13 +1104,13 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
     <div id="kcurve-table-wrap"></div>
 
     <!-- Indicador de K ativo (vazão atual do tramo selecionado) -->
-    <div id="kcurve-live" style="font-size:10px;color:var(--mu);background:#050d18;
+    <div id="kcurve-live" style="font-size:10px;color:var(--mu);background:#161616;
       border:1px solid var(--bd);border-radius:3px;padding:5px 10px;margin-top:6px;">
       —
     </div>
 
     <!-- CV — Sinais da Turbina Master (Tramo 2): Input 1 / Input 2 + preamp -->
-    <div style="margin-top:8px;background:#04141f;border:1px solid #1e3a5f;border-radius:4px;padding:8px 10px">
+    <div style="margin-top:8px;background:#1b1b1b;border:1px solid #1e3a5f;border-radius:4px;padding:8px 10px">
       <div style="font-size:10px;font-weight:700;color:var(--cy);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">
         CV — Sinais da Turbina Master (Tramo 2)
       </div>
@@ -1329,8 +1352,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Arial,sans-seri
 const BASE_VOL       = 0.454323; // m³ — volume de referência do Compact Prover (454,323 L)
 const RUNS_MAX       = 6;       // REQ-CP-001 — máximo de corridas
 const RUNS_VALID_REQ = 5;       // REQ-CP-001 — corridas válidas necessárias
-// Limites de repetitividade — ΔMF absoluto (REQ-CP-004)
-const REPEAT_FISCAL  = 0.0005;  // 0,05% → Fiscal / Custódia
+// Limites de repetitividade (REQ-CP-004): fiscal = desvio relativo sucessivo; demais = ΔMF absoluto.
+const REPEAT_FISCAL  = 0.0005;  // 0,05% entre corridas sucessivas → Fiscal / Custódia
 const REPEAT_APROP   = 0.004;   // 0,40% → Apropriação
 // Falha presumida (REQ-CP-008/009)
 const PRESUME_FISCAL = 0.0025;  // 0,25% — Fiscal
@@ -1490,7 +1513,7 @@ const S = {
     mfStats: null,
     // REQ-CP-001/004 — Modo de aplicação e limites
     appMode: 'fiscal', // 'fiscal' | 'apropriacao'
-    repeatLim: 0.0005, // ΔMF absoluto (atualizado por appMode)
+    repeatLim: 0.0005, // critério atualizado por appMode
     // REQ-CP-010/011 — Condições de referência na prova
     QrefProving: 0,    // m³/h do tramo no início da prova
     TrefProving: 0,    // °C na largada
@@ -1537,6 +1560,9 @@ const S = {
 
   overpressure: {
     hAlarmRaised: false,   // flag: alarme H já disparado neste evento
+    overrideActive: false, // overhide: inibe shutdowns automáticos por sobrepressão
+    pt3001InhibitRaised: false,
+    pt3401InhibitRaised: false,
   },
 
   lowflow: {
@@ -2434,6 +2460,101 @@ function drawApprovalAttempt() {
   return n;
 }
 
+// Maior desvio relativo entre MFs consecutivos, na ordem das corridas mantidas.
+function fiscalSuccessiveDeviation(runs) {
+  if (runs.length < 2) return null;
+  let greatest = 0;
+  for (let i = 1; i < runs.length; i++) {
+    const previousMF = runs[i - 1].MF;
+    if (!(previousMF > 0)) return Infinity;
+    greatest = Math.max(greatest, Math.abs(runs[i].MF - previousMF) / previousMF);
+  }
+  return greatest;
+}
+
+function repeatabilityText(value, fiscalT1) {
+  if (value == null) return '—';
+  return fiscalT1 ? `${(value * 100).toFixed(4)}%` : value.toFixed(5);
+}
+
+// Até seis corridas: manter cinco válidas, descartando no máximo uma corrida.
+// Se houver seis válidas, escolher o único descarte que minimiza o maior desvio sucessivo.
+function selectFiscalRuns(validRuns) {
+  if (validRuns.length <= RUNS_VALID_REQ) return validRuns.slice();
+  let bestRuns = null;
+  let bestDeviation = Infinity;
+  for (let skip = 0; skip < validRuns.length; skip++) {
+    const candidate = validRuns.filter((_, index) => index !== skip);
+    const deviation = fiscalSuccessiveDeviation(candidate);
+    if (!bestRuns || deviation < bestDeviation) {
+      bestRuns = candidate;
+      bestDeviation = deviation;
+    }
+  }
+  return bestRuns;
+}
+
+// Registros de apresentação: independentes do estado operacional e dos critérios.
+const proofConsultation = { current: null, previous: [], startedAt: null, trainId: null };
+function beginProofConsultation(trainId) {
+  if (proofConsultation.current) {
+    proofConsultation.previous.unshift(proofConsultation.current);
+    proofConsultation.previous = proofConsultation.previous.slice(0, 2);
+  }
+  proofConsultation.current = null;
+  proofConsultation.trainId = trainId;
+  proofConsultation.startedAt = new Date().toLocaleTimeString('pt-BR');
+}
+function renderProofConsultation() {
+  const pv = S.prover;
+  const meta = proofConsultation.startedAt
+    ? `Tramo ${proofConsultation.trainId} · ${pv.appMode === 'fiscal' ? 'Fiscal' : 'Apropriação'} · ${proofConsultation.startedAt}`
+    : 'Aguardando prova';
+  el('proof-current-meta').textContent = meta;
+  const summary = pv.phase === 'done' && pv.mfStats
+    ? el('rs-banner').textContent + ' · ' + el('pv-repeat-lbl').textContent
+    : proofConsultation.startedAt ? (pv.phase === 'idle' ? 'Prova interrompida' : el('pv-phase').textContent) : 'Nenhuma prova iniciada.';
+  el('proof-current-summary').textContent = summary;
+  if (proofConsultation.startedAt) {
+    // Cópia do que foi exibido; não reutiliza corridas ou objetos da lógica.
+    proofConsultation.current = Object.freeze({
+      meta, summary,
+      table: el('run-tbody').closest('table').outerHTML.replace(/ id="[^"]*"/g, ''),
+      accumulated: el('pv-range-box').outerHTML.replace(/ id="[^"]*"/g, '')
+    });
+  }
+  const host = el('proof-consultation-history');
+  host.replaceChildren();
+  for (let i = 0; i < 2; i++) {
+    const record = proofConsultation.previous[i];
+    const card = document.createElement('section');
+    card.className = 'proof-record';
+    const title = document.createElement('div');
+    title.className = 'proof-record-title';
+    const label = document.createElement('span');
+    label.textContent = `${i + 1}ª ANTERIOR — Somente consulta`;
+    const info = document.createElement('span');
+    info.textContent = record ? record.meta : 'Aguardando registro';
+    title.append(label, info);
+    card.append(title);
+    if (record) {
+      const content = document.createElement('div');
+      content.innerHTML = record.table + record.accumulated;
+      card.append(content);
+      const result = document.createElement('div');
+      result.className = 'proof-record-summary';
+      result.textContent = record.summary;
+      card.append(result);
+    } else {
+      const empty = document.createElement('div');
+      empty.className = 'proof-record-empty';
+      empty.textContent = 'A prova anterior aparecerá aqui ao iniciar uma nova prova.';
+      card.append(empty);
+    }
+    host.append(card);
+  }
+}
+
 function startProving() {
   if (!S.provingTrain) {
     raiseAlarm('PRV-000','Prova bloqueada: nenhum tramo alinhado ao prover','md'); return;
@@ -2509,6 +2630,8 @@ function startProving() {
     raiseAlarm('PRV-005',
       `REQ-CP-011: Vazão ${Math.round(Qtr)} m³/h fora de ±10% do ponto nominal ${Qnom} m³/h — prova prosseguirá com referência em ${Math.round(Qtr)} m³/h`,'md');
 
+  beginProofConsultation(id);
+
   S.prover = {
     phase: 'startup', startupTick:0, stabTick:0, runIdx:0,
     runs:[], N:0, Nstart:0, startFrac:0, endFrac:0,
@@ -2523,6 +2646,7 @@ function startProving() {
     PrefProving: S.proc.P,
     runQsum: 0, runQcount: 0,
     runFaultFlags: [],
+    t1MFcenter: null,
   };
 
   // Sorteio de approval_attempt (com proteção contra ciclos longos consecutivos)
@@ -2688,8 +2812,8 @@ function tickProver() {
       const CT   = 1 + (S.proc.T - 20) * 0.00065;
       const CP   = 1 + (S.proc.P - 800) * 0.00000012;
       const Vref = BASE_VOL * CT * CP;
-      const Vmed = Neff / Keff;
-      const MF   = Vref / Vmed;
+      let Vmed = Neff / Keff;
+      let MF   = Vref / Vmed;
 
       // Vazão média da corrida
       const Qavg = pv.runQcount > 0 ? pv.runQsum / pv.runQcount : Qeff;
@@ -2704,6 +2828,26 @@ function tickProver() {
 
       // Corrida inválida se: Q fora de faixa, pulso perdido, chatter severo, bolha de gás
       const runValid = qOk && !pulseLostFlag && !chatterSevere && !gasBlob;
+
+      // Tramo 1: a tentativa sorteada já apresenta repetitividade desde a 1ª corrida válida.
+      // Nas tentativas anteriores, a dispersão diminui a cada nova prova, mas permanece acima do limite.
+      if (S.provingTrain === '01' && runValid) {
+        const validIdx = pv.runs.filter(r => r.valid).length;
+        if (pv.t1MFcenter === null) pv.t1MFcenter = MF;
+        const attemptsUntilApproval = Math.max(0,
+          S.provingMeta.approvalAttempt - S.provingMeta.cycleCount);
+        const plannedPass = attemptsUntilApproval === 0;
+        const dispersionFactor = plannedPass ? 0.8 : 1 + 0.35 * attemptsUntilApproval;
+        const spread = pv.repeatLim * (pv.appMode === 'fiscal' ? pv.t1MFcenter : 1)
+          * dispersionFactor;
+        // Pequenas variações entre corridas, preservando o desvio máximo planejado da prova.
+        const runVariation = [-0.5, 0.5, -0.38, 0.32, -0.43, 0.46];
+        const offset = runVariation[validIdx] * spread;
+        const targetMF = pv.t1MFcenter + offset;
+        Neff = Vref * Keff / targetMF;
+        Vmed = Neff / Keff;
+        MF = Vref / Vmed;
+      }
 
       pv.runs.push({
         idx:      pv.runIdx + 1,
@@ -2723,10 +2867,14 @@ function tickProver() {
       const nValid = pv.runs.filter(r => r.valid).length;
       const totalRuns = pv.runIdx;
 
-      // REQ-CP-005 — Verificar se já temos 5 válidas com ΔMF dentro do limite
+      // REQ-CP-005 — Verificar se as 5 válidas já atendem ao critério do modo.
       if (nValid >= RUNS_VALID_REQ) {
-        const validMFs = pv.runs.filter(r => r.valid).map(r => r.MF).slice(0, RUNS_VALID_REQ);
-        const dMF = Math.max(...validMFs) - Math.min(...validMFs);
+        const validRuns = pv.runs.filter(r => r.valid);
+        const fiscalT1 = S.provingTrain === '01' && pv.appMode === 'fiscal';
+        const dMF = fiscalT1
+          ? fiscalSuccessiveDeviation(selectFiscalRuns(validRuns))
+          : Math.max(...validRuns.slice(0, RUNS_VALID_REQ).map(r => r.MF))
+            - Math.min(...validRuns.slice(0, RUNS_VALID_REQ).map(r => r.MF));
         if (dMF <= pv.repeatLim) {
           // Stop early — já temos 5 válidas dentro do critério
           finishProving();
@@ -2762,6 +2910,7 @@ function finishProving() {
   const validRuns = allRuns.filter(r => r.valid);
   const nValid    = validRuns.length;
   const enough    = nValid >= RUNS_VALID_REQ;
+  const fiscalT1  = id === '01' && pv.appMode === 'fiscal';
 
   let pass       = false;
   let MFfinal    = null;
@@ -2769,12 +2918,12 @@ function finishProving() {
   let runsUsed   = [];
 
   if (enough) {
-    // REQ-CP-007 — Usar as primeiras 5 corridas válidas
-    runsUsed = validRuns.slice(0, RUNS_VALID_REQ);
+    // Fiscal: até um descarte; demais modos: primeiras 5 corridas válidas.
+    runsUsed = fiscalT1 ? selectFiscalRuns(validRuns) : validRuns.slice(0, RUNS_VALID_REQ);
     const MFs = runsUsed.map(r => r.MF);
     MFmin    = Math.min(...MFs);
     MFmax    = Math.max(...MFs);
-    deltaMF  = MFmax - MFmin;   // ΔMF absoluto (REQ-CP-004)
+    deltaMF  = fiscalT1 ? fiscalSuccessiveDeviation(runsUsed) : MFmax - MFmin;
     // REQ-CP-007 — MF final = média das 5 válidas
     MFfinal  = MFs.reduce((a, b) => a + b, 0) / MFs.length;
     // REQ-CP-005 — Aprovado se ΔMF ≤ limite
@@ -2782,10 +2931,11 @@ function finishProving() {
   } else {
     // Não chegou a 5 válidas → reprovado (REQ-CP-006)
     if (validRuns.length > 0) {
+      if (fiscalT1) runsUsed = validRuns.slice();
       const MFs = validRuns.map(r => r.MF);
       MFmin   = Math.min(...MFs);
       MFmax   = Math.max(...MFs);
-      deltaMF = MFmax - MFmin;
+      deltaMF = fiscalT1 ? fiscalSuccessiveDeviation(validRuns) : MFmax - MFmin;
       MFfinal = MFs.reduce((a, b) => a + b, 0) / MFs.length;
     }
     pass = false;
@@ -2820,30 +2970,6 @@ function finishProving() {
     }
     deltaMF = disp;
     pass = enough && perm.allOk && (disp <= T3_REPEAT);
-  } else if (enough) {
-    const shouldFail = meta.cycleCount < meta.approvalAttempt;
-    const shouldPass = meta.cycleCount >= meta.approvalAttempt;
-
-    if (shouldFail && pass) {
-      // Forçar reprovação: injetar dispersão realista (ΔMF ≈ 2.5× limite)
-      const spread = repeatLim * 2.5;
-      runsUsed.forEach((r, i) => { r.MF += (i % 2 === 0 ? 1 : -1) * spread / 2; });
-      const fMFs = runsUsed.map(r => r.MF);
-      MFmin = Math.min(...fMFs); MFmax = Math.max(...fMFs);
-      deltaMF = MFmax - MFmin;
-      MFfinal = fMFs.reduce((a, b) => a + b, 0) / fMFs.length;
-      pass = false;
-    }
-
-    if (shouldPass && !pass) {
-      // Forçar aprovação: comprimir dispersão para ΔMF ≈ 0.4× limite
-      const tight = repeatLim * 0.4;
-      const mid = MFfinal ?? runsUsed.map(r => r.MF).reduce((a, b) => a + b, 0) / runsUsed.length;
-      runsUsed.forEach((r, i) => { r.MF = mid + (i % 2 === 0 ? 1 : -1) * tight / 2; });
-      MFmin = mid - tight / 2; MFmax = mid + tight / 2;
-      deltaMF = tight; MFfinal = mid;
-      pass = true;
-    }
   }
 
   // Atualizar meta após resultado (apenas T1 — T2/T3 não usam o sorteio de aprovação)
@@ -2861,6 +2987,7 @@ function finishProving() {
   // Marcar pass/fail por corrida
   allRuns.forEach(r => {
     if (!r.valid)              { r.pass = false; return; }
+    r.discarded = fiscalT1 && !runsUsed.includes(r);
     if (!runsUsed.includes(r)) { r.pass = null;  return; } // válida mas não usada (6ª extra)
     r.pass = pass;
   });
@@ -2889,10 +3016,11 @@ function finishProving() {
     : null;
   pv.mfStats = {
     MFmin, MFmax, MFfinal,
-    deltaMF,   // ΔMF absoluto
+    deltaMF,   // fiscal T1: desvio relativo sucessivo; demais: ΔMF absoluto
     repeatLim,
     nValid,
     nTotal:     allRuns.length,
+    discardedRuns: fiscalT1 ? allRuns.filter(r => !runsUsed.includes(r)).map(r => r.idx) : [],
     pass,
     presumedFail,
     appMode:    pv.appMode,
@@ -2935,13 +3063,15 @@ function finishProving() {
   } else if (!pass) {
     const reason = !enough
       ? `Corridas válidas insuficientes: ${nValid}/${RUNS_VALID_REQ}`
-      : `ΔMF=${deltaMF.toFixed(5)} > Limite ${repeatLim.toFixed(5)}`;
+      : fiscalT1
+        ? `Maior desvio sucessivo=${repeatabilityText(deltaMF, true)} > Limite ${repeatabilityText(repeatLim, true)}`
+        : `ΔMF=${deltaMF.toFixed(5)} > Limite ${repeatLim.toFixed(5)}`;
     raiseAlarm('PRV-010',
       `REQ-CP-006: Prova REPROVADA — Tramo ${id} | ${reason}`, 'hi');
   } else {
     raiseAlarm('PRV-011',
       `REQ-CP-005: Prova APROVADA — Tramo ${id}` +
-      ` | MF Final: ${MFfinal.toFixed(6)} | ΔMF: ${deltaMF.toFixed(5)}` +
+      ` | MF Final: ${MFfinal.toFixed(6)} | ${fiscalT1 ? 'Maior desvio sucessivo' : 'ΔMF'}: ${repeatabilityText(deltaMF, fiscalT1)}` +
       ` | ${nValid} corridas válidas`, 'lo');
   }
 
@@ -3007,6 +3137,34 @@ function triggerShutdown(reason, cause, procedure) {
   ov.style.display = 'flex';
 }
 
+function toggleOverhide() {
+  if (!S.overpressure.overrideActive) {
+    const pwd = window.prompt('Senha para ativar overhide:');
+    if (pwd !== 'flowcore') {
+      raiseAlarm('OVR-001', 'OVERHIDE recusado: senha inválida.', 'md');
+      return;
+    }
+    S.overpressure.overrideActive = true;
+    raiseAlarm('OVR-ON', 'OVERHIDE ativo: shutdowns por sobrepressão inibidos. Alarmes permanecem ativos.', 'hi');
+  } else {
+    S.overpressure.overrideActive = false;
+    raiseAlarm('OVR-OFF', 'OVERHIDE desativado: proteção por sobrepressão restabelecida.', 'md');
+  }
+  updateOverhideButton();
+  syncPresence();
+}
+
+function updateOverhideButton() {
+  const btn = el('overhide-btn');
+  if (!btn) return;
+  const active = !!S.overpressure.overrideActive;
+  btn.classList.toggle('on', active);
+  btn.textContent = active ? 'overhide ON' : 'overhide';
+  btn.title = active
+    ? 'Overhide ativo: shutdowns por sobrepressão inibidos'
+    : 'Inibir shutdowns por sobrepressão';
+}
+
 function createStateSnapshot() {
   return {
     proc:         JSON.parse(JSON.stringify(S.proc)),
@@ -3028,7 +3186,12 @@ function createStateSnapshot() {
     warmup:       { ...S.warmup, active:false, stabilityState:'stable' },
     trendBuf:     JSON.parse(JSON.stringify(S.trendBuf)),
     trendTick:    S.trendTick,
-    overpressure: { hAlarmRaised:false },
+    overpressure: {
+      hAlarmRaised:false,
+      overrideActive:S.overpressure.overrideActive,
+      pt3001InhibitRaised:false,
+      pt3401InhibitRaised:false,
+    },
     lowflow:      { lAlarmRaised:false, llAlarmRaised:false },
     shutdown:     { active:false, deadEndTick:0 },
     t2:           JSON.parse(JSON.stringify(T2)),   // estado do Tramo 2 (isolado)
@@ -3167,7 +3330,12 @@ function restartSimulation() {
   S.session     = { t0:Date.now(), provedTrains:{}, alarmsTotal:0, decisionsLog:[], lastScore:null,
     esdHistory:[...prevEsd, { type:'RESTARTED', ts:new Date().toISOString() }] };
   S.shutdown    = { active:false, deadEndTick:0 };
-  S.overpressure = { hAlarmRaised:false };
+  S.overpressure = {
+    hAlarmRaised:false,
+    overrideActive:false,
+    pt3001InhibitRaised:false,
+    pt3401InhibitRaised:false,
+  };
   S.lowflow     = { lAlarmRaised:false, llAlarmRaised:false };
   S.trendBuf    = { P:[], T:[], Q:[] };
   S.trendTick   = 0;
@@ -3575,7 +3743,11 @@ function tick() {
       S.proc.P += (750 - S.proc.P) * 0.015;
       S.shutdown.deadEndTick = 0;
     }
-    if (S.proc.P >= 1500) {
+    if (S.proc.P >= 1500 && S.overpressure.overrideActive && !S.overpressure.pt3001InhibitRaised) {
+      S.overpressure.pt3001InhibitRaised = true;
+      raiseAlarm('OVR-PT3001', 'OVERHIDE: shutdown por SOBREPRESSÃO PT-3001 inibido — ' + Math.round(S.proc.P) + ' kPa', 'hi');
+    }
+    if (S.proc.P >= 1500 && !S.overpressure.overrideActive) {
       const cause = !S.valves['MOV-3402']
         ? 'MOV-3401 aberta com MOV-3402 fechada criou volume morto pressurizado no loop do prover.'
         : `MOV-3402 aberta mas FCV-3401 em ${Math.round(_fcv3401)}% (< 20%) — vazão insuficiente para alívio de pressão.`;
@@ -3584,6 +3756,7 @@ function tick() {
     }
   } else if (!S.valves['MOV-3401']) {
     S.shutdown.deadEndTick = 0;
+    S.overpressure.pt3001InhibitRaised = false;
   }
 
   // ── Lógica de sobrepressão PT-3401 ──
@@ -3624,7 +3797,11 @@ function tick() {
       raiseAlarm('PT-3401', 'ALARME H: PRESSÃO ALTA NO SISTEMA — ' + Math.round(S.proc.P3401) + ' kPa', 'hi');
     }
     // Alarme HH — 1500 kPa → shutdown
-    if (S.proc.P3401 >= 1500) {
+    if (S.proc.P3401 >= 1500 && S.overpressure.overrideActive && !S.overpressure.pt3401InhibitRaised) {
+      S.overpressure.pt3401InhibitRaised = true;
+      raiseAlarm('OVR-PT3401', 'OVERHIDE: shutdown por SOBREPRESSÃO PT-3401 inibido — ' + Math.round(S.proc.P3401) + ' kPa', 'hi');
+    }
+    if (S.proc.P3401 >= 1500 && !S.overpressure.overrideActive) {
       const cause = _deadhead
         ? `Tramo ${S.provingTrain} alinhado ao prover com as válvulas do prover FECHADAS (MOV-3401) e a MOV/FCV do tramo abertas — fluxo sem caminho de circulação no provador.`
         : (_opInsuf
@@ -3646,7 +3823,10 @@ function tick() {
         S.session.decisionsLog.push({ ts: new Date().toISOString(), action: 'OVERPRESSURE_PT3401_NORMALIZED' });
       }
     }
-    if (S.proc.P3401 < 1300) S.overpressure.hAlarmRaised = false;
+    if (S.proc.P3401 < 1300) {
+      S.overpressure.hAlarmRaised = false;
+      S.overpressure.pt3401InhibitRaised = false;
+    }
   }
 
   // ── Prover engine ──
@@ -3737,6 +3917,7 @@ function updateStatusBar() {
 
   // ── Painel lateral de instrumentação ──
   updateInstrPanel();
+  updateOverhideButton();
 }
 
 function updateInstrPanel() {
@@ -3877,15 +4058,21 @@ function renderProvingPane() {
 
   // ── Tabela de corridas — 6 linhas (REQ-CP-012) ──
   // Calcula MF médio provisório das corridas válidas (para Δ desvio)
-  const validMFs = pv.runs.filter(r => r.valid).map(r => r.MF);
+  const validRuns = pv.runs.filter(r => r.valid);
+  const validMFs = validRuns.map(r => r.MF);
+  const fiscalT1 = S.provingTrain === '01' && pv.appMode === 'fiscal';
   const pvMean   = validMFs.length
     ? validMFs.reduce((a, b) => a + b, 0) / validMFs.length : null;
 
-  // Acumulado de ΔMF atual
+  // Acumulado do critério ativo (fiscal: maior desvio relativo sucessivo).
   let accDelta = null;
   if (validMFs.length >= 2) {
-    accDelta = Math.max(...validMFs) - Math.min(...validMFs);
+    accDelta = fiscalT1
+      ? fiscalSuccessiveDeviation(selectFiscalRuns(validRuns))
+      : Math.max(...validMFs) - Math.min(...validMFs);
   }
+  el('pv-range-lbl').textContent = fiscalT1 ? 'Maior desvio sucessivo' : 'ΔMF acumulado';
+  el('pv-delta-lbl').textContent = fiscalT1 ? 'Maior desvio sucessivo' : 'ΔMF (Range)';
 
   const tbody = el('run-tbody');
   tbody.innerHTML = '';
@@ -3906,14 +4093,20 @@ function renderProvingPane() {
       const devStr = pvMean != null
         ? ((r.MF - pvMean) >= 0 ? '+' : '') + (r.MF - pvMean).toFixed(5)
         : '—';
-      const devColor = pvMean != null && Math.abs(r.MF - pvMean) > pv.repeatLim * 0.5
-        ? 'var(--yl)' : 'var(--gr)';
+      // O desvio em relação à média é apenas informativo no fiscal; o critério usa pares sucessivos.
+      const devColor = fiscalT1 ? 'var(--mu)'
+        : pvMean != null && Math.abs(r.MF - pvMean) > pv.repeatLim * 0.5
+          ? 'var(--yl)' : 'var(--gr)';
 
       let badgeClass, statusText;
       if (!r.valid) {
         row.className = 'rinv';
         badgeClass = 'inv';
         statusText = '⚠ INVÁLIDA';
+      } else if (r.discarded) {
+        row.className = 'rinv';
+        badgeClass = 'inv';
+        statusText = 'DESCARTADA';
       } else if (r.pass === true) {
         row.className = 'rpass';
         badgeClass = 'ok';
@@ -3944,7 +4137,7 @@ function renderProvingPane() {
   }
 
   // ── Acumulados abaixo da tabela (REQ-CP-012) ──
-  el('pv-range-acc').textContent  = accDelta != null ? accDelta.toFixed(5) : '—';
+  el('pv-range-acc').textContent  = repeatabilityText(accDelta, fiscalT1);
   el('pv-range-acc').style.color  = accDelta != null && accDelta > pv.repeatLim ? 'var(--rd)' : 'var(--cy)';
   el('pv-valid-acc').textContent  = nValid;
   el('pv-valid-acc').style.color  = nValid >= RUNS_VALID_REQ ? 'var(--gr)' : 'var(--yl)';
@@ -3955,28 +4148,33 @@ function renderProvingPane() {
   const banner = el('rs-banner');
   if (pv.phase === 'done' && pv.mfStats) {
     const st = pv.mfStats;
+    const resultFiscalT1 = st.trainId === '01' && st.appMode === 'fiscal';
     banner.className = 'rsbanner on ' + (st.pass ? 'pass' : 'fail');
     banner.textContent = st.pass
       ? `✓ PROVA APROVADA — MF Final: ${fmt6(st.MFfinal)}`
       : !enough(st)
         ? `✕ REPROVADA — Corridas válidas: ${st.nValid}/${RUNS_VALID_REQ}`
-        : `✕ REPROVADA — ΔMF ${st.deltaMF.toFixed(5)} > Lim ${st.repeatLim.toFixed(5)}`;
+        : `✕ REPROVADA — ${resultFiscalT1 ? 'Desvio sucessivo' : 'ΔMF'} ${repeatabilityText(st.deltaMF, resultFiscalT1)} > Lim ${repeatabilityText(st.repeatLim, resultFiscalT1)}`;
 
     // Caixa de stats detalhada (REQ-CP-012)
     el('pv-stats-box').style.display = 'block';
-    el('pv-delta-mf').textContent  = st.deltaMF != null ? st.deltaMF.toFixed(5) : '—';
+    el('pv-delta-mf').textContent  = repeatabilityText(st.deltaMF, resultFiscalT1);
     el('pv-delta-mf').style.color  = st.deltaMF <= st.repeatLim ? 'var(--gr)' : 'var(--rd)';
-    el('pv-lim-disp').textContent  = st.repeatLim.toFixed(5) +
+    el('pv-lim-disp').textContent  = repeatabilityText(st.repeatLim, resultFiscalT1) +
       ` (${st.appMode === 'fiscal' ? 'Fiscal' : 'Apropriação'})`;
     el('pv-mf-final').textContent  = st.MFfinal != null ? fmt6(st.MFfinal) : '—';
     el('pv-valid-disp').textContent = `${st.nValid} / ${st.nTotal} corridas`;
+    el('pv-discard-row').style.display = resultFiscalT1 ? 'flex' : 'none';
+    el('pv-discard-disp').textContent = st.discardedRuns.length
+      ? st.discardedRuns.map(idx => `#${idx}`).join(', ') + (st.discardedRuns.length > 1 ? ' — excede máximo' : '')
+      : 'Nenhum';
 
     const pw = el('pv-presume-warn');
     pw.style.display = st.presumedFail ? 'block' : 'none';
 
     el('pv-repeat-lbl').textContent =
-      `ΔMF: ${st.deltaMF != null ? st.deltaMF.toFixed(5) : '—'}` +
-      `  |  Critério (${st.appMode === 'fiscal' ? '0,0500%' : '0,4000%'}): ≤ ${st.repeatLim.toFixed(5)}`;
+      `${resultFiscalT1 ? 'Maior desvio sucessivo' : 'ΔMF'}: ${repeatabilityText(st.deltaMF, resultFiscalT1)}` +
+      `  |  Limite: ≤ ${repeatabilityText(st.repeatLim, resultFiscalT1)}`;
     el('rep-btn').disabled = false;
   } else {
     banner.className = 'rsbanner';
@@ -3994,12 +4192,13 @@ function renderProvingPane() {
         const modeTag = h.appMode === 'fiscal' ? '⚖' : '📊';
         const mfVal   = h.MFfinal != null ? fmt6(h.MFfinal) : (h.MFavg != null ? fmt6(h.MFavg) : '—');
         return `<span style="color:${h.pass?'var(--gr)':'var(--rd)'}">` +
-          `${modeTag} ${mfVal} · ΔMF=${h.deltaMF!=null?h.deltaMF.toFixed(5):'?'} (${h.ts})</span>`;
+          `${modeTag} ${mfVal} · ${id2 === '01' && h.appMode === 'fiscal' ? 'Desvio sucessivo' : 'ΔMF'}=${repeatabilityText(h.deltaMF, id2 === '01' && h.appMode === 'fiscal')} (${h.ts})</span>`;
       }).join(' → ');
       histHtml += '</div>';
     }
   });
   el('mf-hist').innerHTML = histHtml || 'Nenhuma prova concluída.';
+  renderProofConsultation();
 }
 
 // Helper para banner de resultado
@@ -4057,7 +4256,7 @@ function qDisplay(px, py, tag, Q, flowing, side='right') {
   const lx2  = side==='right' ? bx    : bx+bw;
   return `
     <line x1="${lx1}" y1="${py}" x2="${lx2}" y2="${by+bh/2}" stroke="${bcol}" stroke-width="1" stroke-dasharray="3,2"/>
-    <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="#04090e" stroke="${bcol}" stroke-width="1.2" rx="3"/>
+    <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="#121212" stroke="${bcol}" stroke-width="1.2" rx="3"/>
     <rect x="${bx+1}" y="${by+1}" width="${bw-2}" height="13" fill="${flowing?'#120800':'#0a0f18'}" rx="2"/>
     <text x="${bx+5}" y="${by+11}" font-size="7.5" fill="${flowing?'#E55B13':'#2a3a50'}" font-family="Arial" font-weight="bold">${tag}</text>
     <line x1="${bx}" y1="${by+15}" x2="${bx+bw}" y2="${by+15}" stroke="${bcol}" stroke-width="0.7" opacity="0.6"/>
@@ -4206,7 +4405,7 @@ function proverBody(x1, y1, x2, y2, ppos) {
 
   return `
     <!-- ── Prover body ── -->
-    <rect x="${x1}" y="${y1}" width="${pw}" height="${ph}" fill="#04090f" stroke="${borderCol}" stroke-width="2" rx="6"/>
+    <rect x="${x1}" y="${y1}" width="${pw}" height="${ph}" fill="#121212" stroke="${borderCol}" stroke-width="2" rx="6"/>
     <rect x="${x1+4}" y="${y1+6}" width="${pw-8}" height="${ph-12}" fill="#030710" stroke="#1a2a3a" stroke-width="1" rx="3"/>
 
     <!-- S1 switch marker -->
@@ -4327,7 +4526,7 @@ function renderPID() {
 
   let s = `
   <!-- Background + grid -->
-  <rect width="1400" height="740" fill="#060b11"/>
+  <rect width="1400" height="740" fill="#141414"/>
 
   <!-- ═══ INLET HEADER ═══ -->
   <line x1="50" y1="${Y_IN}" x2="1350" y2="${Y_IN}" stroke="${inletCol}" stroke-width="5" ${anyFlow?'class="fpipe"':''}/>
@@ -4457,14 +4656,14 @@ function renderPID() {
   <text x="${(PV_X1+PV_X2)/2}" y="${PV_Y1-14}" text-anchor="middle" font-size="9" fill="#5a8aaa" font-family="Arial">LINHA PROVA — 1923-FL-003</text>
 
   <!-- ═══ Q TOTAL BOX (top right) ═══ -->
-  <rect x="1263" y="138" width="118" height="52" fill="#04090f" stroke="#1e3050" stroke-width="1" rx="4"/>
+  <rect x="1263" y="138" width="118" height="52" fill="#121212" stroke="#1e3050" stroke-width="1" rx="4"/>
   <text x="1322" y="152" text-anchor="middle" font-size="8.5" fill="#E55B13" font-family="Arial" font-weight="bold">Q DISPONÍVEL</text>
   <line x1="1263" y1="155" x2="1381" y2="155" stroke="#1e3050" stroke-width="1"/>
   <text x="1375" y="173" text-anchor="end" font-size="16" fill="${qRightDisplay<=300?'#e03030':qRightDisplay<=500?'#ffd600':'#00c97a'}" font-family="'Courier New',monospace" font-weight="bold">${qRightDisplay}</text>
   <text x="1270" y="183" font-size="8" fill="#5a7a9a" font-family="Arial">m³/h — fora dos tramos</text>
 
   <!-- ═══ LEGEND ═══ -->
-  <rect x="950" y="548" width="180" height="80" fill="#04090f" stroke="#1e3050" stroke-width="1" rx="4"/>
+  <rect x="950" y="548" width="180" height="80" fill="#121212" stroke="#1e3050" stroke-width="1" rx="4"/>
   <text x="1040" y="563" text-anchor="middle" font-size="9" fill="#E55B13" font-family="Arial" font-weight="bold">LEGENDA</text>
   <line x1="960" y1="567" x2="1122" y2="567" stroke="#1e3050" stroke-width="1"/>
   <line x1="960" y1="580" x2="990" y2="580" stroke="#00c97a" stroke-width="3"/>
@@ -4540,7 +4739,7 @@ function renderProverBanner() {
 
   return `
     <rect x="${bx}" y="${by}" width="${bw}" height="${bh}"
-          fill="#04090f" stroke="${statusCol}" stroke-width="1.5" rx="5" opacity="0.96"/>
+          fill="#121212" stroke="${statusCol}" stroke-width="1.5" rx="5" opacity="0.96"/>
     <rect x="${bx+8}" y="${by+bh-7}" width="${bw-16}" height="4"
           fill="#0a1824" rx="2"/>
     <rect x="${bx+8}" y="${by+bh-7}" width="${progW > 0 ? progW : 0}" height="4"
@@ -4641,15 +4840,17 @@ function generateReport() {
   if (pv.mfStats) {
     html += `<div class="rsec"><h3>Resultado da Última Prova — Tramo ${S.provingTrain}</h3>`;
     const st = pv.mfStats;
+    const fiscalT1 = st.trainId === '01' && st.appMode === 'fiscal';
     const modeLabel = st.appMode === 'fiscal' ? 'Fiscal / Custódia' : 'Apropriação';
-    const limLabel  = st.appMode === 'fiscal' ? '0,0500%' : '0,4000%';
+    const limLabel  = `${(st.repeatLim * 100).toFixed(4)}%`;
     html += `<div class="rrow"><span class="rkey">Modo de Aplicação</span><span class="rval" style="color:var(--cy)">${modeLabel}</span></div>`;
     html += `<div class="rrow"><span class="rkey">Corridas Executadas</span><span class="rval">${st.nTotal} de ${RUNS_MAX} máx</span></div>`;
     html += `<div class="rrow"><span class="rkey">Corridas Válidas</span><span class="rval" style="color:${st.nValid>=RUNS_VALID_REQ?'var(--gr)':'var(--rd)'}">${st.nValid} / ${RUNS_VALID_REQ} necessárias</span></div>`;
     html += `<div class="rrow"><span class="rkey">MF Mínimo</span><span class="rval">${st.MFmin!=null?fmt6(st.MFmin):'—'}</span></div>`;
     html += `<div class="rrow"><span class="rkey">MF Máximo</span><span class="rval">${st.MFmax!=null?fmt6(st.MFmax):'—'}</span></div>`;
-    html += `<div class="rrow"><span class="rkey">ΔMF (Range)</span><span class="rval" style="color:${st.deltaMF<=st.repeatLim?'var(--gr)':'var(--rd)'}">${st.deltaMF!=null?st.deltaMF.toFixed(5):'—'}</span></div>`;
-    html += `<div class="rrow"><span class="rkey">Limite ΔMF (${limLabel})</span><span class="rval">${st.repeatLim.toFixed(5)}</span></div>`;
+    html += `<div class="rrow"><span class="rkey">${fiscalT1 ? 'Maior desvio entre corridas sucessivas' : 'ΔMF (Range)'}</span><span class="rval" style="color:${st.deltaMF<=st.repeatLim?'var(--gr)':'var(--rd)'}">${repeatabilityText(st.deltaMF, fiscalT1)}</span></div>`;
+    html += `<div class="rrow"><span class="rkey">Limite ${fiscalT1 ? 'sucessivo' : 'ΔMF'} (${limLabel})</span><span class="rval">${repeatabilityText(st.repeatLim, fiscalT1)}</span></div>`;
+    if (fiscalT1) html += `<div class="rrow"><span class="rkey">Descartes (máx. 1)</span><span class="rval">${st.discardedRuns.length ? st.discardedRuns.map(idx => `#${idx}`).join(', ') + (st.discardedRuns.length > 1 ? ' — excede máximo' : '') : 'Nenhum'}</span></div>`;
     html += `<div class="rrow"><span class="rkey">MF Final (média 5)</span><span class="rval" style="color:var(--cy);font-size:14px">${st.MFfinal!=null?fmt6(st.MFfinal):'—'}</span></div>`;
     html += `<div class="rrow"><span class="rkey">Critério REQ-CP-005</span><span class="rval" style="color:${st.pass?'var(--gr)':'var(--rd)'}">${st.pass?'✓ APROVADO':'✕ REPROVADO'}</span></div>`;
     if (st.presumedFail) {
@@ -4660,9 +4861,9 @@ function generateReport() {
     html += `</div>`;
     // Runs detail
     html += `<div class="rsec"><h3>Detalhe das Corridas (REQ-CP-012)</h3>`;
-    html += `<table class="rtbl"><thead><tr><th>#</th><th>N Eff</th><th>V Ref</th><th>V Med</th><th>MF</th><th>Δ Média</th><th>Q Média</th><th>Válida</th></tr></thead><tbody>`;
+    html += `<table class="rtbl"><thead><tr><th>#</th><th>N Eff</th><th>V Ref</th><th>V Med</th><th>MF</th><th>Δ Média</th><th>Q Média</th><th>Válida</th><th>Uso</th></tr></thead><tbody>`;
     pv.runs.forEach(r => {
-      const rowClass = !r.valid ? 'rinv' : r.pass ? 'rpass' : 'rfail';
+      const rowClass = !r.valid || r.discarded ? 'rinv' : r.pass ? 'rpass' : 'rfail';
       const dStr = r.devMean != null
         ? ((r.devMean>=0?'+':'')+r.devMean.toFixed(5)) : '—';
       html += `<tr class="${rowClass}">
@@ -4671,6 +4872,7 @@ function generateReport() {
         <td>${fmt6(r.MF)}</td><td>${dStr}</td>
         <td>${Math.round(r.Qavg||0)}</td>
         <td>${r.valid?'✓':'✕ '+(r.fflags||[]).join(',')}</td>
+        <td>${!r.valid ? 'Inválida' : r.discarded ? 'Descartada' : 'Utilizada'}</td>
       </tr>`;
     });
     html += `</tbody></table></div>`;
@@ -4733,7 +4935,7 @@ function drawChart(canvasId, buf, series, yUnit, minSpan) {
   const yMax = mid + span / 2;
 
   // Background
-  ctx.fillStyle = '#04090f';
+  ctx.fillStyle = '#121212';
   ctx.fillRect(0, 0, W, H);
 
   // Y grid + labels
@@ -6183,7 +6385,7 @@ function certBuildCards() {
         <button class="btn bbl bsm" style="font-size:9px;padding:2px 4px" onclick="certCaptureResult('${key}',${ri})" title="${capR}">⊕R</button>
       </div>`).join('');
     return `
-      <div style="background:#0a0f18;border:1px solid var(--bd);border-radius:5px;padding:10px">
+      <div style="background:#181818;border:1px solid var(--bd);border-radius:5px;padding:10px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <b style="font-size:12px;color:var(--cy)">${m.label}</b>
         </div>
