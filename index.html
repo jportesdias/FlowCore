@@ -8,12 +8,9 @@
   <meta name="description"
     content="Domine a metrologia industrial e impulsione sua carreira com a FlowCore Solutions." />
 
-  <!-- Fonts: Outfit for headings, Inter for body, Rajdhani for the first section -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap"
-    rel="stylesheet" />
+  <!-- Fonts: Jost (local) -->
+  <link rel="preload" as="font" type="font/woff2" href="fonts/jost-300.woff2" crossorigin />
+  <link rel="stylesheet" href="jost.css" />
   <link rel="preload" as="image" href="wallpaper_flowcore.png" fetchpriority="high" />
   <link rel="preload" as="image" href="consultoria.png" />
   <link rel="preload" as="image" href="banner-academy.png" />
@@ -78,7 +75,7 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: var(--font-display);
       background-color: var(--bg-dark);
       color: var(--text-body);
       line-height: 1.6;
@@ -123,7 +120,7 @@
     h3,
     h4,
     h5 {
-      font-family: 'Outfit', sans-serif;
+      font-family: var(--font-display);
       color: var(--text-heading);
       line-height: 1.2;
     }
@@ -176,8 +173,8 @@
 
     /* Navbar Logo Text Fallback (if image is moved) */
     .logo-text {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 800;
+      font-family: var(--font-display);
+      font-weight: 500;
       font-size: 1.4rem;
       letter-spacing: 0.03em;
       color: var(--accent-secondary);
@@ -218,8 +215,8 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 600;
+      font-family: var(--font-display);
+      font-weight: 500;
       border-radius: var(--radius-pill);
       padding: 14px 28px;
       font-size: 1rem;
@@ -292,7 +289,7 @@
     .hero .btn,
     .hero .social-proof p,
     .hero .logos span {
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
     }
 
     .badge {
@@ -307,7 +304,7 @@
       /* Light orange border */
       color: var(--accent-main);
       font-size: 0.85rem;
-      font-weight: 600;
+      font-weight: 500;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       margin-bottom: 24px;
@@ -323,9 +320,9 @@
     }
 
     .hero-title {
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: clamp(2.5rem, 4.5vw, 4rem);
-      font-weight: 700;
+      font-weight: 500;
       letter-spacing: 0;
       text-transform: uppercase;
       scale: 1 1.14;
@@ -345,7 +342,7 @@
     }
 
     .hero-subtitle {
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: clamp(1.1rem, 1.5vw, 1.25rem);
       font-weight: 500;
       max-width: 550px;
@@ -438,9 +435,9 @@
     }
 
     .logos span {
-      font-family: 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: 1.2rem;
-      font-weight: 700;
+      font-weight: 500;
       letter-spacing: 0.05em;
     }
 
@@ -640,7 +637,7 @@
     .materials-aside strong {
       display: block;
       margin-bottom: 8px;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: 1.35rem;
       line-height: 1;
       color: var(--accent-secondary);
@@ -714,8 +711,8 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 12px;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
-      font-weight: 700;
+      font-family: var(--font-display);
+      font-weight: 500;
       font-size: 0.88rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -993,7 +990,7 @@
       padding: 6px 14px;
       border-radius: var(--radius-pill);
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 500;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       border: 1px solid rgba(240, 179, 90, 0.3);
@@ -1053,7 +1050,7 @@
     .features-list li::before {
       content: '✓';
       color: var(--accent-main);
-      font-weight: bold;
+      font-weight: 500;
       background: rgba(240, 179, 90, 0.1);
       width: 20px;
       height: 20px;
@@ -1230,8 +1227,8 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 14px;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
-      font-weight: 700;
+      font-family: var(--font-display);
+      font-weight: 500;
       font-size: 0.86rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -1465,8 +1462,8 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 20px;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
-      font-weight: 700;
+      font-family: var(--font-display);
+      font-weight: 500;
       font-size: 0.9rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -1884,9 +1881,9 @@
       border: 1px solid rgba(244, 138, 80, 0.34);
       background: rgba(229, 91, 19, 0.13);
       color: #FFD6C0;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: 0.9rem;
-      font-weight: 700;
+      font-weight: 500;
       letter-spacing: 0.13em;
       text-transform: uppercase;
       box-shadow: 0 16px 40px rgba(229, 91, 19, 0.16);
@@ -1965,9 +1962,9 @@
       border: 1px solid rgba(255, 255, 255, 0.14);
       background: rgba(255, 255, 255, 0.075);
       color: rgba(255, 255, 255, 0.74);
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: 0.88rem;
-      font-weight: 700;
+      font-weight: 500;
       line-height: 1.18;
       letter-spacing: 0.05em;
       text-transform: uppercase;
@@ -2013,7 +2010,7 @@
 
     .hero-metric strong {
       display: block;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: 1.35rem;
       line-height: 1;
       color: #FFFFFF;
@@ -2105,8 +2102,8 @@
       justify-content: space-between;
       gap: 14px;
       margin-bottom: 22px;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
-      font-weight: 700;
+      font-family: var(--font-display);
+      font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: rgba(255, 255, 255, 0.68);
@@ -2141,7 +2138,7 @@
     }
 
     .panel-title {
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: clamp(2.15rem, 3.6vw, 2.9rem);
       line-height: 0.94;
       color: #FFFFFF;
@@ -2169,8 +2166,8 @@
       gap: 6px;
       min-height: 82px;
       padding: 14px 12px 12px;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
-      font-weight: 700;
+      font-family: var(--font-display);
+      font-weight: 500;
       color: rgba(255, 255, 255, 0.78);
       background: rgba(255, 255, 255, 0.065);
       border: 1px solid rgba(255, 255, 255, 0.13);
@@ -2231,9 +2228,9 @@
       border: 1px solid rgba(98, 217, 255, 0.14);
       background: rgba(98, 217, 255, 0.055);
       color: rgba(255, 255, 255, 0.72);
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: 0.78rem;
-      font-weight: 700;
+      font-weight: 500;
       letter-spacing: 0.08em;
       text-align: center;
       text-transform: uppercase;
@@ -2367,9 +2364,9 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 22px;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: 0.92rem;
-      font-weight: 700;
+      font-weight: 500;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: #F48A50;
@@ -2386,10 +2383,10 @@
       max-width: 760px;
       margin-bottom: 24px;
       color: #FFFFFF;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: clamp(3rem, 6vw, 5.65rem);
       line-height: 0.92;
-      font-weight: 700;
+      font-weight: 500;
       letter-spacing: 0;
       text-transform: uppercase;
     }
@@ -2446,7 +2443,7 @@
     .consulting-panel-title {
       margin-bottom: 18px;
       color: #FFFFFF;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: 1.55rem;
       line-height: 1.15;
       text-transform: uppercase;
@@ -2467,7 +2464,7 @@
       display: block;
       margin-bottom: 4px;
       color: #FFFFFF;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
+      font-family: var(--font-display);
       font-size: 1.05rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
@@ -2588,8 +2585,8 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 20px;
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
-      font-weight: 700;
+      font-family: var(--font-display);
+      font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: var(--accent-main);
@@ -2628,8 +2625,8 @@
       background: #FFFFFF;
       border: 1px solid rgba(31, 63, 104, 0.12);
       box-shadow: 0 12px 28px rgba(31, 63, 104, 0.08);
-      font-family: 'Rajdhani', 'Outfit', sans-serif;
-      font-weight: 700;
+      font-family: var(--font-display);
+      font-weight: 500;
       color: var(--accent-secondary);
       text-transform: uppercase;
       letter-spacing: 0.06em;
