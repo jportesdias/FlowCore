@@ -11,13 +11,13 @@
   <!-- Fonts: Jost (local) -->
   <link rel="preload" as="font" type="font/woff2" href="fonts/jost-300.woff2" crossorigin />
   <link rel="stylesheet" href="jost.css" />
-  <link rel="preload" as="image" href="wallpaper_flowcore.png" fetchpriority="high" />
-  <link rel="preload" as="image" href="consultoria.png" />
-  <link rel="preload" as="image" href="banner-academy.png" />
-  <link rel="preload" as="image" href="biblioteca.png" />
-  <link rel="preload" as="image" href="pensamento.png" />
+  <link rel="preload" as="image" href="wallpaper_flowcore.jpg" fetchpriority="high" />
+  <link rel="preload" as="image" href="consultoria.jpg" />
+  <link rel="preload" as="image" href="banner-academy.jpg" />
+  <link rel="preload" as="image" href="biblioteca.jpg" />
+  <link rel="preload" as="image" href="pensamento.jpg" />
   <link rel="preload" as="image" href="solutions.png" />
-  <link rel="preload" as="image" href="ultima-sessao.png" />
+  <link rel="preload" as="image" href="ultima-sessao.jpg" />
 
   <style>
     :root {
@@ -556,7 +556,7 @@
       text-align: left;
       background:
         linear-gradient(90deg, rgba(3, 10, 22, 0.82) 0%, rgba(5, 17, 36, 0.58) 44%, rgba(238, 242, 248, 0.28) 100%),
-        url('biblioteca.png') center / cover no-repeat;
+        url('biblioteca.jpg') center / cover no-repeat;
       background-color: #030A16;
       border-bottom: 1px solid rgba(31, 63, 104, 0.10);
       box-shadow: none;
@@ -657,7 +657,7 @@
         padding: 56px 28px;
         background:
           linear-gradient(180deg, rgba(3, 10, 22, 0.82) 0%, rgba(5, 17, 36, 0.62) 100%),
-          url('biblioteca.png') center / cover no-repeat;
+          url('biblioteca.jpg') center / cover no-repeat;
         background-color: #030A16;
       }
 
@@ -687,7 +687,7 @@
       padding: 72px max(24px, calc((100% - var(--max-width)) / 2 + 24px));
       background:
         linear-gradient(135deg, rgba(3, 10, 22, 0.70) 0%, rgba(5, 17, 36, 0.48) 48%, rgba(238, 242, 248, 0.38) 100%),
-        url('pensamento.png') center / cover no-repeat;
+        url('pensamento.jpg') center / cover no-repeat;
       background-color: #030A16;
     }
 
@@ -1362,7 +1362,7 @@
       padding: 120px 0;
       position: relative;
       background-color: #030A16;
-      background-image: url('wallpaper_flowcore.png');
+      background-image: url('wallpaper_flowcore.jpg');
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
@@ -1444,7 +1444,7 @@
       min-height: 420px;
       background:
         linear-gradient(180deg, rgba(3, 10, 22, 0.06), rgba(3, 10, 22, 0.18)),
-        url('ultima-sessao.png') center / cover no-repeat;
+        url('ultima-sessao.jpg') center / cover no-repeat;
       background-color: #030A16;
     }
 
@@ -1728,7 +1728,7 @@
        WALLPAPER HERO | dark industrial bg
        ======================================== */
     .hero {
-      background-image: url('wallpaper_flowcore.png');
+      background-image: url('wallpaper_flowcore.jpg');
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
@@ -1821,7 +1821,7 @@
     .hero {
       padding: 140px 0 56px;
       min-height: 100vh;
-      background-image: url('wallpaper_flowcore.png');
+      background-image: url('wallpaper_flowcore.jpg');
       background-position: center;
       isolation: isolate;
     }
@@ -2319,7 +2319,7 @@
       align-items: center;
       padding: 96px 0;
       background-color: #030A16;
-      background-image: url('consultoria.png');
+      background-image: url('consultoria.jpg');
       background-size: cover;
       background-position: center;
       isolation: isolate;
@@ -2512,7 +2512,7 @@
       overflow: hidden;
       min-height: 620px;
       padding: 0;
-      --academy-white-bg: url('banner-academy.png');
+      --academy-white-bg: url('banner-academy.jpg');
       background:
         linear-gradient(135deg, #030A16 0%, #051124 31%, #0A1937 46%, #F3F7FC 46%, #FFFFFF 100%);
       background-color: #030A16;
@@ -2687,6 +2687,21 @@
         width: 100%;
       }
     }
+
+    /* Desempenho de rolagem: sem desfoque de fundo em paineis do conteudo */
+    .materials-aside,
+    .solutions-band .solution-card .product-tag,
+    .solutions-band .solution-card .product-image-wrapper,
+    .cta-box,
+    .cta-final .btn-outline,
+    .consulting-actions .btn-outline,
+    .consulting-panel {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    .author-image::after { transform: translateZ(0); }
+
   </style>
 </head>
 
@@ -2858,7 +2873,7 @@
     <section class="academy-section" id="academy">
       <div class="container academy-inner">
         <div class="academy-brand">
-          <img src="logo-academy.png" alt="FlowCore Academy" class="academy-logo" />
+          <img src="logo-academy-sm.png" alt="FlowCore Academy" class="academy-logo" />
         </div>
         <div class="academy-content">
           <div class="academy-kicker">Formação técnica FlowCore</div>
@@ -2955,10 +2970,10 @@
             <!-- Capas sobrepostas -->
             <div class="books-visual">
               <div class="bk-wrap bk-back">
-                <img src="capa_nfcm.png" alt="Nunca Foi Certo Medir" class="bk-img" />
+                <img loading="lazy" decoding="async" src="capa_nfcm.jpg" alt="Nunca Foi Certo Medir" class="bk-img" />
               </div>
               <div class="bk-wrap bk-front">
-                <img src="capa_pro_exc.png" alt="Profissional de Excelência" class="bk-img" />
+                <img loading="lazy" decoding="async" src="capa_pro_exc.jpg" alt="Profissional de Excelência" class="bk-img" />
               </div>
             </div>
 
@@ -3027,7 +3042,7 @@
               <div class="product-tag">Treinamento & Simulação</div>
 
               <div class="product-image-wrapper">
-                <img src="simulador.png" alt="Simulador de Prova com Compact Prover" class="product-image" style="box-shadow: none; max-width: 90%;" />
+                <img loading="lazy" decoding="async" src="simulador.png" alt="Simulador de Prova com Compact Prover" class="product-image" style="box-shadow: none; max-width: 90%;" />
               </div>
 
               <div class="product-info">
@@ -3057,7 +3072,7 @@
               <div class="product-tag">Gestão & Tecnologia</div>
 
               <div class="product-image-wrapper">
-                <img src="evergreen.png" alt="Evergreen Dashboard" class="product-image" style="box-shadow: none; max-width: 90%;" />
+                <img loading="lazy" decoding="async" src="evergreen.png" alt="Evergreen Dashboard" class="product-image" style="box-shadow: none; max-width: 90%;" />
               </div>
 
               <div class="product-info">
@@ -3128,7 +3143,7 @@
     <!-- FINAL CTA -->
     <section class="section cta-final">
       <div class="container">
-        <!-- TESTE: card final com imagem ultima-sessao.png -->
+        <!-- TESTE: card final com imagem ultima-sessao.jpg -->
         <div class="cta-box final-card">
           <div class="final-card-visual" aria-hidden="true"></div>
           <div class="final-card-content">
@@ -3164,7 +3179,7 @@
       <div class="footer-content">
         <!-- TESTE: logo no rodapé -->
         <div class="logo-text">
-          <img src="Flow core solutions Color.png" alt="FlowCore Solutions" style="height: 132px; width: auto; display: block;" />
+          <img loading="lazy" decoding="async" src="flowcore-logo-sm.png" alt="FlowCore Solutions" style="height: 132px; width: auto; display: block;" />
         </div>
         <!-- FIM TESTE -->
 
@@ -3205,14 +3220,21 @@
     document.getElementById('year-final').textContent = new Date().getFullYear();
 
     // Sticky Nav Shadow and Glass effect on scroll
+    const header = document.getElementById('header');
+    let headerScrolled = null;
+    let headerTicking = false;
     window.addEventListener('scroll', () => {
-      const header = document.getElementById('header');
-      if (window.scrollY > 50) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-    });
+      if (headerTicking) return;
+      headerTicking = true;
+      requestAnimationFrame(() => {
+        const scrolled = window.scrollY > 50;
+        if (header && scrolled !== headerScrolled) {
+          header.classList.toggle('scrolled', scrolled);
+          headerScrolled = scrolled;
+        }
+        headerTicking = false;
+      });
+    }, { passive: true });
 
     // Simple reveal animation observer for sections
     const observerOptions = {
