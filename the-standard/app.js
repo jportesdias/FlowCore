@@ -546,7 +546,7 @@ async function loadMembershipState(studentId) {
         .order("sort_order", { ascending: true }),
       client
         .from("membership_orders")
-        .select("id,plan_code,status,amount,currency,starts_at,valid_until,gateway_status,created_at")
+        .select("id,plan_code,status,amount,currency,starts_at,valid_until,gateway,gateway_status,created_at")
         .eq("student_id", studentId)
         .order("created_at", { ascending: false }),
       client
@@ -1857,7 +1857,21 @@ function renderGoalPanel() {
     </article>`;
 }
 
+function getProfileAccessSummary() {
+  const manual = (state.membershipOrders || [])
+    .filter(order => order.gateway === "manual" && ["active", "paid"].includes(order.status))
+    .sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")))[0];
+  const validUntil = manual ? manual.valid_until : getPlatformAccessState().validUntil;
+  const days = validUntil ? daysUntilDate(validUntil) : null;
+  if (!Number.isFinite(days)) return { remaining: "Validade não definida", validity: "—" };
+  return {
+    remaining: days < 0 ? "0 dias · acesso vencido" : days === 0 ? "0 dias · vence hoje" : `${days} dia${days === 1 ? "" : "s"}`,
+    validity: formatDate(validUntil)
+  };
+}
+
 function renderProfile() {
+  const platformAccess = getProfileAccessSummary();
   const iniciais = String(state.aluno.nome || "")
     .split(" ")
     .filter(Boolean)
@@ -1894,6 +1908,8 @@ function renderProfile() {
         <dl>
           <div><dt>ID</dt><dd>${state.aluno.id}</dd></div>
           <div><dt>E-mail</dt><dd>${state.aluno.email}</dd></div>
+          <div><dt>Dias restantes na plataforma</dt><dd><strong>${escapeHtml(platformAccess.remaining)}</strong></dd></div>
+          <div><dt>Acesso válido até</dt><dd>${escapeHtml(platformAccess.validity)}</dd></div>
           <div><dt>Cursos liberados</dt><dd>${state.cursos.length}</dd></div>
           <div><dt>Nível</dt><dd>${getCreditSummary().level}</dd></div>
           <div><dt>Descontos</dt><dd>${(() => {
