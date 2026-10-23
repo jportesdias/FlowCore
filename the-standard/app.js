@@ -2,7 +2,7 @@ const app = document.querySelector("#app");
 const sidebar = document.querySelector(".sidebar");
 const logoutButton = document.querySelector("#logoutButton");
 const client = window.supabase?.createClient(FLOWCORE_SUPABASE_URL, FLOWCORE_SUPABASE_ANON_KEY, {
-  auth: { storageKey: "flowcore-student-session" }
+  auth: { storageKey: "flowcore-student-session", storage: window.sessionStorage }
 });
 const institutionalVideoSeenPrefix = "flowcore-institutional-video-seen";
 const institutionalVideoUrl = "https://player-vz-b9ef5310-065.tv.pandavideo.com.br/embed/?v=66c1df47-f33e-42bd-978d-b38c0e60b7eb";
@@ -17,7 +17,7 @@ const defaultMembershipPlans = [
     name: "Plano Mensal",
     description: "Acesso aos cursos incluídos no plano e IA proprietária com 10 utilizações por ciclo mensal.",
     billing_mode: "recurring",
-    amount: 69.90,
+    amount: 59.90,
     currency: "BRL",
     interval_name: "month",
     interval_count: 1,
@@ -29,11 +29,28 @@ const defaultMembershipPlans = [
     sort_order: 10
   },
   {
+    code: "trimestral",
+    name: "Plano Trimestral",
+    description: "Acesso por 3 meses aos cursos incluídos no plano e IA proprietária limitada a 10 usos por ciclo mensal.",
+    billing_mode: "one_time",
+    amount: 119.90,
+    currency: "BRL",
+    interval_name: null,
+    interval_count: null,
+    access_days: 90,
+    initial_credits: 0,
+    max_installments: 1,
+    access_tag_id: "pratileira",
+    status: "active",
+    sort_order: 15
+  },
+  {
     code: "anual",
+
     name: "Plano Anual",
     description: "Acesso por 12 meses, IA ilimitada, um novo curso gravado por mês e 3 créditos para cursos ao vivo.",
     billing_mode: "one_time",
-    amount: 649.90,
+    amount: 499.00,
     currency: "BRL",
     interval_name: null,
     interval_count: null,
@@ -127,13 +144,19 @@ async function boot() {
   }
 
   const { data } = await client.auth.getSession();
-  if (data.session) await openStudentSession();
-  else renderLogin();
+  if (data.session) {
+    // Mostra algo na área central enquanto os dados do aluno carregam.
+    app.innerHTML = `<section class="page-loading" aria-busy="true"><div class="loading-bar"></div><p>Carregando seu painel…</p></section>`;
+    await openStudentSession();
+  } else {
+    renderLogin();
+  }
 
   window.addEventListener("hashchange", renderRoute);
   logoutButton.addEventListener("click", async () => {
     if (state.aluno?.id) {
       sessionStorage.removeItem(`${renewalOfferSeenPrefix}:${state.aluno.id}`);
+      sessionStorage.removeItem(`${aiTermAcceptedPrefix}:${state.aluno.id}`);
     }
     await client.auth.signOut();
     state.isAuthenticated = false;
@@ -264,9 +287,72 @@ async function verifyLoginCode(event) {
     await openStudentSession();
 }
 
+const aiTermAcceptedPrefix = "flowcore-ai-term-accepted";
+
+function confirmarTermoIA() {
+  if (!state.aluno?.id) return Promise.resolve(false);
+
+  const storageKey = `${aiTermAcceptedPrefix}:${state.aluno.id}`;
+  if (sessionStorage.getItem(storageKey)) return Promise.resolve(true);
+
+  return new Promise(resolve => {
+    const backdrop = document.createElement("div");
+    backdrop.className = "renewal-offer-backdrop";
+    backdrop.innerHTML = `
+      <section class="renewal-offer-modal ai-term-modal" role="dialog" aria-modal="true" aria-labelledby="aiTermTitle">
+        <p class="renewal-offer-kicker">Termo de ciência</p>
+        <h2 id="aiTermTitle">Serviço de inteligência artificial</h2>
+        <div class="ai-term-text">
+          <p>O certificado será analisado por um serviço de inteligência artificial de terceiros. Ao enviar o arquivo, você concorda que o conteúdo será processado por esse serviço.</p>
+          <p>A FlowCore Academy não se responsabiliza pelo conteúdo enviado, pelas respostas geradas pela IA nem pelo uso que você fizer delas. As respostas devem ser conferidas por um profissional habilitado.</p>
+          <p>Antes do envio, o sistema oculta automaticamente CPF, CNPJ, e-mails e telefones formatados. Nomes e outros dados não são ocultados automaticamente. Você é responsável por verificar se tem autorização para enviar o documento.</p>
+        </div>
+        <label class="ai-term-check">
+          <input type="checkbox" id="aiTermCheck" />
+          <span>Li e entendi as condições acima.</span>
+        </label>
+        <div class="ai-term-actions">
+          <button class="secondary-button" type="button" id="aiTermCancel">Cancelar</button>
+          <button class="primary-button" type="button" id="aiTermAccept" disabled>Concordar e enviar</button>
+        </div>
+      </section>
+    `;
+    document.body.appendChild(backdrop);
+
+    const check = backdrop.querySelector("#aiTermCheck");
+    const accept = backdrop.querySelector("#aiTermAccept");
+    const cancel = backdrop.querySelector("#aiTermCancel");
+    const close = aceito => {
+      backdrop.remove();
+      resolve(aceito);
+    };
+
+    check.addEventListener("change", () => {
+      accept.disabled = !check.checked;
+    });
+    cancel.addEventListener("click", () => close(false));
+    accept.addEventListener("click", () => {
+      sessionStorage.setItem(storageKey, new Date().toISOString());
+      close(true);
+    });
+  });
+}
+
+
+function ocultarDadosPessoais(texto) {
+  return String(texto || "")
+    .replace(/\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/g, "[CPF oculto]")
+    .replace(/\b\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\b/g, "[CNPJ oculto]")
+    .replace(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g, "[e-mail oculto]")
+    .replace(/(\(\d{2}\)\s?|\+?55\s?\d{2}\s?)?9?\d{4}-\d{4}\b/g, "[telefone oculto]");
+}
+
 async function openStudentSession() {
   try {
+    // Só o essencial antes de desenhar a tela: dados do aluno e a situação do tour.
     await loadStudentState();
+    await loadTourStatus().catch(() => {});
+
     state.isAuthenticated = true;
     sidebar.classList.remove("is-hidden");
     const accessExpired = getPlatformAccessState().expired;
@@ -275,13 +361,26 @@ async function openStudentSession() {
       state.cursos = [];
       window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}#comprar`);
     } else {
-      window.location.hash = window.location.hash || "#dashboard";
+      window.location.hash = "#dashboard";
     }
     renderRoute();
     if (!accessExpired) {
-      const renewalOfferShown = showRenewalOfferOnce();
-      if (!renewalOfferShown) showInstitutionalVideoWelcomeOnce();
+      showRenewalOfferOnce();
     }
+
+    // O restante carrega em segundo plano e atualiza a tela quando chega.
+    Promise.all([
+      loadInstitutionalVideoStatus().catch(() => {}),
+      loadAvatar().catch(() => {}),
+      loadFocusData().catch(() => {}),
+      loadNotifications().catch(() => {})
+    ]).then(() => {
+      iniciarNotificacoes();
+      iniciarRastreamento();
+      atualizarBadgeNotificacoes();
+      const view = (window.location.hash.replace("#", "") || "dashboard").split("/")[0];
+      if (view === "dashboard") renderRoute();
+    }).catch(() => {});
   } catch (error) {
     await client.auth.signOut();
     state.isAuthenticated = false;
@@ -294,8 +393,11 @@ async function openStudentSession() {
 }
 
 async function loadStudentState() {
-  const { data: userData, error: userError } = await client.auth.getUser();
-  if (userError || !userData?.user) throw new Error("Sessao expirada. Entre novamente.");
+  // getSession já traz o usuário da sessão local; evita uma ida extra ao servidor de login.
+  const { data: sessionData } = await client.auth.getSession();
+  const usuario = sessionData?.session?.user;
+  if (!usuario) throw new Error("Sessao expirada. Entre novamente.");
+  const userData = { user: usuario };
 
   const { data: student, error: studentError } = await client
     .from("students")
@@ -453,9 +555,9 @@ async function loadMembershipState(studentId) {
         .eq("student_id", studentId)
     ]);
 
-    state.membershipPlans = plansResult.error || !plansResult.data?.length
+    state.membershipPlans = (plansResult.error || !plansResult.data?.length
       ? defaultMembershipPlans
-      : plansResult.data;
+      : plansResult.data).filter(plan => plan.code !== "manual");
     state.membershipOrders = ordersResult.error ? [] : ordersResult.data || [];
     state.creditBalance = creditsResult.error
       ? 0
@@ -552,13 +654,18 @@ function renderRoute() {
     return;
   }
   updateActiveNav(view);
+  document.querySelector(".nav-group")?.classList.toggle("is-open", view === "flowcore-tools");
 
   if (view === "curso" && id) renderCourse(id);
   else if (view === "biblioteca") renderLibrary();
-  else if (view === "video-institucional") renderInstitutionalVideoCleanPage();
+  else if (view === "video-institucional") {
+    renderInstitutionalVideoCleanPage();
+    marcarVideoInstitucionalAssistido();
+  }
   else if (view === "especialista") renderSpecialistV2();
   else if (view === "flowcore-tools") renderFlowCoreTools(id);
-  else if (view === "financeiro") renderUnderConstruction("Financeiro");
+  else if (view === "financeiro") renderFinancial();
+  else if (view === "notificacoes") renderNotifications();
   else if (view === "comprar") renderStore();
   else if (view === "perfil") renderProfile();
   else if (view === "creditos") renderCredits();
@@ -626,58 +733,257 @@ function renderUnderConstruction(sectionName) {
   `;
 }
 
+function getSaudacao() {
+  const hora = new Date().getHours();
+  if (hora < 5) return "Seja bem-vindo, madrugador";
+  if (hora < 12) return "Bom dia";
+  if (hora < 18) return "Boa tarde";
+  return "Boa noite";
+}
+
+function getSpecialistProgress(cursos) {
+  const totalAulas = cursos.reduce((soma, curso) => soma + Number(curso.aulasTotal || 0), 0);
+  if (!totalAulas) return 0;
+  const assistidas = cursos.reduce((soma, curso) => soma + Number(curso.aulasConcluidas || 0), 0);
+  return Math.min(100, Math.round((assistidas / totalAulas) * 100));
+}
+
+function getInstitutionalVideoCycle() {
+  const access = getPlatformAccessState();
+  return access.order?.id || access.validUntil || "sem-plano";
+}
+
+async function loadInstitutionalVideoStatus() {
+  state.videoInstitucionalAssistido = false;
+  if (!state.aluno?.id) return;
+  const { data, error } = await client
+    .from("student_institutional_video")
+    .select("cycle")
+    .eq("student_id", state.aluno.id)
+    .maybeSingle();
+  if (error) return;
+  state.videoInstitucionalAssistido = data?.cycle === getInstitutionalVideoCycle();
+}
+
+async function marcarVideoInstitucionalAssistido() {
+  if (!state.aluno?.id || state.videoInstitucionalAssistido) return;
+  const { error } = await client
+    .from("student_institutional_video")
+    .upsert(
+      { student_id: state.aluno.id, cycle: getInstitutionalVideoCycle(), watched_at: new Date().toISOString() },
+      { onConflict: "student_id" }
+    );
+  if (!error) state.videoInstitucionalAssistido = true;
+}
+
+function renderJornada(cursos) {
+  const liberados = cursos.map(curso => {
+    const progresso = Number(curso.progresso || 0);
+    const concluido = progresso >= 100;
+    const emAndamento = !concluido && progresso > 0;
+    const classe = concluido ? "is-done" : emAndamento ? "is-progress" : "is-open";
+    const status = concluido
+      ? "Concluído"
+      : emAndamento
+        ? `Em andamento · ${Number(curso.aulasConcluidas || 0)} de ${Number(curso.aulasTotal || 0)} aulas`
+        : "Liberado";
+    return `
+      <li class="cockpit-step ${classe}">
+        <span class="cockpit-dot"></span>
+        <a class="cockpit-step-link" href="#curso/${curso.id}">
+          <strong>${escapeHtml(curso.titulo)}</strong>
+          <span class="cockpit-tag">${status}</span>
+        </a>
+      </li>`;
+  }).join("");
+
+  const liberadosIds = new Set(cursos.map(curso => curso.id));
+  const sugeridos = (state.catalogoCursos || [])
+    .filter(offer => !liberadosIds.has(offer.offerId || offer.id))
+    .map(offer => {
+      const emBreve = offer.status === "Em breve" || !offer.url || offer.url === "#";
+      const acao = emBreve
+        ? `<span class="cockpit-tag">Em breve</span>`
+        : `<a class="cockpit-link" href="${escapeHtml(offer.url)}" target="_blank" rel="noopener">Ver curso</a>`;
+      return `
+      <li class="cockpit-step is-locked">
+        <span class="cockpit-dot"></span>
+        <strong>${escapeHtml(offer.titulo)}</strong>
+        ${acao}
+      </li>`;
+    }).join("");
+
+  const videoAssistido = state.videoInstitucionalAssistido;
+  const videoStep = `
+      <li class="cockpit-step ${videoAssistido ? "is-done" : "is-open"}">
+        <span class="cockpit-dot"></span>
+        <a class="cockpit-step-link" href="#video-institucional">
+          <strong>V&iacute;deo institucional</strong>
+          <span class="cockpit-tag">${videoAssistido ? "Assistido" : "Assistir"}</span>
+        </a>
+      </li>`;
+
+  return `<ol class="cockpit-steps">${videoStep}${liberados}${sugeridos}</ol>`;
+
+}
+
+function renderCourseBands(cursos) {
+  return cursos.map(curso => `
+      <a class="cockpit-band" href="#curso/${curso.id}">
+        <img src="${escapeHtml(curso.capa)}" alt="" />
+        <div class="cockpit-band-body">
+          <span class="eyebrow">Trilha liberada</span>
+          <strong>${escapeHtml(curso.titulo)}</strong>
+          <p>${escapeHtml(curso.descricao)}</p>
+          <small class="cockpit-band-meta">${Number(curso.aulasConcluidas || 0)} de ${Number(curso.aulasTotal || 0)} aulas assistidas</small>
+          <div class="cockpit-bar"><span style="width: ${Number(curso.progresso || 0)}%"></span></div>
+        </div>
+        <span class="cockpit-band-cta">Acessar</span>
+      </a>`).join("");
+}
+
+let cockpitClockTimer = null;
+const codigosTempo = {
+  0: "Céu limpo", 1: "Predominantemente limpo", 2: "Parcialmente nublado", 3: "Nublado",
+  45: "Nevoeiro", 48: "Nevoeiro", 51: "Garoa", 53: "Garoa", 55: "Garoa",
+  61: "Chuva fraca", 63: "Chuva", 65: "Chuva forte",
+  80: "Pancadas de chuva", 81: "Pancadas de chuva", 82: "Pancadas de chuva",
+  95: "Trovoada", 96: "Trovoada", 99: "Trovoada"
+};
+
+function atualizarRelogio() {
+  const relogio = document.querySelector("#cockpitClock");
+  if (!relogio) return;
+  const agora = new Date();
+  relogio.querySelector("[data-clock-date]").textContent = agora.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+  relogio.querySelector("[data-clock-time]").textContent = agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
+
+function iniciarRelogio() {
+  atualizarRelogio();
+  clearInterval(cockpitClockTimer);
+  cockpitClockTimer = setInterval(atualizarRelogio, 30000);
+}
+
+const iconesTempo = {
+  sol: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>`,
+  nublado: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.5-9 6 6 0 0 1 11.5 1.5A3.5 3.5 0 0 1 18 18z"/></svg>`,
+  chuva: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 14a4.5 4.5 0 0 1-.5-9 6 6 0 0 1 11.5 1.5A3.5 3.5 0 0 1 18 14z"/><path d="M8 17l-1 2M12 17l-1 2M16 17l-1 2"/></svg>`,
+  tempestade: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 14a4.5 4.5 0 0 1-.5-9 6 6 0 0 1 11.5 1.5A3.5 3.5 0 0 1 18 14z"/><path d="M12 14l-2 4h3l-2 4"/></svg>`
+};
+
+function iconeDoTempo(codigo) {
+  if (codigo <= 1) return "sol";
+  if (codigo <= 3 || codigo === 45 || codigo === 48) return "nublado";
+  if (codigo >= 95) return "tempestade";
+  return "chuva";
+}
+
+function atualizarPrevisao() {
+  const el = document.querySelector("#cockpitWeather");
+  if (!el) return;
+  const previsao = state.weather && state.weather !== "loading" ? state.weather : null;
+  if (!previsao) {
+    el.innerHTML = "";
+    el.hidden = true;
+    return;
+  }
+  el.hidden = false;
+  el.innerHTML = `
+    <span class="cockpit-weather-line">${iconesTempo[previsao.icone]}<strong>${previsao.temperatura}°C</strong> · ${escapeHtml(previsao.condicao)}</span>
+    <span class="cockpit-weather-rain">Chance de chuva hoje: ${previsao.chuva}%</span>`;
+}
+
+function carregarPrevisao() {
+  if (state.weather !== undefined || !navigator.geolocation) {
+    atualizarPrevisao();
+    return;
+  }
+  state.weather = "loading";
+  navigator.geolocation.getCurrentPosition(async posicao => {
+    try {
+      const { latitude, longitude } = posicao.coords;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&daily=precipitation_probability_max&forecast_days=1&timezone=auto`;
+      const resposta = await fetch(url);
+      const dados = await resposta.json();
+      const codigo = dados.current.weather_code;
+      state.weather = {
+        temperatura: Math.round(dados.current.temperature_2m),
+        condicao: codigosTempo[codigo] || "Tempo variável",
+        icone: iconeDoTempo(codigo),
+        chuva: Math.round(dados.daily?.precipitation_probability_max?.[0] ?? 0)
+      };
+    } catch (error) {
+      state.weather = null;
+    }
+    atualizarPrevisao();
+  }, () => {
+    state.weather = null;
+    atualizarPrevisao();
+  }, { maximumAge: 1800000, timeout: 8000 });
+}
+
 function renderDashboard() {
   const cursos = getAccessibleCourses();
-  const completedCount = cursos.filter(curso => Number(curso.progresso || 0) >= 100).length;
   const nextCourse = cursos.find(curso => Number(curso.progresso || 0) < 100) || cursos[0];
+  const progresso = getSpecialistProgress(cursos);
   app.innerHTML = `
-    <section class="academy-cockpit">
-      <div>
-        <p class="eyebrow">Portal FlowCore Academy</p>
-        <h1>COCKPIT DO ALUNO</h1>
-        <div class="student-identity">
-          <span>Aluno conectado</span>
-          <strong>${escapeHtml(state.aluno.nome)}</strong>
-          <p>Este é o seu espaço de formação técnica na FlowCore Academy. Acompanhe suas trilhas, aulas, certificados e evolução em um painel único de formação operacional.</p>
+    <div class="cockpit-v2">
+      ${renderPriorityBanner()}
+      <section class="cockpit-head-row">
+        <div>
+          <p class="eyebrow">Portal FlowCore Academy</p>
+          <h1>${getSaudacao()}, ${escapeHtml(state.aluno.nome)}</h1>
         </div>
-        <div class="cockpit-actions">
-          ${nextCourse ? `<a class="primary-button" href="#curso/${nextCourse.id}">Continuar trilha</a>` : ""}
-          <a class="secondary-button" href="#biblioteca">Abrir acervo técnico</a>
+        <div class="cockpit-head-side">
+          <div class="cockpit-clock" id="cockpitClock">
+            <span data-clock-date></span>
+            <strong data-clock-time></strong>
+            <span id="cockpitWeather" hidden></span>
+          </div>
+          <a class="cockpit-avatar ${levelClass(getCreditSummary().level)}" href="#perfil" aria-label="Meu perfil">
+            ${state.avatarUrl
+              ? `<img src="${escapeAttribute(state.avatarUrl)}" alt="" />`
+              : `<span>${escapeHtml(String(state.aluno.nome || "?").split(" ").filter(Boolean).slice(0, 2).map(parte => parte[0].toUpperCase()).join(""))}</span>`}
+          </a>
         </div>
-      </div>
-      <div class="cockpit-status-panel" aria-label="Resumo técnico do aluno">
-        <div class="ihm-panel-top">
-          <span>Student IHM</span>
-          <b>${cursos.length ? "ONLINE" : "STANDBY"}</b>
-        </div>
-        <strong>${cursos.length ? "Acesso operacional" : "Aguardando liberação"}</strong>
-        <div class="ihm-status-grid" aria-label="Indicadores rápidos">
-          <div><span>Trilhas</span><b>${String(cursos.length).padStart(2, "0")}</b></div>
-          <div><span>Cert.</span><b>${String(completedCount).padStart(2, "0")}</b></div>
-        </div>
-        <div class="ihm-signal" aria-label="Progresso da próxima trilha">
-          <span>Progress bus</span>
-          <i style="width: ${nextCourse ? nextCourse.progresso : 0}%"></i>
-        </div>
-        <p>${cursos.length} trilha(s) liberada(s) · ${completedCount} concluída(s)</p>
-      </div>
-    </section>
+      </section>
 
-    <section class="cockpit-metrics" aria-label="Indicadores da formação">
-      <article><span>Trilhas liberadas</span><strong>${cursos.length}</strong><p>Conteúdo com acesso ativo</p></article>
-      <article><span>Certificação</span><strong>${completedCount}</strong><p>Trilhas com progresso completo</p></article>
-      <article><span>Próxima ação</span><strong>${nextCourse ? `${nextCourse.progresso}%` : "0%"}</strong><p>${nextCourse ? escapeHtml(nextCourse.titulo) : "Sem trilha ativa"}</p></article>
-    </section>
+      ${nextCourse ? `
+      <section class="cockpit-continue">
+        <div>
+          <p class="eyebrow">Continue de onde parou</p>
+          <strong>${escapeHtml(nextCourse.titulo)}</strong>
+        </div>
+        <a class="primary-button" href="#curso/${nextCourse.id}">Continuar trilha</a>
+      </section>` : ""}
 
-    <section class="section-heading premium-heading">
-      <div>
-        <p class="eyebrow">Trilhas técnicas</p>
-        <h2>Área de operação do aluno</h2>
-      </div>
-      <span>FlowCore Academy · Fase 1</span>
-    </section>
-    ${cursos.length ? renderCourseGrid(cursos) : renderEmptyContent()}
+      ${getObjetivoAtual() === objetivoNenhum ? "" : `
+      <section class="cockpit-goal">
+        <div>
+          <p class="eyebrow">Seu objetivo</p>
+          <strong>${escapeHtml(getObjetivoAtual())}</strong>
+          <div class="cockpit-bar"><span style="width: ${progresso}%"></span></div>
+        </div>
+        <b>${progresso}%</b>
+      </section>`}
+
+      <section class="cockpit-journey">
+        <p class="eyebrow">Sua jornada</p>
+        ${renderJornada(cursos)}
+      </section>
+
+      ${cursos.length ? `
+      <section class="cockpit-bands">
+        <p class="eyebrow">Seus cursos</p>
+        ${renderCourseBands(cursos)}
+      </section>` : renderEmptyContent()}
+    </div>
   `;
+  iniciarRelogio();
+  carregarPrevisao();
+  if (state.tourVersionSeen === null) setTimeout(() => iniciarTour(), 700);
+  else if (state.tourVersionSeen !== tourVersion) setTimeout(() => iniciarNovidades(state.tourVersionSeen), 700);
 }
 
 function renderInstitutionalVideoPage() {
@@ -739,31 +1045,6 @@ function showInstitutionalVideoOnce() {
     document.removeEventListener("keydown", closeOnEscape);
   });
   document.body.appendChild(modal);
-}
-
-function renderCourseGrid(cursos) {
-  return `
-    <section class="course-grid" aria-label="Cursos liberados">
-      ${cursos.map(curso => `
-        <article class="course-card track-card">
-          <img src="${curso.capa}" alt="" />
-          <div class="course-card-body">
-            <span class="status-pill">Trilha liberada</span>
-            <h2>${curso.titulo}</h2>
-            <p>${curso.descricao}</p>
-            <div class="progress-row">
-              <span>Progresso</span>
-              <strong>${curso.progresso}%</strong>
-            </div>
-            <div class="progress-bar" aria-label="Progresso de ${curso.progresso}%">
-              <span style="width: ${curso.progresso}%"></span>
-            </div>
-            <a class="primary-button" href="#curso/${curso.id}">Acessar</a>
-          </div>
-        </article>
-      `).join("")}
-    </section>
-  `;
 }
 
 function renderCourse(id) {
@@ -879,6 +1160,10 @@ function renderCourseVideoStation(curso, videos) {
   `;
 }
 
+function isVideoReleased(item) {
+  return Boolean(item?.url && item.url !== "#");
+}
+
 function renderVideoPlaylistItem(video, curso, index, isActive) {
   const checked = isMaterialCompleted(video.id);
   return `
@@ -890,7 +1175,7 @@ function renderVideoPlaylistItem(video, curso, index, isActive) {
       <span class="video-thumb-copy">
         <strong>${escapeHtml(video.titulo)}</strong>
         <small>${escapeHtml(video.duracao || video.formato || "Aula técnica")}</small>
-        <em data-playlist-status="${escapeAttribute(video.id)}">${checked ? "Concluído" : "Pendente"}</em>
+        <em data-playlist-status="${escapeAttribute(video.id)}">${!isVideoReleased(video) ? "Em breve" : checked ? "Concluído" : "Pendente"}</em>
       </span>
     </button>
   `;
@@ -1053,6 +1338,9 @@ function getMaterialDownloadUrl(url) {
 }
 
 function renderMaterialCompletionControl(item) {
+  if (!isVideoReleased(item)) {
+    return `<span class="completion-check is-locked"><span>Disponível após a liberação da aula</span></span>`;
+  }
   const checked = isMaterialCompleted(item.id);
   return `
     <label class="completion-check ${checked ? "is-checked" : ""}">
@@ -1096,24 +1384,590 @@ function updateCompletionUI(materialId, completed) {
   });
 }
 
+const focusDefaults = { default_minutes: 30, fullscreen: true, alert_tab_switch: true };
+let focoAtivo = null;
+let atividadePendente = {};
+let rastreamentoIniciado = false;
+
+async function loadFocusData() {
+  state.focus = { settings: { ...focusDefaults }, sessions: [], activity: [] };
+  if (!state.aluno?.id) return;
+
+  const [settings, sessions, activity] = await Promise.all([
+    client.from("student_focus_settings")
+      .select("default_minutes,fullscreen,alert_tab_switch")
+      .eq("student_id", state.aluno.id)
+      .maybeSingle(),
+    client.from("student_focus_sessions")
+      .select("course_id,planned_seconds,focused_seconds,interruptions,completed,started_at")
+      .eq("student_id", state.aluno.id)
+      .order("started_at", { ascending: false })
+      .limit(10),
+    client.from("student_activity")
+      .select("course_id,day,seconds")
+      .eq("student_id", state.aluno.id)
+  ]);
+
+  state.focus.settings = settings.data ? { ...focusDefaults, ...settings.data } : { ...focusDefaults };
+  state.focus.sessions = sessions.data || [];
+  state.focus.activity = activity.data || [];
+  const goal = await client.from("student_goals")
+    .select("goal")
+    .eq("student_id", state.aluno.id)
+    .maybeSingle();
+  state.focus.goal = goal.data?.goal || "";
+}
+
+async function salvarRegrasFoco(regras) {
+  const { error } = await client.from("student_focus_settings").upsert(
+    { student_id: state.aluno.id, ...regras, updated_at: new Date().toISOString() },
+    { onConflict: "student_id" }
+  );
+  if (error) throw new Error(error.message || "Não foi possível salvar as regras.");
+  state.focus.settings = { ...state.focus.settings, ...regras };
+}
+
+async function salvarSessaoFoco(sessao) {
+  await client.from("student_focus_sessions").insert({
+    student_id: state.aluno.id,
+    course_id: sessao.cursoId || "",
+    planned_seconds: sessao.planejado,
+    focused_seconds: sessao.focado,
+    interruptions: sessao.interrupcoes,
+    completed: sessao.concluida,
+    started_at: sessao.inicio,
+    ended_at: new Date().toISOString()
+  });
+}
+
+function formatarTempo(segundos) {
+  const horas = Math.floor(segundos / 3600);
+  const minutos = Math.floor((segundos % 3600) / 60);
+  return horas ? `${horas} h ${minutos} min` : `${minutos} min`;
+}
+
+function formatarRelogio(segundos) {
+  const minutos = String(Math.floor(segundos / 60)).padStart(2, "0");
+  const resto = String(segundos % 60).padStart(2, "0");
+  return `${minutos}:${resto}`;
+}
+
+function iniciarFoco(minutos, cursoId) {
+  if (focoAtivo) return;
+  const planejado = minutos * 60;
+  const regras = state.focus?.settings || focusDefaults;
+  const nomeCurso = (state.cursos.find(curso => curso.id === cursoId)?.titulo) || "Sem curso";
+
+  const overlay = document.createElement("div");
+  overlay.className = "focus-overlay";
+  overlay.innerHTML = `
+    <section class="focus-card" role="dialog" aria-modal="true" aria-label="Core Attention">
+      <p class="eyebrow">Core Attention</p>
+      <div class="focus-time" data-focus-time>${formatarRelogio(planejado)}</div>
+      <p class="focus-course">${escapeHtml(nomeCurso)}</p>
+      <div class="focus-bar"><span data-focus-bar style="width:0%"></span></div>
+      <p class="focus-alert" data-focus-alert hidden></p>
+      <div class="focus-actions">
+        <button class="secondary-button" type="button" data-focus-pause>Pausar</button>
+        <button class="primary-button" type="button" data-focus-end>Encerrar</button>
+      </div>
+    </section>`;
+  document.body.appendChild(overlay);
+
+  focoAtivo = {
+    overlay,
+    planejado,
+    restante: planejado,
+    focado: 0,
+    interrupcoes: 0,
+    pausado: false,
+    concluida: false,
+    cursoId,
+    inicio: new Date().toISOString(),
+    timer: null
+  };
+
+  const tempo = overlay.querySelector("[data-focus-time]");
+  const barra = overlay.querySelector("[data-focus-bar]");
+  const alerta = overlay.querySelector("[data-focus-alert]");
+  const botaoPausa = overlay.querySelector("[data-focus-pause]");
+
+  const atualizar = () => {
+    tempo.textContent = formatarRelogio(focoAtivo.restante);
+    barra.style.width = `${Math.round((focoAtivo.focado / focoAtivo.planejado) * 100)}%`;
+    botaoPausa.textContent = focoAtivo.pausado ? "Retomar" : "Pausar";
+  };
+
+  const finalizar = async concluida => {
+    if (!focoAtivo) return;
+    clearInterval(focoAtivo.timer);
+    focoAtivo.concluida = concluida;
+    document.removeEventListener("visibilitychange", aoTrocarAba);
+    window.removeEventListener("beforeunload", aoSair);
+    if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+    try {
+      await salvarSessaoFoco(focoAtivo);
+    } catch (error) {
+      console.warn("Sessão de foco não foi salva.", error);
+    }
+    focoAtivo.overlay.remove();
+    focoAtivo = null;
+    await loadFocusData().catch(() => {});
+    if (location.hash === "#perfil") renderProfile();
+  };
+
+  const aoTrocarAba = () => {
+    if (!focoAtivo) return;
+    if (document.hidden) {
+      if (regras.alert_tab_switch && !focoAtivo.pausado) {
+        focoAtivo.pausado = true;
+        focoAtivo.interrupcoes += 1;
+      }
+      return;
+    }
+    if (focoAtivo.pausado && regras.alert_tab_switch) {
+      alerta.textContent = "Você saiu da tela de foco. O tempo ficou pausado. Clique em Retomar para continuar.";
+      alerta.hidden = false;
+    }
+    atualizar();
+  };
+
+  const aoSair = event => {
+    if (!focoAtivo) return;
+    event.preventDefault();
+    event.returnValue = "";
+  };
+
+  botaoPausa.addEventListener("click", () => {
+    focoAtivo.pausado = !focoAtivo.pausado;
+    alerta.hidden = true;
+    atualizar();
+  });
+  overlay.querySelector("[data-focus-end]").addEventListener("click", () => finalizar(false));
+
+  document.addEventListener("visibilitychange", aoTrocarAba);
+  window.addEventListener("beforeunload", aoSair);
+
+  if (regras.fullscreen) {
+    document.documentElement.requestFullscreen?.().catch(() => {});
+  }
+
+  focoAtivo.timer = setInterval(() => {
+    if (!focoAtivo || focoAtivo.pausado || document.hidden) return;
+    focoAtivo.restante -= 1;
+    focoAtivo.focado += 1;
+    if (focoAtivo.restante <= 0) {
+      focoAtivo.restante = 0;
+      atualizar();
+      finalizar(true);
+      return;
+    }
+    atualizar();
+  }, 1000);
+  atualizar();
+}
+
+function registrarTick() {
+  if (document.hidden || !state.isAuthenticated) return;
+  const cursoId = decodeURIComponent((window.location.hash.match(/^#curso\/(.+)$/) || [])[1] || "");
+  atividadePendente[cursoId] = (atividadePendente[cursoId] || 0) + 15;
+}
+
+async function enviarAtividade() {
+  const entradas = Object.entries(atividadePendente).filter(([, segundos]) => segundos > 0);
+  atividadePendente = {};
+  for (const [cursoId, segundos] of entradas) {
+    await client.rpc("registrar_atividade", { p_course_id: cursoId, p_seconds: segundos });
+  }
+}
+
+function iniciarRastreamento() {
+  if (rastreamentoIniciado) return;
+  rastreamentoIniciado = true;
+
+  setInterval(registrarTick, 15000);
+  setInterval(() => enviarAtividade().catch(() => {}), 60000);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) enviarAtividade().catch(() => {});
+  });
+
+  document.addEventListener("click", event => {
+    if (event.target.closest("[data-history-open]")) {
+      openHistoryPopup();
+      return;
+    }
+    if (event.target.closest("[data-history-open]")) {
+      openHistoryPopup();
+      return;
+    }
+    const botao = event.target.closest("[data-focus-start]");
+    if (!botao) return;
+    const campo = document.querySelector("#focusCustomForm");
+    const cursoId = campo?.elements.curso?.value || "";
+    iniciarFoco(Number(botao.dataset.focusStart), cursoId);
+  });
+
+  document.addEventListener("submit", async event => {
+    if (event.target.id === "goalForm") {
+      event.preventDefault();
+      const formulario = event.target;
+      const escolha = formulario.elements.objetivo?.value || "";
+      const texto = escolha === "__outro__" ? formulario.elements.outro.value.trim() : escolha;
+      if (!texto) {
+        document.querySelector("#goalStatus").textContent = "Escreva ou escolha um objetivo.";
+        return;
+      }
+      try {
+        await salvarObjetivo(texto);
+        renderProfile();
+        document.querySelector("#goalStatus").textContent = "Objetivo salvo.";
+      } catch (error) {
+        document.querySelector("#goalStatus").textContent = error.message;
+      }
+      return;
+    }
+    if (event.target.id === "focusCustomForm") {
+      event.preventDefault();
+      const minutos = Math.min(480, Math.max(5, Number(event.target.elements.minutos.value) || 30));
+      iniciarFoco(minutos, event.target.elements.curso.value || "");
+    }
+    if (event.target.id === "focusRulesForm") {
+      event.preventDefault();
+      const formulario = event.target;
+      const status = formulario.querySelector("#focusRulesStatus");
+      try {
+        await salvarRegrasFoco({
+          default_minutes: Math.min(480, Math.max(5, Number(formulario.elements.padrao.value) || 30)),
+          fullscreen: formulario.elements.fullscreen.checked,
+          alert_tab_switch: formulario.elements.alert.checked
+        });
+        renderProfile();
+        document.querySelector("#focusRulesStatus").textContent = "Regras salvas.";
+      } catch (error) {
+        status.textContent = error.message;
+      }
+    }
+  });
+}
+
+function renderFocusSection() {
+  const settings = state.focus?.settings || focusDefaults;
+  const opcoesCurso = getAccessibleCourses()
+    .map(curso => `<option value="${escapeAttribute(curso.id)}">${escapeHtml(curso.titulo)}</option>`)
+    .join("");
+
+  return `
+    <article class="info-panel focus-panel">
+      <p class="eyebrow">Core Attention</p>
+      <h2>Modo de foco</h2>
+      <p>Escolha o tempo de estudo. Ao sair da tela de foco, o tempo é pausado e a saída fica registrada.</p>
+      <div class="focus-presets">
+        <button class="secondary-button" type="button" data-focus-start="15">15 min</button>
+        <button class="secondary-button" type="button" data-focus-start="30">30 min</button>
+        <button class="secondary-button" type="button" data-focus-start="60">1 h</button>
+        <button class="secondary-button" type="button" data-focus-start="120">2 h</button>
+      </div>
+      <form class="focus-custom" id="focusCustomForm">
+        <label>Outro tempo (minutos)
+          <input type="number" name="minutos" min="5" max="480" value="${settings.default_minutes}" />
+        </label>
+        <label>Curso
+          <select name="curso">
+            <option value="">Sem curso</option>
+            ${opcoesCurso}
+          </select>
+        </label>
+        <button class="primary-button" type="submit">Iniciar com tempo personalizado</button>
+      </form>
+      <form class="focus-rules" id="focusRulesForm">
+        <h3>Regras</h3>
+        <label class="focus-check"><input type="checkbox" name="fullscreen" ${settings.fullscreen ? "checked" : ""} /> Abrir em tela cheia</label>
+        <label class="focus-check"><input type="checkbox" name="alert" ${settings.alert_tab_switch ? "checked" : ""} /> Pausar quando eu sair da tela</label>
+        <label>Tempo padrão (minutos)
+          <input type="number" name="padrao" min="5" max="480" value="${settings.default_minutes}" />
+        </label>
+        <button class="secondary-button" type="submit">Salvar regras</button>
+        <p id="focusRulesStatus" class="manual-note"></p>
+      </form>
+    </article>`;
+}
+
+function renderMonitoringSection() {
+  const atividade = state.focus?.activity || [];
+  const totalSegundos = atividade.reduce((soma, item) => soma + Number(item.seconds || 0), 0);
+
+  return `
+    <div class="profile-monitor">
+      <p class="eyebrow">Acompanhamento</p>
+      <h2>Tempo na plataforma</h2>
+      <p class="focus-total">${formatarTempo(totalSegundos)}</p>
+      <button class="secondary-button profile-history-button" type="button" data-history-open>Meu histórico</button>
+    </div>`;
+}
+
+function renderHistoryBody() {
+  const atividade = state.focus?.activity || [];
+  const porCurso = {};
+  atividade.forEach(item => {
+    if (!item.course_id) return;
+    porCurso[item.course_id] = (porCurso[item.course_id] || 0) + Number(item.seconds || 0);
+  });
+  const tituloDe = id => state.cursos.find(curso => curso.id === id)?.titulo
+    || (state.catalogoCursos || []).find(curso => (curso.offerId || curso.id) === id)?.titulo
+    || id;
+
+  const linhasCurso = Object.entries(porCurso)
+    .sort((a, b) => b[1] - a[1])
+    .map(([id, segundos]) => `<li><span>${escapeHtml(tituloDe(id))}</span><strong>${formatarTempo(segundos)}</strong></li>`)
+    .join("") || "<li><span>Nenhum curso aberto ainda.</span></li>";
+
+  const linhasSessao = (state.focus?.sessions || [])
+    .map(sessao => `<li><span>${formatDate(sessao.started_at)} · ${escapeHtml(sessao.course_id ? tituloDe(sessao.course_id) : "Sem curso")}</span><strong>${formatarTempo(sessao.focused_seconds)} de ${formatarTempo(sessao.planned_seconds)}${sessao.completed ? " · concluída" : ""} · ${sessao.interruptions} saída(s)</strong></li>`)
+    .join("") || "<li><span>Nenhuma sessão de foco ainda.</span></li>";
+
+  return `
+    <h3>Por curso</h3>
+    <ul class="focus-list">${linhasCurso}</ul>
+    <h3>Últimas sessões de foco</h3>
+    <ul class="focus-list">${linhasSessao}</ul>
+    <p class="manual-note">Este acompanhamento registra o tempo em que a plataforma está aberta e ativa, e o curso visualizado. Ele é usado para acompanhar a sua evolução.</p>`;
+}
+
+function openHistoryPopup() {
+  const modal = document.createElement("div");
+  modal.className = "renewal-offer-backdrop";
+  modal.innerHTML = `
+    <section class="renewal-offer-modal history-popup" role="dialog" aria-modal="true" aria-labelledby="historyTitle">
+      <p class="renewal-offer-kicker">Acompanhamento</p>
+      <h2 id="historyTitle">Meu histórico</h2>
+      <div class="history-popup-body">${renderHistoryBody()}</div>
+      <div class="plan-popup-actions">
+        <button class="secondary-button" type="button" data-history-close>Fechar</button>
+      </div>
+    </section>
+  `;
+  document.body.appendChild(modal);
+
+  const close = () => modal.remove();
+  modal.querySelector("[data-history-close]").addEventListener("click", close);
+  modal.addEventListener("click", event => {
+    if (event.target === modal) close();
+  });
+}
+
+
+function renderHistoryBody() {
+  const atividade = state.focus?.activity || [];
+  const porCurso = {};
+  atividade.forEach(item => {
+    if (!item.course_id) return;
+    porCurso[item.course_id] = (porCurso[item.course_id] || 0) + Number(item.seconds || 0);
+  });
+  const tituloDe = id => state.cursos.find(curso => curso.id === id)?.titulo
+    || (state.catalogoCursos || []).find(curso => (curso.offerId || curso.id) === id)?.titulo
+    || id;
+
+  const linhasCurso = Object.entries(porCurso)
+    .sort((a, b) => b[1] - a[1])
+    .map(([id, segundos]) => `<li><span>${escapeHtml(tituloDe(id))}</span><strong>${formatarTempo(segundos)}</strong></li>`)
+    .join("") || "<li><span>Nenhum curso aberto ainda.</span></li>";
+
+  const linhasSessao = (state.focus?.sessions || [])
+    .map(sessao => `<li><span>${formatDate(sessao.started_at)} · ${escapeHtml(sessao.course_id ? tituloDe(sessao.course_id) : "Sem curso")}</span><strong>${formatarTempo(sessao.focused_seconds)} de ${formatarTempo(sessao.planned_seconds)}${sessao.completed ? " · concluída" : ""} · ${sessao.interruptions} saída(s)</strong></li>`)
+    .join("") || "<li><span>Nenhuma sessão de foco ainda.</span></li>";
+
+  return `
+    <h3>Por curso</h3>
+    <ul class="focus-list">${linhasCurso}</ul>
+    <h3>Últimas sessões de foco</h3>
+    <ul class="focus-list">${linhasSessao}</ul>
+    <p class="manual-note">Este acompanhamento registra o tempo em que a plataforma está aberta e ativa, e o curso visualizado. Ele é usado para acompanhar a sua evolução.</p>`;
+}
+
+function openHistoryPopup() {
+  const modal = document.createElement("div");
+  modal.className = "renewal-offer-backdrop";
+  modal.innerHTML = `
+    <section class="renewal-offer-modal history-popup" role="dialog" aria-modal="true" aria-labelledby="historyTitle">
+      <p class="renewal-offer-kicker">Acompanhamento</p>
+      <h2 id="historyTitle">Meu histórico</h2>
+      <div class="history-popup-body">${renderHistoryBody()}</div>
+      <div class="plan-popup-actions">
+        <button class="secondary-button" type="button" data-history-close>Fechar</button>
+      </div>
+    </section>
+  `;
+  document.body.appendChild(modal);
+
+  const close = () => modal.remove();
+  modal.querySelector("[data-history-close]").addEventListener("click", close);
+  modal.addEventListener("click", event => {
+    if (event.target === modal) close();
+  });
+}
+
+
+const objetivosPredefinidos = [
+  "Metering Specialist",
+  "Metering Engineer Specialist",
+  "Metering Technician",
+  "Metering Engineer",
+  "Nenhum"
+];
+const objetivoPadrao = "Metering Specialist";
+const objetivoNenhum = "Nenhum";
+
+function getObjetivoAtual() {
+  return state.focus?.goal || objetivoPadrao;
+}
+
+async function salvarObjetivo(texto) {
+  const { error } = await client.from("student_goals").upsert(
+    { student_id: state.aluno.id, goal: texto, updated_at: new Date().toISOString() },
+    { onConflict: "student_id" }
+  );
+  if (error) throw new Error(error.message || "Não foi possível salvar o objetivo.");
+  state.focus.goal = texto;
+}
+
+function renderGoalPanel() {
+  const atual = getObjetivoAtual();
+  const predefinido = objetivosPredefinidos.includes(atual);
+  const opcoes = objetivosPredefinidos.map(nome => `
+      <label class="goal-option">
+        <input type="radio" name="objetivo" value="${escapeAttribute(nome)}" ${atual === nome ? "checked" : ""} />
+        <span>${escapeHtml(nome)}</span>
+      </label>`).join("");
+
+  return `
+    <article class="info-panel goal-panel">
+      <p class="eyebrow">Objetivo</p>
+      <h2>Meu objetivo</h2>
+      <p>Escolha o objetivo que você está buscando. Ele aparece no seu painel.</p>
+      <form class="goal-form" id="goalForm">
+        ${opcoes}
+        <label class="goal-option">
+          <input type="radio" name="objetivo" value="__outro__" ${predefinido ? "" : "checked"} />
+          <span>Outro</span>
+        </label>
+        <input type="text" name="outro" maxlength="80" placeholder="Escreva seu objetivo" value="${predefinido ? "" : escapeAttribute(atual)}" />
+        <button class="primary-button" type="submit">Salvar objetivo</button>
+        <p id="goalStatus" class="manual-note"></p>
+      </form>
+    </article>`;
+}
+
 function renderProfile() {
+  const iniciais = String(state.aluno.nome || "")
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(parte => parte[0].toUpperCase())
+    .join("");
+
   app.innerHTML = `
-    <section class="page-header">
-      <p class="eyebrow">Perfil</p>
-      <h1>${state.aluno.nome}</h1>
-      <p>${state.aluno.email}</p>
+    <section class="page-header profile-head">
+      <div class="profile-avatar ${levelClass(getCreditSummary().level)}">
+        ${state.avatarUrl
+          ? `<img src="${escapeAttribute(state.avatarUrl)}" alt="Foto do aluno" />`
+          : `<span>${escapeHtml(iniciais || "?")}</span>`}
+      </div>
+      <div class="profile-head-text">
+        <p class="eyebrow">Perfil</p>
+        <h1>${state.aluno.nome}</h1>
+        <p>${state.aluno.email}</p>
+        <label class="secondary-button profile-avatar-button">
+          Editar foto do perfil
+          <input type="file" id="avatarFile" accept="image/jpeg,image/png,image/webp" class="visually-hidden-input" />
+        </label>
+        <p id="avatarStatus" class="manual-note"></p>
+      </div>
+      ${renderMonitoringSection()}
     </section>
     <section class="profile-grid">
       <article class="info-panel">
         <h2>Dados do aluno</h2>
+        ${(state.membershipOrders || []).some(item => item.plan_code === "mensal" && ["active", "paid", "checkout_open"].includes(item.status))
+          ? `<button class="tour-skip" type="button" data-cancel-subscription>Cancelar assinatura mensal</button>`
+          : ""}
+        <button class="secondary-button" type="button" data-tour-replay>Rever tour do Meu Painel</button>
         <dl>
           <div><dt>ID</dt><dd>${state.aluno.id}</dd></div>
           <div><dt>E-mail</dt><dd>${state.aluno.email}</dd></div>
           <div><dt>Cursos liberados</dt><dd>${state.cursos.length}</dd></div>
+          <div><dt>Nível</dt><dd>${getCreditSummary().level}</dd></div>
+          <div><dt>Descontos</dt><dd>${(() => {
+            const desconto = getLevelDiscount(getCreditSummary().level);
+            return desconto
+              ? `Ao vivo ${desconto.aoVivo}%${desconto.gravado ? ` · Gravado ${desconto.gravado}%` : ""}`
+              : "Sem desconto ainda";
+          })()}</dd></div>
         </dl>
       </article>
+      ${renderGoalPanel()}
+      ${renderFocusSection()}
     </section>
   `;
+
+  document.querySelector("#avatarFile").addEventListener("change", async event => {
+    const arquivo = event.currentTarget.files?.[0];
+    const status = document.querySelector("#avatarStatus");
+    if (!arquivo) return;
+    if (arquivo.size > 5 * 1024 * 1024) {
+      status.textContent = "A imagem deve ter até 5 MB.";
+      return;
+    }
+    status.textContent = "Enviando foto...";
+    try {
+      await enviarAvatar(arquivo);
+      renderProfile();
+      document.querySelector("#avatarStatus").textContent = "Foto atualizada.";
+    } catch (error) {
+      status.textContent = error.message || "Não foi possível enviar a foto.";
+    }
+  });
+}
+
+
+async function loadAvatar() {
+  const { data } = await client.auth.getSession();
+  const uid = data.session?.user?.id;
+  state.avatarUid = uid || "";
+  state.avatarUrl = "";
+  if (!uid) return;
+
+  const bucket = client.storage.from("avatars");
+  const { data: arquivos, error } = await bucket.list(uid, { search: "avatar.jpg" });
+  if (error) return;
+  const arquivo = (arquivos || []).find(item => item.name === "avatar.jpg");
+  if (!arquivo) return;
+
+  const { data: publica } = bucket.getPublicUrl(`${uid}/avatar.jpg`);
+  state.avatarUrl = `${publica.publicUrl}?v=${encodeURIComponent(arquivo.updated_at || Date.now())}`;
+}
+
+async function enviarAvatar(arquivo) {
+  if (!state.avatarUid) throw new Error("Sessão expirada. Entre novamente.");
+
+  const imagem = await createImageBitmap(arquivo);
+  const lado = 256;
+  const escala = Math.max(lado / imagem.width, lado / imagem.height);
+  const largura = imagem.width * escala;
+  const altura = imagem.height * escala;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = lado;
+  canvas.height = lado;
+  canvas.getContext("2d").drawImage(imagem, (lado - largura) / 2, (lado - altura) / 2, largura, altura);
+  imagem.close();
+
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", 0.9));
+  const { error } = await client.storage
+    .from("avatars")
+    .upload(`${state.avatarUid}/avatar.jpg`, blob, { upsert: true, contentType: "image/jpeg" });
+  if (error) throw new Error(error.message || "Não foi possível enviar a foto.");
+
+  await loadAvatar();
 }
 
 function renderCredits() {
@@ -1155,6 +2009,16 @@ function renderCredits() {
       </div>
       <p>O Plano Anual concede 3 créditos após a confirmação do pagamento. Uso e ajustes ficam registrados no histórico da plataforma.</p>
     </section>
+    <section class="credits-levels">
+      <article class="info-panel">
+        <p class="eyebrow">Níveis</p>
+        <h2>Níveis e descontos</h2>
+        <p>Seu nível sobe conforme você conclui cursos. O desconto aparece ao lado de cada categoria.</p>
+        ${renderLevelDiscountTable(summary.level)}
+        <p class="manual-note">Os descontos serão aplicados por tipo de curso (ao vivo ou gravado) assim que essa classificação estiver ativa na plataforma.</p>
+      </article>
+    </section>
+
   `;
 }
 
@@ -1167,8 +2031,41 @@ function renderLevelStep(level, rule, isActive) {
   `;
 }
 
-function renderFlowCoreTools(toolId = "meter-calibration-calculator") {
-  const activeTool = toolId || "meter-calibration-calculator";
+function renderFlowCoreTools(toolId) {
+  document.querySelectorAll("[data-nav-sub]").forEach(link => {
+    link.classList.toggle("is-active", link.dataset.navSub === toolId);
+  });
+
+  if (!toolId) {
+    app.innerHTML = `
+      <section class="page-header">
+        <p class="eyebrow">The Standard / FlowCore Tools</p>
+        <h1>FlowCore Tools</h1>
+        <p>Ferramentas práticas para profissionais de medição. Escolha uma ferramenta para abrir.</p>
+      </section>
+
+      <section class="tool-cards" aria-label="Ferramentas disponíveis">
+        <article class="tool-card">
+          <div>
+            <span class="type-chip">Medidores de vazão</span>
+            <h2>Meter Calibration Calculator</h2>
+            <p>Calculadora para calibração de medidores de vazão com saída de pulsos. Informe os valores conhecidos e escolha o que deseja calcular.</p>
+          </div>
+          <a class="primary-button" href="#flowcore-tools/meter-calibration-calculator">Abrir ferramenta</a>
+        </article>
+
+        <article class="tool-card">
+          <div>
+            <span class="type-chip">Modo inteligente</span>
+            <h2>Intelligent calculator</h2>
+            <p>Informe todos os valores que você já tem e a ferramenta calcula, de uma vez, todos os resultados possíveis, com fórmulas e validação.</p>
+          </div>
+          <a class="primary-button" href="#flowcore-tools/intelligent-calculator">Abrir ferramenta</a>
+        </article>
+      </section>
+    `;
+    return;
+  }
 
   app.innerHTML = `
     <section class="page-header">
@@ -1180,30 +2077,34 @@ function renderFlowCoreTools(toolId = "meter-calibration-calculator") {
     <section class="tools-shell">
       <aside class="tools-menu" aria-label="FlowCore Tools menu">
         <span class="type-chip">Available tool</span>
-        <a class="${activeTool === "meter-calibration-calculator" ? "is-active" : ""}" href="#flowcore-tools/meter-calibration-calculator">
+        <a class="${toolId === "meter-calibration-calculator" || toolId === "intelligent-calculator" ? "is-active" : ""}" href="#flowcore-tools/meter-calibration-calculator">
           <strong>Meter Calibration Calculator</strong>
           <small>Pulsed output flow meters</small>
         </a>
       </aside>
 
       <article class="tool-workspace">
-        ${renderMeterCalibrationCalculator()}
+        ${toolId === "intelligent-calculator" ? renderIntelligentPage() : renderSolveForPage()}
       </article>
     </section>
   `;
 
-  bindMeterCalibrationCalculator();
+  if (toolId === "intelligent-calculator") {
+    bindMeterCalibrationCalculator();
+    bindCertificateUpload();
+  } else {
+    bindSolveForMode([]);
+  }
 }
 
-function renderMeterCalibrationCalculator() {
+function renderSolveForPage() {
   return `
     <div class="tool-header">
       <div>
         <p class="eyebrow">Pulsed Output Flow Meters</p>
         <h2>Meter Calibration Calculator</h2>
-        <p>Intelligent calculator for pulsed output flow meter calibration. Enter the known values and the tool detects every available calculation.</p>
+        <p>Selecione a grandeza que deseja calcular. A ferramenta mostra apenas os dados necessários para ela.</p>
       </div>
-      <button class="secondary-button" type="button" data-load-calibration-demo>Load demo data</button>
     </div>
 
     <section class="solve-for-panel">
@@ -1232,12 +2133,37 @@ function renderMeterCalibrationCalculator() {
       <div id="solveForResult" class="solve-result" aria-live="polite"></div>
     </section>
 
-    <section class="intelligent-calculator-panel">
+  `;
+}
+
+function renderIntelligentPage() {
+  return `
+    <div class="tool-header">
       <div>
-        <p class="eyebrow">Intelligent Calculator</p>
-        <h2>Detect all possible calculations</h2>
-        <p>Use this mode when you want the engine to inspect every known value and return every valid calculation available.</p>
+        <p class="eyebrow">Pulsed Output Flow Meters</p>
+        <h2>Intelligent calculator</h2>
+        <p>Informe os valores que você já tem. A ferramenta verifica todos eles e devolve todos os cálculos possíveis, com fórmulas e validação.</p>
       </div>
+      <button class="secondary-button" type="button" data-load-calibration-demo>Load demo data</button>
+    </div>
+
+    <section class="certificate-upload" aria-labelledby="certificateTitle">
+      <p class="eyebrow">Análise de certificado</p>
+      <h2 id="certificateTitle">Enviar certificado em PDF</h2>
+      <p>Antes do envio, CPF, CNPJ, e-mails e telefones formatados são ocultados. Você confere o texto antes de enviar. O conteúdo é processado por um serviço de inteligência artificial de terceiros.</p>
+      <label class="certificate-dropzone" id="certificateDropzone">
+        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><polyline points="7 9 12 4 17 9"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+        <strong>Arraste o PDF aqui</strong>
+        <span>ou <u>selecione do seu computador</u></span>
+        <small id="certificateFileName">Apenas arquivos PDF</small>
+        <input type="file" id="certificateFile" accept="application/pdf" />
+      </label>
+      <div id="certificatePreview" class="certificate-preview" hidden>
+        <p class="eyebrow">Texto que será enviado</p>
+        <pre id="certificateText"></pre>
+        <button class="primary-button" type="button" id="certificateSend">Enviar para análise</button>
+      </div>
+      <div id="certificateResult" class="certificate-result" aria-live="polite"></div>
     </section>
 
     <form id="meterCalibrationForm" class="calculation-form">
@@ -1330,8 +2256,7 @@ function renderMeterCalibrationCalculator() {
       <ul id="certificateDraftList">
         <li>No calculation added yet.</li>
       </ul>
-    </section>
-  `;
+    </section>  `;
 }
 
 function bindMeterCalibrationCalculator() {
@@ -1638,6 +2563,7 @@ function selectField(name, label, symbol, unit, options) {
 }
 
 function bindSolveForMode(certificateDraft) {
+  if (!document.querySelector("#solveForForm")) return;
   const definitions = getSolveForDefinitions();
   const selector = document.querySelector("#solveForTarget");
   const fields = document.querySelector("#solveForFields");
@@ -2501,15 +3427,17 @@ function renderSpecialistV2() {
       </article>
 
       <article class="specialist-chat">
-        <div class="specialist-message">
-          <strong>Especialista FlowCore</strong>
-          <p>Envie uma dúvida sobre seus cursos, materiais ou conceitos técnicos. A IA responde com orientação didática e foco operacional, usando o contexto dos cursos liberados.</p>
+        <div id="specialistAnswer" class="specialist-answer">
+          <div class="specialist-bubble is-assistant">
+            <strong>FlowCore Specialist</strong>
+            <p>Envie uma dúvida sobre seus cursos, materiais ou conceitos técnicos. A IA responde com orientação didática e foco operacional, usando o contexto dos cursos liberados.</p>
+          </div>
         </div>
         <form id="specialistForm" class="specialist-form">
-          <textarea name="question" placeholder="Digite sua dúvida sobre o conteúdo..." rows="5" required></textarea>
-          <button class="primary-button" type="submit">Enviar pergunta</button>
+          <textarea name="question" placeholder="Digite sua dúvida sobre o conteúdo..." rows="1" required></textarea>
+          <button class="specialist-mic" id="specialistMic" type="button" aria-label="Falar a pergunta"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg></button>
+          <button class="specialist-send" type="submit" aria-label="Enviar pergunta (Enter)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg></button>
         </form>
-        <div id="specialistAnswer" class="specialist-answer" style="display:none;"></div>
       </article>
     </section>
   `;
@@ -2522,19 +3450,71 @@ function renderSpecialistV2() {
     });
   });
 
+  const specialistInput = document.querySelector("#specialistForm textarea");
+  const specialistThread = document.querySelector("#specialistAnswer");
+
+  function addSpecialistBubble(role, html) {
+    const bubble = document.createElement("div");
+    bubble.className = `specialist-bubble is-${role}`;
+    bubble.innerHTML = html;
+    specialistThread.appendChild(bubble);
+    specialistThread.scrollTop = specialistThread.scrollHeight;
+    return bubble;
+  }
+
+  const specialistMic = document.querySelector("#specialistMic");
+  const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognitionAPI) {
+    specialistMic.hidden = true;
+  } else {
+    const recognition = new SpeechRecognitionAPI();
+    let textoAnterior = "";
+    recognition.lang = "pt-BR";
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.onresult = event => {
+      const transcricao = Array.from(event.results).map(result => result[0].transcript).join(" ");
+      specialistInput.value = `${textoAnterior} ${transcricao}`.trim();
+      ajustarCampo();
+    };
+    recognition.onend = () => specialistMic.classList.remove("is-listening");
+    recognition.onerror = () => specialistMic.classList.remove("is-listening");
+    specialistMic.addEventListener("click", () => {
+      if (specialistMic.classList.contains("is-listening")) {
+        recognition.stop();
+        return;
+      }
+      textoAnterior = specialistInput.value.trim();
+      specialistMic.classList.add("is-listening");
+      recognition.start();
+    });
+  }
+
+  function ajustarCampo() {
+    specialistInput.style.height = "auto";
+    specialistInput.style.height = `${Math.min(specialistInput.scrollHeight, 160)}px`;
+  }
+  specialistInput.addEventListener("input", ajustarCampo);
+
+  specialistInput.addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      document.querySelector("#specialistForm").requestSubmit();
+    }
+  });
+
   document.querySelector("#specialistForm").addEventListener("submit", async event => {
     event.preventDefault();
     const form = event.currentTarget;
     const submitButton = form.querySelector('button[type="submit"]');
-    const data = Object.fromEntries(new FormData(form).entries());
-    const question = String(data.question || "").trim();
-    const answer = document.querySelector("#specialistAnswer");
+    const question = specialistInput.value.trim();
 
     if (!question) return;
 
-    answer.style.display = "block";
-    answer.classList.remove("is-error");
-    answer.innerHTML = `<strong>FlowCore Specialist</strong><p>FlowCore Specialist metrificando e diminuindo as incertezas...</p>`;
+    specialistInput.value = "";
+    ajustarCampo();
+    addSpecialistBubble("user", `<strong>${escapeHtml(state.aluno?.nome || "Aluno")}</strong><p>${escapeHtml(question)}</p>`);
+    const pending = addSpecialistBubble("assistant", `<strong>FlowCore Specialist</strong><p>Metrificando e diminuindo as incertezas...</p>`);
     if (submitButton) submitButton.disabled = true;
 
     try {
@@ -2544,19 +3524,20 @@ function renderSpecialistV2() {
         : Number.isFinite(Number(result.aiUsage?.remaining))
           ? `${Number(result.aiUsage.remaining)} de ${Number(result.aiUsage.limit || 10)} utilizações disponíveis neste ciclo.`
           : "";
-      answer.innerHTML = `
+      pending.innerHTML = `
         <strong>FlowCore Specialist</strong>
         <p>${formatAssistantText(result.answer || "Não recebi uma resposta da IA.")}</p>
         ${usageMessage ? `<small>${escapeHtml(usageMessage)}</small>` : ""}
       `;
     } catch (error) {
-      answer.classList.add("is-error");
-      answer.innerHTML = `
+      pending.classList.add("is-error");
+      pending.innerHTML = `
         <strong>Não foi possível responder agora</strong>
         <p>${escapeHtml(error.message || "Falha na comunicação com o FlowCore Specialist.")}</p>
       `;
     } finally {
       if (submitButton) submitButton.disabled = false;
+      specialistInput.focus();
     }
   });
 }
@@ -2604,18 +3585,13 @@ function formatAssistantText(value) {
 }
 
 function renderFinancial() {
-  const acessosPagos = getAccessibleCourses()
-    .map(curso => ({
-      curso,
-      financeiro: state.financeiro.lancamentos.find(item => item.curso_id === curso.id)
-    }))
-    .filter(item => item.financeiro);
+  const acessosPagos = getAccessibleCourses().map(curso => ({ curso }));
 
   app.innerHTML = `
     <section class="page-header">
       <p class="eyebrow">Financeiro</p>
-      <h1>Cursos pagos e validade</h1>
-      <p>Esta área mostra somente o valor pago pelos cursos que estão liberados para o aluno. A validade será sempre de 1 ano e, nesta fase, a conferência é manual.</p>
+      <h1>Cursos liberados</h1>
+      <p>Esta área mostra somente os cursos liberados para o aluno e o status de pagamento de cada um.</p>
     </section>
     <section class="finance-course-grid" aria-label="Cursos pagos e validade">
       ${acessosPagos.map(renderPaidCourseCard).join("")}
@@ -2624,7 +3600,6 @@ function renderFinancial() {
 }
 
 function renderPaidCourseCard(item) {
-  const financeiro = item.financeiro;
   const curso = item.curso;
 
   return `
@@ -2632,21 +3607,10 @@ function renderPaidCourseCard(item) {
       <img src="${curso.capa}" alt="" />
       <div class="finance-course-body">
         <div>
-          <span class="status-pill">Acesso ativo</span>
           <h2>${curso.titulo}</h2>
           <p>${curso.descricao}</p>
         </div>
-        <div class="finance-facts">
-          <div>
-            <span>Valor pago</span>
-            <strong>${formatCurrency(financeiro.valor)}</strong>
-          </div>
-          <div>
-            <span>Validade</span>
-            <strong>${formatDate(financeiro.validade_inicio)} a ${formatDate(financeiro.validade_ate)}</strong>
-          </div>
-        </div>
-        <p class="manual-note">Validação manual · vigência padrão de 1 ano.</p>
+        <span class="finance-paid-tag">Pago</span>
       </div>
     </article>
   `;
@@ -2695,6 +3659,27 @@ function renderCatalogCard(curso, hasAccess = false) {
   `;
 }
 
+function renderStoreNotice() {
+  const plano = (state.membershipPlans || []).find(item => item.code === state.membershipSelection);
+  if (plano) {
+    return `
+    <div class="store-notice is-lock" role="status">
+      <div>
+        <strong>Plano ${escapeHtml(plano.name)} escolhido.</strong>
+        <span>O carrinho está travado. Para comprar cursos avulsos, desfaça a escolha do plano.</span>
+      </div>
+      <button class="secondary-button" type="button" data-membership-undo>Desfazer escolha</button>
+    </div>`;
+  }
+  if (state.storeNotice) {
+    return `
+    <div class="store-notice" role="alert">
+      <span>${escapeHtml(state.storeNotice)}</span>
+    </div>`;
+  }
+  return "";
+}
+
 function renderStore() {
   const platformAccess = getPlatformAccessState();
   if (platformAccess.expired) {
@@ -2702,23 +3687,15 @@ function renderStore() {
     return;
   }
 
-  const currentIds = new Set(state.cursos.map(curso => curso.id));
-  const catalog = state.catalogoCursos;
-  const cartItems = state.cart.items
-    .map(item => ({
-      ...item,
-      course: catalog.find(course => (course.offerId || course.id) === item.offerId)
-    }))
-    .filter(item => item.course);
-  const total = cartItems.reduce((sum, item) => sum + Number(item.course.valor || 0) * item.quantity, 0);
-  const selectedPlan = state.membershipPlans.find(plan => plan.code === state.membershipSelection);
-
   app.innerHTML = `
-    <section class="page-header">
+    <section class="page-header store-head">
       <p class="eyebrow">FlowCore Academy</p>
       <h1>Planos e cursos</h1>
-      <p>Escolha um plano de formação ou compre treinamentos individualmente com checkout seguro Pagar.me.</p>
+      <p>Escolha um plano de formação para liberar os cursos incluídos nele.</p>
+      ${renderCartButton()}
     </section>
+    ${renderCartPanel()}
+    ${renderStoreNotice()}
     ${state.membershipPlans.length
       ? `<section class="membership-section" aria-labelledby="membershipTitle">
            <div class="section-heading">
@@ -2733,47 +3710,23 @@ function renderStore() {
            </div>
          </section>`
       : ""}
-    <section class="commerce-shell">
-      <div>
-        <div class="section-heading compact">
-          <div>
-            <p class="eyebrow">Compra avulsa</p>
-            <h2>Cursos individuais</h2>
-          </div>
+    <section class="store-courses" aria-labelledby="storeCoursesTitle">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Cursos individuais</p>
+          <h2 id="storeCoursesTitle">Cursos disponíveis</h2>
         </div>
-        <div class="catalog-grid" aria-label="Catálogo de novos cursos">
-          ${catalog.map(curso => renderCommerceCatalogCard(curso, currentIds.has(curso.id))).join("")}
-        </div>
+        <p>Compre cursos avulsos ou escolha um plano. Não é possível combinar os dois na mesma compra.</p>
       </div>
-      <aside class="checkout-panel" aria-label="Resumo da compra">
-        ${selectedPlan
-          ? renderMembershipCheckout(selectedPlan)
-          : `<div>
-               <p class="eyebrow">Checkout seguro</p>
-               <h2>Seu carrinho</h2>
-             </div>
-             ${cartItems.length
-               ? `<div class="cart-items">${cartItems.map(renderCartItem).join("")}</div>
-                  <div class="checkout-total"><span>Total</span><strong>${formatCurrency(total)}</strong></div>
-                  <form class="checkout-form" id="checkoutForm">
-                    <label>CPF ou CNPJ
-                      <input name="document" inputmode="numeric" autocomplete="off" required minlength="11" placeholder="Somente números" />
-                    </label>
-                    <label>Telefone com DDD
-                      <input name="phone" type="tel" inputmode="tel" autocomplete="tel" required minlength="10" placeholder="(24) 99999-9999" />
-                    </label>
-                    <p class="manual-note">Pagamento disponível por cartão de crédito ou Pix.</p>
-                    <button class="primary-button" type="submit" ${state.cart.status ? "disabled" : ""}>Ir para o pagamento</button>
-                  </form>`
-               : `<p>Seu carrinho está vazio. Escolha um plano ou curso para continuar.</p>`}`}
-        ${state.cart.status ? `<p class="checkout-status" role="status">${escapeHtml(state.cart.status)}</p>` : ""}
-        ${state.cart.error ? `<p class="checkout-status is-error" role="alert">${escapeHtml(state.cart.error)}</p>` : ""}
-      </aside>
+      <div class="store-course-list">
+        ${state.catalogoCursos.map(renderStoreCourseRow).join("")}
+      </div>
     </section>
   `;
 
   bindStoreActions();
 }
+
 
 function renderExpiredMembershipStore(platformAccess) {
   const selectedPlan = state.membershipPlans.find(plan => plan.code === state.membershipSelection);
@@ -2797,22 +3750,205 @@ function renderExpiredMembershipStore(platformAccess) {
         ${state.membershipPlans.map(renderMembershipPlanCard).join("")}
       </div>
     </section>
-    ${selectedPlan
-      ? `<section class="expired-membership-checkout">
-           <aside class="checkout-panel" aria-label="Finalizar renovação">
-             ${renderMembershipCheckout(selectedPlan)}
-             ${state.cart.status ? `<p class="checkout-status" role="status">${escapeHtml(state.cart.status)}</p>` : ""}
-             ${state.cart.error ? `<p class="checkout-status is-error" role="alert">${escapeHtml(state.cart.error)}</p>` : ""}
-           </aside>
-         </section>`
-      : ""}
   `;
 
   bindStoreActions();
 }
 
+function getCartDiscountPercent(quantidade) {
+  return Math.min(30, quantidade * 5);
+}
+
+function getCartCourses() {
+  return state.cart.items
+    .map(item => state.catalogoCursos.find(curso => (curso.offerId || curso.id) === item.offerId))
+    .filter(Boolean);
+}
+
+const stoneCheckoutUrl = ""; // URL do ambiente de pagamento da Stone
+
+function renderStoneCheckoutButton(label) {
+  if (!stoneCheckoutUrl) {
+    return `<button class="primary-button" type="button" data-checkout-plan="${escapeAttribute(plan.code)}">Seguir com a compra</button>`;
+  }
+  return `<a class="primary-button" href="${escapeAttribute(stoneCheckoutUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
+}
+
+function renderCartIcon(quantidade) {
+  const cheio = quantidade > 0;
+  return `
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 8h14l-1.6 6.6a1 1 0 0 1-1 .8H8.2a1 1 0 0 1-1-.8L5.2 5H3" ${cheio ? 'fill="currentColor" fill-opacity="0.22"' : ""}/>
+      <circle cx="9.5" cy="19.5" r="1.4"/>
+      <circle cx="17" cy="19.5" r="1.4"/>
+    </svg>`;
+}
+
+function renderCartButton() {
+  const quantidade = state.cart.items.length;
+  const label = `Carrinho, ${quantidade} ${quantidade === 1 ? "item" : "itens"}`;
+  return `
+    <button class="store-cart-button" type="button" data-cart-toggle aria-expanded="${state.cart.open ? "true" : "false"}" aria-label="${label}">
+      ${renderCartIcon(quantidade)}
+      ${quantidade ? `<span class="store-cart-count">${quantidade}</span>` : ""}
+    </button>`;
+}
+
+function renderCartPanel() {
+  if (!state.cart.open) return "";
+
+  const cursos = getCartCourses();
+  const quantidade = cursos.length;
+
+  if (!quantidade) {
+    return `
+      <section class="store-cart" aria-label="Carrinho">
+        <div class="store-cart-head">
+          <h2>Seu carrinho está vazio</h2>
+        </div>
+        <p>Adicione cursos abaixo para ver o total.</p>
+      </section>`;
+  }
+
+  const nivel = getCreditSummary().level;
+  const classificado = Boolean(getLevelDiscount(nivel));
+  const subtotal = cursos.reduce((soma, curso) => soma + Number(curso.valor || 0), 0);
+
+  let rotuloDesconto;
+  let desconto;
+  let dica = "";
+  let degraus = "";
+
+  if (classificado) {
+    desconto = 0;
+    rotuloDesconto = "Sem desconto de nível";
+    dica = "O desconto por nível vale no Plano Anual.";
+  } else {
+    const percentual = getCartDiscountPercent(quantidade);
+    desconto = subtotal * percentual / 100;
+    rotuloDesconto = `Desconto progressivo (${percentual}%)`;
+    dica = quantidade < 6
+      ? `Adicione mais 1 curso e o desconto sobe para ${getCartDiscountPercent(quantidade + 1)}%.`
+      : "Desconto máximo de 30% aplicado.";
+    degraus = `
+      <div class="store-discount-steps" aria-label="Desconto progressivo">
+        ${[1, 2, 3, 4, 5, 6].map(degrau => `<span class="store-discount-step ${quantidade >= degrau ? "is-reached" : ""}">${degrau * 5}%</span>`).join("")}
+      </div>`;
+  }
+
+  const total = subtotal - desconto;
+
+  return `
+    <section class="store-cart" aria-label="Carrinho">
+      <div class="store-cart-head">
+        <h2>Seu carrinho</h2>
+        <span>${quantidade} ${quantidade === 1 ? "curso" : "cursos"}</span>
+      </div>
+      <ul class="store-cart-items">
+        ${cursos.map(curso => `
+        <li>
+          <span>${escapeHtml(curso.titulo)}</span>
+          <div>
+            <strong>${formatCurrency(Number(curso.valor || 0))}</strong>
+            <button class="text-link" type="button" data-cart-remove="${escapeAttribute(curso.offerId || curso.id)}">Remover</button>
+          </div>
+        </li>`).join("")}
+      </ul>
+      ${degraus}
+      <dl class="store-cart-summary">
+        <div><dt>Subtotal</dt><dd>${formatCurrency(subtotal)}</dd></div>
+        <div><dt>${rotuloDesconto}</dt><dd>- ${formatCurrency(desconto)}</dd></div>
+        <div class="is-total"><dt>Total</dt><dd>${formatCurrency(total)}</dd></div>
+      </dl>
+      <p class="store-cart-hint">${dica}</p>
+      <button class="primary-button" type="button" data-checkout-cart>Finalizar compra</button>
+    </section>`;
+}
+
+
+// Modalidade interna: todos os cursos são "ao vivo", exceto os listados aqui.
+const cursosGravados = ["ia-dominio-tecnico"];
+
+function getCourseModalidade(cursoId) {
+  return cursosGravados.includes(cursoId) ? "gravado" : "ao_vivo";
+}
+
+function getStudentCoursePrice(curso) {
+  // O desconto de nível vale só no Plano Anual, então os cursos avulsos não têm desconto de nível.
+  const percentual = 0;
+  const original = Number(curso.valor || 0);
+  return { original, final: original * (1 - percentual / 100), percentual };
+}
+
+function renderStoreCourseRow(curso) {
+  const owned = state.cursos.some(item => item.id === curso.id);
+  const isComingSoon = curso.valor === null || curso.url === "#";
+  const priceLabel = isComingSoon ? "Status" : "Valor";
+  const priceValue = isComingSoon ? "Em breve" : formatCurrency(curso.valor);
+  const modalidadeLabel = getCourseModalidade(curso.id) === "ao_vivo" ? "Ao vivo" : "Gravado";
+  const offerId = curso.offerId || curso.id;
+  const inCart = state.cart.items.some(item => item.offerId === offerId);
+  const travado = Boolean(state.membershipSelection);
+
+  let action;
+  if (owned) {
+    action = `<a class="primary-button" href="#curso/${escapeAttribute(curso.id)}">Acessar curso</a>`;
+  } else if (isComingSoon) {
+    action = `<span class="store-tag">Em breve</span>`;
+  } else if (travado) {
+    action = `<span class="store-tag">Carrinho travado</span>`;
+  } else {
+    action = `<button class="primary-button" type="button" data-cart-add="${escapeAttribute(offerId)}" ${inCart ? "disabled" : ""}>${inCart ? "No carrinho" : "Adicionar ao carrinho"}</button>`;
+  }
+
+  return `
+    <article class="store-course-row">
+      <img src="${escapeAttribute(curso.capa)}" alt="" />
+      <div class="store-course-body">
+        <div>
+          <span class="status-pill">${owned ? "Já liberado" : escapeHtml(curso.status || "")}</span>
+          <span class="store-tag">${modalidadeLabel}</span>
+          <h2>${escapeHtml(curso.titulo)}</h2>
+          <p>${escapeHtml(curso.descricao)}</p>
+        </div>
+        <div class="store-course-side">
+          <div class="price-row">
+            <span>${priceLabel}</span>
+            <strong>${priceValue}</strong>
+          </div>
+          ${action}
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderPlanPrice(plan, unidade) {
+  const valor = Number(plan.amount || 0);
+  const nivel = getCreditSummary().level;
+  const desconto = plan.code === "anual" ? getLevelDiscount(nivel) : null;
+  if (!desconto) {
+    return `
+        <div class="membership-price">
+          <strong>${formatCurrency(valor)}</strong>
+          <span>${unidade}</span>
+        </div>`;
+  }
+
+  const final = valor * (1 - desconto.aoVivo / 100);
+  return `
+        <div class="membership-price">
+          <s>${formatCurrency(valor)}</s>
+          <strong>${formatCurrency(final)}</strong>
+          <span>${unidade}</span>
+        </div>
+        <p class="level-discount-note">Desconto de nível ${escapeHtml(nivel)}: ${desconto.aoVivo}% aplicado.</p>`;
+}
+
 function renderMembershipPlanCard(plan) {
   const recurring = plan.billing_mode === "recurring";
+  const anual = Number(plan.access_days) >= 365;
+  const trimestral = Number(plan.access_days) === 90;
   const activeOrder = state.membershipOrders.find(order =>
     order.plan_code === plan.code &&
     ["active", "paid"].includes(order.status) &&
@@ -2821,33 +3957,67 @@ function renderMembershipPlanCard(plan) {
   const detail = recurring
     ? "Cobrança mensal automática no cartão"
     : `Compra única em até ${Number(plan.max_installments || 12)}x sem juros`;
+  const eyebrow = recurring ? "Assinatura" : anual ? "Compra anual" : "Compra única";
+  const unidade = recurring ? "/mês" : anual ? "/ano" : trimestral ? "/trimestre" : "";
 
   return `
-    <article class="membership-plan-card ${plan.code === "anual" ? "is-featured" : ""}">
-      ${plan.code === "anual" ? `<span class="membership-badge">Melhor condição</span>` : ""}
-      <p class="eyebrow">${recurring ? "Assinatura" : "Compra anual"}</p>
-      <h3>${escapeHtml(plan.name)}</h3>
-      <p>${escapeHtml(plan.description)}</p>
-      <div class="membership-price">
-        <strong>${formatCurrency(Number(plan.amount || 0))}</strong>
-        <span>${recurring ? "/mês" : "/ano"}</span>
+    <article class="membership-plan-card ${anual ? "is-featured" : ""}">
+      ${anual ? `<span class="membership-badge">Melhor condição</span>` : ""}
+      <div class="membership-plan-main">
+        <p class="eyebrow">${eyebrow}</p>
+        <h3>${escapeHtml(plan.name)}</h3>
+        <p>${escapeHtml(plan.description)}</p>
+        <ul>
+          <li>Acesso aos cursos incluídos no plano</li>
+          <li>${recurring ? "IA proprietária: 10 utilizações por ciclo mensal" : "IA proprietária ilimitada"}</li>
+          ${anual ? `<li>Um novo curso gravado liberado a cada mês</li>` : ""}
+          ${Number(plan.initial_credits || 0) > 0
+            ? `<li>${Number(plan.initial_credits)} créditos para cursos ao vivo</li>`
+            : ""}
+          <li>${escapeHtml(detail)}</li>
+        </ul>
       </div>
-      <ul>
-        <li>Acesso aos cursos incluídos no plano</li>
-        <li>${recurring ? "IA proprietária: 10 utilizações por ciclo mensal" : "IA proprietária ilimitada"}</li>
-        ${plan.code === "anual"
-          ? `<li>Um novo curso gravado liberado a cada mês</li>`
-          : ""}
-        ${Number(plan.initial_credits || 0) > 0
-          ? `<li>${Number(plan.initial_credits)} créditos para cursos ao vivo</li>`
-          : ""}
-        <li>${escapeHtml(detail)}</li>
-      </ul>
-      ${activeOrder
-        ? `<span class="membership-active">Plano vigente até ${formatDate(activeOrder.valid_until)}</span>`
-        : `<button class="primary-button" type="button" data-membership-select="${escapeAttribute(plan.code)}">Escolher ${escapeHtml(plan.name)}</button>`}
+      <div class="membership-plan-side">
+        ${renderPlanPrice(plan, unidade)}
+        ${activeOrder
+          ? `<span class="membership-active">Plano vigente até ${formatDate(activeOrder.valid_until)}</span>`
+          : `<button class="primary-button" type="button" data-membership-select="${escapeAttribute(plan.code)}">Escolher ${escapeHtml(plan.name)}</button>`}
+      </div>
     </article>
   `;
+}
+
+
+function openPlanPopup(planCode) {
+  const plan = state.membershipPlans.find(item => item.code === planCode);
+  if (!plan) return;
+
+  const recurring = plan.billing_mode === "recurring";
+  const backdrop = document.createElement("div");
+  backdrop.className = "renewal-offer-backdrop";
+  backdrop.innerHTML = `
+    <section class="renewal-offer-modal plan-popup" role="dialog" aria-modal="true" aria-labelledby="planPopupTitle">
+      <p class="renewal-offer-kicker">${recurring ? "Assinatura mensal" : "Compra única"}</p>
+      <h2 id="planPopupTitle">${escapeHtml(plan.name)}</h2>
+      <div class="plan-popup-price">
+        <strong>${formatCurrency(Number(plan.amount || 0))}</strong>
+        <span>${recurring ? "cobrado mensalmente" : `em até ${Number(plan.max_installments || 12)}x sem juros`}</span>
+      </div>
+      <p class="plan-popup-text">Você será redirecionado ao ambiente seguro de pagamento. A compra será concluída em uma nova aba.</p>
+      <p id="planPopupStatus" class="manual-note"></p>
+      <div class="plan-popup-actions">
+        <button class="secondary-button" type="button" data-plan-popup-close>Cancelar</button>
+        <button class="primary-button" type="button" data-checkout-plan="${escapeAttribute(plan.code)}">Seguir com a compra</button>
+      </div>
+    </section>
+  `;
+  document.body.appendChild(backdrop);
+
+  const close = () => backdrop.remove();
+  backdrop.querySelector("[data-plan-popup-close]").addEventListener("click", close);
+  backdrop.addEventListener("click", event => {
+    if (event.target === backdrop) close();
+  });
 }
 
 function renderMembershipCheckout(plan) {
@@ -2861,19 +4031,11 @@ function renderMembershipCheckout(plan) {
       <strong>${formatCurrency(Number(plan.amount || 0))}</strong>
       <span>${recurring ? "cobrado mensalmente" : `em até ${Number(plan.max_installments || 12)}x sem juros`}</span>
     </div>
-    <form class="checkout-form" id="membershipCheckoutForm" data-plan-code="${escapeAttribute(plan.code)}">
-      <label>CPF ou CNPJ
-        <input name="document" inputmode="numeric" autocomplete="off" required minlength="11" placeholder="Somente números" />
-      </label>
-      <label>Telefone com DDD
-        <input name="phone" type="tel" inputmode="tel" autocomplete="tel" required minlength="10" placeholder="(24) 99999-9999" />
-      </label>
-      <p class="manual-note">${recurring
-        ? "A assinatura recorrente é paga por cartão de crédito."
-        : "Pagamento por cartão de crédito ou Pix. Parcelamento sem juros disponível no cartão."}</p>
-      <button class="primary-button" type="submit" ${state.cart.status ? "disabled" : ""}>Ir para o pagamento</button>
-      <button class="text-link" type="button" data-membership-cancel>${getPlatformAccessState().expired ? "Escolher outro plano" : "Voltar ao carrinho"}</button>
-    </form>
+    <div class="checkout-actions">
+      ${renderStoneCheckoutButton("Ir para o pagamento")}
+      <button class="text-link" type="button" data-membership-cancel>${getPlatformAccessState().expired ? "Escolher outro plano" : "Voltar aos planos"}</button>
+    </div>
+
   `;
 }
 
@@ -2927,6 +4089,13 @@ function bindStoreActions() {
     button.addEventListener("click", () => addOfferToCart(button.dataset.cartAdd));
   });
 
+  document.querySelectorAll("[data-cart-toggle]").forEach(button => {
+    button.addEventListener("click", () => {
+      state.cart.open = !state.cart.open;
+      renderStore();
+    });
+  });
+
   document.querySelectorAll("[data-cart-remove]").forEach(button => {
     button.addEventListener("click", () => removeOfferFromCart(button.dataset.cartRemove));
   });
@@ -2936,10 +4105,16 @@ function bindStoreActions() {
 
   document.querySelectorAll("[data-membership-select]").forEach(button => {
     button.addEventListener("click", () => {
-      state.membershipSelection = button.dataset.membershipSelect || "";
-      state.cart.status = "";
-      state.cart.error = "";
+      const codigo = button.dataset.membershipSelect || "";
+      if (state.cart.items.length) {
+        state.storeNotice = "Seu carrinho já tem cursos. Remova os cursos ou finalize a compra antes de escolher um plano.";
+        renderStore();
+        return;
+      }
+      state.membershipSelection = codigo;
+      state.storeNotice = "";
       renderStore();
+      openPlanPopup(codigo);
     });
   });
 
@@ -2952,6 +4127,11 @@ function bindStoreActions() {
 }
 
 function addOfferToCart(offerId) {
+  if (state.membershipSelection) {
+    state.storeNotice = "O carrinho está travado pelo plano escolhido. Desfaça a escolha do plano para comprar cursos avulsos.";
+    renderStore();
+    return;
+  }
   const offer = state.catalogoCursos.find(course => (course.offerId || course.id) === offerId);
   if (!offer || offer.valor === null) return;
   if (!state.cart.items.some(item => item.offerId === offerId)) {
@@ -3095,14 +4275,23 @@ function getAccessibleCourses() {
 
 function updateCourseProgress() {
   state.cursos.forEach(curso => {
+    // Todas as aulas do curso contam. O curso só fica concluído com 100% das aulas marcadas.
     const measurableMaterials = (curso.materiais || []).filter(item => item.tipo !== "certificado");
     if (!measurableMaterials.length) {
       curso.progresso = 0;
+      curso.aulasTotal = 0;
+      curso.aulasConcluidas = 0;
       return;
     }
 
     const completedCount = measurableMaterials.filter(item => isMaterialCompleted(item.id)).length;
-    curso.progresso = Math.round((completedCount / measurableMaterials.length) * 100);
+    curso.aulasTotal = measurableMaterials.length;
+    curso.aulasConcluidas = completedCount;
+    if (completedCount === measurableMaterials.length) {
+      curso.progresso = 100;
+      return;
+    }
+    curso.progresso = Math.min(99, Math.round((completedCount / measurableMaterials.length) * 100));
   });
 }
 
@@ -3143,17 +4332,66 @@ function getCreditSummary() {
     active,
     credits: Math.max(0, credits),
     completedTrainings,
-    level: getStudentLevel(completedTrainings),
+    level: getStudentLevel(state.cursos.length),
     startLabel: startDate ? formatDate(startDate.toISOString().slice(0, 10)) : "Sem assinatura registrada"
   };
 }
 
 function getStudentLevel(completedTrainings) {
-  if (completedTrainings > 5) return "Ouro";
-  if (completedTrainings >= 5) return "Prata";
+  if (completedTrainings >= 8) return "Diamante";
+  if (completedTrainings >= 5) return "Ouro";
+  if (completedTrainings >= 4) return "Prata";
   if (completedTrainings >= 3) return "Bronze";
   return "Em formação";
 }
+
+const studentLevelDiscounts = {
+  Bronze: { aoVivo: 7, gravado: 0 },
+  Prata: { aoVivo: 15, gravado: 5 },
+  Ouro: { aoVivo: 20, gravado: 10 },
+  Diamante: { aoVivo: 30, gravado: 15 }
+};
+
+function getLevelDiscount(nivel) {
+  return studentLevelDiscounts[nivel] || null;
+}
+
+function levelClass(nivel) {
+  const slug = String(nivel || "")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+  return `level-${slug}`;
+}
+
+function renderLevelDiscountTable(nivelAtual) {
+  const niveis = [
+    ["Bronze", "3 cursos"],
+    ["Prata", "4 cursos"],
+    ["Ouro", "5 a 7 cursos"],
+    ["Diamante", "8 ou mais cursos"]
+  ];
+  const linhas = niveis.map(([nome, criterio]) => {
+    const desconto = studentLevelDiscounts[nome];
+    return `
+      <tr class="${nome === nivelAtual ? "is-current" : ""}">
+        <td>${nome}</td>
+        <td>${criterio}</td>
+        <td>${desconto.aoVivo}%</td>
+        <td>${desconto.gravado ? `${desconto.gravado}%` : "—"}</td>
+      </tr>`;
+  }).join("");
+
+  return `
+    <table class="level-table">
+      <thead>
+        <tr><th>Nível</th><th>Critério</th><th>Ao vivo</th><th>Gravado</th></tr>
+      </thead>
+      <tbody>${linhas}</tbody>
+    </table>`;
+}
+
 
 function getSubscriptionStartDate() {
   if (state.aluno?.subscriptionStartDate) {
@@ -3230,40 +4468,6 @@ function renderInstitutionalVideoCleanFrame() {
       <iframe src="${institutionalVideoUrl}" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture" allowfullscreen fetchpriority="high"></iframe>
     </div>
   `;
-}
-
-function showInstitutionalVideoWelcomeOnce() {
-  if (!state.aluno?.id) return;
-  const storageKey = `${institutionalVideoSeenPrefix}:${state.aluno.id}`;
-  if (localStorage.getItem(storageKey)) return;
-  localStorage.setItem(storageKey, new Date().toISOString());
-
-  const modal = document.createElement("div");
-  modal.className = "video-modal-backdrop";
-  modal.innerHTML = `
-    <section class="video-modal" role="dialog" aria-modal="true" aria-labelledby="institutionalVideoTitle">
-      <div class="video-modal-header">
-        <div>
-          <span class="type-chip">Boas-vindas</span>
-          <h2 id="institutionalVideoTitle">V&iacute;deo institucional</h2>
-        </div>
-        <button class="video-modal-close" type="button" aria-label="Fechar v&iacute;deo institucional">Fechar</button>
-      </div>
-      ${renderInstitutionalVideoCleanFrame()}
-    </section>
-  `;
-
-  const closeModal = () => modal.remove();
-  modal.querySelector(".video-modal-close").addEventListener("click", closeModal);
-  modal.addEventListener("click", event => {
-    if (event.target === modal) closeModal();
-  });
-  document.addEventListener("keydown", function closeOnEscape(event) {
-    if (event.key !== "Escape") return;
-    closeModal();
-    document.removeEventListener("keydown", closeOnEscape);
-  });
-  document.body.appendChild(modal);
 }
 
 function showRenewalOfferOnce() {
@@ -3411,3 +4615,687 @@ function showVideoNotice() {
 // SUPABASE: biblioteca deve vir de library_items filtrados por access, plano ou bundle adquirido.
 // SUPABASE: emissao de certificado deve atualizar materials.emitido ou tabela propria de certificados.
 boot();
+
+const certificateAnalysisFunction = "flowcore-certificate-analysis";
+let pdfJsPromise = null;
+
+function loadPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if (!pdfJsPromise) {
+    pdfJsPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+      script.onload = () => {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        resolve(window.pdfjsLib);
+      };
+      script.onerror = () => reject(new Error("Não foi possível carregar o leitor de PDF."));
+      document.head.appendChild(script);
+    });
+  }
+  return pdfJsPromise;
+}
+
+async function extrairTextoPdf(file) {
+  const pdfjs = await loadPdfJs();
+  const documento = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
+  let texto = "";
+  for (let numero = 1; numero <= documento.numPages; numero += 1) {
+    const pagina = await documento.getPage(numero);
+    const conteudo = await pagina.getTextContent();
+    texto += conteudo.items.map(item => item.str).join(" ") + "\n";
+  }
+  return texto.trim();
+}
+
+function bindCertificateUpload() {
+  const input = document.querySelector("#certificateFile");
+  if (!input) return;
+
+  const dropzone = document.querySelector("#certificateDropzone");
+  const fileName = document.querySelector("#certificateFileName");
+  dropzone.addEventListener("dragover", event => {
+    event.preventDefault();
+    dropzone.classList.add("is-dragging");
+  });
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("is-dragging"));
+  dropzone.addEventListener("drop", event => {
+    event.preventDefault();
+    dropzone.classList.remove("is-dragging");
+    const arquivo = event.dataTransfer?.files?.[0];
+    if (!arquivo) return;
+    if (arquivo.type !== "application/pdf") {
+      fileName.textContent = "Envie um arquivo PDF";
+      return;
+    }
+    const transferencia = new DataTransfer();
+    transferencia.items.add(arquivo);
+    input.files = transferencia.files;
+    input.dispatchEvent(new Event("change"));
+  });
+  input.addEventListener("change", () => {
+    fileName.textContent = input.files?.[0]?.name || "Apenas arquivos PDF";
+  });
+  const preview = document.querySelector("#certificatePreview");
+  const textoEl = document.querySelector("#certificateText");
+  const sendButton = document.querySelector("#certificateSend");
+  const result = document.querySelector("#certificateResult");
+  let textoOculto = "";
+
+  input.addEventListener("change", async () => {
+    const file = input.files?.[0];
+    preview.hidden = true;
+    result.innerHTML = "";
+    textoOculto = "";
+    if (!file) return;
+
+    result.innerHTML = "<p>Lendo o PDF...</p>";
+    try {
+      const texto = await extrairTextoPdf(file);
+      textoOculto = ocultarDadosPessoais(texto);
+      textoEl.textContent = textoOculto || "Não encontrei texto neste PDF. Se for uma imagem digitalizada, o texto não pode ser lido.";
+      sendButton.disabled = !textoOculto;
+      preview.hidden = false;
+      result.innerHTML = "";
+    } catch (error) {
+      result.innerHTML = `<p class="is-error">${escapeHtml(error.message || "Não foi possível ler o PDF.")}</p>`;
+    }
+  });
+
+  sendButton.addEventListener("click", async () => {
+    const termoAceito = await confirmarTermoIA();
+    if (!termoAceito) return;
+
+    sendButton.disabled = true;
+    result.innerHTML = "<p>Analisando o certificado...</p>";
+    try {
+      const { data } = await client.auth.getSession();
+      const token = data.session?.access_token;
+      if (!token) throw new Error("Sessão expirada. Entre novamente.");
+
+      const response = await fetch(`${FLOWCORE_SUPABASE_URL}/functions/v1/${certificateAnalysisFunction}`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ texto: textoOculto })
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || `Falha na análise. Status ${response.status}.`);
+
+      result.innerHTML = `
+        <strong>Análise do certificado</strong>
+        <p>${formatAssistantText(payload.answer || "Não recebi uma resposta da IA.")}</p>
+      `;
+    } catch (error) {
+      result.innerHTML = `<p class="is-error">${escapeHtml(error.message || "Falha na comunicação com a análise.")}</p>`;
+    } finally {
+      sendButton.disabled = !textoOculto;
+    }
+  });
+}
+
+// Notificações: lista, contador não lido e alerta de mensagem nova
+let notificationsTimer = null;
+
+function mostrarAvisoNotificacao(quantidade) {
+  const badge = document.querySelector("#notificationBadge");
+  if (badge) {
+    badge.classList.remove("is-new");
+    void badge.offsetWidth;
+    badge.classList.add("is-new");
+  }
+
+  const aviso = document.createElement("a");
+  aviso.className = "notify-toast";
+  aviso.href = "#notificacoes";
+  aviso.textContent = quantidade === 1
+    ? "Você tem uma nova mensagem"
+    : `Você tem ${quantidade} novas mensagens`;
+  document.body.appendChild(aviso);
+  setTimeout(() => aviso.remove(), 6000);
+}
+
+async function marcarNotificacoesLidas(ids) {
+  const pendentes = (state.notifications || []).filter(item => ids.includes(item.id) && !item.lida);
+  if (!pendentes.length) return;
+  pendentes.forEach(item => { item.lida = true; });
+  atualizarBadgeNotificacoes();
+  await client.from("notification_reads").upsert(
+    pendentes.map(item => ({
+      notification_id: item.id,
+      student_id: state.aluno.id,
+      read_at: new Date().toISOString()
+    })),
+    { onConflict: "notification_id,student_id" }
+  );
+}
+
+document.addEventListener("click", event => {
+  const linha = event.target.closest("[data-notification-id]");
+  if (!linha || !document.querySelector(".mail-layout")) return;
+  state.notificationSelectedId = linha.dataset.notificationId;
+  renderNotifications();
+});
+
+function iniciarNotificacoes() {
+  if (notificationsTimer) return;
+  notificationsTimer = setInterval(() => loadNotifications().catch(() => {}), 60000);
+}
+
+// Versão atual e histórico de novidades. Para uma nova versão, suba tourVersion e adicione um item em versionNotes.
+const tourVersion = "2.0.0";
+const versionNotes = [
+  {
+    version: "2.0.0",
+    changes: [
+      "Meu Painel com saudação, previsão do tempo, seu objetivo e a jornada dos cursos.",
+      "Meu objetivo, com opções predefinidas e campo livre.",
+      "Core Attention: sessões de foco com acompanhamento de tempo na plataforma.",
+      "Níveis Bronze, Prata, Ouro e Diamante, com descontos no Plano Anual.",
+      "Planos e cursos com plano trimestral e compra pelo WhatsApp.",
+      "FlowCore Tools com análise de certificado em PDF.",
+      "FlowCore Specialist com entrada por voz.",
+      "Notificações com aviso de mensagem nova."
+    ]
+  }
+];
+
+const tourSteps = [
+  { selector: ".cockpit-head-row h1", title: "Meu Painel", text: "Aqui você vê a sua saudação, a data, a previsão do tempo e a sua foto." },
+  { selector: ".cockpit-goal", title: "Seu objetivo", text: "Mostra a meta que você escolheu no perfil e o seu avanço, conforme as aulas assistidas." },
+  { selector: ".cockpit-journey", title: "Sua jornada", text: "Os cursos liberados aparecem primeiro, com o status de cada um. Os sugeridos mostram o que ainda pode conquistar." },
+  { selector: "[data-nav='notificacoes']", title: "Notificações", text: "As mensagens da equipe FlowCore chegam aqui. O contador mostra quantas você ainda não leu." },
+  { selector: ".cockpit-avatar", title: "Seu perfil", text: "No perfil você troca a foto, define o objetivo e acompanha o Core Attention e o seu histórico." }
+];
+let tourOpen = false;
+
+function compareVersions(a, b) {
+  const pa = String(a).split(".").map(Number);
+  const pb = String(b).split(".").map(Number);
+  for (let i = 0; i < 3; i += 1) {
+    const diferenca = (pa[i] || 0) - (pb[i] || 0);
+    if (diferenca) return diferenca;
+  }
+  return 0;
+}
+
+async function loadTourStatus() {
+  state.tourVersionSeen = null;
+  state.tourSeen = false;
+  if (!state.aluno?.id) return;
+  const { data, error } = await client.from("student_tours")
+    .select("tour_version")
+    .eq("student_id", state.aluno.id)
+    .maybeSingle();
+  if (error) return;
+  state.tourVersionSeen = data?.tour_version || null;
+  state.tourSeen = state.tourVersionSeen === tourVersion;
+}
+
+async function marcarTourVisto() {
+  state.tourVersionSeen = tourVersion;
+  state.tourSeen = true;
+  await client.from("student_tours").upsert(
+    { student_id: state.aluno.id, tour_version: tourVersion, seen_at: new Date().toISOString() },
+    { onConflict: "student_id" }
+  );
+}
+
+function abrirCartaoCentral(html, { comFundo = false, rotulo = "" } = {}) {
+  const fundo = document.createElement("div");
+  fundo.className = `tour-backdrop ${comFundo ? "is-dimmed" : ""}`;
+  const cartao = document.createElement("section");
+  cartao.className = "tour-card";
+  cartao.setAttribute("role", "dialog");
+  cartao.setAttribute("aria-label", rotulo);
+  cartao.innerHTML = html;
+  fundo.appendChild(cartao);
+  document.body.appendChild(fundo);
+  return { fundo, cartao };
+}
+
+function posicionarCartaoDoTour(cartao, alvo, primeiraVez) {
+  const margem = 16;
+  const largura = cartao.offsetWidth;
+  const altura = cartao.offsetHeight;
+  let left;
+  let top;
+
+  if (!alvo) {
+    left = (window.innerWidth - largura) / 2;
+    top = (window.innerHeight - altura) / 2;
+  } else {
+    const r = alvo.getBoundingClientRect();
+    top = r.bottom + margem;
+    if (top + altura > window.innerHeight - margem) top = r.top - altura - margem;
+    if (top < margem) top = Math.max(margem, (window.innerHeight - altura) / 2);
+    left = r.left + r.width / 2 - largura / 2;
+  }
+
+  left = Math.max(margem, Math.min(left, window.innerWidth - largura - margem));
+  top = Math.max(margem, Math.min(top, window.innerHeight - altura - margem));
+
+  cartao.style.transition = primeiraVez ? "none" : "left 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)";
+  cartao.style.left = `${left}px`;
+  cartao.style.top = `${top}px`;
+}
+
+function iniciarTour() {
+  if (tourOpen) return;
+  const passos = tourSteps.filter(passo => document.querySelector(passo.selector));
+  if (!passos.length) return;
+
+  tourOpen = true;
+  let atual = 0;
+  let primeiraVez = true;
+  const { fundo, cartao } = abrirCartaoCentral(`
+    <div class="tour-dots" data-tour-dots></div>
+    <p class="eyebrow" data-tour-count></p>
+    <h2 data-tour-title></h2>
+    <p data-tour-text></p>
+    <div class="tour-actions">
+      <button class="tour-skip" type="button" data-tour-skip>Pular tour</button>
+      <button class="primary-button" type="button" data-tour-next></button>
+    </div>`, { rotulo: "Tour do Meu Painel" });
+  fundo.classList.add("is-transparent");
+  cartao.classList.add("is-floating");
+
+  const limparDestaque = () => {
+    document.querySelectorAll(".tour-highlight").forEach(el => el.classList.remove("tour-highlight"));
+  };
+
+  const mostrar = () => {
+    limparDestaque();
+    const passo = passos[atual];
+    const alvo = document.querySelector(passo.selector);
+    alvo?.classList.add("tour-highlight");
+    cartao.querySelector("[data-tour-dots]").innerHTML = passos
+      .map((_, indice) => `<span class="${indice <= atual ? "is-on" : ""}"></span>`).join("");
+    cartao.querySelector("[data-tour-count]").textContent = `Passo ${atual + 1} de ${passos.length}`;
+    cartao.querySelector("[data-tour-title]").textContent = passo.title;
+    cartao.querySelector("[data-tour-text]").textContent = passo.text;
+    cartao.querySelector("[data-tour-next]").textContent = atual === passos.length - 1 ? "Concluir" : "Próximo";
+
+    if (alvo) alvo.scrollIntoView({ behavior: "smooth", block: "center" });
+    // espera o scroll terminar para medir a posição do elemento
+    setTimeout(() => {
+      posicionarCartaoDoTour(cartao, alvo, primeiraVez);
+      primeiraVez = false;
+    }, alvo ? 380 : 0);
+  };
+
+  const fechar = () => {
+    limparDestaque();
+    window.removeEventListener("resize", reposicionar);
+    fundo.remove();
+    tourOpen = false;
+    marcarTourVisto().catch(() => {});
+  };
+
+  const reposicionar = () => {
+    const alvo = document.querySelector(passos[atual].selector);
+    posicionarCartaoDoTour(cartao, alvo, true);
+  };
+  window.addEventListener("resize", reposicionar);
+
+  cartao.querySelector("[data-tour-skip]").addEventListener("click", fechar);
+  cartao.querySelector("[data-tour-next]").addEventListener("click", () => {
+    if (atual === passos.length - 1) fechar();
+    else {
+      atual += 1;
+      mostrar();
+    }
+  });
+  mostrar();
+}
+
+// Mostra o que mudou desde a última versão que o aluno viu
+function iniciarNovidades(versaoVista) {
+  if (tourOpen) return;
+  const notas = versionNotes
+    .filter(nota => compareVersions(nota.version, versaoVista) > 0 && compareVersions(nota.version, tourVersion) <= 0)
+    .sort((a, b) => compareVersions(b.version, a.version));
+  if (!notas.length) {
+    marcarTourVisto().catch(() => {});
+    return;
+  }
+
+  tourOpen = true;
+  const { fundo, cartao } = abrirCartaoCentral(`
+    <p class="eyebrow">Novidades</p>
+    <h2>O que mudou na plataforma</h2>
+    <div class="novidades-list">
+      ${notas.map(nota => `
+        <div>
+          <strong>Versão ${escapeHtml(nota.version)}</strong>
+          <ul>${nota.changes.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+        </div>`).join("")}
+    </div>
+    <div class="tour-actions">
+      <button class="text-link" type="button" data-novidades-tour>Ver tour</button>
+      <button class="primary-button" type="button" data-novidades-ok>Entendi</button>
+    </div>`, { comFundo: true, rotulo: "O que mudou" });
+
+  const fechar = () => {
+    fundo.remove();
+    tourOpen = false;
+    marcarTourVisto().catch(() => {});
+  };
+  cartao.querySelector("[data-novidades-ok]").addEventListener("click", fechar);
+  cartao.querySelector("[data-novidades-tour]").addEventListener("click", () => {
+    fechar();
+    setTimeout(() => iniciarTour(), 300);
+  });
+}
+
+document.addEventListener("click", event => {
+  if (!event.target.closest("[data-tour-replay]")) return;
+  window.location.hash = "#dashboard";
+  setTimeout(() => iniciarTour(), 500);
+});
+
+// Banner de mensagem prioritária no topo do Meu Painel (aparece até o aluno fechar)
+document.addEventListener("click", event => {
+  const botao = event.target.closest("[data-priority-close]");
+  if (!botao) return;
+  const banner = botao.closest(".priority-banner");
+  const id = banner?.dataset.priorityId;
+  banner?.remove();
+  if (id) marcarNotificacoesLidas([id]).catch(() => {});
+});
+
+function atualizarBadgeNotificacoes() {
+  const badge = document.querySelector("#notificationBadge");
+  if (!badge) return;
+  const naoLidas = (state.notifications || []).filter(item => !item.lida && !item.apagada).length;
+  badge.textContent = naoLidas > 99 ? "99+" : String(naoLidas);
+  badge.hidden = naoLidas === 0;
+}
+
+function renderPriorityBanner() {
+  const pendente = (state.notifications || []).find(item => item.priority === "prioritaria" && !item.lida && !item.apagada);
+  if (!pendente) return "";
+  return `
+      <section class="priority-banner" role="status" data-priority-id="${escapeAttribute(pendente.id)}">
+        <div class="priority-banner-text">
+          <p class="eyebrow">Aviso importante</p>
+          <strong>${escapeHtml(pendente.title)}</strong>
+          <p>${formatAssistantText(pendente.body || "")}</p>
+        </div>
+        <button class="priority-close" type="button" data-priority-close aria-label="Fechar aviso">Fechar</button>
+      </section>`;
+}
+
+
+async function loadNotifications() {
+  if (!state.aluno?.id) return;
+  const anteriores = (state.notifications || []).filter(item => !item.lida && !item.apagada).length;
+
+  const [mensagens, leituras] = await Promise.all([
+    client.from("notifications")
+      .select("id,title,body,created_at,priority")
+      .order("created_at", { ascending: false })
+      .limit(50),
+    client.from("notification_reads")
+      .select("notification_id,deleted_at,purged_at")
+      .eq("student_id", state.aluno.id)
+  ]);
+  if (mensagens.error) return;
+
+  const registros = new Map((leituras.data || []).map(item => [item.notification_id, item]));
+  state.notifications = (mensagens.data || [])
+    .filter(item => !registros.get(item.id)?.purged_at)
+    .map(item => {
+      const registro = registros.get(item.id);
+      return {
+        ...item,
+        lida: Boolean(registro),
+        apagada: Boolean(registro?.deleted_at)
+      };
+    });
+  atualizarBadgeNotificacoes();
+
+  const naoLidas = state.notifications.filter(item => !item.lida && !item.apagada).length;
+  if (naoLidas > anteriores && location.hash !== "#notificacoes") {
+    mostrarAvisoNotificacao(naoLidas - anteriores);
+  }
+}
+
+async function alterarLixeira(id, paraLixeira) {
+  const item = (state.notifications || []).find(mensagem => mensagem.id === id);
+  if (!item) return;
+  item.apagada = paraLixeira;
+  item.lida = true;
+  atualizarBadgeNotificacoes();
+  await client.from("notification_reads").upsert(
+    {
+      notification_id: id,
+      student_id: state.aluno.id,
+      read_at: new Date().toISOString(),
+      deleted_at: paraLixeira ? new Date().toISOString() : null
+    },
+    { onConflict: "notification_id,student_id" }
+  );
+}
+
+async function excluirDefinitivamente(id) {
+  state.notifications = (state.notifications || []).filter(mensagem => mensagem.id !== id);
+  atualizarBadgeNotificacoes();
+  const agora = new Date().toISOString();
+  await client.from("notification_reads").upsert(
+    { notification_id: id, student_id: state.aluno.id, read_at: agora, deleted_at: agora, purged_at: agora },
+    { onConflict: "notification_id,student_id" }
+  );
+}
+
+function renderNotifications() {
+  const todas = state.notifications || [];
+  const caixa = todas.filter(item => !item.apagada);
+  const lixeira = todas.filter(item => item.apagada);
+  const lista = state.notificationShowDeleted ? lixeira : caixa;
+
+  if (!lista.some(item => item.id === state.notificationSelectedId)) {
+    state.notificationSelectedId = lista[0]?.id || null;
+  }
+  const selecionada = todas.find(item => item.id === state.notificationSelectedId);
+  if (selecionada && !selecionada.lida) {
+    marcarNotificacoesLidas([selecionada.id]).catch(() => {});
+  }
+  const naoLidas = caixa.filter(item => !item.lida).length;
+
+  app.innerHTML = `
+    <section class="page-header">
+      <p class="eyebrow">Comunicados</p>
+      <h1>${state.notificationShowDeleted ? "Lixeira" : "Notificações"}</h1>
+      <p>${state.notificationShowDeleted
+        ? (lixeira.length ? "Mensagens apagadas. Você pode restaurar ou excluir de vez." : "A lixeira está vazia.")
+        : (naoLidas === 0 ? "Você não tem mensagens não lidas." : `${naoLidas} ${naoLidas === 1 ? "mensagem não lida" : "mensagens não lidas"}.`)}</p>
+    </section>
+    ${lista.length
+      ? `<section class="mail-layout">
+           <div>
+             <ul class="mail-list" aria-label="${state.notificationShowDeleted ? "Lixeira" : "Mensagens"}">
+               ${lista.map(item => `
+                 <li>
+                   <button type="button" class="mail-row ${item.lida ? "is-read" : "is-unread"} ${item.id === state.notificationSelectedId ? "is-selected" : ""} ${item.apagada ? "is-deleted" : ""}" data-notification-id="${escapeAttribute(item.id)}">
+                     <span class="mail-status">${item.apagada ? "Lixeira" : item.lida ? "Lida" : "Não lida"}</span>
+                     <strong>${escapeHtml(item.title)}</strong>
+                     <small>${formatDate(String(item.created_at).slice(0, 10))}</small>
+                   </button>
+                 </li>`).join("")}
+             </ul>
+             <button class="text-link mail-toggle" type="button" data-notification-toggle-deleted>
+               ${state.notificationShowDeleted ? "Voltar às mensagens" : `Lixeira (${lixeira.length})`}
+             </button>
+           </div>
+           <article class="mail-reader" aria-live="polite">
+             ${selecionada
+               ? `<div class="mail-reader-head">
+                    <div>
+                      <p class="eyebrow">${selecionada.priority === "prioritaria" ? "Prioritária" : "Mensagem"} · ${formatDate(String(selecionada.created_at).slice(0, 10))}</p>
+                      <h2>${escapeHtml(selecionada.title)}</h2>
+                    </div>
+                    ${selecionada.apagada
+                      ? `<div class="mail-reader-actions">
+                           <button class="secondary-button" type="button" data-notification-restore="${escapeAttribute(selecionada.id)}">Restaurar</button>
+                           <button class="tour-skip" type="button" data-notification-purge="${escapeAttribute(selecionada.id)}">Excluir de vez</button>
+                         </div>`
+                      : `<button class="tour-skip" type="button" data-notification-delete="${escapeAttribute(selecionada.id)}">Apagar</button>`}
+                  </div>
+                  <div class="mail-body">${formatAssistantText(selecionada.body || "")}</div>`
+               : ""}
+           </article>
+         </section>`
+      : `<article class="empty-state compact">
+           <h2>${state.notificationShowDeleted ? "A lixeira está vazia" : "Nenhuma notificação"}</h2>
+           <p>${state.notificationShowDeleted ? "Mensagens apagadas aparecem aqui." : "Quando houver uma mensagem para você, ela aparece aqui."}</p>
+           ${state.notificationShowDeleted
+             ? `<button class="secondary-button" type="button" data-notification-toggle-deleted>Voltar às mensagens</button>`
+             : ""}
+         </article>`}
+  `;
+}
+
+document.addEventListener("click", event => {
+  const apagar = event.target.closest("[data-notification-delete]");
+  if (apagar) {
+    const id = apagar.dataset.notificationDelete;
+    const caixa = (state.notifications || []).filter(item => !item.apagada);
+    const posicao = caixa.findIndex(item => item.id === id);
+    const proxima = caixa[posicao + 1] || caixa[posicao - 1];
+    alterarLixeira(id, true).catch(() => {});
+    state.notificationSelectedId = proxima?.id || null;
+    renderNotifications();
+    return;
+  }
+
+  const restaurar = event.target.closest("[data-notification-restore]");
+  if (restaurar) {
+    alterarLixeira(restaurar.dataset.notificationRestore, false).catch(() => {});
+    state.notificationSelectedId = restaurar.dataset.notificationRestore;
+    renderNotifications();
+    return;
+  }
+
+  const purgar = event.target.closest("[data-notification-purge]");
+  if (purgar) {
+    if (!window.confirm("Excluir esta mensagem de vez? Ela não poderá ser restaurada.")) return;
+    const id = purgar.dataset.notificationPurge;
+    const lixeira = (state.notifications || []).filter(item => item.apagada && item.id !== id);
+    excluirDefinitivamente(id).catch(() => {});
+    state.notificationSelectedId = lixeira[0]?.id || null;
+    renderNotifications();
+    return;
+  }
+
+  if (event.target.closest("[data-notification-toggle-deleted]")) {
+    state.notificationShowDeleted = !state.notificationShowDeleted;
+    state.notificationSelectedId = null;
+    renderNotifications();
+  }
+});
+
+document.addEventListener("click", event => {
+  if (!event.target.closest("[data-membership-undo]")) return;
+  state.membershipSelection = "";
+  state.storeNotice = "";
+  renderStore();
+});
+
+// Checkout único: o servidor calcula o valor e devolve o link de pagamento.
+async function criarLinkDeCompra(payload) {
+  const { data } = await client.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new Error("Sessão expirada. Entre novamente.");
+
+  const resposta = await fetch(`${FLOWCORE_SUPABASE_URL}/functions/v1/create-checkout`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+  const dados = await resposta.json().catch(() => ({}));
+  if (!resposta.ok || !dados.paymentUrl) {
+    throw new Error(dados.error || "Não foi possível iniciar a compra.");
+  }
+  return dados.paymentUrl;
+}
+
+// Abre o pagamento em nova aba. A aba é aberta no clique, antes da chamada ao servidor,
+// para o navegador não bloquear. Nunca troca a página do The Standard.
+async function iniciarCompra(payload, aoErro) {
+  const janela = window.open("", "_blank");
+  if (!janela) {
+    aoErro("Seu navegador bloqueou a nova aba. Permita pop-ups para este site e tente de novo.");
+    return;
+  }
+  janela.document.write("<p style='font-family:sans-serif;padding:24px'>Abrindo o ambiente seguro de pagamento…</p>");
+
+  try {
+    const url = await criarLinkDeCompra(payload);
+    janela.opener = null;
+    janela.location.href = url;
+  } catch (error) {
+    janela.close();
+    aoErro(error.message || "Não foi possível iniciar a compra.");
+  }
+}
+
+document.addEventListener("click", event => {
+  const botaoPlano = event.target.closest("[data-checkout-plan]");
+  if (botaoPlano) {
+    const status = document.querySelector("#planPopupStatus");
+    botaoPlano.disabled = true;
+    if (status) status.textContent = "Abrindo o ambiente de pagamento…";
+    iniciarCompra({ type: "plan", planCode: botaoPlano.dataset.checkoutPlan }, mensagem => {
+      botaoPlano.disabled = false;
+      if (status) {
+        status.textContent = mensagem;
+        status.classList.add("is-error");
+      }
+    });
+    return;
+  }
+
+  const botaoCarrinho = event.target.closest("[data-checkout-cart]");
+  if (botaoCarrinho) {
+    const offerIds = state.cart.items.map(item => item.offerId);
+    iniciarCompra({ type: "courses", offerIds }, mensagem => {
+      state.storeNotice = mensagem;
+      renderStore();
+    });
+  }
+});
+
+document.addEventListener("click", async event => {
+  const botao = event.target.closest("[data-cancel-subscription]");
+  if (!botao) return;
+  if (!window.confirm("Cancelar sua assinatura mensal? Você não será cobrado novamente.")) return;
+
+  botao.disabled = true;
+  try {
+    const { data } = await client.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) throw new Error("Sessão expirada. Entre novamente.");
+
+    const resposta = await fetch(`${FLOWCORE_SUPABASE_URL}/functions/v1/cancel-subscription`, {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    const dados = await resposta.json().catch(() => ({}));
+    if (!resposta.ok) throw new Error(dados.error || "Não foi possível cancelar a assinatura.");
+
+    state.membershipOrders = (state.membershipOrders || []).map(item =>
+      item.plan_code === "mensal" ? { ...item, status: "canceled" } : item
+    );
+    renderProfile();
+    window.alert("Assinatura cancelada. Você não será cobrado novamente.");
+  } catch (error) {
+    botao.disabled = false;
+    window.alert(error.message || "Não foi possível cancelar a assinatura.");
+  }
+});

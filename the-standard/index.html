@@ -17,26 +17,35 @@
   <meta name="twitter:title" content="Portal FlowCore Academy" />
   <meta name="twitter:description" content="Acesse seus cursos, materiais, certificados e suporte da FlowCore Academy." />
   <meta name="twitter:image" content="https://flowcoresolutions.com.br/the-standard/assets/background.png" />
+  <link rel="stylesheet" href="../jost.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar" aria-label="Navegação principal">
-      <a class="brand" href="../cursos.html" aria-label="FlowCore Academy">
+      <a class="brand" href="../cursos.html" target="_blank" rel="noopener" aria-label="FlowCore Academy">
         <img src="assets/logo-academy-preta.png" alt="FlowCore Academy" />
       </a>
       <nav class="nav-stack">
-        <a href="#dashboard" data-nav="dashboard"><span>Meus Cursos</span></a>
+        <a href="#dashboard" data-nav="dashboard"><span>Meu Painel</span></a>
+        <a href="#notificacoes" data-nav="notificacoes"><span>Notificações</span><b class="nav-badge" id="notificationBadge" hidden>0</b></a>
         <a href="#video-institucional" data-nav="video-institucional"><span>V&iacute;deo institucional</span></a>
         <a href="#biblioteca" data-nav="biblioteca"><span>Biblioteca FlowCore</span></a>
         <a href="#especialista" data-nav="especialista"><span>Meu Especialista</span></a>
-        <a href="#flowcore-tools/meter-calibration-calculator" data-nav="flowcore-tools"><span>FlowCore Tools</span></a>
+        <div class="nav-group">
+          <a href="#flowcore-tools" data-nav="flowcore-tools"><span>FlowCore Tools</span></a>
+          <div class="nav-sub-list">
+            <a class="nav-sub" href="#flowcore-tools/meter-calibration-calculator" data-nav-sub="meter-calibration-calculator">Meter Calibration Calculator</a>
+            <a class="nav-sub" href="#flowcore-tools/intelligent-calculator" data-nav-sub="intelligent-calculator">Intelligent calculator</a>
+          </div>
+        </div>
         <a href="#financeiro" data-nav="financeiro"><span>Financeiro</span></a>
         <a href="#comprar" data-nav="comprar"><span>Planos e cursos</span></a>
         <a href="#perfil" data-nav="perfil"><span>Perfil</span></a>
         <a href="#creditos" data-nav="creditos"><span>Meus Créditos</span></a>
       </nav>
       <button class="ghost-button" type="button" id="logoutButton">Sair</button>
+      <p class="app-version">The Standard v2.2.0</p>
     </aside>
 
     <main class="main-stage" id="app" tabindex="-1"></main>
