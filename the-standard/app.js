@@ -4776,9 +4776,7 @@ function mostrarAvisoNotificacao(quantidade) {
 async function marcarNotificacoesLidas(ids) {
   const pendentes = (state.notifications || []).filter(item => ids.includes(item.id) && !item.lida);
   if (!pendentes.length) return;
-  pendentes.forEach(item => { item.lida = true; });
-  atualizarBadgeNotificacoes();
-  await client.from("notification_reads").upsert(
+  const { error } = await client.from("notification_reads").upsert(
     pendentes.map(item => ({
       notification_id: item.id,
       student_id: state.aluno.id,
@@ -4786,6 +4784,9 @@ async function marcarNotificacoesLidas(ids) {
     })),
     { onConflict: "notification_id,student_id" }
   );
+  if (error) throw error;
+  pendentes.forEach(item => { item.lida = true; });
+  atualizarBadgeNotificacoes();
 }
 
 document.addEventListener("click", event => {
@@ -5013,13 +5014,24 @@ document.addEventListener("click", event => {
 });
 
 // Banner de mensagem prioritária no topo do Meu Painel (aparece até o aluno fechar)
-document.addEventListener("click", event => {
+document.addEventListener("click", async event => {
   const botao = event.target.closest("[data-priority-close]");
-  if (!botao) return;
+  if (!botao || botao.disabled) return;
   const banner = botao.closest(".priority-banner");
   const id = banner?.dataset.priorityId;
-  banner?.remove();
-  if (id) marcarNotificacoesLidas([id]).catch(() => {});
+  if (!id) return;
+  botao.disabled = true;
+  try {
+    await marcarNotificacoesLidas([id]);
+    banner.remove();
+    if (!window.location.hash || window.location.hash === "#dashboard") {
+      const nextBanner = renderPriorityBanner();
+      if (nextBanner) document.querySelector(".cockpit-v2")?.insertAdjacentHTML("afterbegin", nextBanner);
+    }
+  } catch (error) {
+    botao.disabled = false;
+    botao.textContent = "Tentar fechar novamente";
+  }
 });
 
 function atualizarBadgeNotificacoes() {
